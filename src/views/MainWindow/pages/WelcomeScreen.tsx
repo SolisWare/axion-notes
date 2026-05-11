@@ -95,14 +95,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     marginLeft: 8
   },
   checkboxLabel: {
-    marginLeft: "-10px !important",
     color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT + " !important"
   },
   checkbox: {
-    color: ({ appColors }) => appColors.MAIN + " !important",
-    "&.Mui-checked": {
-      color: ({ appColors }) => appColors.SECONDARY + " !important"
-    }
   },
   preview: {
     position: "relative",
@@ -202,6 +197,12 @@ function WelcomeScreen(props: WelcomeProps) {
                   className={classes.checkbox}
                   checked={neverShowAgain}
                   onChange={handleNeverShowAgainChange}
+                  sx={{
+                    color: appColors.MAIN,
+                    "&.Mui-checked": {
+                      color: (props.theme === SystemTheme.DARK ? appColors.MAIN_LIGHT : appColors.MAIN) + " !important"
+                    }
+                  }}
                 />
               }
               label="Do not show this welcome screen again"
