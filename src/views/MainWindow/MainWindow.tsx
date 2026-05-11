@@ -18,6 +18,7 @@ import { NoteType } from "../../models/NoteType";
 import { getRandomNoteColor } from "../../theme/NoteColors";
 import { nanoid } from "nanoid";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
+import { useNavigate } from "react-router-dom";
 
 type MainWindowProps = {
   view: AppView;
@@ -50,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 function MainWindow(props: MainWindowProps) {
   const classes = useStyles();
+  const navigate = useNavigate();
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
@@ -107,6 +109,8 @@ function MainWindow(props: MainWindowProps) {
     if (hideWelcomeOnNextLaunch) {
       // TODO: Persist this preference once app settings storage is available.
     }
+
+    navigate(AppView.home);
   }
   
   let page = <></>;

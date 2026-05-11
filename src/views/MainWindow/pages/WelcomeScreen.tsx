@@ -27,7 +27,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "48px 24px"
+    padding: "48px 24px",
+    boxSizing: "border-box",
+    textAlign: "left"
   },
   content: {
     width: "100%",
@@ -78,7 +80,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     flexDirection: "column",
     alignItems: "flex-start",
     gap: 14,
-    marginTop: 24
+    marginTop: 0
   },
   getStartedButton: {
     minWidth: 178,
@@ -118,30 +120,22 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     width: 220,
     minHeight: 180,
     borderRadius: 8,
-    padding: 18,
-    boxShadow: ({ appColors }) => "0 18px 36px " + appColors.WELCOME_NOTE_PREVIEW_SHADOW,
-    border: ({ appColors }) => "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
+    padding: 18
   },
   primaryNote: {
     top: 24,
     left: 12,
-    zIndex: 3,
-    backgroundColor: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_PRIMARY_BACKGROUND,
-    color: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_TEXT
+    zIndex: 3
   },
   secondaryNote: {
     top: 86,
     right: 18,
-    zIndex: 2,
-    backgroundColor: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_SECONDARY_BACKGROUND,
-    color: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_TEXT
+    zIndex: 2
   },
   tertiaryNote: {
     bottom: 0,
     left: 78,
-    zIndex: 1,
-    backgroundColor: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_TERTIARY_BACKGROUND,
-    color: ({ appColors }) => appColors.WELCOME_NOTE_PREVIEW_TEXT
+    zIndex: 1
   },
   noteTitle: {
     fontWeight: "700 !important",
@@ -214,7 +208,15 @@ function WelcomeScreen(props: WelcomeProps) {
           </div>
         </div>
         <div className={classes.preview} aria-hidden="true">
-          <div className={`${classes.notePreview} ${classes.primaryNote}`}>
+          <div
+            className={`${classes.notePreview} ${classes.primaryNote}`}
+            style={{
+              backgroundColor: appColors.WELCOME_NOTE_PREVIEW_PRIMARY_BACKGROUND,
+              color: appColors.WELCOME_NOTE_PREVIEW_TEXT,
+              boxShadow: "0 18px 36px " + appColors.WELCOME_NOTE_PREVIEW_SHADOW,
+              border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
+            }}
+          >
             <Typography className={classes.noteTitle} variant="body1">Today</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
@@ -224,7 +226,15 @@ function WelcomeScreen(props: WelcomeProps) {
               <Typography variant="body2">Fresh workspace</Typography>
             </div>
           </div>
-          <div className={`${classes.notePreview} ${classes.secondaryNote}`}>
+          <div
+            className={`${classes.notePreview} ${classes.secondaryNote}`}
+            style={{
+              backgroundColor: appColors.WELCOME_NOTE_PREVIEW_SECONDARY_BACKGROUND,
+              color: appColors.WELCOME_NOTE_PREVIEW_TEXT,
+              boxShadow: "0 18px 36px " + appColors.WELCOME_NOTE_PREVIEW_SHADOW,
+              border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
+            }}
+          >
             <Typography className={classes.noteTitle} variant="body1">Ideas</Typography>
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />
@@ -233,7 +243,15 @@ function WelcomeScreen(props: WelcomeProps) {
               <Typography variant="body2">Colorful notes</Typography>
             </div>
           </div>
-          <div className={`${classes.notePreview} ${classes.tertiaryNote}`}>
+          <div
+            className={`${classes.notePreview} ${classes.tertiaryNote}`}
+            style={{
+              backgroundColor: appColors.WELCOME_NOTE_PREVIEW_TERTIARY_BACKGROUND,
+              color: appColors.WELCOME_NOTE_PREVIEW_TEXT,
+              boxShadow: "0 18px 36px " + appColors.WELCOME_NOTE_PREVIEW_SHADOW,
+              border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
+            }}
+          >
             <Typography className={classes.noteTitle} variant="body1">Next</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
