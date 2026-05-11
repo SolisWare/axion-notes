@@ -11,6 +11,7 @@ import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
 import { AppView } from "../../App";
 import Home from "./pages/Home";
+import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { useEffect, useState } from "react";
 import { NoteType } from "../../models/NoteType";
@@ -53,6 +54,7 @@ function MainWindow(props: MainWindowProps) {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [versionLabel, setVersionLabel] = useState("");
+  const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
   
   
   const isDeleteAllButtonDisabled = notes.length === 0;
@@ -100,9 +102,18 @@ function MainWindow(props: MainWindowProps) {
       window.api.storage.deleteAllNotes();
     }, 500);
   }
+
+  function handleGetStarted() {
+    if (hideWelcomeOnNextLaunch) {
+      // TODO: Persist this preference once app settings storage is available.
+    }
+  }
   
   let page = <></>;
   switch (props.view) {
+    case AppView.welcome:
+      page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={setHideWelcomeOnNextLaunch} />
+      break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} />
       break;

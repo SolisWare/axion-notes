@@ -37,7 +37,7 @@ function App() {
               <MainWindow view={AppView.welcome} theme={systemTheme} />
             } />
             <Route path="/" element={
-              <MainWindow view={AppView.home} theme={systemTheme} />
+              <MainWindow view={AppView.welcome} theme={systemTheme} />
             } />
           </>
         } />
