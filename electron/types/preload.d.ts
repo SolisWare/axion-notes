@@ -6,6 +6,7 @@
  */
 import { NoteType } from '../../src/models/NoteType';
 import { SystemTheme } from '../../src/theme/SystemTheme';
+import { AppSettings } from '../../src/settings/AppSettings';
 
 interface IElectronAPI {
   storage: {
@@ -17,6 +18,9 @@ interface IElectronAPI {
   },
   menu: {
     onMenuNewNote: (callback: () => void) => void;
+  },
+  settings: {
+    getSettings: () => Promise<AppSettings | undefined>;
   },
   version: {
     getShortDisplayVersion: () => string;

@@ -10,6 +10,7 @@ import { isMac, isWindows } from './utils/Platform';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../scripts/app-version/AppVersionResolver";
 import { SystemTheme } from "../src/theme/SystemTheme";
+import { AppSettings } from "../src/settings/AppSettings";
 
 // All Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
@@ -56,6 +57,15 @@ contextBridge.exposeInMainWorld('api', {
   menu: {
     onMenuNewNote: (callback: () => void) => {
       on('menu.newNote', callback);
+    }
+  },
+  settings: {
+    getSettings: (): Promise<AppSettings | undefined> => {
+      return receive('settings.getSettings')
+        .catch((err: Error): AppSettings | undefined => {
+          console.error('Failed to load app settings:', err.message);
+          return undefined;
+        });
     }
   },
   version: {

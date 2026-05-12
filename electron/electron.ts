@@ -15,9 +15,13 @@ import { NoteType } from "../src/models/NoteType";
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../scripts/app-version/AppVersionResolver";
 import { resolveSystemTheme } from "../src/theme/SystemTheme";
+import { AppSettings } from "../src/settings/AppSettings";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
+const appSettingsDir = path.join(appDir, 'data');
+const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
+
 const systemThemeSubscribers = new Set<number>();
 
 // Create the 'data' directory if it doesn't exist.
@@ -153,6 +157,23 @@ app.on("ready", () => {
       .catch((err) => {
         console.log(err);
         // TODO: Error handling
+      });
+  });
+
+  ipcMain.handle('settings.getSettings', async () => {
+    return fs.promises.readFile(appSettingsFilePath, 'utf-8')
+      .then((content): AppSettings | undefined => {
+        if (!content.trim()) {
+          return undefined;
+        }
+        return JSON.parse(content) as AppSettings;
+      })
+      .catch((err): AppSettings | undefined => {
+        if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+          return undefined;
+        }
+        console.warn('Failed to read app settings:', err);
+        return undefined;
       });
   });
 });
