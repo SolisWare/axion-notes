@@ -115,14 +115,18 @@ function MainWindow(props: MainWindowProps) {
         showWelcomeScreenOnLaunch: false
       });
     }
-
     navigate(AppView.home);
   }
+
+  function handleNeverShowAgainChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const checked = event.target.checked;
+    setHideWelcomeOnNextLaunch(checked);
+  };
   
   let page = <></>;
   switch (props.view) {
     case AppView.welcome:
-      page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={setHideWelcomeOnNextLaunch} />
+      page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} />

@@ -10,7 +10,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
-import { useState } from "react";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppColorStyleProps } from "../../../types/appColorTypes";
@@ -18,7 +17,7 @@ import { AppColorStyleProps } from "../../../types/appColorTypes";
 type WelcomeProps = {
   theme: SystemTheme;
   onGetStarted: () => void;
-  onNeverShowAgainChange?: (checked: boolean) => void;
+  onNeverShowAgainChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -158,14 +157,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 function WelcomeScreen(props: WelcomeProps) {
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
-  const [neverShowAgain, setNeverShowAgain] = useState(false);
-
-  const handleNeverShowAgainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = event.target.checked;
-
-    setNeverShowAgain(checked);
-    props.onNeverShowAgainChange?.(checked);
-  };
 
   return (
     <section className={classes.root}>
@@ -195,8 +186,7 @@ function WelcomeScreen(props: WelcomeProps) {
               control={
                 <Checkbox
                   className={classes.checkbox}
-                  checked={neverShowAgain}
-                  onChange={handleNeverShowAgainChange}
+                  onChange={props.onNeverShowAgainChange}
                   sx={{
                     color: appColors.MAIN,
                     "&.Mui-checked": {
