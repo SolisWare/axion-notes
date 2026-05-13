@@ -1,7 +1,7 @@
 # X-NoTES
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-April%202026-blue)
-![Version](https://img.shields.io/badge/version-0.1--beta.4-green)
+![Version](https://img.shields.io/badge/version-0.1-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgray)
 
