@@ -21,6 +21,7 @@ const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
+const mainWindowBoundsFilePath = path.join(appSettingsDir, 'main-window-bounds.json');
 
 const systemThemeSubscribers = new Set<number>();
 
@@ -75,6 +76,10 @@ const createMainWindow = () => {
 
   win.once('ready-to-show', () => {
     win.show();
+  });
+
+  win.on('close', () => {
+    saveMainWindowBoundsOnClose(win);
   });
   
   if (isDev) {
@@ -240,4 +245,10 @@ function handleSystemTheme(event?: Electron.IpcMainInvokeEvent) {
       webContents.send("systemTheme.onThemeChange", systemTheme);
     }
   });
+}
+
+function saveMainWindowBoundsOnClose(window: BrowserWindow): void {
+  const currentBounds = window.getBounds();
+
+  fs.writeFileSync(mainWindowBoundsFilePath, `${JSON.stringify(currentBounds, null, 2)}\n`);
 }

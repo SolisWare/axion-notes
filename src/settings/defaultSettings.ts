@@ -6,12 +6,14 @@
  */
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppSettings } from "./AppSettings";
+import { AppWindowBounds } from "./AppWindowBounds";
 
-export const DefaultAppSettings: AppSettings = {
+export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
-  theme: SystemTheme.LIGHT,
-  mainWindowBounds: {
-    width: 1250,
-    height: 800
-  }
+  theme: SystemTheme.LIGHT
+};
+
+export const defaultMainWindowBounds: AppWindowBounds = {
+  width: 1250,
+  height: 800
 };
