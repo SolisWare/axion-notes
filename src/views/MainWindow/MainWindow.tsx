@@ -80,6 +80,10 @@ function MainWindow(props: MainWindowProps) {
     window.api.menu.onMenuNewNote(handleAddNote);
     window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
   }, []);
+
+  useEffect(() => {
+    window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);
+  }, [notes.length]);
   
   function handleAddNote() {
     setNotes((prevNotes) => [

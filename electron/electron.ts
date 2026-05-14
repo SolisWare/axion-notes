@@ -178,6 +178,15 @@ app.on("ready", () => {
       });
   });
 
+  ipcMain.on('menu.setDeleteAllNotesEnabled', (_, ...args: any[]) => {
+    const enabled = args[0][0] as boolean;
+    const deleteAllNotesMenuItem = Menu.getApplicationMenu()?.getMenuItemById('deleteAllNotes');
+
+    if (deleteAllNotesMenuItem) {
+      deleteAllNotesMenuItem.enabled = enabled;
+    }
+  });
+
   ipcMain.handle('settings.getSettings', async () => {
     return fs.promises.readFile(appSettingsFilePath, 'utf-8')
       .then((content): AppSettings | undefined => {

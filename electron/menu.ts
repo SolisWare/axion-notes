@@ -56,7 +56,9 @@ const template: any = [
       { role: 'delete' },
       { type: 'separator' },
       {
+        id: 'deleteAllNotes',
         label: 'Delete All Notes...',
+        enabled: false,
         click: () => {
           BrowserWindow.getFocusedWindow()?.webContents.send('menu.deleteAllNotes');
         }

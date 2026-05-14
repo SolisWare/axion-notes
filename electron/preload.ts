@@ -60,6 +60,9 @@ contextBridge.exposeInMainWorld('api', {
     },
     onMenuDeleteAllNotes: (callback: () => void) => {
       on('menu.deleteAllNotes', callback);
+    },
+    setDeleteAllNotesEnabled: (enabled: boolean) => {
+      send('menu.setDeleteAllNotesEnabled', enabled);
     }
   },
   settings: {
