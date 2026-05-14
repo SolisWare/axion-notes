@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { app, BrowserWindow, ipcMain, LoadFileOptions, Menu, nativeTheme } from "electron";
+import { app, BrowserWindow, ipcMain, LoadFileOptions, Menu, nativeTheme, screen } from "electron";
 import * as path from "path";
 import { createFileRoute, createURLRoute } from 'electron-router-dom'
 import menubar from "./menu";
@@ -264,7 +264,7 @@ function readMainWindowBounds(): AppWindowBounds {
       return defaultMainWindowBounds;
     }
 
-    return JSON.parse(content) as AppWindowBounds;
+    return getVisibleMainWindowBounds(JSON.parse(content) as AppWindowBounds);
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
       return defaultMainWindowBounds;
@@ -273,4 +273,26 @@ function readMainWindowBounds(): AppWindowBounds {
     console.warn('Failed to read main window bounds:', err);
     return defaultMainWindowBounds;
   }
+}
+
+function getVisibleMainWindowBounds(bounds: AppWindowBounds): AppWindowBounds {
+  if (bounds.x === undefined || bounds.y === undefined || isWindowVisibleOnAnyDisplay(bounds)) {
+    return bounds;
+  }
+
+  return {
+    width: bounds.width,
+    height: bounds.height
+  };
+}
+
+function isWindowVisibleOnAnyDisplay(bounds: AppWindowBounds): boolean {
+  return screen.getAllDisplays().some((display) => {
+    const displayBounds = display.bounds;
+
+    return bounds.x! < displayBounds.x + displayBounds.width
+      && bounds.x! + bounds.width > displayBounds.x
+      && bounds.y! < displayBounds.y + displayBounds.height
+      && bounds.y! + bounds.height > displayBounds.y;
+  });
 }
