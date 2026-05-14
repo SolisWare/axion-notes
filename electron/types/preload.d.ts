@@ -18,6 +18,7 @@ interface IElectronAPI {
   },
   menu: {
     onMenuNewNote: (callback: () => void) => void;
+    onMenuDeleteAllNotes: (callback: () => void) => void;
   },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;

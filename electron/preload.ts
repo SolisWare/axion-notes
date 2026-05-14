@@ -57,6 +57,9 @@ contextBridge.exposeInMainWorld('api', {
   menu: {
     onMenuNewNote: (callback: () => void) => {
       on('menu.newNote', callback);
+    },
+    onMenuDeleteAllNotes: (callback: () => void) => {
+      on('menu.deleteAllNotes', callback);
     }
   },
   settings: {

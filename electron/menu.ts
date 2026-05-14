@@ -14,8 +14,8 @@ const template: any = [
     submenu: [
       { role: 'about' },
       { type: 'separator' },
-      { label: 'Preferences' },
-      { type: 'separator' },
+      // { label: 'Preferences' },
+      // { type: 'separator' },
       { role: 'services' },
       { type: 'separator' },
       { role: 'hide' },
@@ -53,7 +53,14 @@ const template: any = [
       { role: 'copy' },
       { role: 'paste' },
       { role: 'selectAll' },
-      { role: 'delete' }
+      { role: 'delete' },
+      { type: 'separator' },
+      {
+        label: 'Delete All Notes...',
+        click: () => {
+          BrowserWindow.getFocusedWindow()?.webContents.send('menu.deleteAllNotes');
+        }
+      }
     ]
   }
 ];

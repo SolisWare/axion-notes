@@ -78,6 +78,7 @@ function MainWindow(props: MainWindowProps) {
 
     // menu
     window.api.menu.onMenuNewNote(handleAddNote);
+    window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
   }, []);
   
   function handleAddNote() {
