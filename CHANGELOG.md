@@ -7,7 +7,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Increased the main window width so notes do not wrap too early when scrollbars appear
 - Added a new welcome screen
 - Added persistent app settings storage
-- Added persistence for the main window size and position
+- Added restoration for main window state, including maximized windows and safe handling for disconnected displays
+- Prevented the welcome screen from briefly flashing before the saved launch preference is loaded
 - Saved pending note edits when a note unmounts or the app window closes
 
 ## [v0.1.0-beta.4] - May 9, 2026 - Stakeout

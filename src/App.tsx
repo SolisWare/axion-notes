@@ -22,6 +22,7 @@ export enum AppView {
 function App() {
   const [systemTheme, setSystemTheme] = useState<SystemTheme>(SystemTheme.LIGHT);
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
+  const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
 
   const defaultMainWindowPage = appSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home;
 
@@ -29,13 +30,20 @@ function App() {
     window.api.settings.getSettings()
       .then((settings) => {
         setAppSettings(settings ?? defaultAppSettings);
+        setHasLoadedAppSettings(true);
       })
       .catch((err: Error) => {
         console.error('Failed to load app settings:', err.message);
+        setHasLoadedAppSettings(true);
       });
 
     return window.api.systemTheme.onThemeChange(setSystemTheme);
   }, []);
+
+  if (!hasLoadedAppSettings) {
+    // TODO: Splash screen: loading placeholder with a spinner. 
+    return <></>;
+  }
 
   return (
     <div className="App"> 
