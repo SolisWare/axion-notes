@@ -97,10 +97,15 @@
     "concurrently": "^8.2.2",
     "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
-    "electron": "^27.0.2",
-    "electron-builder": "^24.6.4",
+    "electron": "^42.0.1",
+    "electron-builder": "^26.8.1",
     "react-scripts": "5.0.1",
     "typescript": "~4.9.5",
     "wait-on": "^7.0.1"
+  },
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "serialize-javascript": "^7.0.5",
+    "underscore": "^1.13.8"
   }
 }
