@@ -1,19 +1,24 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "outDir": "../build",
-    "baseUrl": ".",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "sourceMap": true,
+    "rootDir": "..",
     "paths": {
-      "*":["node_modules/*"]
+      "*":["./node_modules/*"]
     }
   },
   "include": [
     "**/*",
+    "../src/models/**/*",
+    "../src/settings/**/*",
+    "../src/theme/**/*",
+    "../src/types/**/*",
     "../scripts/app-version/**/*",
     "../config/**/*"
   ]
