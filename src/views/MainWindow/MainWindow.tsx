@@ -106,6 +106,10 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);
   }, [notes.length]);
+
+  useEffect(() => {
+    window.api.menu.setNewNoteEnabled(props.view !== AppView.welcome);
+  }, [props.view]);
   
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);

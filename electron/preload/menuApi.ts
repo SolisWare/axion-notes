@@ -29,5 +29,9 @@ export const menuApi = {
   
   setDeleteAllNotesEnabled: (enabled: boolean) => {
     send(channels.menu.setDeleteAllNotesEnabled, enabled);
+  },
+
+  setNewNoteEnabled: (enabled: boolean) => {
+    send(channels.menu.setNewNoteEnabled, enabled);
   }
 };

@@ -16,6 +16,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Updated dependency constraints so npm install no longer requires the legacy peer dependency resolver
 - Updated Electron dependencies and reduced reported dependency vulnerabilities from 38 to 2
 - Added native View, Window, and Help menus
+- Disabled New Note and Edit menu actions while the welcome screen is shown
+- Fixed duplicate note creation from accumulated New Note menu listeners
 
 ## [v0.1.0-beta.4] - May 9, 2026 - Stakeout
 - Centered the note grid so fixed-width notes keep more balanced left and right spacing when the available window width leaves extra room

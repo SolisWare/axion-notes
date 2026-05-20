@@ -20,6 +20,7 @@ interface IElectronAPI {
     onMenuShowWelcome: (callback: () => void) => () => void;
     onMenuDeleteAllNotes: (callback: () => void) => () => void;
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
+    setNewNoteEnabled: (enabled: boolean) => void;
   },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;

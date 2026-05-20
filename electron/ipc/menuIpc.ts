@@ -7,12 +7,38 @@
 import { ipcMain, Menu } from "electron";
 import { channels } from "./channels";
 
-export function registerMenuIpc(): void {
-  ipcMain.on(channels.menu.setDeleteAllNotesEnabled, (_, enabled: boolean) => {
-    const deleteAllNotesMenuItem = Menu.getApplicationMenu()?.getMenuItemById("deleteAllNotes");
+let isNewNoteEnabled = true;
+let isDeleteAllNotesEnabled = false;
 
-    if (deleteAllNotesMenuItem) {
-      deleteAllNotesMenuItem.enabled = enabled;
-    }
+function updateNoteMenuItems(): void {
+  const applicationMenu = Menu.getApplicationMenu();
+  const newNoteMenuItem = applicationMenu?.getMenuItemById("newNote");
+  const editMenu = applicationMenu?.getMenuItemById("editMenu");
+  const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById("deleteAllNotes");
+
+  if (newNoteMenuItem) {
+    newNoteMenuItem.enabled = isNewNoteEnabled;
+  }
+
+  if (editMenu) {
+    editMenu.submenu?.items.forEach((item) => {
+      item.enabled = isNewNoteEnabled;
+    });
+  }
+
+  if (deleteAllNotesMenuItem) {
+    deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
+  }
+}
+
+export function registerMenuIpc(): void {
+  ipcMain.on(channels.menu.setNewNoteEnabled, (_, enabled: boolean) => {
+    isNewNoteEnabled = enabled;
+    updateNoteMenuItems();
+  });
+
+  ipcMain.on(channels.menu.setDeleteAllNotesEnabled, (_, enabled: boolean) => {
+    isDeleteAllNotesEnabled = enabled;
+    updateNoteMenuItems();
   });
 }

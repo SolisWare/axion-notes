@@ -9,6 +9,7 @@ export const channels = {
     newNote: "menu.newNote",
     showWelcome: "menu.showWelcome",
     deleteAllNotes: "menu.deleteAllNotes",
+    setNewNoteEnabled: "menu.setNewNoteEnabled",
     setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled"
   },
   settings: {

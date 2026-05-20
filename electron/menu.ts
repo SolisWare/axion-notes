@@ -33,6 +33,7 @@ const template: any = [
         { type: 'separator' as const }
       ] : []),
       { 
+        id: 'newNote',
         label: 'New Note...',
         accelerator: 'CmdOrCtrl+N',
         click: () => {
@@ -44,6 +45,7 @@ const template: any = [
     ]
   },
   {
+    id: 'editMenu',
     label: 'Edit',
     submenu: [
       { role: 'undo' },
