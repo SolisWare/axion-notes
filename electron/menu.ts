@@ -76,7 +76,7 @@ const template: any = [
       { type: 'separator' },
       {
         label: 'Toggle Full Screen',
-        accelerator: isMac ? 'Ctrl+Command+F' : 'F11',
+        accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
           focusedWindow?.setFullScreen(!focusedWindow.isFullScreen());

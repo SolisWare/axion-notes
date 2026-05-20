@@ -13,7 +13,7 @@ import { AppView } from "../../App";
 import Home from "./pages/Home";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NoteType } from "../../models/NoteType";
 import { getRandomNoteColor } from "../../theme/NoteColors";
 import { nanoid } from "nanoid";
@@ -65,6 +65,19 @@ function MainWindow(props: MainWindowProps) {
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const appSettings = props.appSettings;
 
+  const handleAddNote = useCallback(() => {
+    setNotes((prevNotes) => [
+      ...prevNotes,
+      {
+        id: nanoid(),
+        bgcolor: getRandomNoteColor(),
+        content: "",
+        createdOn: new Date(),
+        lastModifiedOn: new Date()
+      },
+    ]);
+  }, []);
+
   useEffect(() => {
     window.api.storage.getNotes()
       .then((notes: NoteType[]) => {
@@ -76,28 +89,23 @@ function MainWindow(props: MainWindowProps) {
 
     setVersionLabel(window.api.version.getShortDisplayVersion());
 
-    // menu
-    window.api.menu.onMenuNewNote(handleAddNote);
-    window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
-    window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
-  }, [navigate]);
+  }, []);
+
+  useEffect(() => {
+    const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
+    const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
+    const offMenuDeleteAllNotes = window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
+
+    return () => {
+      offMenuNewNote();
+      offMenuShowWelcome();
+      offMenuDeleteAllNotes();
+    };
+  }, [handleAddNote, navigate]);
 
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);
   }, [notes.length]);
-  
-  function handleAddNote() {
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      {
-        id: nanoid(),
-        bgcolor: getRandomNoteColor(),
-        content: "",
-        createdOn: new Date(),
-        lastModifiedOn: new Date()
-      },
-    ]);
-  }
   
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);

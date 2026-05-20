@@ -16,9 +16,9 @@ interface IElectronAPI {
     deleteAllNotes: () => void;
   },
   menu: {
-    onMenuNewNote: (callback: () => void) => void;
-    onMenuShowWelcome: (callback: () => void) => void;
-    onMenuDeleteAllNotes: (callback: () => void) => void;
+    onMenuNewNote: (callback: () => void) => () => void;
+    onMenuShowWelcome: (callback: () => void) => () => void;
+    onMenuDeleteAllNotes: (callback: () => void) => () => void;
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
   },
   settings: {
