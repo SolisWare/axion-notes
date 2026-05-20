@@ -60,6 +60,7 @@ const template: any = [
       {
         id: 'deleteAllNotes',
         label: 'Delete All Notes...',
+        accelerator: 'Shift+CmdOrCtrl+Backspace',
         enabled: false,
         click: () => {
           BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.deleteAllNotes);
