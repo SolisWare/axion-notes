@@ -19,6 +19,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Disabled New Note and Edit menu actions while the welcome screen is shown
 - Fixed duplicate note creation from accumulated New Note menu listeners
 - Added a missing accelerator for Delete All Notes menu item
+- Added a dedicated License window opened from the Help menu
 
 ## [v0.1.0-beta.4] - May 9, 2026 - Stakeout
 - Centered the note grid so fixed-width notes keep more balanced left and right spacing when the available window width leaves extra room
