@@ -18,7 +18,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   const mainWindowState = readMainWindowState(options.mainWindowStateFilePath);
   const mainWindowBounds = getMainWindowLaunchBounds(mainWindowState);
 
-  const win = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     ...mainWindowBounds,
     minWidth: 335,
     minHeight: 250,
@@ -32,23 +32,23 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   });
 
   if (mainWindowState.isMaximized) {
-    win.maximize();
+    mainWindow.maximize();
   }
 
-  win.once("ready-to-show", () => {
-    win.show();
+  mainWindow.once("ready-to-show", () => {
+    mainWindow.show();
   });
 
-  win.on("close", () => {
-    saveMainWindowStateOnClose(win, options.mainWindowStateFilePath);
+  mainWindow.on("close", () => {
+    saveMainWindowStateOnClose(mainWindow, options.mainWindowStateFilePath);
   });
 
   if (isDev) {
-    win.loadURL(dev("main"));
-    win.webContents.openDevTools({ mode: "detach" });
+    mainWindow.loadURL(dev("main"));
+    mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    win.loadFile(...production("main"));
+    mainWindow.loadFile(...production("main"));
   }
 
-  return win;
+  return mainWindow;
 }
