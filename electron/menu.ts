@@ -7,6 +7,7 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { isMac, isWindows } from "./utils/Platform";
 import { channels } from "./ipc/channels";
+import { createLicenseWindow } from "./windows/createLicenseWindow";
 
 const template: any = [
   ...(isMac ? [{
@@ -101,7 +102,7 @@ const template: any = [
       {
         label: 'View License',
         click: () => {
-          shell.openExternal('https://github.com/SolisWare/sticky-notes-desktop/blob/master/LICENSE.txt');
+          createLicenseWindow();
         }
       },
       {

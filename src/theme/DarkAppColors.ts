@@ -6,8 +6,8 @@
  */
 export const DarkAppColors = {
   // App's Primary color palette.
-  MAIN_LIGHT: "#4AA3D1",
-  MAIN: "#2A7CA5",
+  MAIN_LIGHT: "#79F0FF",
+  MAIN: "#4AA3D1",
   MAIN_DARK: "#1F5C79",
   MAIN_TEXT: "#F5F7FA",
   // App's Secondary color palette.
