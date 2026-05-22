@@ -21,6 +21,7 @@ export function createLicenseWindow(): BrowserWindow {
     minimizable: false,
     maximizable: false,
     fullscreenable: false,
+    autoHideMenuBar: true,
     title: "X-NoTES — License",
     webPreferences: {
       webSecurity: false,
@@ -29,6 +30,9 @@ export function createLicenseWindow(): BrowserWindow {
       preload: path.join(__dirname, "../preload/preload.js")
     }
   });
+
+  licenseWindow.setMenu(null);
+  licenseWindow.setMenuBarVisibility(false);
 
   licenseWindow.once("ready-to-show", () => {
     licenseWindow.show();
