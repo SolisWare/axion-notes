@@ -7,6 +7,7 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { isMac, isWindows } from "./utils/Platform";
 import { channels } from "./ipc/channels";
+import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
 
 const template: any = [
@@ -34,7 +35,7 @@ const template: any = [
         { type: 'separator' as const }
       ] : []),
       { 
-        id: 'newNote',
+        id: menuIds.file.newNote,
         label: 'New Note...',
         accelerator: 'CmdOrCtrl+N',
         click: () => {
@@ -46,7 +47,7 @@ const template: any = [
     ]
   },
   {
-    id: 'editMenu',
+    id: menuIds.edit.root,
     label: 'Edit',
     submenu: [
       { role: 'undo' },
@@ -59,7 +60,7 @@ const template: any = [
       { role: 'delete' },
       { type: 'separator' },
       {
-        id: 'deleteAllNotes',
+        id: menuIds.edit.deleteAllNotes,
         label: 'Delete All Notes...',
         accelerator: 'Shift+CmdOrCtrl+Backspace',
         enabled: false,

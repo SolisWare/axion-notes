@@ -6,15 +6,16 @@
  */
 import { ipcMain, Menu } from "electron";
 import { channels } from "./channels";
+import { menuIds } from "./menuIds";
 
 let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
 
 function updateNoteMenuItems(): void {
   const applicationMenu = Menu.getApplicationMenu();
-  const newNoteMenuItem = applicationMenu?.getMenuItemById("newNote");
-  const editMenu = applicationMenu?.getMenuItemById("editMenu");
-  const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById("deleteAllNotes");
+  const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);
+  const editMenu = applicationMenu?.getMenuItemById(menuIds.edit.root);
+  const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
 
   if (newNoteMenuItem) {
     newNoteMenuItem.enabled = isNewNoteEnabled;
