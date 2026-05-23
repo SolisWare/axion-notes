@@ -6,7 +6,7 @@
  */
 import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
-import WindowToolbar from "../../components/WindowToolbar";
+import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
 import { AppView } from "../../App";
@@ -20,6 +20,7 @@ import { nanoid } from "nanoid";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
+import { UserAgent } from "../../utils/UserAgent";
 
 type MainWindowProps = {
   view: AppView;
@@ -61,9 +62,9 @@ function MainWindow(props: MainWindowProps) {
   const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
-  const shouldShowToolbar = props.view !== AppView.welcome;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const appSettings = props.appSettings;
+  const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
 
   const handleAddNote = useCallback(() => {
     setNotes((prevNotes) => [
@@ -169,8 +170,8 @@ function MainWindow(props: MainWindowProps) {
         </nav>
         <div className={classes.app}>
           {shouldShowToolbar &&
-            <WindowToolbar theme={props.theme} title="X-NoTES" versionLabel={versionLabel} handleAddNoteButton={handleAddNote}
-                           isDeleteAllButtonDisabled={isDeleteAllButtonDisabled} handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)} />
+            <WebToolbar theme={props.theme} title="X-NoTES" versionLabel={versionLabel} handleAddNoteButton={handleAddNote}
+                        isDeleteAllButtonDisabled={isDeleteAllButtonDisabled} handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)} />
           }
           <main className={classes.content}>
             { page }
