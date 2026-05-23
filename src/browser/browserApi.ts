@@ -9,6 +9,7 @@ import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
 import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
 import { UserAgent } from "../utils/UserAgent";
+import { storageApi } from "./storage/storageApi";
 
 const noop = () => {};
 const unsubscribe = () => {};
@@ -33,12 +34,7 @@ export function installBrowserApi(): void {
   }
 
   window.api = {
-    storage: {
-      getNotes: async () => [],
-      setNote: noop,
-      deleteNote: noop,
-      deleteAllNotes: noop
-    },
+    storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,
       onMenuShowWelcome: () => unsubscribe,
