@@ -46,6 +46,7 @@
     "build": "npm run build:web && npm run build:desktop",
     "start:desktop": "npm run build && electron ./build/electron/electron.js",
     "electron:dev": "concurrently \"cross-env BROWSER=none npm run start:web\" \"wait-on http://localhost:3000 && npm run build:desktop && electron ./build/electron/electron.js\"",
+    "dist-web": "npm run build:web",
     "dist-mac-arm64": "electron-builder -m --arm64",
     "dist-mac-x64": "electron-builder -m --x64",
     "dist-windows-x64": "electron-builder -w --x64",

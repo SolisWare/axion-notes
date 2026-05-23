@@ -72,6 +72,45 @@ jobs:
           path: build/
           retention-days: 1
 
+  dist-web:
+    needs: metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Stamp CI build version
+        run: |
+          node -e "const fs=require('fs'); const file='app-version-config.json'; const config=JSON.parse(fs.readFileSync(file,'utf8')); config.buildVersion=Number(process.env.BUILD_VERSION); fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');"
+          npm run version-numbers
+        env:
+          BUILD_VERSION: ${{ needs.metadata.outputs.build_version }}
+
+      - name: Distribute web
+        run: |
+          npm run dist-web
+          mkdir -p dist
+          cd build
+          zip -r "../dist/${ARTIFACT_NAME}.zip" .
+        env:
+          ARTIFACT_NAME: ${{ needs.metadata.outputs.artifact_name_prefix }}-web
+
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-web
+          path: dist/*.zip
+          retention-days: 30
+
   dist-mac-arm64:
     needs: [metadata, build]
     runs-on: macos-latest
