@@ -4,11 +4,11 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { defaultAppSettings } from "./settings/defaultSettings";
-import { resolveSystemTheme, SystemTheme } from "./theme/SystemTheme";
-import { AppVersionConfig } from "./utils/app-version/AppVersionConfig";
-import { AppVersionResolver } from "./utils/app-version/AppVersionResolver";
-import { UserAgent } from "./utils/UserAgent";
+import { defaultAppSettings } from "../settings/defaultSettings";
+import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
+import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
+import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
+import { UserAgent } from "../utils/UserAgent";
 
 const noop = () => {};
 const unsubscribe = () => {};
