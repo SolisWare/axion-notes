@@ -39,7 +39,7 @@
   },
   "scripts": {
     "clean": "rm -rf build dist",
-    "version-numbers": "tsc -p scripts/tsconfig.json && node build/electron/utils/app-version/AppVersionUpdater.js",
+    "version-numbers": "tsc -p electron/tsconfig.json && node build/electron/utils/app-version/AppVersionUpdater.js",
     "start:web": "node src/utils/app-version/reactScripts.cjs start",
     "build:web": "node src/utils/app-version/reactScripts.cjs build",
     "build:desktop": "tsc -p electron/tsconfig.json",

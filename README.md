@@ -78,7 +78,6 @@ This starts the React dev server and Electron concurrently. The app will reload 
 ```
 x-notes/
 ├── electron/          # Electron main process, preload, and menu
-├── scripts/           # Build and release helper scripts
 ├── src/               # React renderer (components, pages, theme, models)
 ├── assets/            # App icons and installer assets
 ├── build/             # Compiled output (generated, do not edit or commit)
