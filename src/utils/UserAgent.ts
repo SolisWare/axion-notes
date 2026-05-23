@@ -11,4 +11,6 @@ export class UserAgent {
   public static isElectron = UserAgent.userAgent.includes("electron");
   
   public static isMac = (UserAgent.userAgent.includes("mac") || UserAgent.userAgent.includes("macintosh"));
+
+  public static isWindows = UserAgent.userAgent.includes("windows");
 }
