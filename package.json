@@ -39,9 +39,9 @@
   },
   "scripts": {
     "clean": "rm -rf build dist",
-    "version-numbers": "tsc -p scripts/tsconfig.json && node build/scripts/app-version/AppVersionUpdater.js",
-    "start:web": "react-scripts start",
-    "build:web": "cross-env PUBLIC_URL=./ react-scripts build",
+    "version-numbers": "tsc -p scripts/tsconfig.json && node build/electron/utils/app-version/AppVersionUpdater.js",
+    "start:web": "node src/utils/app-version/reactScripts.cjs start",
+    "build:web": "node src/utils/app-version/reactScripts.cjs build",
     "build:desktop": "tsc -p electron/tsconfig.json",
     "build": "npm run build:web && npm run build:desktop",
     "start:desktop": "npm run build && electron ./build/electron/electron.js",

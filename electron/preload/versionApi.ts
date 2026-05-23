@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import appVersionConfig from "../../app-version-config.json";
-import { AppVersionResolver } from "../../scripts/app-version/AppVersionResolver";
+import { AppVersionResolver } from "../../src/utils/app-version/AppVersionResolver";
 
 export const versionApi = {
   

@@ -6,6 +6,8 @@
  */
 import { defaultAppSettings } from "./settings/defaultSettings";
 import { resolveSystemTheme, SystemTheme } from "./theme/SystemTheme";
+import { AppVersionConfig } from "./utils/app-version/AppVersionConfig";
+import { AppVersionResolver } from "./utils/app-version/AppVersionResolver";
 import { UserAgent } from "./utils/UserAgent";
 
 const noop = () => {};
@@ -13,6 +15,16 @@ const unsubscribe = () => {};
 
 function getBrowserSystemTheme(): SystemTheme {
   return resolveSystemTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+function getBrowserVersionLabel(): string {
+  const appVersionConfig = process.env.REACT_APP_APP_VERSION_CONFIG;
+
+  if (!appVersionConfig) {
+    return "Web";
+  }
+
+  return `Web ${AppVersionResolver.getShortDisplayVersion(JSON.parse(appVersionConfig) as AppVersionConfig)}`;
 }
 
 export function installBrowserApi(): void {
@@ -39,7 +51,7 @@ export function installBrowserApi(): void {
       setSettings: noop
     },
     version: {
-      getShortDisplayVersion: () => "Web"
+      getShortDisplayVersion: getBrowserVersionLabel
     },
     systemTheme: {
       onThemeChange: (callback) => {

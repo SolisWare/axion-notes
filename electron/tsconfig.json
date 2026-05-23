@@ -19,7 +19,7 @@
     "../src/settings/**/*",
     "../src/theme/**/*",
     "../src/types/**/*",
-    "../scripts/app-version/**/*",
+    "../src/utils/app-version/**/*",
     "../config/**/*"
   ]
 }

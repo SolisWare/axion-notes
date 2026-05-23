@@ -6,8 +6,8 @@
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { AppVersionConfig } from "./AppVersionConfig";
-import { AppVersionResolver } from "./AppVersionResolver";
+import { AppVersionConfig } from "../../../src/utils/app-version/AppVersionConfig";
+import { AppVersionResolver } from "../../../src/utils/app-version/AppVersionResolver";
 
 export class AppVersionUpdater {
   
