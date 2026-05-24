@@ -9,6 +9,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added persistent browser note storage using localStorage
 - Renamed the React toolbar to WebToolbar and limited it to the web app while Electron uses native desktop menus
 - Added VS Code debug configurations for the Electron desktop app and React web app
+- Added persistent browser app settings using localStorage
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear

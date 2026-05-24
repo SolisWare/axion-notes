@@ -4,11 +4,11 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { defaultAppSettings } from "../settings/defaultSettings";
 import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
 import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
 import { UserAgent } from "../utils/UserAgent";
+import { settingsApi } from "./storage/settingsApi";
 import { storageApi } from "./storage/storageApi";
 
 const noop = () => {};
@@ -42,10 +42,7 @@ export function installBrowserApi(): void {
       setDeleteAllNotesEnabled: noop,
       setNewNoteEnabled: noop
     },
-    settings: {
-      getSettings: async () => defaultAppSettings,
-      setSettings: noop
-    },
+    settings: settingsApi,
     version: {
       getShortDisplayVersion: getBrowserVersionLabel
     },
