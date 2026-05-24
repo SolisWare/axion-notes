@@ -11,6 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { Box, Button, Theme } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import clsx from "clsx";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -19,10 +20,10 @@ import { AppColorStyleProps } from "../types/appColorTypes";
 type WebToolbarProps = {
   theme: SystemTheme;
   title: string;
-  versionLabel: string;
   isDeleteAllButtonDisabled: boolean;
   handleAddNoteButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleDeleteAllNotesButton: (event: React.MouseEvent<HTMLElement>) => void;
+  handleAboutButton: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -92,13 +93,10 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   windowsToolbarTitle: {
     color: ({ appColors }) => appColors.WINDOWS_TOOLBAR_TEXT
   },
-  toolbarVersionText: {
-    color: ({ appColors }) => appColors.MAIN_TEXT,
-    opacity: 0.95
-  },
-  windowsToolbarVersionText: {
-    color: ({ appColors }) => appColors.WINDOWS_TOOLBAR_TEXT,
-    opacity: 0.72
+  toolbarAboutBtn: {
+    width: 105,
+    height: 32,
+    color: "#fff !important"
   }
 }));
 
@@ -152,15 +150,21 @@ function WebToolbar(props: WebToolbarProps) {
           </Button>
         </Box>
         <div className={classes.toolbarGrow} />
-        <Typography
+        <Button
           className={clsx(
-            isWindows ? classes.windowsToolbarVersionText : classes.toolbarVersionText
+            classes.toolbarBtn,
+            classes.toolbarAboutBtn,
+            isWindows && classes.windowsToolbarBtn
           )}
-          variant="body1"
-          fontWeight={500}
+          variant="toolbar"
+          color="primary"
+          onClick={props.handleAboutButton}
         >
-          {props.versionLabel}
-        </Typography>
+          <div className={classes.toolbarIconBtnInnerContainer}>
+            <InfoOutlinedIcon fontSize="small" />
+            <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">About</Typography>
+          </div>
+        </Button>
       </Toolbar>
     </AppBar>
   );
