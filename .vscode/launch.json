@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Electron Desktop",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "args": [
+        "${workspaceFolder}/build/electron/electron.js"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "BROWSER": "none",
+        "ELECTRON_ENABLE_LOGGING": "true"
+      },
+      "console": "integratedTerminal",
+      "preLaunchTask": "Prepare Electron Debug",
+      "outFiles": [
+        "${workspaceFolder}/build/electron/**/*.js"
+      ],
+      "sourceMaps": true
+    },
+    {
+      "name": "Debug Web App",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/src",
+      "preLaunchTask": "Start Web Dev Server",
+      "userDataDir": true,
+      "runtimeArgs": [
+        "--new-window"
+      ],
+      "sourceMaps": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Electron + Web",
+      "configurations": [
+        "Debug Electron Desktop"
+      ]
+    }
+  ]
+}

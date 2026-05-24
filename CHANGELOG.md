@@ -3,6 +3,13 @@ All changes to the SolisWare X-NoTES will be documented in this file.
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.2.0] - Unreleased - Skylight
+- Added support for running X-NoTES as a React web app in the browser
+- Added a browser API layer that mirrors the Electron preload API for shared app code
+- Added persistent browser note storage using localStorage
+- Renamed the React toolbar to WebToolbar and limited it to the web app while Electron uses native desktop menus
+- Added VS Code debug configurations for the Electron desktop app and React web app
+
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear
 - Added a new welcome screen
