@@ -6,6 +6,8 @@
  */
 import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
+import WebAboutDialog from "../../components/WebAboutDialog";
+import WebLicenseDialog from "../../components/WebLicenseDialog";
 import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
@@ -58,7 +60,8 @@ function MainWindow(props: MainWindowProps) {
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
-  const [versionLabel, setVersionLabel] = useState("");
+  const [isAboutDialogOpen, setAboutDialogOpen] = useState(false);
+  const [isLicenseDialogOpen, setLicenseDialogOpen] = useState(false);
   const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
@@ -87,8 +90,6 @@ function MainWindow(props: MainWindowProps) {
       .catch((err: Error) => {
         console.error('Unexpected error loading notes:', err.message);
       });
-
-    setVersionLabel(window.api.version.getShortDisplayVersion());
 
   }, []);
 
@@ -165,13 +166,22 @@ function MainWindow(props: MainWindowProps) {
                             confirmLabel="Delete All"
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
+        <WebAboutDialog theme={props.theme}
+                        open={isAboutDialogOpen}
+                        onLicenseClick={() => setLicenseDialogOpen(true)}
+                        onClose={() => setAboutDialogOpen(false)} />
+        <WebLicenseDialog theme={props.theme}
+                          open={isLicenseDialogOpen}
+                          onClose={() => setLicenseDialogOpen(false)} />
         <nav className={classes.menu}>
           {/* In-app menu goes here. */}
         </nav>
         <div className={classes.app}>
           {shouldShowToolbar &&
-            <WebToolbar theme={props.theme} title="X-NoTES" versionLabel={versionLabel} handleAddNoteButton={handleAddNote}
-                        isDeleteAllButtonDisabled={isDeleteAllButtonDisabled} handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)} />
+            <WebToolbar theme={props.theme} title="X-NoTES" handleAddNoteButton={handleAddNote}
+                        isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
+                        handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
+                        handleAboutButton={() => setAboutDialogOpen(true)} />
           }
           <main className={classes.content}>
             { page }

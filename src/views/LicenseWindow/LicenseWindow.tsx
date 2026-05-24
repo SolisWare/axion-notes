@@ -14,11 +14,16 @@ import { AppColorStyleProps } from "../../types/appColorTypes";
 
 type LicenseWindowProps = {
   theme: SystemTheme;
+  embedded?: boolean;
 }
 
-const useStyles = makeStyles<Theme, AppColorStyleProps>(() => ({
+type LicenseWindowStyleProps = AppColorStyleProps & {
+  embedded?: boolean;
+};
+
+const useStyles = makeStyles<Theme, LicenseWindowStyleProps>(() => ({
   root: {
-    minHeight: "100vh",
+    minHeight: ({ embedded }) => embedded ? "auto" : "100vh",
     boxSizing: "border-box",
     padding: "28px 32px",
     textAlign: "left",
@@ -38,7 +43,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>(() => ({
 function LicenseWindow(props: LicenseWindowProps) {
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const appColors = getAppColors(props.theme);
-  const classes = useStyles({ appColors });
+  const classes = useStyles({ appColors, embedded: props.embedded });
 
   return (
     <ThemeProvider theme={appTheme}>
