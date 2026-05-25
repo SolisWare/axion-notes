@@ -181,6 +181,7 @@ function MainWindow(props: MainWindowProps) {
             <WebToolbar theme={props.theme} title="X-NoTES" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
+                        handleSettingsButton={() => navigate("/settings")}
                         handleAboutButton={() => setAboutDialogOpen(true)} />
           }
           <main className={classes.content}>

@@ -12,6 +12,7 @@ import { Box, Button, Theme } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import clsx from "clsx";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -23,6 +24,7 @@ type WebToolbarProps = {
   isDeleteAllButtonDisabled: boolean;
   handleAddNoteButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleDeleteAllNotesButton: (event: React.MouseEvent<HTMLElement>) => void;
+  handleSettingsButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleAboutButton: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
@@ -41,6 +43,11 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   },
   toolbarGrow: {
     flexGrow: 1
+  },
+  toolbarRightBtnsContainer: {
+    display: "flex",
+    gap: 15,
+    alignItems: "center"
   },
   toolbarBtn: {
     width: 130,
@@ -97,6 +104,11 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     width: 105,
     height: 32,
     color: "#fff !important"
+  },
+  toolbarSettingsBtn: {
+    width: 115,
+    height: 32,
+    color: "#fff !important"
   }
 }));
 
@@ -151,21 +163,38 @@ function WebToolbar(props: WebToolbarProps) {
           </Button>
         </Box>
         <div className={classes.toolbarGrow} />
-        <Button
-          className={clsx(
-            classes.toolbarBtn,
-            classes.toolbarAboutBtn,
-            isWindows && classes.windowsToolbarBtn
-          )}
-          variant="toolbar"
-          color="primary"
-          onClick={props.handleAboutButton}
-        >
-          <div className={classes.toolbarIconBtnInnerContainer}>
-            <InfoOutlinedIcon fontSize="small" />
-            <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">About</Typography>
-          </div>
-        </Button>
+        <Box className={classes.toolbarRightBtnsContainer}>
+          <Button
+            className={clsx(
+              classes.toolbarBtn,
+              classes.toolbarSettingsBtn,
+              isWindows && classes.windowsToolbarBtn
+            )}
+            variant="toolbar"
+            color="primary"
+            onClick={props.handleSettingsButton}
+          >
+            <div className={classes.toolbarIconBtnInnerContainer}>
+              <SettingsOutlinedIcon fontSize="small" />
+              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">Settings</Typography>
+            </div>
+          </Button>
+          <Button
+            className={clsx(
+              classes.toolbarBtn,
+              classes.toolbarAboutBtn,
+              isWindows && classes.windowsToolbarBtn
+            )}
+            variant="toolbar"
+            color="primary"
+            onClick={props.handleAboutButton}
+          >
+            <div className={classes.toolbarIconBtnInnerContainer}>
+              <InfoOutlinedIcon fontSize="small" />
+              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">About</Typography>
+            </div>
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
