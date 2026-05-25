@@ -14,6 +14,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Removed the version label from the web toolbar
 - Fixed Delete All toolbar button hover flickering in the web app
 - Added optional note title section
+- Added a Settings window for Electron and an embedded Settings dialog for the web app
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear
