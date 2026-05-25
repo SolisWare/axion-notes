@@ -7,7 +7,7 @@
 declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
     toolbar: true;
-    toolbarDelete: true;
+    toolbarNegative: true;
   }
 }
 

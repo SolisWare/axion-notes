@@ -59,7 +59,7 @@ export class AppTheme {
             },
             {
               props: {
-                variant: "toolbarDelete"
+                variant: "toolbarNegative"
               },
               style: {
                 boxShadow: "none"
@@ -122,7 +122,7 @@ export class AppTheme {
         styleOverrides: {
           root: {
             minWidth: 0,
-            "&.MuiButton-toolbar.Mui-disabled, &.MuiButton-toolbarDelete.Mui-disabled": {
+            "&.MuiButton-toolbar.Mui-disabled, &.MuiButton-toolbarNegative.Mui-disabled": {
               color: this.LightColors.DISABLED_TEXT,
               outline: "1px solid " + this.LightColors.DISABLED_TEXT
             }
@@ -145,16 +145,15 @@ export class AppTheme {
           },
           {
             props: {
-              variant: "toolbarDelete"
+              variant: "toolbarNegative"
             },
             style: {
               backgroundColor: this.LightColors.MAIN,
-              color: this.LightColors.MAIN_TEXT,
               outline: "1px solid " + this.LightColors.TOOLBAR_VARIANT_OUTLINE,
               boxShadow: "none",
+              transition: "none",
               '&:hover': {
                 backgroundColor: this.LightColors.TOOLBAR_DELETE_BUTTON_HOVER_BACKGROUND,
-                color: this.LightColors.TOOLBAR_DELETE_BUTTON_HOVER_TEXT,
                 outline: "1px solid " + this.LightColors.TOOLBAR_DELETE_BUTTON_HOVER_BORDER
               }
             }
@@ -221,7 +220,7 @@ export class AppTheme {
         styleOverrides: {
           root: {
             minWidth: 0,
-            "&.MuiButton-toolbar.Mui-disabled, &.MuiButton-toolbarDelete.Mui-disabled": {
+            "&.MuiButton-toolbar.Mui-disabled, &.MuiButton-toolbarNegative.Mui-disabled": {
               color: this.DarkColors.DISABLED_TEXT,
               outline: "1px solid " + this.DarkColors.DISABLED_TEXT
             }
@@ -245,16 +244,16 @@ export class AppTheme {
           },
           {
             props: {
-              variant: "toolbarDelete"
+              variant: "toolbarNegative"
             },
             style: {
               backgroundColor: "transparent",
               color: this.DarkColors.MAIN_TEXT,
               outline: "1px solid " + this.DarkColors.TOOLBAR_VARIANT_OUTLINE,
               boxShadow: "none",
+              transition: "none",
               '&:hover': {
                 backgroundColor: this.DarkColors.TOOLBAR_DELETE_BUTTON_HOVER_BACKGROUND,
-                color: this.DarkColors.TOOLBAR_DELETE_BUTTON_HOVER_TEXT,
                 outline: "1px solid " + this.DarkColors.TOOLBAR_DELETE_BUTTON_HOVER_BORDER
               }
             }

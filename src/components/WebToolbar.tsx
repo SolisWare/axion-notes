@@ -139,9 +139,10 @@ function WebToolbar(props: WebToolbarProps) {
           <Button
             className={clsx(
               classes.toolbarBtn,
-              isWindows ? classes.windowsToolbarBtnDelete : classes.toolbarBtnDelete
+              isWindows && classes.windowsToolbarBtnDelete
             )}
-            variant="toolbarDelete"
+            variant="toolbarNegative"
+            color="primary"
             disabled={props.isDeleteAllButtonDisabled}
             onClick={props.handleDeleteAllNotesButton}
           >
