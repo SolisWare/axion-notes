@@ -18,7 +18,8 @@ import { defaultAppSettings } from './settings/defaultSettings';
 
 export enum AppView {
   home = "/home",
-  welcome = "/welcome"
+  welcome = "/welcome",
+  license = "/license"
 }
 
 function App() {
@@ -82,11 +83,11 @@ function App() {
             <WebRoute path={AppView.welcome} element={
               <MainWindow view={AppView.welcome} theme={systemTheme} appSettings={appSettings} />
             } />
+            <WebRoute path={AppView.license} element={
+              <LicenseWindow theme={systemTheme} />
+            } />
             <WebRoute path="/" element={
               <MainWindow view={defaultMainWindowPage} theme={systemTheme} appSettings={appSettings} />
-            } />
-            <WebRoute path="/license" element={
-              <LicenseWindow theme={systemTheme} />
             } />
           </Routes>
         </BrowserRouter>
