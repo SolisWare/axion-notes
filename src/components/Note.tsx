@@ -48,13 +48,45 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   },
   noteBody: {
     height: "192px",
+    display: "flex",
+    flexDirection: "column"
   },
   noteTitleWrapper: {
-    
+    flex: "0 0 auto",
+    marginBottom: "4px",
+    padding: "0 2px"
+  },
+  noteTitleInput: {
+    display: "block",
+    width: "100%",
+    boxSizing: "border-box",
+    WebkitAppearance: "none",
+    appearance: "none",
+    background: "transparent",
+    border: "none",
+    borderRadius: 0,
+    outline: "none",
+    padding: 0,
+    fontSize: 17,
+    fontWeight: 700,
+    lineHeight: "22px",
+    color: ({ appColors }) => appColors.NOTE_TEXT + " !important",
+    caretColor: ({ appColors }) => appColors.NOTE_TEXT,
+    '&::placeholder': {
+      color: ({ appColors }) => appColors.NOTE_PLACEHOLDER_TEXT,
+      opacity: 1
+    }
+  },
+  noteTitleUnderline: {
+    height: 1,
+    marginTop: 4,
+    width: "100%"
   },
   noteContent: {
     paddingLeft: "2px",
-    paddingRight: "2px"
+    paddingRight: "2px",
+    flex: "1 1 auto",
+    minHeight: 0
   },
   noteFooter: {
     
@@ -89,21 +121,28 @@ function Note(props: NoteProps) {
 
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
-  
-  const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const updatedContent = event.target.value;
-    const updatedNote: NoteType = {
-      id: props.note.id,
-      bgcolor: props.note.bgcolor,
-      title: props.note.title,
-      content: updatedContent,
-      createdOn: props.note.createdOn,
-      lastModifiedOn: new Date()
-    };
-    
+
+  const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
     hasUnsavedChanges.current = true;
     setNote(updatedNote);
+  };
+
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    updateNote({
+      ...note,
+      title: event.target.value,
+      lastModifiedOn: new Date()
+    });
+  };
+  
+  const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const updatedContent = event.target.value;
+    updateNote({
+      ...note,
+      content: updatedContent,
+      lastModifiedOn: new Date()
+    });
   };
 
   useEffect(() => {
@@ -143,9 +182,20 @@ function Note(props: NoteProps) {
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             <div className={classes.noteTitleWrapper}>
-              {/* TODO: Add editable title section */}
+              <input
+                className={classes.noteTitleInput}
+                value={note.title ?? ""}
+                placeholder="Title"
+                onChange={handleTitleChange}
+              />
+              <div
+                className={classes.noteTitleUnderline}
+                style={{ backgroundColor: appColors.NOTE_TITLE_UNDERLINE }}
+              />
             </div>
-            <NoteTextarea theme={props.theme} placeholder="Type here..." content={note.content} onChange={handleNoteChange} />
+            <div className={classes.noteContent}>
+              <NoteTextarea theme={props.theme} placeholder="Type here..." content={note.content} onChange={handleNoteChange} />
+            </div>
             <Autosave data={note} onSave={(note) => {
               if (!isDeleting.current) {
                 props.handleNoteSave(note);
