@@ -42,8 +42,10 @@
     {
       "name": "Debug Electron + Web",
       "configurations": [
-        "Debug Electron Desktop"
-      ]
+        "Debug Electron Desktop",
+        "Debug Web App"
+      ],
+      "stopAll": true
     }
   ]
 }
