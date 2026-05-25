@@ -8,6 +8,7 @@ import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import WebAboutDialog from "../../components/WebAboutDialog";
 import WebLicenseDialog from "../../components/WebLicenseDialog";
+import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
@@ -62,6 +63,7 @@ function MainWindow(props: MainWindowProps) {
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isAboutDialogOpen, setAboutDialogOpen] = useState(false);
   const [isLicenseDialogOpen, setLicenseDialogOpen] = useState(false);
+  const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
@@ -173,6 +175,9 @@ function MainWindow(props: MainWindowProps) {
         <WebLicenseDialog theme={props.theme}
                           open={isLicenseDialogOpen}
                           onClose={() => setLicenseDialogOpen(false)} />
+        <WebSettingsDialog theme={props.theme}
+                           open={isSettingsDialogOpen}
+                           onClose={() => setSettingsDialogOpen(false)} />
         <nav className={classes.menu}>
           {/* In-app menu goes here. */}
         </nav>
@@ -181,7 +186,7 @@ function MainWindow(props: MainWindowProps) {
             <WebToolbar theme={props.theme} title="X-NoTES" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
-                        handleSettingsButton={() => navigate("/settings")}
+                        handleSettingsButton={() => setSettingsDialogOpen(true)}
                         handleAboutButton={() => setAboutDialogOpen(true)} />
           }
           <main className={classes.content}>

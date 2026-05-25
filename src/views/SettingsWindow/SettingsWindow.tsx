@@ -20,6 +20,7 @@ import styles from "./SettingsWindow.module.css";
 
 type SettingsWindowProps = {
   theme: SystemTheme;
+  embedded?: boolean;
 };
 
 function SettingsWindow(props: SettingsWindowProps) {
@@ -63,7 +64,7 @@ function SettingsWindow(props: SettingsWindowProps) {
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
-      <div className={styles.root} style={themeVariables}>
+      <div className={clsx(styles.root, props.embedded && styles.rootEmbedded)} style={themeVariables}>
         <aside className={styles.sidebar}>
           {settingsNavigationSections.map((section) => (
             <section className={styles.section} key={section.label}>

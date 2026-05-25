@@ -1,0 +1,16 @@
+.dialogPaper {
+  width: 680px;
+  max-width: calc(100vw - 32px);
+  background: var(--settings-dialog-background);
+}
+
+.content {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.actions {
+  justify-content: center;
+  padding: 14px 16px 16px 16px !important;
+  background: var(--settings-dialog-background);
+}

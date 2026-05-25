@@ -88,9 +88,6 @@ function App() {
             <WebRoute path="/license" element={
               <LicenseWindow theme={systemTheme} />
             } />
-            <WebRoute path="/settings" element={
-              <SettingsWindow theme={systemTheme} />
-            } />
           </Routes>
         </BrowserRouter>
       }

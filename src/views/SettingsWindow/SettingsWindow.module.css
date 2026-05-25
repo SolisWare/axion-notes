@@ -7,6 +7,12 @@
   background: var(--settings-content-background);
 }
 
+.rootEmbedded {
+  width: 660px;
+  max-width: calc(100vw - 32px);
+  height: min(500px, 72vh);
+}
+
 .sidebar {
   width: 168px;
   flex: 0 0 168px;
