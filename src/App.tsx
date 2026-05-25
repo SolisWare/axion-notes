@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route as WebRoute } from "react-router-dom";
 import { Router, Route } from 'electron-router-dom'
 import MainWindow from './views/MainWindow/MainWindow';
 import LicenseWindow from './views/LicenseWindow/LicenseWindow';
+import SettingsWindow from './views/SettingsWindow/SettingsWindow';
 import { UserAgent } from './utils/UserAgent';
 import { useEffect, useState } from 'react';
 import { SystemTheme } from './theme/SystemTheme';
@@ -66,6 +67,10 @@ function App() {
           <Route path="/" element={
             <LicenseWindow theme={systemTheme} />
           } />
+        } settings={
+          <Route path="/" element={
+            <SettingsWindow theme={systemTheme} />
+          } />
         } />
         :
         /* Router for a React web app */
@@ -82,6 +87,9 @@ function App() {
             } />
             <WebRoute path="/license" element={
               <LicenseWindow theme={systemTheme} />
+            } />
+            <WebRoute path="/settings" element={
+              <SettingsWindow theme={systemTheme} />
             } />
           </Routes>
         </BrowserRouter>

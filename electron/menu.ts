@@ -9,6 +9,7 @@ import { isMac, isWindows } from "./utils/Platform";
 import { channels } from "./ipc/channels";
 import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
+import { createSettingsWindow } from "./windows/createSettingsWindow";
 
 const template: any = [
   ...(isMac ? [{
@@ -16,8 +17,15 @@ const template: any = [
     submenu: [
       { role: 'about' },
       { type: 'separator' },
-      // { label: 'Preferences' },
-      // { type: 'separator' },
+      {
+        id: menuIds.app.settings,
+        label: 'Settings...',
+        accelerator: 'Cmd+,',
+        click: () => {
+          createSettingsWindow();
+        }
+      },
+      { type: 'separator' },
       { role: 'services' },
       { type: 'separator' },
       { role: 'hide' },
@@ -43,6 +51,17 @@ const template: any = [
         }
       },
       { type: 'separator' },
+      ...(isWindows ? [
+        {
+          id: menuIds.file.settings,
+          label: 'Settings...',
+          accelerator: 'Ctrl+,',
+          click: () => {
+            createSettingsWindow();
+          }
+        },
+        { type: 'separator' as const }
+      ] : []),
       isMac ? { role: 'close' } : { role: 'quit' }
     ]
   },

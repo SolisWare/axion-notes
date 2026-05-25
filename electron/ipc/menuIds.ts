@@ -5,8 +5,12 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 export const menuIds = {
+  app: {
+    settings: "settings"
+  },
   file: {
-    newNote: "newNote"
+    newNote: "newNote",
+    settings: "settings"
   },
   edit: {
     root: "editMenu",

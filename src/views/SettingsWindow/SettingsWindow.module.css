@@ -1,0 +1,103 @@
+.root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  text-align: left;
+  background: var(--settings-content-background);
+}
+
+.sidebar {
+  width: 168px;
+  flex: 0 0 168px;
+  box-sizing: border-box;
+  padding: 19px 9px 12px 16px;
+  background: var(--settings-sidebar-background);
+  border-right: 1px solid var(--settings-divider);
+}
+
+.section {
+  margin: 0 0 17px 0;
+}
+
+.sectionLabel {
+  margin: 0 0 7px 2px;
+  color: var(--settings-section-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.navItem {
+  width: 142px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  box-sizing: border-box;
+  margin: 0 0 2px 0;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--settings-nav-text);
+  cursor: default;
+  font: inherit;
+  text-align: left;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.navItem:hover {
+  background: var(--settings-nav-hover-background);
+  border-color: var(--settings-nav-hover-border);
+  color: var(--settings-nav-hover-text);
+}
+
+.navItem:focus-visible {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 1px;
+}
+
+.navItemActive {
+  background: var(--settings-nav-selected-background);
+  border-color: var(--settings-nav-selected-border);
+  color: var(--settings-nav-selected-text);
+}
+
+.navItemActive:hover {
+  background: var(--settings-nav-selected-background);
+  border-color: var(--settings-nav-selected-border);
+  color: var(--settings-nav-selected-text);
+}
+
+.navItemIcon {
+  width: 15px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 15px;
+}
+
+.navItemIcon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.navItemLabel {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: 13px;
+  line-height: 18px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.content {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: var(--settings-content-background);
+}
