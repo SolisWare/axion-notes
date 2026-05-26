@@ -10,11 +10,11 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Renamed the React toolbar to WebToolbar and limited it to the web app while Electron uses native desktop menus
 - Added VS Code debug configurations for the Electron desktop app and React web app
 - Added persistent browser app settings using localStorage
-- Added a web About button with About and License dialogs for the web app
 - Removed the version label from the web toolbar
 - Fixed Delete All toolbar button hover flickering in the web app
 - Added optional note title section
 - Added a Settings window for Electron and an embedded Settings dialog for the web app
+- Displayed License and About info inside the Settings dialog in the web app
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear
