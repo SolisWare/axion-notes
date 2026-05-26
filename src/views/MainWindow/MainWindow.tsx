@@ -6,8 +6,6 @@
  */
 import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
-import WebAboutDialog from "../../components/WebAboutDialog";
-import WebLicenseDialog from "../../components/WebLicenseDialog";
 import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
@@ -61,8 +59,6 @@ function MainWindow(props: MainWindowProps) {
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
-  const [isAboutDialogOpen, setAboutDialogOpen] = useState(false);
-  const [isLicenseDialogOpen, setLicenseDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
     
@@ -168,13 +164,6 @@ function MainWindow(props: MainWindowProps) {
                             confirmLabel="Delete All"
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
-        <WebAboutDialog theme={props.theme}
-                        open={isAboutDialogOpen}
-                        onLicenseClick={() => setLicenseDialogOpen(true)}
-                        onClose={() => setAboutDialogOpen(false)} />
-        <WebLicenseDialog theme={props.theme}
-                          open={isLicenseDialogOpen}
-                          onClose={() => setLicenseDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}
                            open={isSettingsDialogOpen}
                            onClose={() => setSettingsDialogOpen(false)} />
@@ -186,8 +175,7 @@ function MainWindow(props: MainWindowProps) {
             <WebToolbar theme={props.theme} title="X-NoTES" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
-                        handleSettingsButton={() => setSettingsDialogOpen(true)}
-                        handleAboutButton={() => setAboutDialogOpen(true)} />
+                        handleSettingsButton={() => setSettingsDialogOpen(true)} />
           }
           <main className={classes.content}>
             { page }

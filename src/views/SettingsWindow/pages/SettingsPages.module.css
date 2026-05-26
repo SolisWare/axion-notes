@@ -1,0 +1,19 @@
+.aboutPage {
+  min-height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 46px 32px 32px;
+}
+
+.aboutPanel {
+  width: 100%;
+  max-width: 320px;
+}
+
+.licensePage {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+}

@@ -58,7 +58,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       page = <License theme={props.theme} />;
       break;
     case SettingsPageId.about:
-      page = <About />;
+      page = <About theme={props.theme} />;
       break;
     case SettingsPageId.general:
     default:

@@ -6,13 +6,18 @@
  */
 import { SystemTheme } from "../../../theme/SystemTheme";
 import LicenseWindow from "../../LicenseWindow/LicenseWindow";
+import styles from "./SettingsPages.module.css";
 
 type LicenseProps = {
   theme: SystemTheme;
 };
 
 function License(props: LicenseProps) {
-  return <LicenseWindow theme={props.theme} embedded />;
+  return (
+    <div className={styles.licensePage}>
+      <LicenseWindow theme={props.theme} embedded />
+    </div>
+  );
 }
 
 export default License;
