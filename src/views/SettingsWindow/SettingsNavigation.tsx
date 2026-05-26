@@ -55,9 +55,9 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
     items: [
       ...(!UserAgent.isElectron ? [
         { id: SettingsView.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> }
-      ] : []),
-      { id: SettingsView.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
+      ] : [])
     ]
   }
 ];

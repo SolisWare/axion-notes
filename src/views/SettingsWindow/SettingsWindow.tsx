@@ -44,6 +44,8 @@ function SettingsWindow(props: SettingsWindowProps) {
     "--settings-nav-selected-border": appColors.SETTINGS_NAV_SELECTED_BORDER
   } as CSSProperties;
 
+  const visibleNavigationSections = settingsNavigationSections.filter((section) => section.items.length > 0);
+
   let page = <></>;
   switch (selectedPage) {
     case SettingsView.appearance:
@@ -74,7 +76,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       <CssBaseline />
       <div className={clsx(styles.root, props.embedded && styles.rootEmbedded)} style={themeVariables}>
         <aside className={styles.sidebar}>
-          {settingsNavigationSections.map((section) => (
+          {visibleNavigationSections.map((section) => (
             <section className={styles.section} key={section.label}>
               <h2 className={styles.sectionLabel}>
                 {section.label}
