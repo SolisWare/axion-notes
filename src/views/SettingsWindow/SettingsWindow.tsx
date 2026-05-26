@@ -17,7 +17,7 @@ import DataStorage from "./pages/DataStorage";
 import License from "./pages/License";
 import Links from "./pages/Links";
 import About from "./pages/About";
-import { SettingsPageId, settingsNavigationSections } from "./SettingsNavigation";
+import { SettingsView, settingsNavigationSections } from "./SettingsNavigation";
 import styles from "./SettingsWindow.module.css";
 
 type SettingsWindowProps = {
@@ -26,7 +26,7 @@ type SettingsWindowProps = {
 };
 
 function SettingsWindow(props: SettingsWindowProps) {
-  const [selectedPage, setSelectedPage] = useState<SettingsPageId>(SettingsPageId.general);
+  const [selectedPage, setSelectedPage] = useState<SettingsView>(SettingsView.general);
   
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const appColors = getAppColors(props.theme);
@@ -46,25 +46,25 @@ function SettingsWindow(props: SettingsWindowProps) {
 
   let page = <></>;
   switch (selectedPage) {
-    case SettingsPageId.appearance:
+    case SettingsView.appearance:
       page = <Appearance />;
       break;
-    case SettingsPageId.shortcuts:
+    case SettingsView.shortcuts:
       page = <Shortcuts />;
       break;
-    case SettingsPageId.dataStorage:
+    case SettingsView.dataStorage:
       page = <DataStorage />;
       break;
-    case SettingsPageId.license:
+    case SettingsView.license:
       page = <License theme={props.theme} />;
       break;
-    case SettingsPageId.links:
+    case SettingsView.links:
       page = <Links />;
       break;
-    case SettingsPageId.about:
+    case SettingsView.about:
       page = <About theme={props.theme} />;
       break;
-    case SettingsPageId.general:
+    case SettingsView.general:
     default:
       page = <General />;
   }

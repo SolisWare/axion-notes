@@ -14,7 +14,7 @@ import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { UserAgent } from "../../utils/UserAgent";
 
-export enum SettingsPageId {
+export enum SettingsView {
   general = "general",
   appearance = "appearance",
   shortcuts = "shortcuts",
@@ -25,7 +25,7 @@ export enum SettingsPageId {
 }
 
 export type SettingsNavigationItem = {
-  id: SettingsPageId;
+  id: SettingsView;
   label: string;
   icon: ReactNode;
 };
@@ -39,25 +39,25 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
   {
     label: "Preferences",
     items: [
-      { id: SettingsPageId.general, label: "General", icon: <AppsOutlinedIcon fontSize="small" /> },
-      { id: SettingsPageId.appearance, label: "Appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
-      { id: SettingsPageId.shortcuts, label: "Shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.general, label: "General", icon: <AppsOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.appearance, label: "Appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.shortcuts, label: "Shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
     ]
   },
   {
     label: "Storage",
     items: [
-      { id: SettingsPageId.dataStorage, label: "Data & storage", icon: <StorageOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.dataStorage, label: "Data & storage", icon: <StorageOutlinedIcon fontSize="small" /> }
     ]
   },
   {
     label: "Info",
     items: [
       ...(!UserAgent.isElectron ? [
-        { id: SettingsPageId.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> },
-        { id: SettingsPageId.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> }
       ] : []),
-      { id: SettingsPageId.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
     ]
   }
 ];
