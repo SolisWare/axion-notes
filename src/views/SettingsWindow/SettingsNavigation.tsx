@@ -10,6 +10,7 @@ import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
 import KeyboardAltOutlinedIcon from "@mui/icons-material/KeyboardAltOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { UserAgent } from "../../utils/UserAgent";
 
@@ -19,6 +20,7 @@ export enum SettingsPageId {
   shortcuts = "shortcuts",
   dataStorage = "dataStorage",
   license = "license",
+  links = "links",
   about = "about"
 }
 
@@ -43,11 +45,17 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
     ]
   },
   {
-    label: "System",
+    label: "Storage",
     items: [
-      { id: SettingsPageId.dataStorage, label: "Data & storage", icon: <StorageOutlinedIcon fontSize="small" /> },
+      { id: SettingsPageId.dataStorage, label: "Data & storage", icon: <StorageOutlinedIcon fontSize="small" /> }
+    ]
+  },
+  {
+    label: "Info",
+    items: [
       ...(!UserAgent.isElectron ? [
-        { id: SettingsPageId.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> }
+        { id: SettingsPageId.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> },
+        { id: SettingsPageId.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> }
       ] : []),
       { id: SettingsPageId.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
     ]

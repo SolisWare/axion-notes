@@ -126,9 +126,15 @@ const template: any = [
         }
       },
       {
-        label: 'Website',
+        label: 'Visit Website',
         click: () => {
           shell.openExternal('https://solisware.com');
+        }
+      },
+      {
+        label: 'Checkout GitHub',
+        click: () => {
+          shell.openExternal('https://github.com/SolisWare');
         }
       }
     ]

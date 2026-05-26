@@ -15,6 +15,7 @@ import Appearance from "./pages/Appearance";
 import Shortcuts from "./pages/Shortcuts";
 import DataStorage from "./pages/DataStorage";
 import License from "./pages/License";
+import Links from "./pages/Links";
 import About from "./pages/About";
 import { SettingsPageId, settingsNavigationSections } from "./SettingsNavigation";
 import styles from "./SettingsWindow.module.css";
@@ -56,6 +57,9 @@ function SettingsWindow(props: SettingsWindowProps) {
       break;
     case SettingsPageId.license:
       page = <License theme={props.theme} />;
+      break;
+    case SettingsPageId.links:
+      page = <Links />;
       break;
     case SettingsPageId.about:
       page = <About theme={props.theme} />;

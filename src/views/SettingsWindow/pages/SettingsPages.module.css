@@ -17,3 +17,102 @@
   box-sizing: border-box;
   padding: 0;
 }
+
+.linksPage {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 34px 34px 32px;
+  color: var(--settings-nav-text);
+}
+
+.linksHeader {
+  max-width: 410px;
+  margin-bottom: 22px;
+}
+
+.pageTitle {
+  margin: 0 0 8px;
+  color: var(--settings-nav-text);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.pageDescription {
+  margin: 0;
+  color: var(--settings-section-text);
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.linksList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 430px;
+}
+
+.linkCard {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border: 1px solid var(--settings-divider);
+  border-radius: 8px;
+  color: var(--settings-nav-text);
+  background: var(--settings-content-background);
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.linkCard:hover {
+  border-color: var(--settings-nav-hover-border);
+  background: var(--settings-nav-hover-background);
+  color: var(--settings-nav-hover-text);
+}
+
+.linkCard:focus-visible {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 2px;
+}
+
+.linkIcon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+  border-radius: 8px;
+  background: var(--settings-nav-hover-background);
+  color: inherit;
+}
+
+.linkText {
+  min-width: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.linkLabel {
+  color: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.linkDescription {
+  color: var(--settings-section-text);
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.linkOpenIcon {
+  flex: 0 0 auto;
+  color: inherit;
+  opacity: 0.75;
+}
