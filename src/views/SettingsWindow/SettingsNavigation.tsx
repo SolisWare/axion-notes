@@ -41,7 +41,9 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
     items: [
       { id: SettingsView.general, label: "General", icon: <AppsOutlinedIcon fontSize="small" /> },
       { id: SettingsView.appearance, label: "Appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.shortcuts, label: "Shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+      ...(UserAgent.isElectron ? [
+        { id: SettingsView.shortcuts, label: "Shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+      ] : [])
     ]
   },
   {

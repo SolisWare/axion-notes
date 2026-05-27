@@ -10,7 +10,6 @@ import clsx from 'clsx';
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
-import { UserAgent } from "../utils/UserAgent";
 
 type EmptyNoteListProps = {
   theme: SystemTheme;
@@ -33,7 +32,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 function EmptyNoteList(props: EmptyNoteListProps) {
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
-  const isMac = UserAgent.isElectron ? window.api.os.isMac : UserAgent.isMac;
+  const isMac = window.api.os.isMac;
   const platform = isMac ? "Cmd" : "Ctrl";
   
   return (
