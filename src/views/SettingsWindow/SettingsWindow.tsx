@@ -55,7 +55,7 @@ function SettingsWindow(props: SettingsWindowProps) {
   let page = <></>;
   switch (selectedPage) {
     case SettingsView.appearance:
-      page = <Appearance appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
+      page = <Appearance theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
     case SettingsView.shortcuts:
       page = <Shortcuts />;

@@ -30,18 +30,32 @@
   max-width: 460px;
 }
 
-.themeRow {
+.settingsRows {
   width: 100%;
-  min-height: 76px;
+  overflow: hidden;
+  border: 1px solid var(--settings-divider);
+  border-radius: 8px;
+  background: var(--settings-content-background);
+}
+
+.settingsRow {
+  width: 100%;
+  min-height: 0;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   box-sizing: border-box;
-  padding: 14px 16px 12px 14px;
-  border: 1px solid var(--settings-divider);
-  border-radius: 8px;
-  background: var(--settings-content-background);
+  padding: 10px 16px 9px 14px;
+  border-bottom: 1px solid var(--settings-divider);
+}
+
+.settingsRow:last-child {
+  border-bottom: 0;
+}
+
+.settingsRowText {
+  min-width: 0;
 }
 
 .settingsSectionTitle {
@@ -52,13 +66,20 @@
   line-height: 18px;
 }
 
+.settingsSectionDescription {
+  margin: 2px 0 0;
+  color: var(--settings-section-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
 .radioGroup {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   flex: 0 0 210px;
-  align-self: center;
+  align-self: flex-start;
   box-sizing: border-box;
-  margin: 0;
+  margin: 1px 0 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -130,6 +151,97 @@
 
 .radioOption:hover {
   color: var(--settings-nav-hover-text);
+}
+
+.colorSwatchGroup {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  gap: 7px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 0 14px;
+  border: 0;
+}
+
+.colorSwatchOption {
+  width: 22px;
+  height: 22px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+.colorSwatchInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.colorSwatch,
+.autoColorSwatch {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--settings-divider) 55%, transparent);
+  border-radius: 50%;
+  transition: border-color 120ms ease, border-width 120ms ease, transform 120ms ease;
+}
+
+.colorSwatch::after,
+.autoColorSwatch::after {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: "";
+  display: none;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--settings-section-text) 45%, transparent);
+  border-radius: 50%;
+  background: var(--settings-content-background);
+}
+
+.colorSwatchInput:checked + .colorSwatch,
+.colorSwatchInput:checked + .autoColorSwatch {
+  border-color: color-mix(in srgb, var(--settings-divider) 55%, transparent);
+}
+
+.colorSwatchInput:checked + .colorSwatch::after,
+.colorSwatchInput:checked + .autoColorSwatch::after {
+  display: block;
+}
+
+.colorSwatchLabel {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  display: none;
+  transform: translateX(-50%);
+  color: var(--settings-section-text);
+  font-size: 10px;
+  line-height: 13px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.colorSwatchInput:checked ~ .colorSwatchLabel {
+  display: block;
+}
+
+.colorSwatchOption:has(.colorSwatchInput:focus-visible) {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 3px;
+  border-radius: 50%;
 }
 
 .visuallyHidden {
