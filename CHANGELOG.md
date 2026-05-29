@@ -17,6 +17,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Displayed License and About info inside the Settings dialog in the web app
 - Added a GitHub item to the Electron Help menu and a Links page to web app Settings
 - Added an Electron-only Shortcuts page to Settings with app-specific keyboard shortcuts
+- Added an Appearance setting for Auto, Light, and Dark application theme selection
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear

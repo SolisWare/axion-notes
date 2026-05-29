@@ -6,7 +6,7 @@
  */
 import { AppSettings } from "../../src/settings/AppSettings";
 import { channels } from "../ipc/channels";
-import { receive, send } from "./ipcHelpers";
+import { off, on, receive, send } from "./ipcHelpers";
 
 export const settingsApi = {
 
@@ -21,5 +21,17 @@ export const settingsApi = {
   
   setSettings: (settings: AppSettings) => {
     send(channels.settings.setSettings, settings);
+  },
+
+  onSettingsChange: (callback: (settings: AppSettings) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, settings: AppSettings) => {
+      callback(settings);
+    };
+
+    on(channels.settings.onSettingsChange, listener);
+
+    return () => {
+      off(channels.settings.onSettingsChange, listener);
+    };
   }
 };

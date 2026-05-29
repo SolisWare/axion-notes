@@ -14,7 +14,8 @@ export const channels = {
   },
   settings: {
     getSettings: "settings.getSettings",
-    setSettings: "settings.setSettings"
+    setSettings: "settings.setSettings",
+    onSettingsChange: "settings.onSettingsChange"
   },
   storage: {
     setNote: "storage.setNote",

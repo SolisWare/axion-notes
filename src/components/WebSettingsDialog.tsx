@@ -9,12 +9,15 @@ import { Button, Dialog, DialogActions, DialogContent } from "@mui/material";
 import SettingsWindow from "../views/SettingsWindow/SettingsWindow";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
+import { AppSettings } from "../settings/AppSettings";
 import styles from "./WebSettingsDialog.module.css";
 
 type WebSettingsDialogProps = {
   theme: SystemTheme;
+  appSettings: AppSettings;
   open: boolean;
   onClose: () => void;
+  onAppSettingsChange: (settings: AppSettings) => void;
 };
 
 function WebSettingsDialog(props: WebSettingsDialogProps) {
@@ -34,7 +37,12 @@ function WebSettingsDialog(props: WebSettingsDialogProps) {
       }}
     >
       <DialogContent className={styles.content}>
-        <SettingsWindow theme={props.theme} embedded />
+        <SettingsWindow
+          theme={props.theme}
+          appSettings={props.appSettings}
+          embedded
+          onAppSettingsChange={props.onAppSettingsChange}
+        />
       </DialogContent>
       <DialogActions className={styles.actions}>
         <Button onClick={props.onClose} variant="contained">

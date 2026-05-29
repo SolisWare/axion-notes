@@ -4,9 +4,9 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { SystemTheme } from "../theme/SystemTheme";
+import { AppThemePreference } from "./AppThemePreference";
 
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
-  theme: SystemTheme;
+  theme: AppThemePreference;
 };

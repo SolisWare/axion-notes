@@ -4,9 +4,24 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { ChangeEvent } from "react";
+import { AppSettings } from "../../../settings/AppSettings";
+import { AppThemePreference } from "../../../settings/AppThemePreference";
 import styles from "./SettingsPages.module.css";
 
-function Appearance() {
+type AppearanceProps = {
+  appSettings: AppSettings;
+  onAppSettingsChange: (settings: AppSettings) => void;
+};
+
+function Appearance(props: AppearanceProps) {
+  function handleThemeChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      theme: event.target.value as AppThemePreference
+    });
+  }
+
   return (
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
@@ -15,17 +30,38 @@ function Appearance() {
           <fieldset className={styles.radioGroup}>
             <legend className={styles.visuallyHidden}>Application Theme</legend>
             <label className={styles.radioOption}>
-              <input className={styles.radioInput} type="radio" name="app-theme" value="auto" defaultChecked />
+              <input
+                checked={props.appSettings.theme === AppThemePreference.AUTO}
+                className={styles.radioInput}
+                type="radio"
+                name="app-theme"
+                value={AppThemePreference.AUTO}
+                onChange={handleThemeChange}
+              />
               <span className={styles.radioLabel}>Auto</span>
               <span className={styles.radioControl} aria-hidden="true" />
             </label>
             <label className={styles.radioOption}>
-              <input className={styles.radioInput} type="radio" name="app-theme" value="light" />
+              <input
+                checked={props.appSettings.theme === AppThemePreference.LIGHT}
+                className={styles.radioInput}
+                type="radio"
+                name="app-theme"
+                value={AppThemePreference.LIGHT}
+                onChange={handleThemeChange}
+              />
               <span className={styles.radioLabel}>Light</span>
               <span className={styles.radioControl} aria-hidden="true" />
             </label>
             <label className={styles.radioOption}>
-              <input className={styles.radioInput} type="radio" name="app-theme" value="dark" />
+              <input
+                checked={props.appSettings.theme === AppThemePreference.DARK}
+                className={styles.radioInput}
+                type="radio"
+                name="app-theme"
+                value={AppThemePreference.DARK}
+                onChange={handleThemeChange}
+              />
               <span className={styles.radioLabel}>Dark</span>
               <span className={styles.radioControl} aria-hidden="true" />
             </label>

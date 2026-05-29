@@ -4,13 +4,13 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { SystemTheme } from "../theme/SystemTheme";
+import { AppThemePreference } from "./AppThemePreference";
 import { AppSettings } from "./AppSettings";
 import { AppWindowBounds } from "./AppWindowBounds";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
-  theme: SystemTheme.LIGHT
+  theme: AppThemePreference.AUTO
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {

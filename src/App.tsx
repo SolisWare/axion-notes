@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import { SystemTheme } from './theme/SystemTheme';
 import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
+import { resolveAppThemePreference } from './settings/AppThemePreference';
 
 export enum AppView {
   home = "/home",
@@ -28,6 +29,12 @@ function App() {
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
 
   const defaultMainWindowPage = appSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home;
+  const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
+
+  function handleAppSettingsChange(settings: AppSettings) {
+    setAppSettings(settings);
+    window.api.settings.setSettings(settings);
+  }
 
   useEffect(() => {
     window.api.settings.getSettings()
@@ -43,6 +50,10 @@ function App() {
     return window.api.systemTheme.onThemeChange(setSystemTheme);
   }, []);
 
+  useEffect(() => {
+    return window.api.settings.onSettingsChange(setAppSettings);
+  }, []);
+
   if (!hasLoadedAppSettings) {
     // TODO: Splash screen: loading placeholder with a spinner. 
     return <></>;
@@ -55,22 +66,22 @@ function App() {
         <Router main={
           <>
             <Route path={AppView.home} element={
-              <MainWindow view={AppView.home} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <Route path={AppView.welcome} element={
-              <MainWindow view={AppView.welcome} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <Route path="/" element={
-              <MainWindow view={defaultMainWindowPage} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={defaultMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
           </>
         } license={
           <Route path="/" element={
-            <LicenseWindow theme={systemTheme} />
+            <LicenseWindow theme={effectiveTheme} />
           } />
         } settings={
           <Route path="/" element={
-            <SettingsWindow theme={systemTheme} />
+            <SettingsWindow theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
           } />
         } />
         :
@@ -78,16 +89,16 @@ function App() {
         <BrowserRouter>
           <Routes>
             <WebRoute path={AppView.home} element={
-              <MainWindow view={AppView.home} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <WebRoute path={AppView.welcome} element={
-              <MainWindow view={AppView.welcome} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <WebRoute path={AppView.license} element={
-              <LicenseWindow theme={systemTheme} />
+              <LicenseWindow theme={effectiveTheme} />
             } />
             <WebRoute path="/" element={
-              <MainWindow view={defaultMainWindowPage} theme={systemTheme} appSettings={appSettings} />
+              <MainWindow view={defaultMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
           </Routes>
         </BrowserRouter>

@@ -27,6 +27,7 @@ type MainWindowProps = {
   view: AppView;
   theme: SystemTheme;
   appSettings: AppSettings;
+  onAppSettingsChange: (settings: AppSettings) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -128,7 +129,7 @@ function MainWindow(props: MainWindowProps) {
 
   function handleGetStarted() {
     if (hideWelcomeOnNextLaunch) {
-      window.api.settings.setSettings({
+      props.onAppSettingsChange({
         ...appSettings,
         showWelcomeScreenOnLaunch: false
       });
@@ -165,8 +166,10 @@ function MainWindow(props: MainWindowProps) {
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}
+                           appSettings={appSettings}
                            open={isSettingsDialogOpen}
-                           onClose={() => setSettingsDialogOpen(false)} />
+                           onClose={() => setSettingsDialogOpen(false)}
+                           onAppSettingsChange={props.onAppSettingsChange} />
         <nav className={classes.menu}>
           {/* In-app menu goes here. */}
         </nav>

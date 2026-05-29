@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { AppSettings } from "../../settings/AppSettings";
-import { getSettings, setSettings } from "./appSettingsStorage";
+import { appSettingsKey, getSettings, setSettings } from "./appSettingsStorage";
 
 export const settingsApi = {
 
@@ -24,5 +24,21 @@ export const settingsApi = {
     } catch (err) {
       console.error("Failed to save browser app settings:", err);
     }
+  },
+
+  onSettingsChange: (callback: (settings: AppSettings) => void) => {
+    const listener = (event: StorageEvent) => {
+      if (event.key !== appSettingsKey || !event.newValue) {
+        return;
+      }
+
+      callback(JSON.parse(event.newValue) as AppSettings);
+    };
+
+    window.addEventListener("storage", listener);
+
+    return () => {
+      window.removeEventListener("storage", listener);
+    };
   }
 };

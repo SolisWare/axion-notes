@@ -10,6 +10,7 @@ import clsx from "clsx";
 import { AppTheme } from "../../theme/AppTheme";
 import { getAppColors } from "../../theme/AppColors";
 import { SystemTheme } from "../../theme/SystemTheme";
+import { AppSettings } from "../../settings/AppSettings";
 import General from "./pages/General";
 import Appearance from "./pages/Appearance";
 import Shortcuts from "./pages/Shortcuts";
@@ -22,7 +23,9 @@ import styles from "./SettingsWindow.module.css";
 
 type SettingsWindowProps = {
   theme: SystemTheme;
+  appSettings: AppSettings;
   embedded?: boolean;
+  onAppSettingsChange: (settings: AppSettings) => void;
 };
 
 function SettingsWindow(props: SettingsWindowProps) {
@@ -52,7 +55,7 @@ function SettingsWindow(props: SettingsWindowProps) {
   let page = <></>;
   switch (selectedPage) {
     case SettingsView.appearance:
-      page = <Appearance />;
+      page = <Appearance appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
     case SettingsView.shortcuts:
       page = <Shortcuts />;

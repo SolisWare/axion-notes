@@ -6,7 +6,7 @@
  */
 import { AppSettings } from "../../settings/AppSettings";
 
-const appSettingsKey = "x-notes.app-settings";
+export const appSettingsKey = "x-notes.app-settings";
 
 export function getSettings(): Promise<AppSettings | undefined> {
   const serializedSettings = localStorage.getItem(appSettingsKey);

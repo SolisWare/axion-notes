@@ -25,6 +25,7 @@ interface IElectronAPI {
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
     setSettings: (settings: AppSettings) => void;
+    onSettingsChange: (callback: (settings: AppSettings) => void) => () => void;
   },
   version: {
     getShortDisplayVersion: () => string;
