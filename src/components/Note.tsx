@@ -72,8 +72,10 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     lineHeight: "22px",
     color: ({ appColors }) => appColors.NOTE_TEXT + " !important",
     caretColor: ({ appColors }) => appColors.NOTE_TEXT,
+    WebkitTextFillColor: ({ appColors }) => appColors.NOTE_TEXT + " !important",
     '&::placeholder': {
       color: ({ appColors }) => appColors.NOTE_PLACEHOLDER_TEXT,
+      WebkitTextFillColor: ({ appColors }) => appColors.NOTE_PLACEHOLDER_TEXT,
       opacity: 1
     }
   },
@@ -183,7 +185,13 @@ function Note(props: NoteProps) {
           <div className={classes.noteBody}>
             <div className={classes.noteTitleWrapper}>
               <input
+                key={props.theme}
                 className={classes.noteTitleInput}
+                style={{
+                  color: appColors.NOTE_TEXT,
+                  caretColor: appColors.NOTE_TEXT,
+                  WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
+                }}
                 value={note.title ?? ""}
                 placeholder="Title"
                 onChange={handleTitleChange}

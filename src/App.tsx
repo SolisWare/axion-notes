@@ -11,7 +11,7 @@ import MainWindow from './views/MainWindow/MainWindow';
 import LicenseWindow from './views/LicenseWindow/LicenseWindow';
 import SettingsWindow from './views/SettingsWindow/SettingsWindow';
 import { UserAgent } from './utils/UserAgent';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SystemTheme } from './theme/SystemTheme';
 import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
@@ -27,6 +27,7 @@ function App() {
   const [systemTheme, setSystemTheme] = useState<SystemTheme>(SystemTheme.LIGHT);
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
+  const settingsBroadcastChannel = useRef<BroadcastChannel | undefined>();
 
   const defaultMainWindowPage = appSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home;
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
@@ -34,6 +35,7 @@ function App() {
   function handleAppSettingsChange(settings: AppSettings) {
     setAppSettings(settings);
     window.api.settings.setSettings(settings);
+    settingsBroadcastChannel.current?.postMessage(settings);
   }
 
   useEffect(() => {
@@ -52,6 +54,19 @@ function App() {
 
   useEffect(() => {
     return window.api.settings.onSettingsChange(setAppSettings);
+  }, []);
+
+  useEffect(() => {
+    const channel = new BroadcastChannel("x-notes.app-settings");
+    settingsBroadcastChannel.current = channel;
+    channel.onmessage = (event: MessageEvent<AppSettings>) => {
+      setAppSettings(event.data);
+    };
+
+    return () => {
+      settingsBroadcastChannel.current = undefined;
+      channel.close();
+    };
   }, []);
 
   if (!hasLoadedAppSettings) {

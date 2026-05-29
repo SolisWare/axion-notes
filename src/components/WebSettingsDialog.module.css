@@ -17,6 +17,14 @@
 
 .actions {
   justify-content: center;
-  padding: 14px 16px 16px 16px !important;
-  background: var(--settings-dialog-background);
+  padding: 14px 16px 16px 184px !important;
+  border-top: 1px solid var(--settings-dialog-divider);
+  background: linear-gradient(
+    to right,
+    var(--settings-dialog-sidebar-background) 0,
+    var(--settings-dialog-sidebar-background) 167px,
+    var(--settings-dialog-divider) 167px,
+    var(--settings-dialog-divider) 168px,
+    var(--settings-dialog-background) 168px
+  );
 }

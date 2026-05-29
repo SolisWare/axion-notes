@@ -23,7 +23,9 @@ type WebSettingsDialogProps = {
 function WebSettingsDialog(props: WebSettingsDialogProps) {
   const appColors = getAppColors(props.theme);
   const themeVariables = {
-    "--settings-dialog-background": appColors.SETTINGS_CONTENT_BACKGROUND
+    "--settings-dialog-background": appColors.SETTINGS_CONTENT_BACKGROUND,
+    "--settings-dialog-sidebar-background": appColors.SETTINGS_SIDEBAR_BACKGROUND,
+    "--settings-dialog-divider": appColors.SETTINGS_DIVIDER
   } as CSSProperties;
 
   return (

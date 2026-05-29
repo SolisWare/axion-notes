@@ -14,8 +14,8 @@
 }
 
 .rootEmbedded {
-  width: 660px;
-  max-width: calc(100vw - 32px);
+  width: 100%;
+  max-width: 100%;
   height: min(500px, 72vh);
 }
 

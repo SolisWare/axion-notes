@@ -44,7 +44,8 @@ function SettingsWindow(props: SettingsWindowProps) {
     "--settings-nav-hover-border": appColors.SETTINGS_NAV_HOVER_BORDER,
     "--settings-nav-selected-text": appColors.SETTINGS_NAV_SELECTED_TEXT,
     "--settings-nav-selected-background": appColors.SETTINGS_NAV_SELECTED_BACKGROUND,
-    "--settings-nav-selected-border": appColors.SETTINGS_NAV_SELECTED_BORDER
+    "--settings-nav-selected-border": appColors.SETTINGS_NAV_SELECTED_BORDER,
+    "--settings-color-swatch-dot": props.theme === SystemTheme.DARK ? "#E6EEF4" : "#FFFFFF"
   } as CSSProperties;
 
   const visibleNavigationSections = settingsNavigationSections.filter((section) => section.items.length > 0);

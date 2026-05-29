@@ -20,8 +20,8 @@ type AppearanceProps = {
 function Appearance(props: AppearanceProps) {
   const noteColorKeys = Object.values(NoteColorKey);
   const autoColorBackground = `conic-gradient(${noteColorKeys
-    .map((colorKey) => NoteColors[props.theme][colorKey])
-    .join(", ")}, ${NoteColors[props.theme][noteColorKeys[0]]})`;
+    .map((colorKey) => NoteColors.light[colorKey])
+    .join(", ")}, ${NoteColors.light[noteColorKeys[0]]})`;
 
   function handleThemeChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -102,7 +102,7 @@ function Appearance(props: AppearanceProps) {
                   <input className={styles.colorSwatchInput} type="radio" name="new-note-color" value={colorKey} />
                   <span
                     className={styles.colorSwatch}
-                    style={{ backgroundColor: NoteColors[props.theme][colorKey] }}
+                    style={{ backgroundColor: NoteColors.light[colorKey] }}
                     aria-hidden="true"
                   />
                   <span className={styles.colorSwatchLabel}>

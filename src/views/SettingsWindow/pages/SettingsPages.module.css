@@ -208,7 +208,7 @@
   box-sizing: border-box;
   border: 1px solid color-mix(in srgb, var(--settings-section-text) 45%, transparent);
   border-radius: 50%;
-  background: var(--settings-content-background);
+  background: var(--settings-color-swatch-dot);
 }
 
 .colorSwatchInput:checked + .colorSwatch,
