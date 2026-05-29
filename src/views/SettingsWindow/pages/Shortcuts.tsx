@@ -4,14 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ReactNode } from "react";
-import BackspaceRoundedIcon from "@mui/icons-material/BackspaceRounded";
-import KeyboardCommandKeyRoundedIcon from "@mui/icons-material/KeyboardCommandKeyRounded";
-import KeyboardControlKeyRoundedIcon from "@mui/icons-material/KeyboardControlKeyRounded";
 import styles from "./SettingsPages.module.css";
 
 type ShortcutKey = {
-  label: ReactNode;
+  label: string;
   ariaLabel: string;
 };
 
@@ -23,10 +19,10 @@ type Shortcut = {
 function getShortcutKeys(): Shortcut[] {
   const isMac = window.api.os.isMac;
   const commandKey = isMac
-    ? { label: <KeyboardCommandKeyRoundedIcon className={styles.shortcutIcon} />, ariaLabel: "Command" }
-    : { label: <KeyboardControlKeyRoundedIcon className={styles.shortcutIcon} />, ariaLabel: "Control" };
+    ? { label: "⌘", ariaLabel: "Command" }
+    : { label: "⌃", ariaLabel: "Control" };
   const shiftKey = { label: "⇧", ariaLabel: "Shift" };
-  const backspaceKey = { label: <BackspaceRoundedIcon className={styles.shortcutIcon} />, ariaLabel: "Backspace" };
+  const backspaceKey = { label: "⌫", ariaLabel: "Backspace" };
 
   return [
     { label: "New note", keys: [commandKey, { label: "N", ariaLabel: "N" }] },

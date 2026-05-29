@@ -318,9 +318,3 @@
   font: 600 11px/1 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   white-space: nowrap;
 }
-
-.shortcutIcon {
-  width: 13px;
-  height: 13px;
-  display: block;
-}
