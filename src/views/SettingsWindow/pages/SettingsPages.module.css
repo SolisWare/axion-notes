@@ -18,6 +18,130 @@
   max-width: 320px;
 }
 
+.appearancePage {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 34px;
+  color: var(--settings-nav-text);
+}
+
+.settingsSection {
+  width: 100%;
+  max-width: 460px;
+}
+
+.themeRow {
+  width: 100%;
+  min-height: 76px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  box-sizing: border-box;
+  padding: 14px 16px 12px 14px;
+  border: 1px solid var(--settings-divider);
+  border-radius: 8px;
+  background: var(--settings-content-background);
+}
+
+.settingsSectionTitle {
+  margin: 0;
+  color: var(--settings-nav-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.radioGroup {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex: 0 0 210px;
+  align-self: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.radioOption {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  border: 0;
+  color: var(--settings-nav-text);
+  cursor: default;
+  transition: color 120ms ease;
+}
+
+.radioInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.radioControl {
+  width: 13px;
+  height: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--settings-section-text) 72%, var(--settings-divider));
+  border-radius: 50%;
+  background: var(--settings-content-background);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.radioControl::after {
+  width: 5px;
+  height: 5px;
+  content: "";
+  border-radius: 50%;
+  background: transparent;
+  transition: background-color 120ms ease;
+}
+
+.radioLabel {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.radioInput:checked ~ .radioControl {
+  border-color: var(--settings-nav-selected-border);
+  background: var(--settings-nav-selected-background);
+}
+
+.radioInput:checked ~ .radioControl::after {
+  background: var(--settings-nav-selected-text);
+}
+
+.radioOption:has(.radioInput:focus-visible) {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 3px;
+}
+
+.radioOption:hover {
+  color: var(--settings-nav-hover-text);
+}
+
+.visuallyHidden {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .licensePage {
   min-height: 100%;
   box-sizing: border-box;
