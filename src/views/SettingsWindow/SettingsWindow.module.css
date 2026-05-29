@@ -111,6 +111,33 @@
 .content {
   flex: 1 1 auto;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--settings-content-background);
+}
+
+.contentHeader {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--settings-divider);
+  background: var(--settings-sidebar-background);
+}
+
+.contentTitle {
+  margin: 0;
+  color: var(--settings-nav-text);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.contentBody {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
   background: var(--settings-content-background);
 }

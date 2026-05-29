@@ -28,7 +28,6 @@ function Links() {
   return (
     <div className={styles.linksPage}>
       <div className={styles.linksHeader}>
-        <h1 className={styles.pageTitle}>Links</h1>
         <p className={styles.pageDescription}>
           Thanks for using X-NoTES. These links help you follow releases, source updates, and other SolisWare projects.
         </p>

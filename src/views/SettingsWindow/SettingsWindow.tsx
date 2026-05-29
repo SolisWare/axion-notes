@@ -45,6 +45,9 @@ function SettingsWindow(props: SettingsWindowProps) {
   } as CSSProperties;
 
   const visibleNavigationSections = settingsNavigationSections.filter((section) => section.items.length > 0);
+  const selectedPageTitle = visibleNavigationSections
+    .flatMap((section) => section.items)
+    .find((item) => item.id === selectedPage)?.label ?? "";
 
   let page = <></>;
   switch (selectedPage) {
@@ -96,7 +99,12 @@ function SettingsWindow(props: SettingsWindowProps) {
           ))}
         </aside>
         <main className={styles.content}>
-          { page }
+          <header className={styles.contentHeader}>
+            <h1 className={styles.contentTitle}>{selectedPageTitle}</h1>
+          </header>
+          <div className={styles.contentBody}>
+            { page }
+          </div>
         </main>
       </div>
     </ThemeProvider>

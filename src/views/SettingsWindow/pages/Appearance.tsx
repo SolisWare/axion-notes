@@ -9,9 +9,6 @@ import styles from "./SettingsPages.module.css";
 function Appearance() {
   return (
     <div className={styles.appearancePage}>
-      <header className={styles.linksHeader}>
-        <h1 className={styles.pageTitle}>Appearance</h1>
-      </header>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
         <div className={styles.themeRow}>
           <h3 className={styles.settingsSectionTitle} id="appearance-theme-title">Application Theme</h3>

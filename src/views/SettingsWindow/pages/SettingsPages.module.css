@@ -21,7 +21,7 @@
 .appearancePage {
   min-height: 100%;
   box-sizing: border-box;
-  padding: 34px;
+  padding: 26px 34px 34px;
   color: var(--settings-nav-text);
 }
 
@@ -151,7 +151,7 @@
 .linksPage {
   min-height: 100%;
   box-sizing: border-box;
-  padding: 34px 34px 32px;
+  padding: 26px 34px 32px;
   color: var(--settings-nav-text);
 }
 
@@ -250,7 +250,7 @@
 .shortcutsPage {
   min-height: 100%;
   box-sizing: border-box;
-  padding: 34px;
+  padding: 26px 34px 34px;
   color: var(--settings-nav-text);
 }
 
