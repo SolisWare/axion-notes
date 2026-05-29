@@ -11,6 +11,7 @@ import { AppSettings } from '../../src/settings/AppSettings';
 interface IElectronAPI {
   storage: {
     getNotes: () => Promise<NoteType[]>;
+    getNotesFolderLocation: () => Promise<string>;
     setNote: (note: NoteType) => void;
     deleteNote: (noteId: string) => void;
     deleteAllNotes: () => void;

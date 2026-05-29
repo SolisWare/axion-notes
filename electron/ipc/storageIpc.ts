@@ -22,6 +22,10 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
     return getNotes(options.appDataDir);
   });
 
+  ipcMain.handle(channels.storage.getNotesFolderLocation, () => {
+    return options.appDataDir;
+  });
+
   ipcMain.on(channels.storage.deleteNote, (_, noteId: string) => {
     deleteNote(options.appDataDir, noteId);
   });

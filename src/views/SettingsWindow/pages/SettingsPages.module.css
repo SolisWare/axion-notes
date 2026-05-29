@@ -25,6 +25,13 @@
   color: var(--settings-nav-text);
 }
 
+.dataStoragePage {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 26px 34px 34px;
+  color: var(--settings-nav-text);
+}
+
 .settingsSection {
   width: 100%;
   max-width: 460px;

@@ -26,6 +26,10 @@ export const storageApi = {
     }
   },
 
+  getNotesFolderLocation: async (): Promise<string> => {
+    return "Browser local storage";
+  },
+
   deleteNote: (noteId: string) => {
     try {
       deleteNote(noteId);

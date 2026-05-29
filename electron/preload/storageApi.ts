@@ -25,6 +25,15 @@ export const storageApi = {
     }
   },
 
+  getNotesFolderLocation: async (): Promise<string> => {
+    try {
+      return await receive<string>(channels.storage.getNotesFolderLocation);
+    } catch (err) {
+      console.error('Failed to load notes folder location:', (err as Error).message);
+      return "";
+    }
+  },
+
   deleteNote: (noteId: string) => {
     send(channels.storage.deleteNote, noteId);
   },
