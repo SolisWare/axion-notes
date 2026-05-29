@@ -5,8 +5,10 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { AppThemePreference } from "./AppThemePreference";
+import { DefaultNoteColorPreference } from "./noteColorPreference";
 
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
   theme: AppThemePreference;
+  defaultNoteColor: DefaultNoteColorPreference;
 };

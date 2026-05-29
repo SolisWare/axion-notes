@@ -7,6 +7,7 @@
 import { ChangeEvent } from "react";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
+import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
 import styles from "./SettingsPages.module.css";
@@ -27,6 +28,13 @@ function Appearance(props: AppearanceProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       theme: event.target.value as AppThemePreference
+    });
+  }
+
+  function handleDefaultNoteColorChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      defaultNoteColor: event.target.value as DefaultNoteColorPreference
     });
   }
 
@@ -84,11 +92,12 @@ function Appearance(props: AppearanceProps) {
               <legend className={styles.visuallyHidden}>New note default color</legend>
               <label className={styles.colorSwatchOption}>
                 <input
+                  checked={props.appSettings.defaultNoteColor === NoteColorPreference.AUTO}
                   className={styles.colorSwatchInput}
                   type="radio"
                   name="new-note-color"
-                  value="auto"
-                  defaultChecked
+                  value={NoteColorPreference.AUTO}
+                  onChange={handleDefaultNoteColorChange}
                 />
                 <span
                   className={styles.autoColorSwatch}
@@ -99,7 +108,14 @@ function Appearance(props: AppearanceProps) {
               </label>
               {noteColorKeys.map((colorKey) => (
                 <label className={styles.colorSwatchOption} key={colorKey}>
-                  <input className={styles.colorSwatchInput} type="radio" name="new-note-color" value={colorKey} />
+                  <input
+                    checked={props.appSettings.defaultNoteColor === colorKey}
+                    className={styles.colorSwatchInput}
+                    type="radio"
+                    name="new-note-color"
+                    value={colorKey}
+                    onChange={handleDefaultNoteColorChange}
+                  />
                   <span
                     className={styles.colorSwatch}
                     style={{ backgroundColor: NoteColors.light[colorKey] }}

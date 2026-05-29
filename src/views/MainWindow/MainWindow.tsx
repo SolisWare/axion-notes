@@ -21,6 +21,7 @@ import { nanoid } from "nanoid";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
+import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { UserAgent } from "../../utils/UserAgent";
 
 type MainWindowProps = {
@@ -69,17 +70,21 @@ function MainWindow(props: MainWindowProps) {
   const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
 
   const handleAddNote = useCallback(() => {
+    const noteColor = appSettings.defaultNoteColor === NoteColorPreference.AUTO
+      ? getRandomNoteColor()
+      : appSettings.defaultNoteColor;
+
     setNotes((prevNotes) => [
       ...prevNotes,
       {
         id: nanoid(),
-        bgcolor: getRandomNoteColor(),
+        bgcolor: noteColor,
         content: "",
         createdOn: new Date(),
         lastModifiedOn: new Date()
       },
     ]);
-  }, []);
+  }, [appSettings.defaultNoteColor]);
 
   useEffect(() => {
     window.api.storage.getNotes()

@@ -7,10 +7,12 @@
 import { AppThemePreference } from "./AppThemePreference";
 import { AppSettings } from "./AppSettings";
 import { AppWindowBounds } from "./AppWindowBounds";
+import { NoteColorPreference } from "./noteColorPreference";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
-  theme: AppThemePreference.AUTO
+  theme: AppThemePreference.AUTO,
+  defaultNoteColor: NoteColorPreference.AUTO
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {
