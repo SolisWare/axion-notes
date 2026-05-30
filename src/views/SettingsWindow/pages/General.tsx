@@ -6,6 +6,7 @@
  */
 import { ChangeEvent } from "react";
 import { AppSettings } from "../../../settings/AppSettings";
+import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
 
@@ -22,32 +23,54 @@ function General(props: GeneralProps) {
     });
   }
 
-  if (!UserAgent.isElectron) {
-    return <></>;
+  function handleNoteSortOrderChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      notesSortOrder: event.target.value as NoteSortOrder
+    });
+
+    event.currentTarget.blur();
   }
 
   return (
     <div className={styles.generalPage}>
-      <section className={styles.settingsSection} aria-labelledby="keep-notes-on-top-title">
+      <section className={styles.settingsSection} aria-labelledby="note-sort-order-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">Keep notes on top</h3>
-              <p className={styles.settingsSectionDescription}>Notes stays above all other windows</p>
-            </div>
-            <label className={styles.switchControl}>
-              <input
-                checked={props.appSettings.keepNotesMainWindowOnTop}
-                className={styles.switchInput}
-                type="checkbox"
-                onChange={handleKeepNotesOnTopChange}
-              />
-              <span className={styles.switchTrack} aria-hidden="true">
-                <span className={styles.switchThumb} />
-              </span>
-              <span className={styles.visuallyHidden}>Keep notes on top</span>
-            </label>
+            <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">Sort notes by</label>
+            <select
+              className={styles.settingsSelect}
+              id="note-sort-order"
+              value={props.appSettings.notesSortOrder}
+              onChange={handleNoteSortOrderChange}
+            >
+              <option value={NoteSortOrder.DATE_CREATED_ASC}>Date created (oldest first)</option>
+              <option value={NoteSortOrder.DATE_CREATED_DESC}>Date created (newest first)</option>
+              <option value={NoteSortOrder.LAST_MODIFIED}>Last modified</option>
+              <option value={NoteSortOrder.TITLE_ASC}>Title A-Z</option>
+              <option value={NoteSortOrder.TITLE_DESC}>Title Z-A</option>
+            </select>
           </div>
+          {UserAgent.isElectron && (
+            <div className={styles.settingsRow}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">Keep notes on top</h3>
+                <p className={styles.settingsSectionDescription}>Notes stays above all other windows</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  checked={props.appSettings.keepNotesMainWindowOnTop}
+                  className={styles.switchInput}
+                  type="checkbox"
+                  onChange={handleKeepNotesOnTopChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>Keep notes on top</span>
+              </label>
+            </div>
+          )}
         </div>
       </section>
     </div>

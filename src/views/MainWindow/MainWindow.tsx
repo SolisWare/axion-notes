@@ -159,10 +159,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} />
+      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} />
+      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} />
   }
   
   return (

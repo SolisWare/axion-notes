@@ -9,11 +9,13 @@ import { makeStyles } from "@mui/styles";
 import Note from "./Note";
 import EmptyNoteList from "./EmptyNoteList";
 import { NoteType } from "../models/NoteType";
+import { NoteSortOrder } from "../settings/NoteSortOrder";
 import { SystemTheme } from "../theme/SystemTheme";
 
 type NoteListProps = {
   theme: SystemTheme;
   notes: NoteType[];
+  notesSortOrder: NoteSortOrder;
   handleDeleteNoteButton: (noteId: string) => void;
 }
  
@@ -30,7 +32,21 @@ const useStyles = makeStyles((theme: Theme) => ({
 function NoteList (props: NoteListProps) {
   const classes = useStyles();
   
-  const notes = props.notes;
+  const notes = [...props.notes].sort((firstNote, secondNote) => {
+    switch (props.notesSortOrder) {
+      case NoteSortOrder.TITLE_ASC:
+        return getNoteTitle(firstNote).localeCompare(getNoteTitle(secondNote), undefined, { sensitivity: "base" });
+      case NoteSortOrder.TITLE_DESC:
+        return getNoteTitle(secondNote).localeCompare(getNoteTitle(firstNote), undefined, { sensitivity: "base" });
+      case NoteSortOrder.LAST_MODIFIED:
+        return secondNote.lastModifiedOn.getTime() - firstNote.lastModifiedOn.getTime();
+      case NoteSortOrder.DATE_CREATED_DESC:
+        return secondNote.createdOn.getTime() - firstNote.createdOn.getTime();
+      case NoteSortOrder.DATE_CREATED_ASC:
+      default:
+        return firstNote.createdOn.getTime() - secondNote.createdOn.getTime();
+    }
+  });
   const isNoteListEmpty = notes.length <= 0;
   
   const handleSaveNote = (note: NoteType) => {
@@ -53,6 +69,10 @@ function NoteList (props: NoteListProps) {
       }
     </div>
   );
+}
+
+function getNoteTitle(note: NoteType): string {
+  return note.title?.trim() || note.content.trim();
 }
 
 export default NoteList;

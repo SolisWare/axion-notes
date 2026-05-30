@@ -54,13 +54,14 @@
 
 .settingsRow {
   width: 100%;
+  min-height: 68px;
   min-height: 0;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
   box-sizing: border-box;
-  padding: 10px 16px 9px 14px;
+  padding: 14px 16px 13px 14px;
   border-bottom: 1px solid var(--settings-divider);
 }
 
@@ -221,6 +222,32 @@
   outline: 2px solid var(--settings-nav-selected-border);
   outline-offset: 3px;
   border-radius: 999px;
+}
+
+.settingsSelect {
+  width: 260px;
+  min-width: 0;
+  height: 34px;
+  align-self: center;
+  box-sizing: border-box;
+  padding: 0 30px 0 10px;
+  border: 1px solid var(--settings-divider);
+  border-radius: 6px;
+  color: var(--settings-nav-text);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--settings-content-background) 96%, var(--settings-section-text)),
+    var(--settings-content-background)
+  );
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--settings-section-text) 16%, transparent);
+  font: inherit;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.settingsSelect:focus-visible {
+  border-color: var(--settings-nav-selected-border);
+  outline: none;
 }
 
 .colorSwatchGroup {

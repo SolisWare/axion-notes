@@ -8,10 +8,12 @@ import { AppThemePreference } from "./AppThemePreference";
 import { AppSettings } from "./AppSettings";
 import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
+import { NoteSortOrder } from "./NoteSortOrder";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
   keepNotesMainWindowOnTop: false,
+  notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,
   defaultNoteColor: NoteColorPreference.AUTO
 };
