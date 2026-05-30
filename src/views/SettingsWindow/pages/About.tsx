@@ -9,7 +9,6 @@ import { makeStyles } from "@mui/styles";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppColorStyleProps } from "../../../types/appColorTypes";
-import { AppVersionConfig } from "../../../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../../../utils/app-version/AppVersionResolver";
 import styles from "./SettingsPages.module.css";
 
@@ -50,11 +49,7 @@ function getVersionLabel(): string {
     return window.api.version.getShortDisplayVersion().replace(/^v/, "");
   }
 
-  const parsedAppVersionConfig = JSON.parse(appVersionConfig) as AppVersionConfig;
-  const version = AppVersionResolver.getCombinedVersion(parsedAppVersionConfig);
-  const aboutVersion = AppVersionResolver.getAboutVersion(parsedAppVersionConfig);
-
-  return aboutVersion ? `${version} (${aboutVersion})` : version;
+  return AppVersionResolver.getAboutDisplayVersion(JSON.parse(appVersionConfig));
 }
 
 function About(props: AboutProps) {

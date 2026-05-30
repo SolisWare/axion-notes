@@ -40,6 +40,13 @@ export class AppVersionResolver {
     return releaseCodename;
   }
 
+  public static getAboutDisplayVersion(appVersionConfig: AppVersionConfig): string {
+    const version = AppVersionResolver.getCombinedVersion(appVersionConfig);
+    const aboutVersion = AppVersionResolver.getAboutVersion(appVersionConfig);
+
+    return aboutVersion ? `${version} (${aboutVersion})` : version;
+  }
+
   public static getShortDisplayVersion(appVersionConfig: AppVersionConfig): string {
     const { majorVersion, minorVersion, patchVersion, preReleaseVersion } = appVersionConfig;
 

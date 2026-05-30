@@ -13,7 +13,7 @@ import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver";
 import { createMainWindow } from "./windows/createMainWindow";
-import { getAppIconPath } from "./windows/appIcon";
+import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
 
 const appDir = path.join(app.getPath("userData"));

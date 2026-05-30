@@ -7,7 +7,7 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import isDev from "electron-is-dev";
-import { getAppIconPath } from "./appIcon";
+import { getAppIconPath } from "../utils/appIcon";
 import { dev, production } from "./routes";
 
 export function createSettingsWindow(): BrowserWindow {

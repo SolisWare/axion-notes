@@ -9,6 +9,6 @@ import isDev from "electron-is-dev";
 
 export function getAppIconPath(): string {
   return isDev
-    ? path.join(__dirname, "../../../public/axion_notes_icon512.png")
+    ? path.join(__dirname, "../../public/axion_notes_icon512.png")
     : path.join(__dirname, "../../axion_notes_icon512.png");
 }
