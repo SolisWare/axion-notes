@@ -6,8 +6,8 @@
  */
 import { NoteType } from "../../models/NoteType";
 
-const noteIndexKey = "x-notes.notes.index";
-const noteKeyPrefix = "x-notes.notes";
+const noteIndexKey = "solisware.axion-notes.notes.index";
+const noteKeyPrefix = "solisware.axion-notes.notes";
 
 function getNoteKey(noteId: string): string {
   return `${noteKeyPrefix}.${noteId}`;

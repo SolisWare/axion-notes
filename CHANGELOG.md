@@ -21,6 +21,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added an Appearance setting for choosing the default color of newly created notes
 - Added an Electron-only General setting for keeping the notes window always on top
 - Added a General setting for sorting notes by creation date, last modified date, or title
+- Rebranded the app from X-NoTES to Axion Notes
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear

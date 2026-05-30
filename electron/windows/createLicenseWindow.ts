@@ -7,6 +7,7 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import isDev from "electron-is-dev";
+import { getAppIconPath } from "./appIcon";
 import { dev, production } from "./routes";
 
 export function createLicenseWindow(): BrowserWindow {
@@ -22,7 +23,8 @@ export function createLicenseWindow(): BrowserWindow {
     maximizable: false,
     fullscreenable: false,
     autoHideMenuBar: true,
-    title: "X-NoTES — License",
+    icon: getAppIconPath(),
+    title: "Axion Notes — License",
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
@@ -40,7 +42,7 @@ export function createLicenseWindow(): BrowserWindow {
 
   licenseWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    licenseWindow.setTitle("X-NoTES — License");
+    licenseWindow.setTitle("Axion Notes — License");
   });
 
   if (isDev) {

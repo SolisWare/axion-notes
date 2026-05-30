@@ -7,6 +7,7 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import isDev from "electron-is-dev";
+import { getAppIconPath } from "./appIcon";
 import { dev, production } from "./routes";
 
 export function createSettingsWindow(): BrowserWindow {
@@ -20,7 +21,8 @@ export function createSettingsWindow(): BrowserWindow {
     maximizable: false,
     fullscreenable: false,
     autoHideMenuBar: true,
-    title: "X-NoTES — Settings",
+    icon: getAppIconPath(),
+    title: "Axion Notes — Settings",
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
@@ -38,7 +40,7 @@ export function createSettingsWindow(): BrowserWindow {
 
   settingsWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    settingsWindow.setTitle("X-NoTES — Settings");
+    settingsWindow.setTitle("Axion Notes — Settings");
   });
 
   if (isDev) {

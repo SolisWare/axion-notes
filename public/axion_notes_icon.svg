@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="944"
+   height="944"
+   viewBox="0 0 944 944"
+   role="img"
+   version="1.1"
+   id="svg8"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <title
+     id="title1">Axion Notes icon</title>
+  <defs
+     id="defs1">
+    <clipPath
+       id="ic">
+      <rect
+         x="40"
+         y="40"
+         width="944"
+         height="944"
+         rx="210"
+         id="rect1" />
+    </clipPath>
+    <clipPath
+       id="streakClip">
+      <!-- right of outer right leg edge: top=(540,100) bottom=(840,900) -->
+      <polygon
+         points="1024,1024 840,900 540,100 1024,0 "
+         id="polygon1" />
+    </clipPath>
+  </defs>
+  <rect
+     x="0"
+     y="0"
+     width="944"
+     height="944"
+     rx="210"
+     fill="#111518"
+     id="rect2" />
+  <g
+     clip-path="url(#streakClip)"
+     id="g7"
+     transform="matrix(0.96960362,0,0,0.96960362,-88.854369,-86.111522)">
+    <line
+       x1="723.67004"
+       y1="655.76343"
+       x2="989.58301"
+       y2="806.45758"
+       stroke="#127db3"
+       stroke-width="16.1139"
+       stroke-linecap="round"
+       opacity="0.26"
+       id="line7"
+       style="opacity:0.54" />
+    <line
+       x1="659.73602"
+       y1="464.50259"
+       x2="962.1167"
+       y2="623.41138"
+       stroke="#3cbbeb"
+       stroke-width="21.6194"
+       stroke-linecap="round"
+       opacity="0.42"
+       id="line6"
+       style="opacity:0.6" />
+    <line
+       x1="558.72235"
+       y1="254.42264"
+       x2="919.16974"
+       y2="433.72473"
+       stroke="#3cbbeb"
+       stroke-width="29.5528"
+       stroke-linecap="round"
+       opacity="0.68"
+       id="line5"
+       style="opacity:0.76" />
+  </g>
+  <g
+     clip-path="url(#ic)"
+     id="g8"
+     transform="matrix(0.96960362,0,0,0.96960362,-27.289988,-19.747317)">
+    <!-- LEFT LEG — pointed apex, thick, straight vertical outer left -->
+    <!-- Outer left: x=160 straight down. Inner: x=380 straight down. Apex tip: x=270,y=100 -->
+    <polygon
+       points="380,100 380,900 160,900 270,100 "
+       fill="#138ec7"
+       id="polygon2"
+       style="display:inline" />
+    <!-- RIGHT LEG — shares apex point, splays to the right -->
+    <polygon
+       points="660,900 270,100 380,100 840,900 "
+       fill="#138ec7"
+       id="polygon3"
+       style="display:inline" />
+    <!-- KINETIC SLASH — dark shading on right side of right leg -->
+    <polygon
+       points="800,900 340,100 380,100 840,900 "
+       fill="#127db3"
+       opacity="0.72"
+       id="polygon4"
+       style="display:inline" />
+    <!-- CROSSBAR — sits between left leg right edge and right leg inner edge -->
+    <polygon
+       points="520,500 544,570 380,570 160,570 160,500 380,500 "
+       fill="#3cbbeb"
+       id="polygon5"
+       style="display:none" />
+    <polygon
+       points="100,152 176,152 176,137 128,137 "
+       fill="#3CBBEB"
+       style="color:#000000;font-weight:400;font-size:16px;font-family:'Anthropic Sans', '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif;dominant-baseline:auto;text-anchor:start;display:inline;fill:#3cbbeb;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter"
+       id="polygon3-5"
+       transform="matrix(5.9935989,0,0,5.5199947,-515.09493,-245.87934)" />
+    <!-- STREAKS — right side only, angled along right leg direction -->
+  </g>
+</svg>

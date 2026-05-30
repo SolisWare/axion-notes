@@ -1,7 +1,7 @@
-# X-NoTES
+# Axion Notes
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-May%202026-blue)
-![Version](https://img.shields.io/badge/version-0.1-green)
+![Version](https://img.shields.io/badge/version-0.2-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgray)
 
@@ -10,7 +10,7 @@ A cross-platform sticky notes desktop app built with ReactJS and Electron by Sol
 ---
 
 ### Early release notice
-> SolisWare X-NoTES is currently pre-1.0 software. Features, storage formats, settings, and app behavior may change between releases, and backward compatibility is not guaranteed until a stable 1.0 release.
+> SolisWare Axion Notes is currently pre-1.0 software. Features, storage formats, settings, and app behavior may change between releases, and backward compatibility is not guaranteed until a stable 1.0 release.
 >
 > When updating between early releases, locally stored notes or settings may not always migrate cleanly. Please keep a backup of anything important before installing a new version.
 
@@ -22,9 +22,9 @@ A cross-platform sticky notes desktop app built with ReactJS and Electron by Sol
  
 Download the latest prebuilt release for your platform from the [Releases](https://github.com/solisware/sticky-notes-desktop/releases) page.
  
-> **macOS users:** If you see a *"X-NoTES is damaged and can't be opened"* warning after downloading, this is macOS Gatekeeper blocking the app because it is not yet signed with an Apple Developer certificate. The app itself is fine. Run the following command in Terminal to fix it:
+> **macOS users:** If you see a *"Axion Notes is damaged and can't be opened"* warning after downloading, this is macOS Gatekeeper blocking the app because it is not yet signed with an Apple Developer certificate. The app itself is fine. Run the following command in Terminal to fix it:
 > ```bash
-> xattr -cr /Applications/X-NoTES.app
+> xattr -cr "/Applications/Axion Notes.app"
 > ```
 >
 > **Windows users:** If you see a *"Windows protected your PC"* warning after downloading, this is Microsoft Defender SmartScreen blocking the installer because it is new or not yet widely recognized. The app itself is fine. Click **More info**, then click **Run anyway** to continue the installation.
@@ -62,7 +62,7 @@ All pull requests must be reviewed and approved by the **SolisWare team** before
 ### Clone the Repository
 ```bash
 git clone https://github.com/solisware/sticky-notes-desktop.git
-cd x-notes
+cd axion-notes
 npm install
 ```
 
@@ -76,7 +76,7 @@ This starts the React dev server and Electron concurrently. The app will reload 
 
 ### Project Structure
 ```
-x-notes/
+axion-notes/
 ├── electron/          # Electron main process, preload, and menu
 ├── src/               # React renderer (components, pages, theme, models)
 ├── assets/            # App icons and installer assets
@@ -165,6 +165,6 @@ Output: `dist/` — produces an NSIS `.exe` installer.
 ---
 
 ## License
-X-NoTES is open source software licensed under the [MIT License](LICENSE.txt).
+Axion Notes is open source software licensed under the [MIT License](LICENSE.txt).
  
 You are free to use, modify, and distribute this software. Attribution is not required but is greatly appreciated — if you use our code in your project, a mention or a link back to this repository means a lot to us.

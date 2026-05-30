@@ -171,7 +171,7 @@ function WelcomeScreen(props: WelcomeProps) {
             fontWeight="bold"
             style={{ color: appColors.MAIN }}
           >
-            Welcome to X-NoTES
+            Welcome to Axion Notes
           </Typography>
           <Typography className={classes.intro} variant="body1">
             Keep quick thoughts close, tidy, and ready whenever you need them.

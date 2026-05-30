@@ -1,8 +1,8 @@
 {
-  "name": "x-notes",
-  "productName": "X-NoTES",
-  "description": "Cross platform X-NoTES desktop client written in ReactJS + Electron",
-  "version": "0.1.0",
+  "name": "axion-notes",
+  "productName": "Axion Notes",
+  "description": "Cross platform Axion Notes desktop client written in ReactJS + Electron",
+  "version": "0.2.0",
   "private": true,
   "author": {
     "name": "SolisWare",
@@ -12,20 +12,23 @@
   "main": "build/electron/electron.js",
   "homepage": "./",
   "build": {
-    "appId": "com.solisware.xnotes",
-    "productName": "X-NoTES",
+    "appId": "com.solisware.axion-notes",
+    "productName": "Axion Notes",
+    "icon": "public/axion_notes_icon512.png",
     "copyright": "Copyright © 2023-2026 ${author}",
     "mac": {
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "icon": "public/axion_notes_icon512.png"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "public/axion_notes_icon512.png"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "license": "LICENSE.txt",
-      "shortcutName": "X-NoTES",
+      "shortcutName": "Axion Notes",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },

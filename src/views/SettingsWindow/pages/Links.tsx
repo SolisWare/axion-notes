@@ -29,7 +29,7 @@ function Links() {
     <div className={styles.linksPage}>
       <div className={styles.linksHeader}>
         <p className={styles.pageDescription}>
-          Thanks for using X-NoTES. These links help you follow releases, source updates, and other SolisWare projects.
+          Thanks for using Axion Notes. These links help you follow releases, source updates, and other SolisWare projects.
         </p>
       </div>
       <div className={styles.linksList}>

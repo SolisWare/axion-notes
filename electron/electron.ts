@@ -13,6 +13,7 @@ import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver";
 import { createMainWindow } from "./windows/createMainWindow";
+import { getAppIconPath } from "./windows/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
 
 const appDir = path.join(app.getPath("userData"));
@@ -45,6 +46,10 @@ Menu.setApplicationMenu(menubar);
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
+  if (isMac) {
+    app.dock?.setIcon(getAppIconPath());
+  }
+
   createMainWindow({ mainWindowStateFilePath });
   registerIpcHandlers({ appDataDir, appSettingsFilePath });
 });
@@ -68,7 +73,7 @@ app.on('activate', () => {
 
 // "About" dialog window customization
 app.setAboutPanelOptions({
-  applicationName: "X-NoTES",
+  applicationName: "Axion Notes",
   applicationVersion: AppVersionResolver.getCombinedVersion(appVersionConfig),
   ...(AppVersionResolver.getAboutVersion(appVersionConfig) ? { version: AppVersionResolver.getAboutVersion(appVersionConfig) } : {}),
   authors: [

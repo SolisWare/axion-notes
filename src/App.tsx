@@ -57,7 +57,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const channel = new BroadcastChannel("x-notes.app-settings");
+    const channel = new BroadcastChannel("solisware.axion-notes.app-settings");
     settingsBroadcastChannel.current = channel;
     channel.onmessage = (event: MessageEvent<AppSettings>) => {
       setAppSettings(event.data);

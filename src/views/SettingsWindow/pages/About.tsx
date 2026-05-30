@@ -6,7 +6,6 @@
  */
 import { Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import logo from "../../../logo.svg";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppColorStyleProps } from "../../../types/appColorTypes";
@@ -26,11 +25,8 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>(() => ({
     textAlign: "center"
   },
   logo: {
-    backgroundColor: "#282c34",
-    borderRadius: "50%",
     height: 72,
     marginBottom: 14,
-    padding: 12,
     width: 72
   },
   appName: {
@@ -64,14 +60,15 @@ function getVersionLabel(): string {
 function About(props: AboutProps) {
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
+  const appIcon = `${process.env.PUBLIC_URL}/axion_notes_icon.svg`;
 
   return (
     <div className={styles.aboutPage}>
       <div className={styles.aboutPanel}>
         <div className={classes.content}>
-          <img className={classes.logo} src={logo} alt="" />
+          <img className={classes.logo} src={appIcon} alt="" />
           <Typography className={classes.appName} variant="h6">
-            X-NoTES
+            Axion Notes
           </Typography>
           <Typography className={`${classes.text} ${classes.version}`} variant="body2">
             Version {getVersionLabel()}
