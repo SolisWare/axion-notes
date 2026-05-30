@@ -11,6 +11,7 @@ import { NoteColorPreference } from "./noteColorPreference";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
+  keepNotesMainWindowOnTop: false,
   theme: AppThemePreference.AUTO,
   defaultNoteColor: NoteColorPreference.AUTO
 };

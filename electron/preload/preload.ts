@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { contextBridge } from "electron";
+import { appWindowApi } from "./appWindowApi";
 import { menuApi } from "./menuApi";
 import { osApi } from "./osApi";
 import { settingsApi } from "./settingsApi";
@@ -16,6 +17,7 @@ import { versionApi } from "./versionApi";
 // It has the same sandbox as a Chrome extension.
 
 contextBridge.exposeInMainWorld('api', {
+  appWindow: appWindowApi,
   storage: storageApi,
   menu: menuApi,
   settings: settingsApi,

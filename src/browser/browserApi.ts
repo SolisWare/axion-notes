@@ -34,6 +34,9 @@ export function installBrowserApi(): void {
   }
 
   window.api = {
+    appWindow: {
+      setAlwaysOnTop: noop
+    },
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,

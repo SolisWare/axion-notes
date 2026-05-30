@@ -5,6 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 export const channels = {
+  appWindow: {
+    setAlwaysOnTop: "appWindow.setAlwaysOnTop"
+  },
   menu: {
     newNote: "menu.newNote",
     showWelcome: "menu.showWelcome",

@@ -75,7 +75,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       break;
     case SettingsView.general:
     default:
-      page = <General />;
+      page = <General appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
   }
 
   return (

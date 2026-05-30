@@ -116,6 +116,12 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     window.api.menu.setNewNoteEnabled(props.view !== AppView.welcome);
   }, [props.view]);
+
+  useEffect(() => {
+    if (UserAgent.isElectron) {
+      window.api.appWindow.setAlwaysOnTop(appSettings.keepNotesMainWindowOnTop);
+    }
+  }, [appSettings.keepNotesMainWindowOnTop]);
   
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);

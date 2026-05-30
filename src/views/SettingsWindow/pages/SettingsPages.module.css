@@ -32,6 +32,13 @@
   color: var(--settings-nav-text);
 }
 
+.generalPage {
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 26px 34px 34px;
+  color: var(--settings-nav-text);
+}
+
 .settingsSection {
   width: 100%;
   max-width: 460px;
@@ -158,6 +165,62 @@
 
 .radioOption:hover {
   color: var(--settings-nav-hover-text);
+}
+
+.switchControl {
+  width: 38px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  align-self: center;
+  position: relative;
+  cursor: default;
+}
+
+.switchInput {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switchTrack {
+  width: 36px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--settings-section-text) 42%, var(--settings-content-background));
+  transition: background-color 120ms ease;
+}
+
+.switchThumb {
+  width: 16px;
+  height: 16px;
+  display: block;
+  border-radius: 50%;
+  background: var(--settings-content-background);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--settings-section-text) 35%, transparent);
+  transform: translateX(0);
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+
+.switchInput:checked + .switchTrack {
+  background: var(--settings-nav-selected-background);
+}
+
+.switchInput:checked + .switchTrack .switchThumb {
+  transform: translateX(16px);
+  background: var(--settings-nav-selected-text);
+}
+
+.switchControl:has(.switchInput:focus-visible) {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 3px;
+  border-radius: 999px;
 }
 
 .colorSwatchGroup {

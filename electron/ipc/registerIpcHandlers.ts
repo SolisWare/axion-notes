@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { registerAppWindowIpc } from "./appWindowIpc";
 import { registerMenuIpc } from "./menuIpc";
 import { registerSettingsIpc } from "./settingsIpc";
 import { registerStorageIpc } from "./storageIpc";
@@ -15,6 +16,7 @@ type IpcHandlerOptions = {
 };
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
+  registerAppWindowIpc();
   registerSystemThemeIpc();
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();

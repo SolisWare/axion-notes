@@ -9,6 +9,7 @@ import { DefaultNoteColorPreference } from "./noteColorPreference";
 
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
+  keepNotesMainWindowOnTop: boolean;
   theme: AppThemePreference;
   defaultNoteColor: DefaultNoteColorPreference;
 };

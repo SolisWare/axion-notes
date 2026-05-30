@@ -9,6 +9,9 @@ import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
 
 interface IElectronAPI {
+  appWindow: {
+    setAlwaysOnTop: (enabled: boolean) => void;
+  },
   storage: {
     getNotes: () => Promise<NoteType[]>;
     getNotesFolderLocation: () => Promise<string>;
