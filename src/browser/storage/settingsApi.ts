@@ -18,6 +18,10 @@ export const settingsApi = {
     }
   },
 
+  getSettingsFolderLocation: async (): Promise<string> => {
+    return "Browser local storage";
+  },
+
   setSettings: (settings: AppSettings) => {
     try {
       setSettings(settings);

@@ -25,6 +25,7 @@ interface IElectronAPI {
   },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
+    getSettingsFolderLocation: () => Promise<string>;
     setSettings: (settings: AppSettings) => void;
     onSettingsChange: (callback: (settings: AppSettings) => void) => () => void;
   },

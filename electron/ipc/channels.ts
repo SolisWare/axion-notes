@@ -14,6 +14,7 @@ export const channels = {
   },
   settings: {
     getSettings: "settings.getSettings",
+    getSettingsFolderLocation: "settings.getSettingsFolderLocation",
     setSettings: "settings.setSettings",
     onSettingsChange: "settings.onSettingsChange"
   },

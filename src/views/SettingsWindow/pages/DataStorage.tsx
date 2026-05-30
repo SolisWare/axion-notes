@@ -9,12 +9,19 @@ import styles from "./SettingsPages.module.css";
 
 function DataStorage() {
   const [notesFolderLocation, setNotesFolderLocation] = useState("");
+  const [settingsFolderLocation, setSettingsFolderLocation] = useState("");
 
   useEffect(() => {
     window.api.storage.getNotesFolderLocation()
       .then(setNotesFolderLocation)
       .catch((err: Error) => {
         console.error("Failed to load notes folder location:", err.message);
+      });
+
+    window.api.settings.getSettingsFolderLocation()
+      .then(setSettingsFolderLocation)
+      .catch((err: Error) => {
+        console.error("Failed to load settings folder location:", err.message);
       });
   }, []);
 
@@ -26,6 +33,12 @@ function DataStorage() {
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle} id="notes-folder-location-title">Notes folder location</h3>
               <p className={styles.settingsSectionDescription}>{notesFolderLocation}</p>
+            </div>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle}>Settings folder location</h3>
+              <p className={styles.settingsSectionDescription}>{settingsFolderLocation}</p>
             </div>
           </div>
         </div>

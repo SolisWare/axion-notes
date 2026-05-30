@@ -18,6 +18,15 @@ export const settingsApi = {
       return undefined;
     }
   },
+
+  getSettingsFolderLocation: async (): Promise<string> => {
+    try {
+      return await receive<string>(channels.settings.getSettingsFolderLocation);
+    } catch (err) {
+      console.error('Failed to load settings folder location:', (err as Error).message);
+      return "";
+    }
+  },
   
   setSettings: (settings: AppSettings) => {
     send(channels.settings.setSettings, settings);
