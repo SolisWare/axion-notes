@@ -6,10 +6,10 @@
  */
 import { BrowserWindow } from "electron";
 import * as path from "path";
-import isDev from "electron-is-dev";
 import { dev, production } from "./routes";
 import { getAppIconPath } from "../utils/appIcon";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose } from "./mainWindowState";
+import { isDev } from "../utils/isDev";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;

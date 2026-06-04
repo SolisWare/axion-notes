@@ -6,9 +6,9 @@
  */
 import { BrowserWindow } from "electron";
 import * as path from "path";
-import isDev from "electron-is-dev";
 import { getAppIconPath } from "../utils/appIcon";
 import { dev, production } from "./routes";
+import { isDev } from "../utils/isDev";
 
 export function createSettingsWindow(): BrowserWindow {
   const settingsWindow = new BrowserWindow({
