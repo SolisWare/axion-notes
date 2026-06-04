@@ -14,6 +14,7 @@ type HomeProps = {
   notesSortOrder: NoteSortOrder;
   theme: SystemTheme;
   handleDeleteNoteButton: (noteId: string) => void;
+  handleNoteSave: (note: NoteType) => void;
 }
 
 function Home(props: HomeProps) {
@@ -24,6 +25,7 @@ function Home(props: HomeProps) {
         notes={props.notes}
         notesSortOrder={props.notesSortOrder}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
+        handleNoteSave={props.handleNoteSave}
       />
     </div>
   );

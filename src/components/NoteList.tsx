@@ -17,6 +17,7 @@ type NoteListProps = {
   notes: NoteType[];
   notesSortOrder: NoteSortOrder;
   handleDeleteNoteButton: (noteId: string) => void;
+  handleNoteSave: (note: NoteType) => void;
 }
  
 const useStyles = makeStyles((theme: Theme) => ({
@@ -49,10 +50,6 @@ function NoteList (props: NoteListProps) {
   });
   const isNoteListEmpty = notes.length <= 0;
   
-  const handleSaveNote = (note: NoteType) => {
-    window.api.storage.setNote(note);
-  };
-  
   return (
     <div className={classes.wrapper}>
       {isNoteListEmpty ?
@@ -62,7 +59,7 @@ function NoteList (props: NoteListProps) {
         :
         <>
           {notes.map((note) => (
-            <Note key={note.id} theme={props.theme} note={note} handleNoteSave={handleSaveNote} handleDeleteNoteButton={props.handleDeleteNoteButton} />
+            <Note key={note.id} theme={props.theme} note={note} handleNoteSave={props.handleNoteSave} handleDeleteNoteButton={props.handleDeleteNoteButton} />
             ))
           }
         </>

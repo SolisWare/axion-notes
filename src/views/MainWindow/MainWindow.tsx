@@ -129,6 +129,13 @@ function MainWindow(props: MainWindowProps) {
       notes.filter(({ id }) => id !== noteId)
     );
   }
+
+  function handleSaveNote(note: NoteType) {
+    window.api.storage.setNote(note);
+    setNotes((prevNotes) =>
+      prevNotes.map((prevNote) => prevNote.id === note.id ? note : prevNote)
+    );
+  }
   
   function handleDeleteAllNotes() {
     setNotes([]);
@@ -159,10 +166,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} />
+      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} />
+      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
   }
   
   return (
