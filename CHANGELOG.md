@@ -22,6 +22,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added an Electron-only General setting for keeping the notes window always on top
 - Added a General setting for sorting notes by creation date, last modified date, or title
 - Rebranded the app from X-NoTES to Axion Notes
+- Added Axion Notes app icons for desktop and web builds
 
 ## [v0.1.0] - May 23, 2026 - Groundwork
 - Increased the main window width so notes do not wrap too early when scrollbars appear
