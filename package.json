@@ -22,7 +22,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "public/axion_notes_icon512.png"
+      "icon": "public/axion_notes_icon.ico"
     },
     "nsis": {
       "oneClick": false,
