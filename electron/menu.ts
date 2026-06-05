@@ -55,7 +55,6 @@ const template: any = [
         {
           id: menuIds.file.settings,
           label: 'Settings...',
-          accelerator: 'Ctrl+,',
           click: () => {
             createSettingsWindow();
           }
