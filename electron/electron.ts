@@ -7,6 +7,7 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import menubar from "./menu";
+import isDev from "electron-is-dev";
 import { isMac } from './utils/Platform';
 import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
@@ -14,7 +15,6 @@ import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver"
 import { createMainWindow } from "./windows/createMainWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
-import { isDev } from "./utils/isDev";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
