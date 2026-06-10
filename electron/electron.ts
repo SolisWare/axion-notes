@@ -7,7 +7,7 @@
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
 import menubar from "./menu";
-import isDev from "electron-is-dev";
+import { isDev } from "./utils/isDev";
 import { isMac } from './utils/Platform';
 import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";

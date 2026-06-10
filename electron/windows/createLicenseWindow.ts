@@ -6,7 +6,7 @@
  */
 import { BrowserWindow } from "electron";
 import * as path from "path";
-import isDev from "electron-is-dev";
+import { isDev } from "../utils/isDev";
 import { getAppIconPath } from "../utils/appIcon";
 import { dev, production } from "./routes";
 
