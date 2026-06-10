@@ -18,7 +18,7 @@
     "copyright": "Copyright © 2023-2026 ${author}",
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "public/axion_notes_icon512.png"
+      "icon": "public/axion_notes_icon.icns"
     },
     "win": {
       "target": "nsis",
