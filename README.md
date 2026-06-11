@@ -16,6 +16,26 @@ A cross-platform sticky notes desktop app built with ReactJS and Electron by Sol
 
 ---
 
+## App Overview
+
+Axion Notes is a simple, flexible space for capturing ideas before they slip away. Create quick notes, organize them with color, and use the same familiar sticky-note workflow on desktop or in the browser.
+
+Key features:
+- Color-coded notes for visual organization
+- Auto dark mode with light, dark, and system themes
+- Smart sorting by creation date, last modified, or title
+- Browser app included with local note storage
+- Always-on-top mode for keeping notes visible
+- Auto-save so notes persist across restarts
+
+### Desktop App
+![Axion Notes desktop app showing sample sticky notes](docs/images/sample-notes.png)
+
+### Web App
+![Axion Notes web app showing sample sticky notes](docs/images/sample-notes-webapp.png)
+
+---
+
 ## Getting Started
 
 ### Download & Install
