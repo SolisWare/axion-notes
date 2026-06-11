@@ -1,5 +1,5 @@
 # Changelog
-All changes to the SolisWare X-NoTES will be documented in this file.
+All changes to Axion Notes, the cross-platform desktop client and web app by SolisWare, will be documented in this file.
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 

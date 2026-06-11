@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
-A cross-platform sticky notes desktop app built with ReactJS and Electron by SolisWare.
+A cross-platform sticky notes desktop client and web app built with ReactJS and Electron by SolisWare.
 
 ---
 
