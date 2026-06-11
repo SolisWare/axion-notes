@@ -3,11 +3,6 @@
   "name": "Axion Notes",
   "icons": [
     {
-      "src": "axion_notes_icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    },
-    {
       "src": "axion_notes_icon192.png",
       "type": "image/png",
       "sizes": "192x192"
@@ -16,6 +11,11 @@
       "src": "axion_notes_icon512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "axion_notes_icon1024.png",
+      "type": "image/png",
+      "sizes": "1024x1024"
     }
   ],
   "start_url": ".",

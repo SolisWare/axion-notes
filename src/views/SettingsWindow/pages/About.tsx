@@ -55,7 +55,7 @@ function getVersionLabel(): string {
 function About(props: AboutProps) {
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
-  const appIcon = `${process.env.PUBLIC_URL}/axion_notes_icon.svg`;
+  const appIcon = `${process.env.PUBLIC_URL}/axion_notes_icon1024.png`;
 
   return (
     <div className={styles.aboutPage}>

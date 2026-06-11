@@ -11,11 +11,11 @@ import { isDev } from "./isDev";
 export function getAppIconPath(): string {
   const iconPathCandidates = isDev
     ? [
-      path.join(process.cwd(), "public/axion_notes_icon512.png"),
-      path.join(__dirname, "../../axion_notes_icon512.png")
+      path.join(process.cwd(), "public/axion_notes_icon1024.png"),
+      path.join(__dirname, "../../axion_notes_icon1024.png")
     ]
     : [
-      path.join(__dirname, "../../axion_notes_icon512.png")
+      path.join(__dirname, "../../axion_notes_icon1024.png")
     ];
 
   const iconPath = iconPathCandidates.find((candidate) => fs.existsSync(candidate));

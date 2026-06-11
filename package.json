@@ -18,11 +18,11 @@
     "copyright": "Copyright © 2023-2026 ${author}",
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "public/axion_notes_icon.icns"
+      "icon": "public/axion_notes_icon1024.png"
     },
     "win": {
       "target": "nsis",
-      "icon": "public/axion_notes_icon.ico"
+      "icon": "public/axion_notes_icon1024.png"
     },
     "nsis": {
       "oneClick": false,
