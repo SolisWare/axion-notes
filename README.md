@@ -3,7 +3,7 @@
 ![Last Modified](https://img.shields.io/badge/last%20modified-May%202026-blue)
 ![Version](https://img.shields.io/badge/version-0.2-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgray)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
 A cross-platform sticky notes desktop app built with ReactJS and Electron by SolisWare.
 
@@ -80,6 +80,7 @@ axion-notes/
 ├── electron/          # Electron main process, preload, and menu
 ├── src/               # React renderer (components, pages, theme, models)
 ├── assets/            # App icons and installer assets
+├── docs/              # Project documentation and README images
 ├── build/             # Compiled output (generated, do not edit or commit)
 ├── dist/              # Distribution packages (generated, do not edit or commit)
 └── public/            # Static assets for the React app
@@ -161,6 +162,40 @@ Output: `dist/` — produces an NSIS `.exe` installer.
 npm run dist-windows-x86
 ```
 Output: `dist/` — produces an NSIS `.exe` installer.
+
+---
+
+## Creating App Icons
+
+App icons must be drawn with padding around the artwork. Do not fill the entire canvas with the icon shape. The artwork should be centered both horizontally and vertically so the icon has even breathing room on every side.
+
+![Icon canvas and padding guide](docs/images/icon-gimp-guide.png)
+
+Use the SVG icon as the primary source wherever possible. SVG scales cleanly and is widely used across the app and web-facing metadata. Fixed PNG files are mainly generated outputs for places that require raster icons, such as favicons, web app manifest icons, installer metadata, and platform packaging.
+
+Use these canvas and artwork sizes:
+
+| Canvas size | Icon artwork size | Total padding | Padding per side | Artwork ratio |
+| --- | --- | --- | --- | --- |
+| `192 x 192` | `143 x 143` | `49 px` | `24.5 px` | `74.5%` |
+| `512 x 512` | `433 x 433` | `79 px` | `39.5 px` | `84.6%` |
+| `1024 x 1024` | `865 x 865` | `159 px` | `79.5 px` | `84.5%` |
+
+For the larger icons, use an artwork-to-canvas ratio of about `0.845`. In other words:
+
+```text
+artwork size = canvas size * 0.845
+padding per side = (canvas size - artwork size) / 2
+```
+
+The platform app icon formats are:
+
+| Platform | Required icon format |
+| --- | --- |
+| macOS | `.icns` |
+| Windows | `.ico` |
+
+These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [Markifo](https://markifo.com). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
 
 ---
 
