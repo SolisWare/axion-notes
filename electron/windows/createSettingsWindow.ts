@@ -7,7 +7,8 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
 import { isDev } from "../utils/isDev";
-import { getAppIconPath } from "../utils/appIcon";
+import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
+import { isMac } from "../utils/Platform";
 import { dev, production } from "./routes";
 
 export function createSettingsWindow(): BrowserWindow {
@@ -21,7 +22,7 @@ export function createSettingsWindow(): BrowserWindow {
     maximizable: false,
     fullscreenable: false,
     autoHideMenuBar: true,
-    icon: getAppIconPath(),
+    icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: "Axion Notes — Settings",
     webPreferences: {
       webSecurity: false,

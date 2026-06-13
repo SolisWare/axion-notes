@@ -9,13 +9,22 @@ import * as fs from "node:fs";
 import { isDev } from "./isDev";
 
 export function getAppIconPath(): string {
+  return resolveIconPath("axion_notes_icon1024.png");
+}
+
+// Returns the small window icon shown in the title bar and task switcher outside macOS.
+export function getWindowIconPath(): string {
+  return resolveIconPath("app_favicon.ico");
+}
+
+function resolveIconPath(fileName: string): string {
   const iconPathCandidates = isDev
     ? [
-      path.join(process.cwd(), "public/axion_notes_icon1024.png"),
-      path.join(__dirname, "../../axion_notes_icon1024.png")
+      path.join(process.cwd(), `public/${fileName}`),
+      path.join(__dirname, `../../${fileName}`)
     ]
     : [
-      path.join(__dirname, "../../axion_notes_icon1024.png")
+      path.join(__dirname, `../../${fileName}`)
     ];
 
   const iconPath = iconPathCandidates.find((candidate) => fs.existsSync(candidate));

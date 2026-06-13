@@ -8,7 +8,8 @@ import { BrowserWindow } from "electron";
 import * as path from "path";
 import { isDev } from "../utils/isDev";
 import { dev, production } from "./routes";
-import { getAppIconPath } from "../utils/appIcon";
+import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
+import { isMac } from "../utils/Platform";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose } from "./mainWindowState";
 
 type MainWindowOptions = {
@@ -24,7 +25,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
     minWidth: 335,
     minHeight: 250,
     show: false,
-    icon: getAppIconPath(),
+    icon: isMac ? getAppIconPath() : getWindowIconPath(),
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
