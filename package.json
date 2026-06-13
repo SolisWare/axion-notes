@@ -14,15 +14,15 @@
   "build": {
     "appId": "com.solisware.axion-notes",
     "productName": "Axion Notes",
-    "icon": "public/axion_notes_icon512.png",
+    "icon": "public/axion_notes_icon1024.png",
     "copyright": "Copyright © 2023-2026 ${author}",
     "mac": {
       "category": "public.app-category.productivity",
-      "icon": "public/axion_notes_icon1024.png"
+      "icon": "public/axion_notes_icon.icns"
     },
     "win": {
       "target": "nsis",
-      "icon": "public/axion_notes_icon1024.png"
+      "icon": "public/axion_notes_icon.ico"
     },
     "nsis": {
       "oneClick": false,
