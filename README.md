@@ -1,32 +1,32 @@
-# Axion Notes
+# Axion Notes - Sticky Notes App for macOS, Windows, and Web
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-May%202026-blue)
 ![Version](https://img.shields.io/badge/version-0.2-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
-A cross-platform sticky notes desktop client and web app built with ReactJS and Electron by SolisWare.
-
----
+Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, color-code, sort, and save digital sticky notes locally on your device.
 
 ### Early release notice
 > SolisWare Axion Notes is currently pre-1.0 software. Features, storage formats, settings, and app behavior may change between releases, and backward compatibility is not guaranteed until a stable 1.0 release.
 >
 > When updating between early releases, locally stored notes or settings may not always migrate cleanly. Please keep a backup of anything important before installing a new version.
 
----
-
 ## App Overview
 
-Axion Notes is a simple, flexible space for capturing ideas before they slip away. Create quick notes, organize them with color, and use the same familiar sticky-note workflow on desktop or in the browser.
+Axion Notes is a simple, flexible workspace for capturing ideas before they slip away. Use it as a desktop sticky notes app on macOS or Windows, or run it as a browser-based notes app with the same familiar sticky-note workflow.
+
+The app is designed for quick personal notes, reminders, lightweight planning, and visual organization. Notes and settings are stored locally, so Axion Notes works well for users who want a fast private notes board without needing an online account.
 
 Key features:
 - Color-coded notes for visual organization
 - Auto dark mode with light, dark, and system themes
 - Smart sorting by creation date, last modified, or title
-- Browser app included with local note storage
-- Always-on-top mode for keeping notes visible
+- Browser web app with local note storage
+- Always-on-top mode for keeping desktop notes visible
 - Auto-save so notes persist across restarts
+- Native desktop builds for macOS and Windows
+- React and Electron codebase for desktop and web releases
 
 ### Desktop App
 ![Axion Notes desktop app showing sample sticky notes](docs/images/sample-notes.png)
@@ -34,13 +34,11 @@ Key features:
 ### Web App
 ![Axion Notes web app showing sample sticky notes](docs/images/sample-notes-webapp.png)
 
----
-
 ## Getting Started
 
 ### Download & Install
  
-Download the latest prebuilt release for your platform from the [Releases](https://github.com/solisware/sticky-notes-desktop/releases) page.
+Download the latest prebuilt release for your platform from the [Releases](https://github.com/SolisWare/axion-notes/releases) page.
  
 > **macOS users:** If you see a *"Axion Notes is damaged and can't be opened"* warning after downloading, this is macOS Gatekeeper blocking the app because it is not yet signed with an Apple Developer certificate. The app itself is fine. Run the following command in Terminal to fix it:
 > ```bash
@@ -49,13 +47,19 @@ Download the latest prebuilt release for your platform from the [Releases](https
 >
 > **Windows users:** If you see a *"Windows protected your PC"* warning after downloading, this is Microsoft Defender SmartScreen blocking the installer because it is new or not yet widely recognized. The app itself is fine. Click **More info**, then click **Run anyway** to continue the installation.
 
----
+### Supported Platforms
+
+| Platform | App type | Notes |
+| --- | --- | --- |
+| macOS | Electron desktop app | Apple Silicon and Intel builds |
+| Windows | Electron desktop app | 64-bit and 32-bit installers |
+| Web | React web app | Runs in a modern browser with local storage |
 
 ## Contributing
 Contributions are welcome — whether that's bug fixes, new features, documentation improvements, or raising issues and feature requests.
 
 ### Raising Issues & Feature Requests
-Found a bug or have an idea? [Open an issue](https://github.com/SolisWare/sticky-notes-desktop/issues) and describe it clearly. For feature requests, explain the use case and why it would be valuable.
+Found a bug or have an idea? [Open an issue](https://github.com/SolisWare/axion-notes/issues) and describe it clearly. For feature requests, explain the use case and why it would be valuable.
 
 ### Submitting a Pull Request
 1. Fork the repository
@@ -69,9 +73,11 @@ Found a bug or have an idea? [Open an issue](https://github.com/SolisWare/sticky
 ### PR Review Policy
 All pull requests must be reviewed and approved by the **SolisWare team** before merging. We aim to review PRs promptly. Please be patient — we appreciate your effort.
 
----
-
 ## Development
+
+### Technology
+
+Axion Notes is built with React, TypeScript, Electron, and Material UI. The desktop client and web app share the same note-taking interface while using storage, menus, settings, and app window features that fit each platform.
 
 ### Prerequisites
 > These are required for development only. The distributed app bundles its own runtime — end users do not need Node.js installed.
@@ -81,7 +87,7 @@ All pull requests must be reviewed and approved by the **SolisWare team** before
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/solisware/sticky-notes-desktop.git
+git clone git@github.com:SolisWare/axion-notes.git
 cd axion-notes
 npm install
 ```
@@ -149,8 +155,6 @@ Build version precedence:
 - `buildVersion` from `app-version-config.json`
 - no build suffix if neither is present
 
----
-
 ## Building for Production
  
 Build the app:
@@ -182,8 +186,6 @@ Output: `dist/` — produces an NSIS `.exe` installer.
 npm run dist-windows-x86
 ```
 Output: `dist/` — produces an NSIS `.exe` installer.
-
----
 
 ## Creating App Icons
 
@@ -217,9 +219,21 @@ The platform app icon formats are:
 
 These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [Markifo](https://markifo.com). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
 
----
-
 ## License
 Axion Notes is open source software licensed under the [MIT License](LICENSE.txt).
  
 You are free to use, modify, and distribute this software. Attribution is not required but is greatly appreciated — if you use our code in your project, a mention or a link back to this repository means a lot to us.
+
+## FAQ
+
+### What is Axion Notes?
+Axion Notes is an open source digital sticky notes app for desktop and web. It is designed for quick notes, reminders, lightweight planning, and visual organization.
+
+### Does Axion Notes work offline?
+Yes. Axion Notes stores notes locally on your device, so the desktop app and browser app can keep your notes without requiring an online account.
+
+### Which platforms does Axion Notes support?
+Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
+
+### Will Axion Notes support Linux or other platforms?
+Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures.
