@@ -1,6 +1,6 @@
 # Axion Notes - Sticky Notes App for macOS, Windows, and Web
 
-![Last Modified](https://img.shields.io/badge/last%20modified-May%202026-blue)
+![Last Modified](https://img.shields.io/badge/last%20modified-June%202026-blue)
 ![Version](https://img.shields.io/badge/version-0.2-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
