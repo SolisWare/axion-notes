@@ -13,6 +13,7 @@ import { storageApi } from "./storage/storageApi";
 
 const noop = () => {};
 const unsubscribe = () => {};
+const noteSortRequestEventName = "axion-notes:note-sort-request";
 
 function getBrowserSystemTheme(): SystemTheme {
   return resolveSystemTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -44,6 +45,19 @@ export function installBrowserApi(): void {
       onMenuDeleteAllNotes: () => unsubscribe,
       setDeleteAllNotesEnabled: noop,
       setNewNoteEnabled: noop
+    },
+    noteSort: {
+      requestSort: () => {
+        window.dispatchEvent(new Event(noteSortRequestEventName));
+      },
+      onSortRequest: (callback) => {
+        const listener = () => callback();
+        window.addEventListener(noteSortRequestEventName, listener);
+
+        return () => {
+          window.removeEventListener(noteSortRequestEventName, listener);
+        };
+      }
     },
     settings: settingsApi,
     version: {

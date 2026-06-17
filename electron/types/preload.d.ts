@@ -26,6 +26,10 @@ interface IElectronAPI {
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
     setNewNoteEnabled: (enabled: boolean) => void;
   },
+  noteSort: {
+    requestSort: () => void;
+    onSortRequest: (callback: () => void) => () => void;
+  },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
     getSettingsFolderLocation: () => Promise<string>;

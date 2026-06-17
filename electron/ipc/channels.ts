@@ -15,6 +15,10 @@ export const channels = {
     setNewNoteEnabled: "menu.setNewNoteEnabled",
     setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled"
   },
+  noteSort: {
+    requestSort: "noteSort.requestSort",
+    onSortRequest: "noteSort.onSortRequest"
+  },
   settings: {
     getSettings: "settings.getSettings",
     getSettingsFolderLocation: "settings.getSettingsFolderLocation",

@@ -108,6 +108,12 @@ function MainWindow(props: MainWindowProps) {
   }, [appSettings.notesSortOrder]);
 
   useEffect(() => {
+    return window.api.noteSort.onSortRequest(() => {
+      setNotes((prevNotes) => sortNotes(prevNotes, previousNotesSortOrder.current));
+    });
+  }, []);
+
+  useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
     const offMenuDeleteAllNotes = window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
