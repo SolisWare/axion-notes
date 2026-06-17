@@ -229,11 +229,17 @@ You are free to use, modify, and distribute this software. Attribution is not re
 ### What is Axion Notes?
 Axion Notes is an open source digital sticky notes app for desktop and web. It is designed for quick notes, reminders, lightweight planning, and visual organization.
 
+See more: [App Overview](#app-overview).
+
 ### Does Axion Notes work offline?
 Yes. Axion Notes stores notes locally on your device, so the desktop app and browser app can keep your notes without requiring an online account.
 
 ### Which platforms does Axion Notes support?
 Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
 
+See more: [Supported Platforms](#supported-platforms).
+
 ### Will Axion Notes support Linux or other platforms?
-Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures.
+Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures. Until then, we recommend using the Axion Notes web app on platforms without a dedicated desktop build.
+
+See more: [Supported Platforms](#supported-platforms).
