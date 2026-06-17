@@ -217,7 +217,7 @@ The platform app icon formats are:
 | macOS | `.icns` |
 | Windows | `.ico` |
 
-These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [Markifo](https://markifo.com). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
+These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [ConvertICO](https://convertico.com/icon-converters/). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
 
 ## License
 Axion Notes is open source software licensed under the [MIT License](LICENSE.txt).
