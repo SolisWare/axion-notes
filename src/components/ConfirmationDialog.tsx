@@ -6,6 +6,7 @@
  */
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -52,6 +53,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((_theme: Theme) => ({
 }));
 
 function ConfirmationDialog(props: ConfirmationDialogProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
 
@@ -75,7 +77,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
       </DialogContent>
       <DialogActions className={classes.actions}>
         <Button className={classes.cancelButton} onClick={props.onCancel}>
-          {props.cancelLabel ?? "Cancel"}
+          {props.cancelLabel ?? t("common.cancel")}
         </Button>
         <Button onClick={props.onConfirm} color="error" variant="contained">
           {props.confirmLabel}

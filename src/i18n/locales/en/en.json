@@ -2,17 +2,42 @@
   "app": {
     "name": "Axion Notes"
   },
-  "welcome": {
-    "title": "Welcome to Axion Notes",
-    "intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
-    "getStarted": "Get Started",
-    "doNotShowAgain": "Do not show this welcome screen again",
-    "preview": {
-      "today": "Today",
-      "freshWorkspace": "Fresh workspace",
-      "ideas": "Ideas",
-      "colorfulNotes": "Colorful notes",
-      "next": "Next"
+  "common": {
+    "cancel": "Cancel"
+  },
+  "mainWindow": {
+    "welcome": {
+      "title": "Welcome to Axion Notes",
+      "intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
+      "getStarted": "Get Started",
+      "doNotShowAgain": "Do not show this welcome screen again",
+      "preview": {
+        "today": "Today",
+        "freshWorkspace": "Fresh workspace",
+        "ideas": "Ideas",
+        "colorfulNotes": "Colorful notes",
+        "next": "Next"
+      }
+    },
+    "toolbar": {
+      "newNote": "New Note",
+      "deleteAll": "Delete All",
+      "settings": "Settings"
+    },
+    "emptyNotes": {
+      "title": "You don't have any notes yet!",
+      "addFirstNote": "Press {{shortcut}} to add your first note"
+    },
+    "note": {
+      "titlePlaceholder": "Title",
+      "contentPlaceholder": "Type here...",
+      "lastModified": "Last modified:",
+      "at": "at"
+    },
+    "deleteAllNotesDialog": {
+      "title": "Delete All Notes",
+      "message": "Are you sure you want to delete all notes? This action cannot be undone.",
+      "confirmLabel": "Delete All"
     }
   }
 }

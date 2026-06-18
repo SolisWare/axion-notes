@@ -7,6 +7,7 @@
 import { Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import clsx from 'clsx';
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -30,6 +31,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 }));
  
 function EmptyNoteList(props: EmptyNoteListProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
   const isMac = window.api.os.isMac;
@@ -37,8 +39,8 @@ function EmptyNoteList(props: EmptyNoteListProps) {
   
   return (
     <div className={classes.wrapper}>
-      <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">You don't have any notes yet!</Typography>
-      <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>Press {platform}+N to add your first note</Typography>
+      <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{t("mainWindow.emptyNotes.title")}</Typography>
+      <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` })}</Typography>
     </div>
   );
 }

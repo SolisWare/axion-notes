@@ -6,6 +6,7 @@
  */
 import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
+import { useTranslation } from "react-i18next";
 import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function MainWindow(props: MainWindowProps) {
+  const { t } = useTranslation();
   const classes = useStyles();
   const navigate = useNavigate();
   const appSettings = props.appSettings;
@@ -194,9 +196,9 @@ function MainWindow(props: MainWindowProps) {
         <CssBaseline/>
         <ConfirmationDialog theme={props.theme}
                             open={isDeleteAllNotesDialogOpen}
-                            title="Delete All Notes"
-                            message="Are you sure you want to delete all notes? This action cannot be undone."
-                            confirmLabel="Delete All"
+                            title={t("mainWindow.deleteAllNotesDialog.title")}
+                            message={t("mainWindow.deleteAllNotesDialog.message")}
+                            confirmLabel={t("mainWindow.deleteAllNotesDialog.confirmLabel")}
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}
@@ -209,7 +211,7 @@ function MainWindow(props: MainWindowProps) {
         </nav>
         <div className={classes.app}>
           {shouldShowToolbar &&
-            <WebToolbar theme={props.theme} title="Axion Notes" handleAddNoteButton={handleAddNote}
+            <WebToolbar theme={props.theme} title={t("app.name")} handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
                         handleSettingsButton={() => setSettingsDialogOpen(true)} />
