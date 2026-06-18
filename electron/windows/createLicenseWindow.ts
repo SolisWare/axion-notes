@@ -9,9 +9,12 @@ import * as path from "path";
 import { isDev } from "../utils/isDev";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
+import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 
 export function createLicenseWindow(): BrowserWindow {
+  const windowTitle = `Axion Notes — ${translate("electron.windows.license")}`;
+
   const licenseWindow = new BrowserWindow({
     width: 560,
     height: 520,
@@ -25,7 +28,7 @@ export function createLicenseWindow(): BrowserWindow {
     fullscreenable: false,
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
-    title: "Axion Notes — License",
+    title: windowTitle,
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
@@ -43,7 +46,7 @@ export function createLicenseWindow(): BrowserWindow {
 
   licenseWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    licenseWindow.setTitle("Axion Notes — License");
+    licenseWindow.setTitle(windowTitle);
   });
 
   if (isDev) {

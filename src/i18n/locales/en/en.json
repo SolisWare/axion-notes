@@ -121,5 +121,24 @@
       "version": "Version {{version}}",
       "rights": "All rights reserved."
     }
+  },
+  "electron": {
+    "menu": {
+      "settings": "Settings...",
+      "file": "File",
+      "newNote": "New Note...",
+      "edit": "Edit",
+      "deleteAllNotes": "Delete All Notes...",
+      "view": "View",
+      "toggleFullScreen": "Toggle Full Screen",
+      "welcome": "Welcome",
+      "viewLicense": "View License",
+      "visitWebsite": "Visit Website",
+      "checkoutGitHub": "Checkout GitHub"
+    },
+    "windows": {
+      "settings": "Settings",
+      "license": "License"
+    }
   }
 }
