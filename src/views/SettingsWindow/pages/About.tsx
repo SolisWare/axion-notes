@@ -6,6 +6,7 @@
  */
 import { Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppColorStyleProps } from "../../../types/appColorTypes";
@@ -53,6 +54,7 @@ function getVersionLabel(): string {
 }
 
 function About(props: AboutProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
   const appIcon = `${process.env.PUBLIC_URL}/axion_notes_icon1024.png`;
@@ -63,16 +65,16 @@ function About(props: AboutProps) {
         <div className={classes.content}>
           <img className={classes.logo} src={appIcon} alt="" />
           <Typography className={classes.appName} variant="h6">
-            Axion Notes
+            {t("app.name")}
           </Typography>
           <Typography className={`${classes.text} ${classes.version}`} variant="body2">
-            Version {getVersionLabel()}
+            {t("settingsWindow.about.version", { version: getVersionLabel() })}
           </Typography>
           <Typography className={classes.text} variant="body2">
             Copyright © 2023-2026 SolisWare.
           </Typography>
           <Typography className={classes.text} variant="body2">
-            All rights reserved.
+            {t("settingsWindow.about.rights")}
           </Typography>
         </div>
       </div>
