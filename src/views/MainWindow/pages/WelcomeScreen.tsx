@@ -10,6 +10,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import ColorLensOutlinedIcon from '@mui/icons-material/ColorLensOutlined';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppColorStyleProps } from "../../../types/appColorTypes";
@@ -155,6 +156,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 }));
 
 function WelcomeScreen(props: WelcomeProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
 
@@ -171,14 +173,14 @@ function WelcomeScreen(props: WelcomeProps) {
             fontWeight="bold"
             style={{ color: appColors.MAIN }}
           >
-            Welcome to Axion Notes
+            {t("welcome.title")}
           </Typography>
           <Typography className={classes.intro} variant="body1">
-            Keep quick thoughts close, tidy, and ready whenever you need them.
+            {t("welcome.intro")}
           </Typography>
           <div className={classes.actions}>
             <Button className={classes.getStartedButton} variant="contained" onClick={props.onGetStarted}>
-              Get Started
+              {t("welcome.getStarted")}
               <ArrowForwardIcon className={classes.buttonIcon} fontSize="small" />
             </Button>
             <FormControlLabel
@@ -195,7 +197,7 @@ function WelcomeScreen(props: WelcomeProps) {
                   }}
                 />
               }
-              label="Do not show this welcome screen again"
+              label={t("welcome.doNotShowAgain")}
             />
           </div>
         </div>
@@ -209,13 +211,13 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">Today</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("welcome.preview.today")}</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />
             <div className={classes.featureRow}>
               <AutoAwesomeOutlinedIcon className={classes.featureIcon} />
-              <Typography variant="body2">Fresh workspace</Typography>
+              <Typography variant="body2">{t("welcome.preview.freshWorkspace")}</Typography>
             </div>
           </div>
           <div
@@ -227,12 +229,12 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">Ideas</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("welcome.preview.ideas")}</Typography>
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />
             <div className={classes.featureRow}>
               <ColorLensOutlinedIcon className={classes.featureIcon} />
-              <Typography variant="body2">Colorful notes</Typography>
+              <Typography variant="body2">{t("welcome.preview.colorfulNotes")}</Typography>
             </div>
           </div>
           <div
@@ -244,7 +246,7 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">Next</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("welcome.preview.next")}</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />

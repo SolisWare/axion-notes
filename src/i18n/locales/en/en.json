@@ -1,5 +1,18 @@
 {
   "app": {
     "name": "Axion Notes"
+  },
+  "welcome": {
+    "title": "Welcome to Axion Notes",
+    "intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
+    "getStarted": "Get Started",
+    "doNotShowAgain": "Do not show this welcome screen again",
+    "preview": {
+      "today": "Today",
+      "freshWorkspace": "Fresh workspace",
+      "ideas": "Ideas",
+      "colorfulNotes": "Colorful notes",
+      "next": "Next"
+    }
   }
 }
