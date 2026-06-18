@@ -14,7 +14,7 @@ import { AppView } from "../../App";
 import Home from "./pages/Home";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NoteType } from "../../models/NoteType";
 import { getRandomNoteColor } from "../../theme/NoteColors";
 import { nanoid } from "nanoid";
@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { UserAgent } from "../../utils/UserAgent";
+import { insertNoteBySortOrder, sortNotes } from "../../utils/noteSorting";
 
 type MainWindowProps = {
   view: AppView;
@@ -58,15 +59,16 @@ const useStyles = makeStyles((theme: Theme) => ({
 function MainWindow(props: MainWindowProps) {
   const classes = useStyles();
   const navigate = useNavigate();
+  const appSettings = props.appSettings;
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
+  const previousNotesSortOrder = useRef(appSettings.notesSortOrder);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
-  const appSettings = props.appSettings;
   const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
 
   const handleAddNote = useCallback(() => {
@@ -74,27 +76,41 @@ function MainWindow(props: MainWindowProps) {
       ? getRandomNoteColor()
       : appSettings.defaultNoteColor;
 
-    setNotes((prevNotes) => [
-      ...prevNotes,
-      {
-        id: nanoid(),
-        bgcolor: noteColor,
-        content: "",
-        createdOn: new Date(),
-        lastModifiedOn: new Date()
-      },
-    ]);
-  }, [appSettings.defaultNoteColor]);
+    const newNote = {
+      id: nanoid(),
+      bgcolor: noteColor,
+      content: "",
+      createdOn: new Date(),
+      lastModifiedOn: new Date()
+    };
+
+    setNotes((prevNotes) => insertNoteBySortOrder(prevNotes, newNote, appSettings.notesSortOrder));
+  }, [appSettings.defaultNoteColor, appSettings.notesSortOrder]);
 
   useEffect(() => {
     window.api.storage.getNotes()
       .then((notes: NoteType[]) => {
-        setNotes(notes);
+        setNotes(sortNotes(notes, previousNotesSortOrder.current));
       })
       .catch((err: Error) => {
         console.error('Unexpected error loading notes:', err.message);
       });
 
+  }, []);
+
+  useEffect(() => {
+    if (previousNotesSortOrder.current === appSettings.notesSortOrder) {
+      return;
+    }
+
+    previousNotesSortOrder.current = appSettings.notesSortOrder;
+    setNotes((prevNotes) => sortNotes(prevNotes, appSettings.notesSortOrder));
+  }, [appSettings.notesSortOrder]);
+
+  useEffect(() => {
+    return window.api.noteSort.onSortRequest(() => {
+      setNotes((prevNotes) => sortNotes(prevNotes, previousNotesSortOrder.current));
+    });
   }, []);
 
   useEffect(() => {
@@ -166,10 +182,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
+      page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} notesSortOrder={appSettings.notesSortOrder} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
+      page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
   }
   
   return (

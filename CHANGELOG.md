@@ -3,7 +3,11 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
-## [v0.2.0] - Unreleased - Skylight
+## [v0.2.1] - Unreleased - Skylight
+- Added new icon for better rendering, especially at small resolutions
+- Fixed note sorting so autosaved note edits no longer cause the note grid to reshuffle unexpectedly
+
+## [v0.2.0] - June 14, 2026 - Skylight
 - Added support for running X-NoTES as a React web app in the browser
 - Added a browser API layer that mirrors the Electron preload API for shared app code
 - Added persistent browser note storage using localStorage

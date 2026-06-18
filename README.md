@@ -1,7 +1,7 @@
 # Axion Notes - Sticky Notes App for macOS, Windows, and Web
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-June%202026-blue)
-![Version](https://img.shields.io/badge/version-0.2-green)
+![Version](https://img.shields.io/badge/version-0.2.1-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
@@ -217,7 +217,7 @@ The platform app icon formats are:
 | macOS | `.icns` |
 | Windows | `.ico` |
 
-These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [Markifo](https://markifo.com). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
+These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [ConvertICO](https://convertico.com/icon-converters/). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
 
 ## License
 Axion Notes is open source software licensed under the [MIT License](LICENSE.txt).
@@ -229,11 +229,17 @@ You are free to use, modify, and distribute this software. Attribution is not re
 ### What is Axion Notes?
 Axion Notes is an open source digital sticky notes app for desktop and web. It is designed for quick notes, reminders, lightweight planning, and visual organization.
 
+See more: [App Overview](#app-overview).
+
 ### Does Axion Notes work offline?
 Yes. Axion Notes stores notes locally on your device, so the desktop app and browser app can keep your notes without requiring an online account.
 
 ### Which platforms does Axion Notes support?
 Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
 
+See more: [Supported Platforms](#supported-platforms).
+
 ### Will Axion Notes support Linux or other platforms?
-Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures.
+Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures. Until then, we recommend using the Axion Notes web app on platforms without a dedicated desktop build.
+
+See more: [Supported Platforms](#supported-platforms).

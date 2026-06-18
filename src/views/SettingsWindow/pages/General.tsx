@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { ChangeEvent } from "react";
+import SyncIcon from "@mui/icons-material/Sync";
 import { AppSettings } from "../../../settings/AppSettings";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
@@ -38,18 +39,24 @@ function General(props: GeneralProps) {
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">Sort notes by</label>
-            <select
-              className={styles.settingsSelect}
-              id="note-sort-order"
-              value={props.appSettings.notesSortOrder}
-              onChange={handleNoteSortOrderChange}
-            >
-              <option value={NoteSortOrder.DATE_CREATED_ASC}>Date created (oldest first)</option>
-              <option value={NoteSortOrder.DATE_CREATED_DESC}>Date created (newest first)</option>
-              <option value={NoteSortOrder.LAST_MODIFIED}>Last modified</option>
-              <option value={NoteSortOrder.TITLE_ASC}>Title A-Z</option>
-              <option value={NoteSortOrder.TITLE_DESC}>Title Z-A</option>
-            </select>
+            <div className={styles.sortControls}>
+              <select
+                className={styles.settingsSelect}
+                id="note-sort-order"
+                value={props.appSettings.notesSortOrder}
+                onChange={handleNoteSortOrderChange}
+              >
+                <option value={NoteSortOrder.DATE_CREATED_ASC}>Date created (oldest first)</option>
+                <option value={NoteSortOrder.DATE_CREATED_DESC}>Date created (newest first)</option>
+                <option value={NoteSortOrder.LAST_MODIFIED}>Last modified</option>
+                <option value={NoteSortOrder.TITLE_ASC}>Title A-Z</option>
+                <option value={NoteSortOrder.TITLE_DESC}>Title Z-A</option>
+              </select>
+              <button className={styles.linkButton} type="button" onClick={window.api.noteSort.requestSort}>
+                <SyncIcon fontSize="small" />
+                <span>Re-sort notes</span>
+              </button>
+            </div>
           </div>
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
