@@ -8,6 +8,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a language selector to General settings section
 - Fixed welcome screen text wrapping for longer localized strings
 - Fixed the welcome screen "Do not show again" checkbox so it reflects saved settings and no longer closes the welcome screen immediately when toggled
+- Added date and time format settings with a live preview to the General settings section
 
 ## [v0.2.1] - June 20, 2026 - Skylight
 - Added new icon for better rendering, especially at small resolutions
