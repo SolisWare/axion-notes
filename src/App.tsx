@@ -34,6 +34,10 @@ function App() {
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
 
   function handleAppSettingsChange(settings: AppSettings) {
+    if (!UserAgent.isElectron && settings.language !== appSettings.language) {
+      i18n.changeLanguage(settings.language);
+    }
+
     setAppSettings(settings);
     window.api.settings.setSettings(settings);
     settingsBroadcastChannel.current?.postMessage(settings);

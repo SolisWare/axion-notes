@@ -108,7 +108,9 @@ function General(props: GeneralProps) {
                   </option>
                 ))}
               </select>
-              <span className={styles.settingsLanguageSwitcherNote}>{t("settingsWindow.general.requiresRestart")}</span>
+              {UserAgent.isElectron && (
+                <span className={styles.settingsLanguageSwitcherNote}>{t("settingsWindow.general.requiresRestart")}</span>
+              )}
             </div>
           </div>
         </div>
