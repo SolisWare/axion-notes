@@ -6,6 +6,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ## [v0.3.0] - Unreleased - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text
 - Added a language selector to General settings section
+- Fixed welcome screen text wrapping for longer localized strings
 
 ## [v0.2.1] - June 20, 2026 - Skylight
 - Added new icon for better rendering, especially at small resolutions

@@ -35,7 +35,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     width: "100%",
     maxWidth: 1040,
     display: "grid",
-    gridTemplateColumns: "minmax(520px, 1.2fr) minmax(240px, 0.8fr)",
+    gridTemplateColumns: "minmax(0, 1.2fr) minmax(240px, 0.8fr)",
     gap: 48,
     alignItems: "center",
     [theme.breakpoints.down("md")]: {
@@ -59,10 +59,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     color: ({ appColors }) => appColors.MAIN,
     marginBottom: "14px !important",
     lineHeight: "1.05 !important",
-    whiteSpace: "nowrap",
+    overflowWrap: "break-word",
     [theme.breakpoints.down("sm")]: {
-      fontSize: "40px !important",
-      whiteSpace: "normal"
+      fontSize: "40px !important"
     }
   },
   intro: {
