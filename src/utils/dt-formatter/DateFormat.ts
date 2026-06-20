@@ -4,9 +4,9 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
- export enum DateFormat {
-   MonthDayYear,
-   DayMonthYear,
-   YearMonthDay
+export enum DateFormat {
+   MonthDayYearSlash = "month-day-year-slash",
+   DayMonthYearSlash = "day-month-year-slash",
+   YearMonthDayDash = "year-month-day-dash",
+   DayMonthYearDot = "day-month-year-dot"
  }
- 

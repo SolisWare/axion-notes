@@ -10,6 +10,8 @@ import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
 import { DEFAULT_LANGUAGE } from "../i18n/languages";
+import { DateFormat } from "../utils/dt-formatter/DateFormat";
+import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
@@ -17,7 +19,9 @@ export const defaultAppSettings: AppSettings = {
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,
   defaultNoteColor: NoteColorPreference.AUTO,
-  language: DEFAULT_LANGUAGE
+  language: DEFAULT_LANGUAGE,
+  dateFormat: DateFormat.MonthDayYearSlash,
+  timeFormat: TimeFormat.Regular
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {

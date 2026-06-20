@@ -4,8 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
- export enum TimeFormat {
-   Regular,
-   Military
+export enum TimeFormat {
+   Regular = "regular",
+   Military = "military"
  }
- 
