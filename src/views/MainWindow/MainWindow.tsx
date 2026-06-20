@@ -66,7 +66,6 @@ function MainWindow(props: MainWindowProps) {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [hideWelcomeOnNextLaunch, setHideWelcomeOnNextLaunch] = useState(false);
   const previousNotesSortOrder = useRef(appSettings.notesSortOrder);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
@@ -164,24 +163,20 @@ function MainWindow(props: MainWindowProps) {
   }
 
   function handleGetStarted() {
-    if (hideWelcomeOnNextLaunch) {
-      props.onAppSettingsChange({
-        ...appSettings,
-        showWelcomeScreenOnLaunch: false
-      });
-    }
     navigate(AppView.home);
   }
 
   function handleNeverShowAgainChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const checked = event.target.checked;
-    setHideWelcomeOnNextLaunch(checked);
+    props.onAppSettingsChange({
+      ...appSettings,
+      showWelcomeScreenOnLaunch: !event.target.checked
+    });
   };
   
   let page = <></>;
   switch (props.view) {
     case AppView.welcome:
-      page = <WelcomeScreen theme={props.theme} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
+      page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />

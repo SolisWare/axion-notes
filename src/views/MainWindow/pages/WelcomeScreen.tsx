@@ -17,6 +17,7 @@ import { AppColorStyleProps } from "../../../types/appColorTypes";
 
 type WelcomeProps = {
   theme: SystemTheme;
+  neverShowAgain: boolean;
   onGetStarted: () => void;
   onNeverShowAgainChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -186,6 +187,7 @@ function WelcomeScreen(props: WelcomeProps) {
               className={classes.checkboxLabel}
               control={
                 <Checkbox
+                  checked={props.neverShowAgain}
                   className={classes.checkbox}
                   onChange={props.onNeverShowAgainChange}
                   sx={{

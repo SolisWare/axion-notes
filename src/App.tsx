@@ -28,9 +28,9 @@ function App() {
   const [systemTheme, setSystemTheme] = useState<SystemTheme>(SystemTheme.LIGHT);
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
+  const [startupMainWindowPage, setStartupMainWindowPage] = useState<AppView>(AppView.welcome);
   const settingsBroadcastChannel = useRef<BroadcastChannel | undefined>();
 
-  const defaultMainWindowPage = appSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home;
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
 
   function handleAppSettingsChange(settings: AppSettings) {
@@ -49,6 +49,7 @@ function App() {
 
         i18n.changeLanguage(loadedSettings.language);
         setAppSettings(loadedSettings);
+        setStartupMainWindowPage(loadedSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home);
         setHasLoadedAppSettings(true);
       })
       .catch((err: Error) => {
@@ -94,7 +95,7 @@ function App() {
               <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <Route path="/" element={
-              <MainWindow view={defaultMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+              <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
           </>
         } license={
@@ -120,7 +121,7 @@ function App() {
               <LicenseWindow theme={effectiveTheme} />
             } />
             <WebRoute path="/" element={
-              <MainWindow view={defaultMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+              <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
           </Routes>
         </BrowserRouter>
