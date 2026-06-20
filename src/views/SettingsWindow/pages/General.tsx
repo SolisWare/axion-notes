@@ -8,6 +8,7 @@ import { ChangeEvent } from "react";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
+import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
@@ -31,6 +32,15 @@ function General(props: GeneralProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       notesSortOrder: event.target.value as NoteSortOrder
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      language: event.target.value as SupportedLanguageCode
     });
 
     event.currentTarget.blur();
@@ -81,6 +91,26 @@ function General(props: GeneralProps) {
               </label>
             </div>
           )}
+          <div className={styles.settingsRow}>
+            <label className={styles.settingsSectionTitle} id="language-title" htmlFor="language">
+              {t("settingsWindow.general.language")}
+            </label>
+            <div className={styles.sortControls}>
+              <select
+                className={styles.settingsSelect}
+                id="language"
+                value={props.appSettings.language}
+                onChange={handleLanguageChange}
+              >
+                {SUPPORTED_LANGUAGES.map((language) => (
+                  <option key={language.code} value={language.code}>
+                    {language.nativeLabel}
+                  </option>
+                ))}
+              </select>
+              <span className={styles.settingsLanguageSwitcherNote}>{t("settingsWindow.general.requiresRestart")}</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

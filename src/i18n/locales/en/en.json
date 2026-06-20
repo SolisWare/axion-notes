@@ -58,6 +58,8 @@
       }
     },
     "general": {
+      "language": "Language",
+      "requiresRestart": "(Requires restart)",
       "sortNotesBy": "Sort notes by",
       "sortOptions": {
         "dateCreatedAsc": "Date created (oldest first)",

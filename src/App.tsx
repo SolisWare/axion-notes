@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import './App.css';
+import i18n from './i18n/i18n';
 import { BrowserRouter, Routes, Route as WebRoute } from "react-router-dom";
 import { Router, Route } from 'electron-router-dom'
 import MainWindow from './views/MainWindow/MainWindow';
@@ -41,7 +42,13 @@ function App() {
   useEffect(() => {
     window.api.settings.getSettings()
       .then((settings) => {
-        setAppSettings(settings ?? defaultAppSettings);
+        const loadedSettings = {
+          ...defaultAppSettings,
+          ...settings
+        };
+
+        i18n.changeLanguage(loadedSettings.language);
+        setAppSettings(loadedSettings);
         setHasLoadedAppSettings(true);
       })
       .catch((err: Error) => {

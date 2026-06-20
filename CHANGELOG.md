@@ -3,6 +3,10 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.3.0] - Unreleased - Gateway
+- Initialized the localization framework for shared React, web, and Electron UI text
+- Added a language selector to General settings section
+
 ## [v0.2.1] - June 20, 2026 - Skylight
 - Added new icon for better rendering, especially at small resolutions
 - Fixed note sorting so autosaved note edits no longer cause the note grid to reshuffle unexpectedly

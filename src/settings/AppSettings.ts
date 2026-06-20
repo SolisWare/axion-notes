@@ -7,6 +7,7 @@
 import { AppThemePreference } from "./AppThemePreference";
 import { DefaultNoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
+import { SupportedLanguageCode } from "../i18n/languages";
 
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
@@ -14,4 +15,5 @@ export type AppSettings = {
   notesSortOrder: NoteSortOrder;
   theme: AppThemePreference;
   defaultNoteColor: DefaultNoteColorPreference;
+  language: SupportedLanguageCode;
 };

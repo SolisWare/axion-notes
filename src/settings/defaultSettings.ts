@@ -9,13 +9,15 @@ import { AppSettings } from "./AppSettings";
 import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
+import { DEFAULT_LANGUAGE } from "../i18n/languages";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
   keepNotesMainWindowOnTop: false,
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,
-  defaultNoteColor: NoteColorPreference.AUTO
+  defaultNoteColor: NoteColorPreference.AUTO,
+  language: DEFAULT_LANGUAGE
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {
