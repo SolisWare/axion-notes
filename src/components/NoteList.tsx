@@ -10,10 +10,14 @@ import Note from "./Note";
 import EmptyNoteList from "./EmptyNoteList";
 import { NoteType } from "../models/NoteType";
 import { SystemTheme } from "../theme/SystemTheme";
+import { DateFormat } from "../utils/dt-formatter/DateFormat";
+import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
 type NoteListProps = {
   theme: SystemTheme;
   notes: NoteType[];
+  dateFormat: DateFormat;
+  timeFormat: TimeFormat;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 }
@@ -41,7 +45,15 @@ function NoteList (props: NoteListProps) {
         :
         <>
           {props.notes.map((note) => (
-            <Note key={note.id} theme={props.theme} note={note} handleNoteSave={props.handleNoteSave} handleDeleteNoteButton={props.handleDeleteNoteButton} />
+            <Note
+              key={note.id}
+              theme={props.theme}
+              note={note}
+              dateFormat={props.dateFormat}
+              timeFormat={props.timeFormat}
+              handleNoteSave={props.handleNoteSave}
+              handleDeleteNoteButton={props.handleDeleteNoteButton}
+            />
             ))
           }
         </>

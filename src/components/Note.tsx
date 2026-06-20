@@ -17,10 +17,14 @@ import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor } from "../theme/NoteColors";
+import { DateFormat } from "../utils/dt-formatter/DateFormat";
+import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
 type NoteProps = {
   theme: SystemTheme;
   note: NoteType;
+  dateFormat: DateFormat;
+  timeFormat: TimeFormat;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 };
@@ -218,9 +222,9 @@ function Note(props: NoteProps) {
             <div className={classes.noteFooterUtilBar}>
               <Typography className={classes.noteFooterUtilBarDate} variant="body2">
                 <span>{t("mainWindow.note.lastModified")}&#160;</span>
-                <span>{Formatter.getFormattedDate(note.lastModifiedOn)}</span>
+                <span>{Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)}</span>
                 <span>&#160;{t("mainWindow.note.at")}&#160;</span>
-                <span>{Formatter.getFormattedTimestamp(note.lastModifiedOn)}</span>
+                <span>{Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}</span>
               </Typography>
               <Button
                 className={classes.noteFooterUtilBarDeleteBtn}
