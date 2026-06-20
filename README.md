@@ -70,6 +70,24 @@ Found a bug or have an idea? [Open an issue](https://github.com/SolisWare/axion-
 3. Make your changes and commit with clear, descriptive messages
 4. Push your branch and open a Pull Request against `develop` branch
 
+### 🌎 Adding Translations
+Want to add a language to Axion Notes?
+
+1. Create a branch in your fork, for example `translation/spanish`
+2. Copy `src/i18n/locales/en/en.json` to `src/i18n/locales/<lang-code>/<lang-code>.json`
+3. Translate the values only. Keep the JSON keys and any `{{variables}}` unchanged
+4. Add the language to `src/i18n/languages.ts`, for example:
+   ```ts
+   {
+     code: "es",
+     label: "Spanish",
+     nativeLabel: "Español"
+   }
+   ```
+5. Open a Pull Request from your branch against the upstream `develop` branch
+
+English is the source locale for translations.
+
 ### PR Review Policy
 All pull requests must be reviewed and approved by the **SolisWare team** before merging. We aim to review PRs promptly. Please be patient — we appreciate your effort.
 
