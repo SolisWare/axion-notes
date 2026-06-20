@@ -5,9 +5,11 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./SettingsPages.module.css";
 
 function DataStorage() {
+  const { t } = useTranslation();
   const [notesFolderLocation, setNotesFolderLocation] = useState("");
   const [settingsFolderLocation, setSettingsFolderLocation] = useState("");
 
@@ -31,13 +33,13 @@ function DataStorage() {
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="notes-folder-location-title">Notes folder location</h3>
+              <h3 className={styles.settingsSectionTitle} id="notes-folder-location-title">{t("settingsWindow.dataStorage.notesFolderLocation")}</h3>
               <p className={styles.settingsSectionDescription}>{notesFolderLocation}</p>
             </div>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>Settings folder location</h3>
+              <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.dataStorage.settingsFolderLocation")}</h3>
               <p className={styles.settingsSectionDescription}>{settingsFolderLocation}</p>
             </div>
           </div>

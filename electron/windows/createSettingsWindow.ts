@@ -9,9 +9,12 @@ import * as path from "path";
 import { isDev } from "../utils/isDev";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
+import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 
 export function createSettingsWindow(): BrowserWindow {
+  const windowTitle = `Axion Notes — ${translate("electron.windows.settings")}`;
+
   const settingsWindow = new BrowserWindow({
     width: 660,
     height: 542,
@@ -23,7 +26,7 @@ export function createSettingsWindow(): BrowserWindow {
     fullscreenable: false,
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
-    title: "Axion Notes — Settings",
+    title: windowTitle,
     webPreferences: {
       webSecurity: false,
       nodeIntegration: true,
@@ -41,7 +44,7 @@ export function createSettingsWindow(): BrowserWindow {
 
   settingsWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    settingsWindow.setTitle("Axion Notes — Settings");
+    settingsWindow.setTitle(windowTitle);
   });
 
   if (isDev) {

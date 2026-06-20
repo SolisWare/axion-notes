@@ -7,6 +7,7 @@
 import { Button, Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
+import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
 import NoteTextarea from "./NoteTextarea";
 import { getAppColors } from "../theme/AppColors";
@@ -112,6 +113,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 }));
 
 function Note(props: NoteProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
   
@@ -193,7 +195,7 @@ function Note(props: NoteProps) {
                   WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
                 }}
                 value={note.title ?? ""}
-                placeholder="Title"
+                placeholder={t("mainWindow.note.titlePlaceholder")}
                 onChange={handleTitleChange}
               />
               <div
@@ -202,7 +204,7 @@ function Note(props: NoteProps) {
               />
             </div>
             <div className={classes.noteContent}>
-              <NoteTextarea theme={props.theme} placeholder="Type here..." content={note.content} onChange={handleNoteChange} />
+              <NoteTextarea theme={props.theme} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
             <Autosave data={note} onSave={(note) => {
               if (!isDeleting.current) {
@@ -215,9 +217,9 @@ function Note(props: NoteProps) {
             <Divider />
             <div className={classes.noteFooterUtilBar}>
               <Typography className={classes.noteFooterUtilBarDate} variant="body2">
-                <span>Last modified:&#160;</span>
+                <span>{t("mainWindow.note.lastModified")}&#160;</span>
                 <span>{Formatter.getFormattedDate(note.lastModifiedOn)}</span>
-                <span>&#160;at&#160;</span>
+                <span>&#160;{t("mainWindow.note.at")}&#160;</span>
                 <span>{Formatter.getFormattedTimestamp(note.lastModifiedOn)}</span>
               </Typography>
               <Button

@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
+import i18n from "../i18n/i18n";
 import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
 import { UserAgent } from "../utils/UserAgent";
@@ -21,12 +22,13 @@ function getBrowserSystemTheme(): SystemTheme {
 
 function getBrowserVersionLabel(): string {
   const appVersionConfig = process.env.REACT_APP_APP_VERSION_CONFIG;
+  const webLabel = i18n.t("settingsWindow.about.webVersionLabel");
 
   if (!appVersionConfig) {
-    return "Web";
+    return webLabel;
   }
 
-  return `Web ${AppVersionResolver.getShortDisplayVersion(JSON.parse(appVersionConfig) as AppVersionConfig)}`;
+  return `${webLabel} ${AppVersionResolver.getShortDisplayVersion(JSON.parse(appVersionConfig) as AppVersionConfig)}`;
 }
 
 export function installBrowserApi(): void {

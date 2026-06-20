@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../../models/NoteType";
+import i18n from "../../i18n/i18n";
 import { deleteAllNotes, deleteNote, getNotes, setNote } from "./noteStorage";
 
 export const storageApi = {
@@ -27,7 +28,7 @@ export const storageApi = {
   },
 
   getNotesFolderLocation: async (): Promise<string> => {
-    return "Browser local storage";
+    return i18n.t("settingsWindow.dataStorage.browserLocalStorage");
   },
 
   deleteNote: (noteId: string) => {

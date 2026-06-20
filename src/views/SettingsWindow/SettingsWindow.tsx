@@ -7,6 +7,7 @@
 import { CSSProperties, useState } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 import { AppTheme } from "../../theme/AppTheme";
 import { getAppColors } from "../../theme/AppColors";
 import { SystemTheme } from "../../theme/SystemTheme";
@@ -29,6 +30,7 @@ type SettingsWindowProps = {
 };
 
 function SettingsWindow(props: SettingsWindowProps) {
+  const { t } = useTranslation();
   const [selectedPage, setSelectedPage] = useState<SettingsView>(SettingsView.general);
   
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
@@ -51,7 +53,7 @@ function SettingsWindow(props: SettingsWindowProps) {
   const visibleNavigationSections = settingsNavigationSections.filter((section) => section.items.length > 0);
   const selectedPageTitle = visibleNavigationSections
     .flatMap((section) => section.items)
-    .find((item) => item.id === selectedPage)?.label ?? "";
+    .find((item) => item.id === selectedPage)?.labelKey ?? "";
 
   let page = <></>;
   switch (selectedPage) {
@@ -84,9 +86,9 @@ function SettingsWindow(props: SettingsWindowProps) {
       <div className={clsx(styles.root, props.embedded && styles.rootEmbedded)} style={themeVariables}>
         <aside className={styles.sidebar}>
           {visibleNavigationSections.map((section) => (
-            <section className={styles.section} key={section.label}>
+            <section className={styles.section} key={section.labelKey}>
               <h2 className={styles.sectionLabel}>
-                {section.label}
+                {t(section.labelKey)}
               </h2>
               {section.items.map((item) => (
                 <button
@@ -96,7 +98,7 @@ function SettingsWindow(props: SettingsWindowProps) {
                   onClick={() => setSelectedPage(item.id)}
                 >
                   <span className={styles.navItemIcon}>{item.icon}</span>
-                  <span className={styles.navItemLabel}>{item.label}</span>
+                  <span className={styles.navItemLabel}>{t(item.labelKey)}</span>
                 </button>
               ))}
             </section>
@@ -104,7 +106,7 @@ function SettingsWindow(props: SettingsWindowProps) {
         </aside>
         <main className={styles.content}>
           <header className={styles.contentHeader}>
-            <h1 className={styles.contentTitle}>{selectedPageTitle}</h1>
+            <h1 className={styles.contentTitle}>{selectedPageTitle ? t(selectedPageTitle) : ""}</h1>
           </header>
           <div className={styles.contentBody}>
             { page }

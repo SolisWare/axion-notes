@@ -1,0 +1,144 @@
+{
+  "app": {
+    "name": "Axion Notes"
+  },
+  "common": {
+    "cancel": "Cancel"
+  },
+  "mainWindow": {
+    "welcome": {
+      "title": "Welcome to Axion Notes",
+      "intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
+      "getStarted": "Get Started",
+      "doNotShowAgain": "Do not show this welcome screen again",
+      "preview": {
+        "today": "Today",
+        "freshWorkspace": "Fresh workspace",
+        "ideas": "Ideas",
+        "colorfulNotes": "Colorful notes",
+        "next": "Next"
+      }
+    },
+    "toolbar": {
+      "newNote": "New Note",
+      "deleteAll": "Delete All",
+      "settings": "Settings"
+    },
+    "emptyNotes": {
+      "title": "You don't have any notes yet!",
+      "addFirstNote": "Press {{shortcut}} to add your first note"
+    },
+    "note": {
+      "titlePlaceholder": "Title",
+      "contentPlaceholder": "Type here...",
+      "lastModified": "Last modified:",
+      "at": "at"
+    },
+    "deleteAllNotesDialog": {
+      "title": "Delete All Notes",
+      "message": "Are you sure you want to delete all notes? This action cannot be undone.",
+      "confirmLabel": "Delete All"
+    }
+  },
+  "settingsWindow": {
+    "navigation": {
+      "sections": {
+        "preferences": "Preferences",
+        "storage": "Storage",
+        "info": "Info"
+      },
+      "pages": {
+        "general": "General",
+        "appearance": "Appearance",
+        "shortcuts": "Shortcuts",
+        "dataStorage": "Data & storage",
+        "license": "License",
+        "links": "Links",
+        "about": "About"
+      }
+    },
+    "general": {
+      "sortNotesBy": "Sort notes by",
+      "sortOptions": {
+        "dateCreatedAsc": "Date created (oldest first)",
+        "dateCreatedDesc": "Date created (newest first)",
+        "lastModified": "Last modified",
+        "titleAsc": "Title A-Z",
+        "titleDesc": "Title Z-A"
+      },
+      "resortNotes": "Re-sort notes",
+      "keepNotesOnTop": "Keep notes on top",
+      "keepNotesOnTopDescription": "Notes stays above all other windows"
+    },
+    "appearance": {
+      "applicationTheme": "Application Theme",
+      "themeOptions": {
+        "auto": "Auto",
+        "light": "Light",
+        "dark": "Dark"
+      },
+      "newNoteDefaultColor": "New note default color",
+      "noteColors": {
+        "auto": "Auto",
+        "yellow": "Yellow",
+        "green": "Green",
+        "indigo": "Indigo",
+        "red": "Red",
+        "teal": "Teal",
+        "lilac": "Lilac"
+      }
+    },
+    "dataStorage": {
+      "notesFolderLocation": "Notes folder location",
+      "settingsFolderLocation": "Settings folder location",
+      "browserLocalStorage": "Browser local storage"
+    },
+    "shortcuts": {
+      "newNote": "New note",
+      "openSettings": "Open settings",
+      "deleteAllNotes": "Delete all notes",
+      "keys": {
+        "command": "Command",
+        "control": "Control",
+        "shift": "Shift",
+        "backspace": "Backspace",
+        "comma": "Comma"
+      }
+    },
+    "links": {
+      "description": "Thanks for using Axion Notes. These links help you follow releases, source updates, and other SolisWare projects.",
+      "website": {
+        "label": "Website",
+        "description": "Visit SolisWare for the latest product updates, downloads, and more from the team."
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Follow SolisWare on GitHub to find projects, releases, and source updates."
+      }
+    },
+    "about": {
+      "webVersionLabel": "Web",
+      "version": "Version {{version}}",
+      "rights": "All rights reserved."
+    }
+  },
+  "electron": {
+    "menu": {
+      "settings": "Settings...",
+      "file": "File",
+      "newNote": "New Note...",
+      "edit": "Edit",
+      "deleteAllNotes": "Delete All Notes...",
+      "view": "View",
+      "toggleFullScreen": "Toggle Full Screen",
+      "welcome": "Welcome",
+      "viewLicense": "View License",
+      "visitWebsite": "Visit Website",
+      "checkoutGitHub": "Checkout GitHub"
+    },
+    "windows": {
+      "settings": "Settings",
+      "license": "License"
+    }
+  }
+}

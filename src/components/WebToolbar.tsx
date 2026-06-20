@@ -13,6 +13,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -106,6 +107,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
 }));
 
 function WebToolbar(props: WebToolbarProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
 
@@ -137,7 +139,7 @@ function WebToolbar(props: WebToolbarProps) {
           >
             <div className={classes.toolbarIconBtnInnerContainer}>
               <AddCircleOutlineIcon fontSize="small" />
-              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">New Note</Typography>
+              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.newNote")}</Typography>
             </div>
           </Button>
           <span className={classes.toolbarBtnSpacer}/>
@@ -152,7 +154,7 @@ function WebToolbar(props: WebToolbarProps) {
             onClick={props.handleDeleteAllNotesButton}
           >
             <DeleteOutlineOutlinedIcon fontSize="small" />
-            <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">Delete All</Typography>
+            <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.deleteAll")}</Typography>
           </Button>
         </Box>
         <div className={classes.toolbarGrow} />
@@ -169,7 +171,7 @@ function WebToolbar(props: WebToolbarProps) {
           >
             <div className={classes.toolbarIconBtnInnerContainer}>
               <SettingsOutlinedIcon fontSize="small" />
-              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">Settings</Typography>
+              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.settings")}</Typography>
             </div>
           </Button>
         </Box>

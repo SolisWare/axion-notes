@@ -10,6 +10,7 @@ import { channels } from "./ipc/channels";
 import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
+import { translate } from "./utils/electronI18n";
 
 const template: any = [
   ...(isMac ? [{
@@ -19,7 +20,7 @@ const template: any = [
       { type: 'separator' },
       {
         id: menuIds.app.settings,
-        label: 'Settings...',
+        label: translate("electron.menu.settings"),
         accelerator: 'Cmd+,',
         click: () => {
           createSettingsWindow();
@@ -36,7 +37,7 @@ const template: any = [
     ]
   }] : []),
   {
-    label: 'File',
+    label: translate("electron.menu.file"),
     submenu: [
       ...(isWindows ? [
         { role: 'about' as const },
@@ -44,7 +45,7 @@ const template: any = [
       ] : []),
       { 
         id: menuIds.file.newNote,
-        label: 'New Note...',
+        label: translate("electron.menu.newNote"),
         accelerator: 'CmdOrCtrl+N',
         click: () => {
           BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.newNote);
@@ -54,7 +55,7 @@ const template: any = [
       ...(isWindows ? [
         {
           id: menuIds.file.settings,
-          label: 'Settings...',
+          label: translate("electron.menu.settings"),
           click: () => {
             createSettingsWindow();
           }
@@ -66,7 +67,7 @@ const template: any = [
   },
   {
     id: menuIds.edit.root,
-    label: 'Edit',
+    label: translate("electron.menu.edit"),
     submenu: [
       { role: 'undo' },
       { role: 'redo' },
@@ -79,7 +80,7 @@ const template: any = [
       { type: 'separator' },
       {
         id: menuIds.edit.deleteAllNotes,
-        label: 'Delete All Notes...',
+        label: translate("electron.menu.deleteAllNotes"),
         accelerator: 'Shift+CmdOrCtrl+Backspace',
         enabled: false,
         click: () => {
@@ -89,7 +90,7 @@ const template: any = [
     ]
   },
   {
-    label: 'View',
+    label: translate("electron.menu.view"),
     submenu: [
       { role: 'reload' },
       { type: 'separator' },
@@ -98,7 +99,7 @@ const template: any = [
       { role: 'zoomOut' },
       { type: 'separator' },
       {
-        label: 'Toggle Full Screen',
+        label: translate("electron.menu.toggleFullScreen"),
         accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
         click: () => {
           const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -112,26 +113,26 @@ const template: any = [
     role: 'help',
     submenu: [
       {
-        label: 'Welcome',
+        label: translate("electron.menu.welcome"),
         click: () => {
           BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.showWelcome);
         }
       },
       { type: 'separator' },
       {
-        label: 'View License',
+        label: translate("electron.menu.viewLicense"),
         click: () => {
           createLicenseWindow();
         }
       },
       {
-        label: 'Visit Website',
+        label: translate("electron.menu.visitWebsite"),
         click: () => {
           shell.openExternal('https://solisware.com');
         }
       },
       {
-        label: 'Checkout GitHub',
+        label: translate("electron.menu.checkoutGitHub"),
         click: () => {
           shell.openExternal('https://github.com/SolisWare');
         }

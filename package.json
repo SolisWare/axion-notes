@@ -82,10 +82,12 @@
     "clsx": "^2.1.1",
     "electron-is-dev": "^2.0.0",
     "electron-router-dom": "^1.0.5",
+    "i18next": "^23.16.8",
     "nanoid": "^5.1.5",
     "react": "^18.2.0",
     "react-autosave": "^0.4.4",
     "react-dom": "^18.2.0",
+    "react-i18next": "^15.5.0",
     "react-router-dom": "^6.17.0",
     "web-vitals": "^3.5.0"
   },

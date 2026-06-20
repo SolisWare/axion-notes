@@ -26,39 +26,39 @@ export enum SettingsView {
 
 export type SettingsNavigationItem = {
   id: SettingsView;
-  label: string;
+  labelKey: string;
   icon: ReactNode;
 };
 
 export type SettingsNavigationSection = {
-  label: string;
+  labelKey: string;
   items: SettingsNavigationItem[];
 };
 
 export const settingsNavigationSections: SettingsNavigationSection[] = [
   {
-    label: "Preferences",
+    labelKey: "settingsWindow.navigation.sections.preferences",
     items: [
-      { id: SettingsView.general, label: "General", icon: <AppsOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.appearance, label: "Appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.general, labelKey: "settingsWindow.navigation.pages.general", icon: <AppsOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.appearance, labelKey: "settingsWindow.navigation.pages.appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
       ...(UserAgent.isElectron ? [
-        { id: SettingsView.shortcuts, label: "Shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.shortcuts, labelKey: "settingsWindow.navigation.pages.shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
       ] : [])
     ]
   },
   {
-    label: "Storage",
+    labelKey: "settingsWindow.navigation.sections.storage",
     items: [
-      { id: SettingsView.dataStorage, label: "Data & storage", icon: <StorageOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.dataStorage, labelKey: "settingsWindow.navigation.pages.dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> }
     ]
   },
   {
-    label: "Info",
+    labelKey: "settingsWindow.navigation.sections.info",
     items: [
       ...(!UserAgent.isElectron ? [
-        { id: SettingsView.license, label: "License", icon: <ArticleOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.links, label: "Links", icon: <LinkOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.about, label: "About", icon: <InfoOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.license, labelKey: "settingsWindow.navigation.pages.license", icon: <ArticleOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.links, labelKey: "settingsWindow.navigation.pages.links", icon: <LinkOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.about, labelKey: "settingsWindow.navigation.pages.about", icon: <InfoOutlinedIcon fontSize="small" /> }
       ] : [])
     ]
   }

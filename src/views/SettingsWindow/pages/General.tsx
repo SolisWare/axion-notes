@@ -6,6 +6,7 @@
  */
 import { ChangeEvent } from "react";
 import SyncIcon from "@mui/icons-material/Sync";
+import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
@@ -17,6 +18,8 @@ type GeneralProps = {
 };
 
 function General(props: GeneralProps) {
+  const { t } = useTranslation();
+
   function handleKeepNotesOnTopChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
@@ -38,7 +41,7 @@ function General(props: GeneralProps) {
       <section className={styles.settingsSection} aria-labelledby="note-sort-order-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
-            <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">Sort notes by</label>
+            <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">{t("settingsWindow.general.sortNotesBy")}</label>
             <div className={styles.sortControls}>
               <select
                 className={styles.settingsSelect}
@@ -46,23 +49,23 @@ function General(props: GeneralProps) {
                 value={props.appSettings.notesSortOrder}
                 onChange={handleNoteSortOrderChange}
               >
-                <option value={NoteSortOrder.DATE_CREATED_ASC}>Date created (oldest first)</option>
-                <option value={NoteSortOrder.DATE_CREATED_DESC}>Date created (newest first)</option>
-                <option value={NoteSortOrder.LAST_MODIFIED}>Last modified</option>
-                <option value={NoteSortOrder.TITLE_ASC}>Title A-Z</option>
-                <option value={NoteSortOrder.TITLE_DESC}>Title Z-A</option>
+                <option value={NoteSortOrder.DATE_CREATED_ASC}>{t("settingsWindow.general.sortOptions.dateCreatedAsc")}</option>
+                <option value={NoteSortOrder.DATE_CREATED_DESC}>{t("settingsWindow.general.sortOptions.dateCreatedDesc")}</option>
+                <option value={NoteSortOrder.LAST_MODIFIED}>{t("settingsWindow.general.sortOptions.lastModified")}</option>
+                <option value={NoteSortOrder.TITLE_ASC}>{t("settingsWindow.general.sortOptions.titleAsc")}</option>
+                <option value={NoteSortOrder.TITLE_DESC}>{t("settingsWindow.general.sortOptions.titleDesc")}</option>
               </select>
               <button className={styles.linkButton} type="button" onClick={window.api.noteSort.requestSort}>
                 <SyncIcon fontSize="small" />
-                <span>Re-sort notes</span>
+                <span>{t("settingsWindow.general.resortNotes")}</span>
               </button>
             </div>
           </div>
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">Keep notes on top</h3>
-                <p className={styles.settingsSectionDescription}>Notes stays above all other windows</p>
+                <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">{t("settingsWindow.general.keepNotesOnTop")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.general.keepNotesOnTopDescription")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -74,7 +77,7 @@ function General(props: GeneralProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>Keep notes on top</span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.general.keepNotesOnTop")}</span>
               </label>
             </div>
           )}

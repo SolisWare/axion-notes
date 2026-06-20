@@ -7,29 +7,32 @@
 import GitHubIcon from "@mui/icons-material/GitHub";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
+import { useTranslation } from "react-i18next";
 import styles from "./SettingsPages.module.css";
 
 const links = [
   {
-    label: "Website",
-    description: "Visit SolisWare for the latest product updates, downloads, and more from the team.",
+    labelKey: "settingsWindow.links.website.label",
+    descriptionKey: "settingsWindow.links.website.description",
     href: "https://solisware.com",
     icon: <PublicOutlinedIcon fontSize="small" />
   },
   {
-    label: "GitHub",
-    description: "Follow SolisWare on GitHub to find projects, releases, and source updates.",
+    labelKey: "settingsWindow.links.github.label",
+    descriptionKey: "settingsWindow.links.github.description",
     href: "https://github.com/SolisWare",
     icon: <GitHubIcon fontSize="small" />
   }
 ];
 
 function Links() {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.linksPage}>
       <div className={styles.linksHeader}>
         <p className={styles.pageDescription}>
-          Thanks for using Axion Notes. These links help you follow releases, source updates, and other SolisWare projects.
+          {t("settingsWindow.links.description")}
         </p>
       </div>
       <div className={styles.linksList}>
@@ -43,8 +46,8 @@ function Links() {
           >
             <span className={styles.linkIcon}>{link.icon}</span>
             <span className={styles.linkText}>
-              <span className={styles.linkLabel}>{link.label}</span>
-              <span className={styles.linkDescription}>{link.description}</span>
+              <span className={styles.linkLabel}>{t(link.labelKey)}</span>
+              <span className={styles.linkDescription}>{t(link.descriptionKey)}</span>
             </span>
             <OpenInNewOutlinedIcon className={styles.linkOpenIcon} fontSize="small" />
           </a>
