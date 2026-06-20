@@ -70,7 +70,14 @@
       },
       "resortNotes": "Re-sort notes",
       "keepNotesOnTop": "Keep notes on top",
-      "keepNotesOnTopDescription": "Notes stays above all other windows"
+      "keepNotesOnTopDescription": "Notes stays above all other windows",
+      "dateTimeFormat": "Date & time format",
+      "timeFormat": "Time format",
+      "dateTimeFormatExample": "Example:",
+      "timeFormatOptions": {
+        "regular": "12-hour",
+        "military": "24-hour"
+      }
     },
     "appearance": {
       "applicationTheme": "Application Theme",

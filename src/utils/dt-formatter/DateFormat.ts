@@ -7,6 +7,6 @@
 export enum DateFormat {
    MonthDayYearSlash = "month-day-year-slash",
    DayMonthYearSlash = "day-month-year-slash",
-   YearMonthDayDash = "year-month-day-dash",
-   DayMonthYearDot = "day-month-year-dot"
+   DayMonthYearDot = "day-month-year-dot",
+   YearMonthDayDash = "year-month-day-dash"
  }

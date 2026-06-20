@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { DateFormat } from "./DateFormat";
+import { TimeFormat } from "./TimeFormat";
 
 export class Formatter {
   
@@ -18,16 +19,21 @@ export class Formatter {
         return `${month}/${day}/${year}`;
       case DateFormat.DayMonthYearSlash:
         return `${day}/${month}/${year}`;
-      case DateFormat.YearMonthDayDash:
-        return `${year}-${month}-${day}`;
       case DateFormat.DayMonthYearDot:
         return `${day}.${month}.${year}`;
+      case DateFormat.YearMonthDayDash:
+        return `${year}-${month}-${day}`;
     }
   }
   
-  public static getFormattedTimestamp(date: Date): string {
+  public static getFormattedTimestamp(date: Date, format: TimeFormat = TimeFormat.Regular): string {
     let hours = date.getHours();
     let minutes = Formatter.leftpad(date.getMinutes());
+
+    if (format === TimeFormat.Military) {
+      return `${hours}:${minutes}`;
+    }
+
     let period = (hours > 12) ? "PM" : "AM";
     
     if (hours > 12) {

@@ -264,6 +264,51 @@
   gap: 7px;
 }
 
+.dateTimeControls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.timeFormatRadioGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.timeFormatRadioOption {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--settings-nav-text);
+  cursor: default;
+  transition: color 120ms ease;
+}
+
+.timeFormatRadioOption:has(.radioInput:focus-visible) {
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.timeFormatRadioOption:hover {
+  color: var(--settings-nav-hover-text);
+}
+
+.dateTimeFormatPreview {
+  color: var(--settings-section-text);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
 .linkButton {
   display: inline-flex;
   align-items: center;

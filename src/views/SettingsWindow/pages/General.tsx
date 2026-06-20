@@ -11,6 +11,9 @@ import { AppSettings } from "../../../settings/AppSettings";
 import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
+import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
+import { Formatter } from "../../../utils/dt-formatter/Formatter";
+import { TimeFormat } from "../../../utils/dt-formatter/TimeFormat";
 import styles from "./SettingsPages.module.css";
 
 type GeneralProps = {
@@ -20,6 +23,9 @@ type GeneralProps = {
 
 function General(props: GeneralProps) {
   const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
+  const dateTimeFormatPreview = new Date();
+  const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
 
   function handleKeepNotesOnTopChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -44,6 +50,22 @@ function General(props: GeneralProps) {
     });
 
     event.currentTarget.blur();
+  }
+
+  function handleDateFormatChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      dateFormat: event.target.value as DateFormat
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleTimeFormatChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      timeFormat: event.target.value as TimeFormat
+    });
   }
 
   return (
@@ -91,6 +113,51 @@ function General(props: GeneralProps) {
               </label>
             </div>
           )}
+          <div className={styles.settingsRow}>
+            <label className={styles.settingsSectionTitle} id="date-time-format-title" htmlFor="date-format">
+              {t("settingsWindow.general.dateTimeFormat")}
+            </label>
+            <div className={styles.dateTimeControls}>
+              <select
+                className={styles.settingsSelect}
+                id="date-format"
+                value={props.appSettings.dateFormat}
+                onChange={handleDateFormatChange}
+              >
+                <option value={DateFormat.MonthDayYearSlash}>{`6/20/${currentYear}`}</option>
+                <option value={DateFormat.DayMonthYearSlash}>{`20/6/${currentYear}`}</option>
+                <option value={DateFormat.DayMonthYearDot}>{`20.6.${currentYear}`}</option>
+                <option value={DateFormat.YearMonthDayDash}>{`${currentYear}-6-20`}</option>
+              </select>
+              <fieldset className={styles.timeFormatRadioGroup} aria-label={t("settingsWindow.general.timeFormat")}>
+                <label className={styles.timeFormatRadioOption}>
+                  <input
+                    checked={props.appSettings.timeFormat === TimeFormat.Regular}
+                    className={styles.radioInput}
+                    name="time-format"
+                    type="radio"
+                    value={TimeFormat.Regular}
+                    onChange={handleTimeFormatChange}
+                  />
+                  <span className={styles.radioControl} aria-hidden="true" />
+                  <span className={styles.radioLabel}>{t("settingsWindow.general.timeFormatOptions.regular")}</span>
+                </label>
+                <label className={styles.timeFormatRadioOption}>
+                  <input
+                    checked={props.appSettings.timeFormat === TimeFormat.Military}
+                    className={styles.radioInput}
+                    name="time-format"
+                    type="radio"
+                    value={TimeFormat.Military}
+                    onChange={handleTimeFormatChange}
+                  />
+                  <span className={styles.radioControl} aria-hidden="true" />
+                  <span className={styles.radioLabel}>{t("settingsWindow.general.timeFormatOptions.military")}</span>
+                </label>
+              </fieldset>
+              <span className={styles.dateTimeFormatPreview}>{formattedDateTimePreview}</span>
+            </div>
+          </div>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} id="language-title" htmlFor="language">
               {t("settingsWindow.general.language")}
