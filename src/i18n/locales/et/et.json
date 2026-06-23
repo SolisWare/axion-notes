@@ -1,1 +1,135 @@
-{}
+{
+  "common": {
+    "cancel": "Katkesta"
+  },
+  "mainWindow": {
+    "welcome": {
+      "preview": {
+        "today": "Täna",
+        "freshWorkspace": "Uus töötuba",
+        "ideas": "Ideed",
+        "colorfulNotes": "Märkmed on värvilised",
+        "next": "Järgmine"
+      },
+      "getStarted": "Alustame siis",
+      "doNotShowAgain": "Ära näita seda tervitusvaadet uuesti"
+    },
+    "toolbar": {
+      "newNote": "Uus märge",
+      "deleteAll": "Kustuta kõik",
+      "settings": "Seadistused"
+    },
+    "emptyNotes": {
+      "title": "Sul pole veel märkmeid!",
+      "addFirstNote": "Esimese märkme lisamiseks klõpsa {{shortcut}}"
+    },
+    "note": {
+      "titlePlaceholder": "Pealkiri",
+      "contentPlaceholder": "Kirjuta siia…",
+      "lastModified": "Viimati muudetud:",
+      "at": "kell"
+    },
+    "deleteAllNotesDialog": {
+      "title": "Kustuta kõik märkmed",
+      "message": "Kas oled kindel, et soovid kõik märkmed kustutada? Seda tegevust ei saa tagasi pöörata.",
+      "confirmLabel": "Kustuta kõik"
+    }
+  },
+  "settingsWindow": {
+    "navigation": {
+      "sections": {
+        "preferences": "Eelistused",
+        "storage": "Andmeruum",
+        "info": "Teave"
+      },
+      "pages": {
+        "general": "Üldseadistused",
+        "appearance": "Välimus",
+        "shortcuts": "Kiirklahvid",
+        "dataStorage": "Andmed ja salvestusruum",
+        "license": "Litsents",
+        "links": "Lingid",
+        "about": "Rakenduse teave"
+      }
+    },
+    "general": {
+      "language": "Keel",
+      "requiresRestart": "(Eeldab uuesti käivitamist)",
+      "sortNotesBy": "Märkmete järjestus",
+      "sortOptions": {
+        "dateCreatedAsc": "Loomise kuupäev (esmalt vanemad)",
+        "dateCreatedDesc": "Loomise kuupäev (esmalt uuemad)",
+        "lastModified": "Viimati muudetud",
+        "titleAsc": "Pealkiri A-Z",
+        "titleDesc": "Pealkiri Z-A"
+      },
+      "resortNotes": "Järjesta märkmed uuesti",
+      "keepNotesOnTop": "Märkmed on kõige peal",
+      "keepNotesOnTopDescription": "Hoia märkmete rakendus teiste akende peal",
+      "dateTimeFormat": "Kuupäeva ja aja vorming",
+      "timeFormat": "Ajavorming",
+      "dateTimeFormatExample": "Näide:",
+      "timeFormatOptions": {
+        "regular": "12 tundi",
+        "military": "24 tundi"
+      }
+    },
+    "appearance": {
+      "applicationTheme": "Rakenduse kujundus",
+      "themeOptions": {
+        "auto": "Automaatne kujundus",
+        "light": "Hele kujundus",
+        "dark": "Tume kujundus"
+      },
+      "newNoteDefaultColor": "Uue märkme vaikimisi värv",
+      "noteColors": {
+        "auto": "Automaatne värv",
+        "yellow": "Kollane",
+        "green": "Roheline",
+        "indigo": "Indigosinine",
+        "red": "Punane",
+        "teal": "Sinakasroheline",
+        "lilac": "Kahvatulilla"
+      }
+    },
+    "dataStorage": {
+      "notesFolderLocation": "Märkmete kausta asukoht"
+    },
+    "about": {
+      "webVersionLabel": "Veeb",
+      "version": "Versioon {{version}}",
+      "rights": "Kõik õigused kaitstud."
+    },
+    "shortcuts": {
+      "newNote": "Uus märge",
+      "openSettings": "Ava seadistused",
+      "deleteAllNotes": "Kustuta kõik märkmed",
+      "keys": {
+        "command": "Käsk",
+        "control": "Ctrl",
+        "shift": "Shift",
+        "backspace": "Tagasisammuklahv (Backspace)",
+        "comma": "Koma"
+      }
+    }
+  },
+  "electron": {
+    "menu": {
+      "settings": "Seadistused…",
+      "file": "Fail",
+      "newNote": "Uus märge…",
+      "edit": "Muuda",
+      "deleteAllNotes": "Kustuta kõik märkmed…",
+      "view": "Vaata",
+      "toggleFullScreen": "Lülita täisekraanivaade sisse/välja",
+      "welcome": "Tere tulemast",
+      "viewLicense": "Vaata litsentsi",
+      "visitWebsite": "Vaata veebisaiti",
+      "checkoutGitHub": "Vaata GitHubi"
+    },
+    "windows": {
+      "settings": "Seadistused",
+      "license": "Litsents"
+    }
+  }
+}
