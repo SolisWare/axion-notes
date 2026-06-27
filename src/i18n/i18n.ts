@@ -7,13 +7,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { DEFAULT_LANGUAGE, getBaseLanguageCode, isSupportedLanguageCode, SupportedLanguageCode } from "./languages";
-import en from "./locales/en/en.json";
-
-const resources = {
-  en: {
-    translation: en
-  }
-};
+import { getI18nResources } from "./translationLoader";
 
 function resolveInitialLanguage(): SupportedLanguageCode {
   const browserLanguage = getBaseLanguageCode(navigator.language);
@@ -28,7 +22,7 @@ function resolveInitialLanguage(): SupportedLanguageCode {
 i18n
   .use(initReactI18next)
   .init({
-    resources,
+    resources: getI18nResources(),
     lng: resolveInitialLanguage(),
     fallbackLng: DEFAULT_LANGUAGE,
     interpolation: {

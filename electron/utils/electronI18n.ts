@@ -4,19 +4,11 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import en from "../../src/i18n/locales/en/en.json";
-import { DEFAULT_LANGUAGE, SupportedLanguageCode } from "../../src/i18n/languages";
-
-type TranslationNode = string | {
-  [key: string]: TranslationNode;
-};
-
-const translationsByLanguage: Record<SupportedLanguageCode, TranslationNode> = {
-  en: en as TranslationNode
-};
+import { DEFAULT_LANGUAGE } from "../../src/i18n/languages";
+import { getTranslation, TranslationNode } from "../../src/i18n/translationLoader";
 
 export function translate(key: string): string {
-  const translations = translationsByLanguage[DEFAULT_LANGUAGE];
+  const translations = getTranslation(DEFAULT_LANGUAGE);
   const value = key
     .split(".")
     .reduce<TranslationNode | undefined>((currentValue, keyPart) => {

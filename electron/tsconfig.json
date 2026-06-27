@@ -19,6 +19,7 @@
     "../src/settings/**/*",
     "../src/theme/**/*",
     "../src/types/**/*",
+    "../src/i18n/locales/**/*.json",
     "../src/utils/app-version/**/*",
     "../config/**/*"
   ]
