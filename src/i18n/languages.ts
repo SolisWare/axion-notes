@@ -11,7 +11,6 @@
 export type Language = {
   code: string;
   label: string;
-  nativeLabel: string;
 };
 
 /**
@@ -20,8 +19,7 @@ export type Language = {
 export const SUPPORTED_LANGUAGES = [
   {
     code: "en",
-    label: "English",
-    nativeLabel: "English"
+    label: "English"
   }
 ] as const satisfies readonly Language[];
 
@@ -47,4 +45,32 @@ export function isSupportedLanguageCode(languageCode: string): languageCode is S
  */
 export function getBaseLanguageCode(languageCode: string): string {
   return languageCode.toLowerCase().split("-")[0];
+}
+
+/**
+ * Returns the language picker label, such as "German (Deutsch)".
+ */
+export function getLanguagePickerLabel(language: Language): string {
+  const nativeLabel = getNativeLanguageLabel(language);
+
+  if (nativeLabel.toLocaleLowerCase(language.code) === language.label.toLocaleLowerCase("en")) {
+    return language.label;
+  }
+
+  return `${language.label} (${nativeLabel})`;
+}
+
+/**
+ * Returns the language name in that language, such as "English" for "en" or "español" for "es".
+ */
+function getNativeLanguageLabel(language: Language): string {
+  try {
+    const displayNames = new Intl.DisplayNames([language.code], {
+      type: "language"
+    });
+
+    return displayNames.of(language.code) ?? language.label;
+  } catch {
+    return language.label;
+  }
 }

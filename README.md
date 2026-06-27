@@ -80,10 +80,10 @@ Want to add a language to Axion Notes?
    ```ts
    {
      code: "es",
-     label: "Spanish",
-     nativeLabel: "Español"
+     label: "Spanish"
    }
    ```
+   The `label` value is the English language name. The language picker gets the native display name from the app's internationalization data.
 5. Open a Pull Request from your branch against the upstream `develop` branch
 
 English is the source locale for translations.

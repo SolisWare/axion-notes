@@ -3,6 +3,9 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.3.0] - Unreleased - Gateway
+- Updated the language selector to show English language names with native labels generated from the language code
+
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text
 - Added a language selector to General settings section

@@ -8,7 +8,7 @@ import { ChangeEvent } from "react";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
-import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
+import { getLanguagePickerLabel, SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
 import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
@@ -171,7 +171,7 @@ function General(props: GeneralProps) {
               >
                 {SUPPORTED_LANGUAGES.map((language) => (
                   <option key={language.code} value={language.code}>
-                    {language.nativeLabel}
+                    {getLanguagePickerLabel(language)}
                   </option>
                 ))}
               </select>
