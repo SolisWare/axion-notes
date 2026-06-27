@@ -2,5 +2,6 @@
   "majorVersion": 0,
   "minorVersion": 2,
   "patchVersion": 1,
-  "releaseCodename": "Skylight"
+  "preReleaseVersion": "rc.1",
+  "releaseCodename": "Gateway"
 }
