@@ -32,7 +32,9 @@ function Links() {
     <div className={styles.linksPage}>
       <div className={styles.linksHeader}>
         <p className={styles.pageDescription}>
-          {t("settingsWindow.links.description")}
+          {t("settingsWindow.links.descriptionBeforeAppName")}
+          Axion Notes.{" "}
+          {t("settingsWindow.links.descriptionAfterAppName")}
         </p>
       </div>
       <div className={styles.linksList}>

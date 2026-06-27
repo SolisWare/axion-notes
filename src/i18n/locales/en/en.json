@@ -1,6 +1,7 @@
 {
   "common": {
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "mainWindow": {
     "welcome": {
@@ -112,7 +113,8 @@
       }
     },
     "links": {
-      "description": "Thanks for using Axion Notes. These links help you follow releases, source updates, and other SolisWare projects.",
+      "descriptionBeforeAppName": "Thanks for using ",
+      "descriptionAfterAppName": "These links help you follow releases, source updates, and other SolisWare projects.",
       "website": {
         "label": "Website",
         "description": "Visit SolisWare for the latest product updates, downloads, and more from the team."

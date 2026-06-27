@@ -6,6 +6,7 @@
  */
 import { CSSProperties } from "react";
 import { Button, Dialog, DialogActions, DialogContent } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import SettingsWindow from "../views/SettingsWindow/SettingsWindow";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -21,6 +22,7 @@ type WebSettingsDialogProps = {
 };
 
 function WebSettingsDialog(props: WebSettingsDialogProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const themeVariables = {
     "--settings-dialog-background": appColors.SETTINGS_CONTENT_BACKGROUND,
@@ -48,7 +50,7 @@ function WebSettingsDialog(props: WebSettingsDialogProps) {
       </DialogContent>
       <DialogActions className={styles.actions}>
         <Button onClick={props.onClose} variant="contained">
-          Close
+          {t("common.close")}
         </Button>
       </DialogActions>
     </Dialog>
