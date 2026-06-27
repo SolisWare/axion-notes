@@ -206,7 +206,7 @@ function MainWindow(props: MainWindowProps) {
         </nav>
         <div className={classes.app}>
           {shouldShowToolbar &&
-            <WebToolbar theme={props.theme} title={t("app.name")} handleAddNoteButton={handleAddNote}
+            <WebToolbar theme={props.theme} title="Axion Notes" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
                         handleSettingsButton={() => setSettingsDialogOpen(true)} />

@@ -65,7 +65,7 @@ function About(props: AboutProps) {
         <div className={classes.content}>
           <img className={classes.logo} src={appIcon} alt="" />
           <Typography className={classes.appName} variant="h6">
-            {t("app.name")}
+            Axion Notes
           </Typography>
           <Typography className={`${classes.text} ${classes.version}`} variant="body2">
             {t("settingsWindow.about.version", { version: getVersionLabel() })}
