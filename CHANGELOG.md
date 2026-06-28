@@ -6,6 +6,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code
 - Shared translation loading between React and Electron using the supported language list
+- Reduced reported dependency vulnerabilities from 40 to 25 through compatible package updates
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text
