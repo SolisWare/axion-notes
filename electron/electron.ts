@@ -6,7 +6,7 @@
  */
 import { app, BrowserWindow, Menu } from "electron";
 import * as path from "path";
-import menubar from "./menu";
+import { createMenubar } from "./menu";
 import { isDev } from "./utils/isDev";
 import { isMac } from './utils/Platform';
 import * as fs from 'node:fs';
@@ -15,6 +15,9 @@ import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver"
 import { createMainWindow } from "./windows/createMainWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
+import { getSettings } from "./storage/appSettingsStorage";
+import { setElectronLanguage } from "./utils/electronI18n";
+import { AppSettings } from "../src/settings/AppSettings";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -39,19 +42,31 @@ if (isDev) {
   require("dotenv").config();
 }
 
-// Load the menubar items
-Menu.setApplicationMenu(menubar);
-
 // This method is called when Electron has finished the initialization
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", () => {
+app.on("ready", async () => {
+  const settings = await getSettings(appSettingsFilePath);
+
+  if (settings) {
+    setElectronLanguage(settings.language);
+  }
+
+  Menu.setApplicationMenu(createMenubar());
+
   if (isMac) {
     app.dock?.setIcon(getAppIconPath());
   }
 
+  registerIpcHandlers({
+    appDataDir,
+    appSettingsFilePath,
+    initialSettings: settings,
+    onSettingsChange: (settings: AppSettings) => {
+      setElectronLanguage(settings.language);
+    }
+  });
   createMainWindow({ mainWindowStateFilePath });
-  registerIpcHandlers({ appDataDir, appSettingsFilePath });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

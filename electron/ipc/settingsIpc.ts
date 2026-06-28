@@ -8,15 +8,19 @@ import { BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { channels } from "./channels";
-import { getSettings, setSettings } from "../storage/appSettingsStorage";
+import { setSettings } from "../storage/appSettingsStorage";
 
 type SettingsIpcOptions = {
   appSettingsFilePath: string;
+  initialSettings?: AppSettings;
+  onSettingsChange?: (settings: AppSettings) => void;
 };
 
 export function registerSettingsIpc(options: SettingsIpcOptions): void {
+  let cachedSettings = options.initialSettings;
+
   ipcMain.handle(channels.settings.getSettings, async () => {
-    return getSettings(options.appSettingsFilePath);
+    return cachedSettings;
   });
 
   ipcMain.handle(channels.settings.getSettingsFolderLocation, () => {
@@ -24,7 +28,10 @@ export function registerSettingsIpc(options: SettingsIpcOptions): void {
   });
 
   ipcMain.on(channels.settings.setSettings, (_, settings: AppSettings) => {
+    cachedSettings = settings;
     setSettings(options.appSettingsFilePath, settings);
+    options.onSettingsChange?.(settings);
+
     BrowserWindow.getAllWindows().forEach((window) => {
       if (!window.webContents.isDestroyed()) {
         window.webContents.send(channels.settings.onSettingsChange, settings);

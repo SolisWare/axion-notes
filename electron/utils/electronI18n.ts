@@ -4,11 +4,17 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { DEFAULT_LANGUAGE } from "../../src/i18n/languages";
+import { DEFAULT_LANGUAGE, SupportedLanguageCode } from "../../src/i18n/languages";
 import { getTranslation, TranslationNode } from "../../src/i18n/translationLoader";
 
+let currentLanguage: SupportedLanguageCode = DEFAULT_LANGUAGE;
+
+export function setElectronLanguage(language: SupportedLanguageCode): void {
+  currentLanguage = language;
+}
+
 export function translate(key: string): string {
-  const translations = getTranslation(DEFAULT_LANGUAGE);
+  const translations = getTranslation(currentLanguage);
   const value = key
     .split(".")
     .reduce<TranslationNode | undefined>((currentValue, keyPart) => {
