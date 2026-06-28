@@ -14,7 +14,7 @@ import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor } from "../theme/NoteColors";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -27,6 +27,11 @@ type NoteProps = {
   timeFormat: TimeFormat;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+};
+
+type NoteDateLabelProps = {
+  className: string;
+  text: string;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -106,11 +111,18 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     padding: "0 3px"
   },
   noteFooterUtilBarDate: {
+    flex: "1 1 auto",
+    marginRight: "8px !important",
+    minWidth: 0,
     paddingTop: "5px",
     fontStyle: "italic",
-    color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT
+    color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    overflow: "hidden",
+    textAlign: "left",
+    whiteSpace: "nowrap"
   },
   noteFooterUtilBarDeleteBtn: {
+    flex: "0 0 auto",
     width: 30,
     height: 30,
   }
@@ -129,6 +141,7 @@ function Note(props: NoteProps) {
 
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
+  const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
@@ -220,12 +233,7 @@ function Note(props: NoteProps) {
           <div className={classes.noteFooter}>
             <Divider />
             <div className={classes.noteFooterUtilBar}>
-              <Typography className={classes.noteFooterUtilBarDate} variant="body2">
-                <span>{t("mainWindow.note.lastModified")}&#160;</span>
-                <span>{Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)}</span>
-                <span>&#160;{t("mainWindow.note.at")}&#160;</span>
-                <span>{Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}</span>
-              </Typography>
+              <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
               <Button
                 className={classes.noteFooterUtilBarDeleteBtn}
                 onClick={handleDeleteNote}
@@ -244,6 +252,63 @@ function Note(props: NoteProps) {
         </div>
       </div>
     </Paper>
+  );
+}
+
+function NoteDateLabel(props: NoteDateLabelProps) {
+  const NOTE_FOOTER_MIN_FONT_SIZE = 10;
+  
+  const textRef = useRef<HTMLElement | null>(null);
+  const [fontSize, setFontSize] = useState<number | undefined>();
+
+  useLayoutEffect(() => {
+    const element = textRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    const measure = () => {
+      const previousFontSize = element.style.fontSize;
+      element.style.fontSize = "";
+
+      const baseFontSize = parseFloat(window.getComputedStyle(element).fontSize);
+      const nextFontSize = element.scrollWidth > element.clientWidth && element.clientWidth > 0
+        ? Math.max(
+            NOTE_FOOTER_MIN_FONT_SIZE,
+            Math.floor((baseFontSize * element.clientWidth / element.scrollWidth) * 10) / 10
+          )
+        : undefined;
+
+      element.style.fontSize = previousFontSize;
+      setFontSize((currentFontSize) => currentFontSize === nextFontSize ? currentFontSize : nextFontSize);
+    };
+
+    measure();
+
+    const resizeObserver = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : undefined;
+    resizeObserver?.observe(element);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [props.text]);
+
+  const style: CSSProperties | undefined = fontSize ? { fontSize } : undefined;
+
+  return (
+    <Typography
+      className={props.className}
+      ref={(element) => {
+        textRef.current = element;
+      }}
+      style={style}
+      variant="body2"
+    >
+      {props.text}
+    </Typography>
   );
 }
 

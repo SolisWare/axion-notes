@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { CSSProperties } from "react";
 import { makeStyles } from "@mui/styles";
 import AppBar from "@mui/material/AppBar";
 import Typography from "@mui/material/Typography";
@@ -25,6 +26,11 @@ type WebToolbarProps = {
   handleAddNoteButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleDeleteAllNotesButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleSettingsButton: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
+type WebToolbarLabelProps = {
+  className: string;
+  label: string;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -50,7 +56,8 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   },
   toolbarBtn: {
     width: 130,
-    height: 32,
+    minHeight: 36,
+    padding: "4px 10px !important",
   },
   windowsToolbarBtn: {
     backgroundColor: ({ appColors }) => appColors.WINDOWS_TOOLBAR_BUTTON_BACKGROUND + " !important",
@@ -85,23 +92,26 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   toolbarIconBtnInnerContainer: {
     display: "flex",
     alignItems: "center",
-    verticalAlign: "center"
+    justifyContent: "center",
+    minWidth: 0,
+    width: "100%"
   },
   toolbarBtnText: {
-    paddingTop: "3px",
-    paddingLeft: "5px"
+    lineHeight: "1.15 !important",
+    marginLeft: "7px !important",
+    overflowWrap: "anywhere",
+    textAlign: "center",
+    whiteSpace: "normal"
   },
   windowsToolbarBtnText: {
-    paddingTop: "3px",
-    paddingLeft: "5px",
     color: "inherit"
   },
   windowsToolbarTitle: {
     color: ({ appColors }) => appColors.WINDOWS_TOOLBAR_TEXT
   },
   toolbarSettingsBtn: {
-    width: 115,
-    height: 32,
+    width: 130,
+    minHeight: 36,
     color: "#fff !important"
   }
 }));
@@ -110,8 +120,11 @@ function WebToolbar(props: WebToolbarProps) {
   const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
-
   const isWindows = window.api.os.isWindows;
+  const toolbarTextClassName = clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText);
+  const newNoteLabel = t("mainWindow.toolbar.newNote");
+  const deleteAllLabel = t("mainWindow.toolbar.deleteAll");
+  const settingsLabel = t("mainWindow.toolbar.settings");
 
   return (
     <AppBar
@@ -139,7 +152,7 @@ function WebToolbar(props: WebToolbarProps) {
           >
             <div className={classes.toolbarIconBtnInnerContainer}>
               <AddCircleOutlineIcon fontSize="small" />
-              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.newNote")}</Typography>
+              <WebToolbarLabel className={toolbarTextClassName} label={newNoteLabel} />
             </div>
           </Button>
           <span className={classes.toolbarBtnSpacer}/>
@@ -153,8 +166,10 @@ function WebToolbar(props: WebToolbarProps) {
             disabled={props.isDeleteAllButtonDisabled}
             onClick={props.handleDeleteAllNotesButton}
           >
-            <DeleteOutlineOutlinedIcon fontSize="small" />
-            <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.deleteAll")}</Typography>
+            <div className={classes.toolbarIconBtnInnerContainer}>
+              <DeleteOutlineOutlinedIcon fontSize="small" />
+              <WebToolbarLabel className={toolbarTextClassName} label={deleteAllLabel} />
+            </div>
           </Button>
         </Box>
         <div className={classes.toolbarGrow} />
@@ -171,12 +186,43 @@ function WebToolbar(props: WebToolbarProps) {
           >
             <div className={classes.toolbarIconBtnInnerContainer}>
               <SettingsOutlinedIcon fontSize="small" />
-              <Typography className={clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText)} variant="body2">{t("mainWindow.toolbar.settings")}</Typography>
+              <WebToolbarLabel className={toolbarTextClassName} label={settingsLabel} />
             </div>
           </Button>
         </Box>
       </Toolbar>
     </AppBar>
+  );
+}
+
+function WebToolbarLabel(props: WebToolbarLabelProps) {
+  const TOOLBAR_SINGLE_LINE_TEXT_WIDTH = 88;
+  const TOOLBAR_TEXT_MAX_FONT_SIZE = 14;
+  const TOOLBAR_TEXT_MIN_FONT_SIZE = 7;
+
+  const shouldStayOnOneLine = !/\s/.test(props.label.trim());
+  const style: CSSProperties = shouldStayOnOneLine
+    ? {
+        fontSize: Math.max(
+          TOOLBAR_TEXT_MIN_FONT_SIZE,
+          Math.min(
+            TOOLBAR_TEXT_MAX_FONT_SIZE,
+            Math.floor(TOOLBAR_SINGLE_LINE_TEXT_WIDTH / (Math.max(props.label.trim().length, 1) * 0.58))
+          )
+        ),
+        overflowWrap: "normal",
+        whiteSpace: "nowrap"
+      }
+    : {};
+
+  return (
+    <Typography
+      className={props.className}
+      style={style}
+      variant="body2"
+    >
+      {props.label}
+    </Typography>
   );
 }
 

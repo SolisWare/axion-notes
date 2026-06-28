@@ -98,7 +98,7 @@
 .radioGroup {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  flex: 0 0 210px;
+  flex: 0 0 270px;
   align-self: flex-start;
   box-sizing: border-box;
   margin: 1px 0 0;
@@ -112,10 +112,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  justify-content: flex-start;
+  gap: 7px;
   box-sizing: border-box;
-  padding: 0 6px;
+  padding: 0 4px;
   border: 0;
   color: var(--settings-nav-text);
   cursor: default;
@@ -151,10 +151,14 @@
 }
 
 .radioLabel {
+  width: 100%;
+  display: block;
   color: inherit;
   font-size: 13px;
   font-weight: 600;
   line-height: 18px;
+  overflow-wrap: normal;
+  text-align: center;
 }
 
 .radioInput:checked ~ .radioControl {

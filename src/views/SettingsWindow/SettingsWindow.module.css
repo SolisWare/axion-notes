@@ -44,13 +44,13 @@
 
 .navItem {
   width: 142px;
-  height: 30px;
+  min-height: 30px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 9px;
   box-sizing: border-box;
   margin: 0 0 2px 0;
-  padding: 0 9px;
+  padding: 6px 9px;
   border: 1px solid transparent;
   border-radius: 6px;
   background: transparent;
@@ -100,12 +100,11 @@
 
 .navItemLabel {
   min-width: 0;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: inherit;
   font-size: 13px;
-  line-height: 18px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  line-height: 16px;
+  white-space: normal;
 }
 
 .content {

@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent } from "react";
+import { ChangeEvent, CSSProperties, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import SyncIcon from "@mui/icons-material/Sync";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
@@ -21,11 +21,28 @@ type GeneralProps = {
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
+type FittedSelectProps = {
+  children: ReactNode;
+  className: string;
+  id: string;
+  selectedLabel: string;
+  value: string;
+  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+};
+
 function General(props: GeneralProps) {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const dateTimeFormatPreview = new Date();
   const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
+  const noteSortOptions = [
+    { value: NoteSortOrder.DATE_CREATED_ASC, label: t("settingsWindow.general.sortOptions.dateCreatedAsc") },
+    { value: NoteSortOrder.DATE_CREATED_DESC, label: t("settingsWindow.general.sortOptions.dateCreatedDesc") },
+    { value: NoteSortOrder.LAST_MODIFIED, label: t("settingsWindow.general.sortOptions.lastModified") },
+    { value: NoteSortOrder.TITLE_ASC, label: t("settingsWindow.general.sortOptions.titleAsc") },
+    { value: NoteSortOrder.TITLE_DESC, label: t("settingsWindow.general.sortOptions.titleDesc") }
+  ];
+  const selectedNoteSortLabel = noteSortOptions.find((option) => option.value === props.appSettings.notesSortOrder)?.label ?? "";
 
   function handleKeepNotesOnTopChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -75,18 +92,17 @@ function General(props: GeneralProps) {
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">{t("settingsWindow.general.sortNotesBy")}</label>
             <div className={styles.sortControls}>
-              <select
+              <FittedSelect
                 className={styles.settingsSelect}
                 id="note-sort-order"
+                selectedLabel={selectedNoteSortLabel}
                 value={props.appSettings.notesSortOrder}
                 onChange={handleNoteSortOrderChange}
               >
-                <option value={NoteSortOrder.DATE_CREATED_ASC}>{t("settingsWindow.general.sortOptions.dateCreatedAsc")}</option>
-                <option value={NoteSortOrder.DATE_CREATED_DESC}>{t("settingsWindow.general.sortOptions.dateCreatedDesc")}</option>
-                <option value={NoteSortOrder.LAST_MODIFIED}>{t("settingsWindow.general.sortOptions.lastModified")}</option>
-                <option value={NoteSortOrder.TITLE_ASC}>{t("settingsWindow.general.sortOptions.titleAsc")}</option>
-                <option value={NoteSortOrder.TITLE_DESC}>{t("settingsWindow.general.sortOptions.titleDesc")}</option>
-              </select>
+                {noteSortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </FittedSelect>
               <button className={styles.linkButton} type="button" onClick={window.api.noteSort.requestSort}>
                 <SyncIcon fontSize="small" />
                 <span>{t("settingsWindow.general.resortNotes")}</span>
@@ -183,6 +199,86 @@ function General(props: GeneralProps) {
         </div>
       </section>
     </div>
+  );
+}
+
+function FittedSelect(props: FittedSelectProps) {
+  const SELECT_MIN_FONT_SIZE = 10;
+  const SELECT_NATIVE_CONTROL_RESERVED_WIDTH = 34;
+
+  const selectRef = useRef<HTMLSelectElement | null>(null);
+  const measurementRef = useRef<HTMLSpanElement | null>(null);
+  const [fontSize, setFontSize] = useState<number | undefined>();
+
+  useLayoutEffect(() => {
+    const select = selectRef.current;
+    const measurement = measurementRef.current;
+
+    if (!select || !measurement) {
+      return;
+    }
+
+    const measure = () => {
+      const previousFontSize = select.style.fontSize;
+      select.style.fontSize = "";
+
+      const baseComputedStyle = window.getComputedStyle(select);
+      const baseSelectFontSize = parseFloat(baseComputedStyle.fontSize);
+      const horizontalPadding = parseFloat(baseComputedStyle.paddingLeft) + parseFloat(baseComputedStyle.paddingRight);
+      const availableWidth = select.clientWidth - horizontalPadding - SELECT_NATIVE_CONTROL_RESERVED_WIDTH;
+
+      measurement.style.font = baseComputedStyle.font;
+      measurement.textContent = props.selectedLabel;
+      const measuredTextWidth = measurement.getBoundingClientRect().width;
+
+      const nextFontSize = measuredTextWidth > availableWidth && availableWidth > 0
+        ? Math.max(
+            SELECT_MIN_FONT_SIZE,
+            Math.floor((baseSelectFontSize * availableWidth / measuredTextWidth) * 10) / 10
+          )
+        : undefined;
+
+      select.style.fontSize = previousFontSize;
+      setFontSize((currentFontSize) => currentFontSize === nextFontSize ? currentFontSize : nextFontSize);
+    };
+
+    measure();
+
+    const resizeObserver = typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : undefined;
+    resizeObserver?.observe(select);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [props.selectedLabel]);
+
+  const selectStyle: CSSProperties | undefined = fontSize ? { fontSize } : undefined;
+
+  return (
+    <>
+      <select
+        className={props.className}
+        id={props.id}
+        ref={selectRef}
+        style={selectStyle}
+        value={props.value}
+        onChange={props.onChange}
+      >
+        {props.children}
+      </select>
+      <span
+        ref={measurementRef}
+        style={{
+          left: -9999,
+          position: "absolute",
+          top: -9999,
+          visibility: "hidden",
+          whiteSpace: "nowrap"
+        }}
+      />
+    </>
   );
 }
 
