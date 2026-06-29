@@ -73,20 +73,7 @@ Found a bug or have an idea? [Open an issue](https://github.com/SolisWare/axion-
 ### 🌎 Adding Translations
 Want to add a language to Axion Notes?
 
-1. Create a branch in your fork, for example `translation/spanish`
-2. Copy `src/i18n/locales/en/en.json` to `src/i18n/locales/<lang-code>/<lang-code>.json`
-3. Translate the values only. Keep the JSON keys and any `{{variables}}` unchanged
-4. Add the language to `src/i18n/languages.ts`, for example:
-   ```ts
-   {
-     code: "es",
-     label: "Spanish"
-   }
-   ```
-   The `label` value is the English language name. The language picker gets the native display name from the app's internationalization data.
-5. Open a Pull Request from your branch against the upstream `develop` branch
-
-English is the source locale for translations.
+See the full [translation contribution guide](CONTRIBUTING_TRANSLATIONS.md) for translation status, workflow details, and review tips.
 
 ### PR Review Policy
 All pull requests must be reviewed and approved by the **SolisWare team** before merging. We aim to review PRs promptly. Please be patient — we appreciate your effort.
@@ -256,6 +243,11 @@ Yes. Axion Notes stores notes locally on your device, so the desktop app and bro
 Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
 
 See more: [Supported Platforms](#supported-platforms).
+
+### Is Axion Notes available in other languages?
+Axion Notes is being built with internationalization support so the app can grow beyond English over time. English is the source locale, with a full Polish translation and a partial Estonian translation currently available. Additional languages can be added through community translation contributions. If you want Axion Notes in your language, we would love your help translating the app and improving its internationalization coverage.
+
+See more: [Translation Contribution Guide](CONTRIBUTING_TRANSLATIONS.md).
 
 ### Will Axion Notes support Linux or other platforms?
 Linux support is planned for the future. Axion Notes is being built with cross-platform technologies, and we want to expand platform support carefully as the app matures. Until then, we recommend using the Axion Notes web app on platforms without a dedicated desktop build.
