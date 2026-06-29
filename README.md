@@ -245,7 +245,7 @@ Axion Notes supports macOS, Windows, and web browsers. The desktop version is bu
 See more: [Supported Platforms](#supported-platforms).
 
 ### Is Axion Notes available in other languages?
-Axion Notes is being built with internationalization support so the app can grow beyond English over time. English is the source locale, with a full Polish translation and a partial Estonian translation currently available. Additional languages can be added through community translation contributions. If you want Axion Notes in your language, we would love your help translating the app and improving its internationalization coverage.
+Axion Notes is being built with internationalization support so the app can grow beyond English over time. English is the source locale, with a full Polish and a partial Estonian translation currently available. Additional languages can be added through community translation contributions. If you want Axion Notes in your language, we would love your help translating the app and improving its language support.
 
 See more: [Translation Contribution Guide](CONTRIBUTING_TRANSLATIONS.md).
 
