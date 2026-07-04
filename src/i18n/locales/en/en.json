@@ -33,7 +33,7 @@
       "at": "at",
       "contextMenu": {
         "delete": "Delete note",
-        "color": "Note color",
+        "noteColorAriaLabel": "Note color",
         "noteColor": "Note color..."
       }
     },

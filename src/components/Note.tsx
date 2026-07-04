@@ -423,7 +423,7 @@ function Note(props: NoteProps) {
         <div
           className={classes.noteContextColorRow}
           role="radiogroup"
-          aria-label={t("mainWindow.note.contextMenu.color")}
+          aria-label={t("mainWindow.note.contextMenu.noteColorAriaLabel")}
         >
           <div className={classes.noteContextColorStrip} onMouseLeave={() => setHoveredNoteColor(null)}>
             {noteColorKeys.map((colorKey) => {
