@@ -131,6 +131,7 @@
 .radioControl {
   width: 13px;
   height: 13px;
+  flex: 0 0 13px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -269,10 +270,16 @@
 }
 
 .dateTimeControls {
+  --date-time-control-inset: 5px;
+
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
+}
+
+.dateTimeControls .settingsSelect {
+  align-self: flex-start;
 }
 
 .timeFormatRadioGroup {
@@ -280,7 +287,7 @@
   align-items: center;
   gap: 18px;
   box-sizing: border-box;
-  margin: 0;
+  margin: 0 0 0 var(--date-time-control-inset);
   padding: 0;
   border: 0;
   background: transparent;
@@ -290,10 +297,17 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 7px;
   color: var(--settings-nav-text);
   cursor: default;
   transition: color 120ms ease;
+}
+
+.timeFormatRadioOption .radioLabel {
+  width: auto;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .timeFormatRadioOption:has(.radioInput:focus-visible) {
@@ -307,6 +321,7 @@
 }
 
 .dateTimeFormatPreview {
+  margin-left: var(--date-time-control-inset);
   color: var(--settings-section-text);
   font-size: 12px;
   font-weight: 400;
