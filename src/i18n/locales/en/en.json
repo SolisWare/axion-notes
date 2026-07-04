@@ -118,8 +118,7 @@
       }
     },
     "links": {
-      "descriptionBeforeAppName": "Thanks for using ",
-      "descriptionAfterAppName": "These links help you follow releases, source updates, and other SolisWare projects.",
+      "description": "Thanks for using {{appName}}. These links help you follow releases, source updates, and other SolisWare projects.",
       "website": {
         "label": "Website",
         "description": "Visit SolisWare for the latest product updates, downloads, and more from the team."
