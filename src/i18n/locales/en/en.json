@@ -98,7 +98,15 @@
         "red": "Red",
         "teal": "Teal",
         "lilac": "Lilac"
-      }
+      },
+      "noteFont": "Note font",
+      "noteFontOptions": {
+        "system": "System default",
+        "serif": "Serif",
+        "sansSerif": "Sans-serif",
+        "monospace": "Monospace"
+      },
+      "noteFontPreview": "The quick brown fox jumps over the lazy dog."
     },
     "dataStorage": {
       "notesFolderLocation": "Notes folder location",

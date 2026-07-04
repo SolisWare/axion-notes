@@ -4,11 +4,12 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent } from "react";
+import { ChangeEvent, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
 import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
+import { NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
 import styles from "./SettingsPages.module.css";
@@ -19,12 +20,36 @@ type AppearanceProps = {
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
+const NOTE_FONT_PREVIEW_COLLAPSED_WIDTH = 260;
+const NOTE_FONT_PREVIEW_EXPAND_THRESHOLD = 340;
+const NOTE_FONT_PREVIEW_MAX_WIDTH = 360;
+
 function Appearance(props: AppearanceProps) {
   const { t } = useTranslation();
+  const noteFontPreviewMeasurementRef = useRef<HTMLSpanElement | null>(null);
+  const [noteFontPreviewWidth, setNoteFontPreviewWidth] = useState(NOTE_FONT_PREVIEW_COLLAPSED_WIDTH);
   const noteColorKeys = Object.values(NoteColorKey);
+  const isNoteFontPreviewExpanded = noteFontPreviewWidth > NOTE_FONT_PREVIEW_COLLAPSED_WIDTH;
+  const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
+  const noteFontPreview = t("settingsWindow.appearance.noteFontPreview");
   const autoColorBackground = `conic-gradient(${noteColorKeys
     .map((colorKey) => NoteColors.light[colorKey])
     .join(", ")}, ${NoteColors.light[noteColorKeys[0]]})`;
+
+  useLayoutEffect(() => {
+    const measurement = noteFontPreviewMeasurementRef.current;
+
+    if (!measurement) {
+      return;
+    }
+
+    if (measurement.scrollWidth <= NOTE_FONT_PREVIEW_EXPAND_THRESHOLD) {
+      setNoteFontPreviewWidth(NOTE_FONT_PREVIEW_COLLAPSED_WIDTH);
+      return;
+    }
+
+    setNoteFontPreviewWidth(Math.min(Math.ceil(measurement.scrollWidth) + 3, NOTE_FONT_PREVIEW_MAX_WIDTH));
+  }, [noteFontPreview, noteFontPreviewFontFamily]);
 
   function handleThemeChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -38,6 +63,15 @@ function Appearance(props: AppearanceProps) {
       ...props.appSettings,
       defaultNoteColor: event.target.value as DefaultNoteColorPreference
     });
+  }
+
+  function handleNoteFontChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      noteFont: event.target.value as NoteFontPreference
+    });
+
+    event.currentTarget.blur();
   }
 
   return (
@@ -130,10 +164,80 @@ function Appearance(props: AppearanceProps) {
               ))}
             </fieldset>
           </div>
+          <div className={styles.settingsRow}>
+            <label className={styles.settingsSectionTitle} htmlFor="note-font">
+              {t("settingsWindow.appearance.noteFont")}
+            </label>
+            <div className={styles.noteFontControls}>
+              <select
+                className={styles.settingsSelect}
+                id="note-font"
+                style={{ fontFamily: noteFontPreviewFontFamily }}
+                value={props.appSettings.noteFont}
+                onChange={handleNoteFontChange}
+              >
+                <option
+                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SYSTEM) }}
+                  value={NoteFontPreference.SYSTEM}
+                >
+                  {t("settingsWindow.appearance.noteFontOptions.system")}
+                </option>
+                <option
+                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SERIF) }}
+                  value={NoteFontPreference.SERIF}
+                >
+                  {t("settingsWindow.appearance.noteFontOptions.serif")}
+                </option>
+                <option
+                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SANS_SERIF) }}
+                  value={NoteFontPreference.SANS_SERIF}
+                >
+                  {t("settingsWindow.appearance.noteFontOptions.sansSerif")}
+                </option>
+                <option
+                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.MONOSPACE) }}
+                  value={NoteFontPreference.MONOSPACE}
+                >
+                  {t("settingsWindow.appearance.noteFontOptions.monospace")}
+                </option>
+              </select>
+              <span
+                className={`${styles.noteFontPreview} ${isNoteFontPreviewExpanded ? styles.noteFontPreviewExpanded : ""}`}
+                style={{
+                  fontFamily: noteFontPreviewFontFamily,
+                  width: `${noteFontPreviewWidth}px`
+                }}
+              >
+                {noteFontPreview}
+              </span>
+              <span
+                ref={noteFontPreviewMeasurementRef}
+                className={styles.noteFontPreviewMeasurement}
+                style={{ fontFamily: noteFontPreviewFontFamily }}
+                aria-hidden="true"
+              >
+                {noteFontPreview}
+              </span>
+            </div>
+          </div>
         </div>
       </section>
     </div>
   );
+}
+
+function getNoteFontFamily(noteFont: NoteFontPreference): string | undefined {
+  switch (noteFont) {
+    case NoteFontPreference.SERIF:
+      return "Georgia, 'Times New Roman', serif";
+    case NoteFontPreference.SANS_SERIF:
+      return "Arial, Helvetica, sans-serif";
+    case NoteFontPreference.MONOSPACE:
+      return "'SFMono-Regular', Consolas, 'Liberation Mono', monospace";
+    case NoteFontPreference.SYSTEM:
+    default:
+      return undefined;
+  }
 }
 
 export default Appearance;
