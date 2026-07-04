@@ -291,6 +291,24 @@ function Note(props: NoteProps) {
     handleDeleteNote();
   };
 
+  const handleContextMenuNoteColorChange = (colorKey: NoteColorKey) => {
+    handleCloseNoteContextMenu();
+
+    if (note.bgcolor === colorKey) {
+      return;
+    }
+
+    const updatedNote = {
+      ...note,
+      bgcolor: colorKey
+    };
+
+    latestNote.current = updatedNote;
+    hasUnsavedChanges.current = false;
+    setNote(updatedNote);
+    props.handleNoteSave(updatedNote);
+  };
+
   useEffect(() => {
     if (noteContextMenuPosition === null) {
       return;
@@ -421,6 +439,7 @@ function Note(props: NoteProps) {
                   role="radio"
                   title={t(`settingsWindow.appearance.noteColors.${colorKey}`)}
                   type="button"
+                  onClick={() => handleContextMenuNoteColorChange(colorKey)}
                   onMouseEnter={() => setHoveredNoteColor(colorKey)}
                 >
                   <span
