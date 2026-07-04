@@ -286,6 +286,11 @@ function Note(props: NoteProps) {
     setDeleteMenuItemHovered(false);
   };
 
+  const handleContextMenuDeleteNote = () => {
+    handleCloseNoteContextMenu();
+    handleDeleteNote();
+  };
+
   useEffect(() => {
     if (noteContextMenuPosition === null) {
       return;
@@ -392,6 +397,7 @@ function Note(props: NoteProps) {
           } : undefined}
           onMouseEnter={() => setDeleteMenuItemHovered(true)}
           onMouseLeave={() => setDeleteMenuItemHovered(false)}
+          onClick={handleContextMenuDeleteNote}
         >
           {t("mainWindow.note.contextMenu.delete")}
         </div>
