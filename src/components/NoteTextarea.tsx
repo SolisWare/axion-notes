@@ -13,6 +13,7 @@ import { AppColorStyleProps } from "../types/appColorTypes";
  
 type NoteTextareaProps = {
   theme?: SystemTheme;
+  fontFamily?: string;
   placeholder: string;
   content: string;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -82,6 +83,7 @@ function NoteTextarea(props: NoteTextareaProps) {
     <div className={classes.wrapper}>
       <textarea ref={textareaRef}
                 className={classes.noteTextarea}
+                style={{ fontFamily: props.fontFamily }}
                 placeholder={props.placeholder}
                 defaultValue={props.content}
                 onChange={handleChange} />

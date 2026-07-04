@@ -6,6 +6,7 @@
  */
 import NoteList from "../../../components/NoteList";
 import { NoteType } from "../../../models/NoteType";
+import { NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../../../utils/dt-formatter/TimeFormat";
@@ -15,6 +16,7 @@ type HomeProps = {
   theme: SystemTheme;
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
+  noteFont: NoteFontPreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 }
@@ -27,6 +29,7 @@ function Home(props: HomeProps) {
         notes={props.notes}
         dateFormat={props.dateFormat}
         timeFormat={props.timeFormat}
+        noteFont={props.noteFont}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
         handleNoteSave={props.handleNoteSave}
       />

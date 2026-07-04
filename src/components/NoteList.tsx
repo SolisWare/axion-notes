@@ -9,6 +9,7 @@ import { makeStyles } from "@mui/styles";
 import Note from "./Note";
 import EmptyNoteList from "./EmptyNoteList";
 import { NoteType } from "../models/NoteType";
+import { NoteFontPreference } from "../settings/NoteFontPreference";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -18,6 +19,7 @@ type NoteListProps = {
   notes: NoteType[];
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
+  noteFont: NoteFontPreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 }
@@ -51,6 +53,7 @@ function NoteList (props: NoteListProps) {
               note={note}
               dateFormat={props.dateFormat}
               timeFormat={props.timeFormat}
+              noteFont={props.noteFont}
               handleNoteSave={props.handleNoteSave}
               handleDeleteNoteButton={props.handleDeleteNoteButton}
             />

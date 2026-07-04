@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
 import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
-import { NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { getNoteFontFamily, NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
 import styles from "./SettingsPages.module.css";
@@ -224,20 +224,6 @@ function Appearance(props: AppearanceProps) {
       </section>
     </div>
   );
-}
-
-function getNoteFontFamily(noteFont: NoteFontPreference): string | undefined {
-  switch (noteFont) {
-    case NoteFontPreference.SERIF:
-      return "Georgia, 'Times New Roman', serif";
-    case NoteFontPreference.SANS_SERIF:
-      return "Arial, Helvetica, sans-serif";
-    case NoteFontPreference.MONOSPACE:
-      return "'SFMono-Regular', Consolas, 'Liberation Mono', monospace";
-    case NoteFontPreference.SYSTEM:
-    default:
-      return undefined;
-  }
 }
 
 export default Appearance;

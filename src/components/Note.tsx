@@ -17,6 +17,7 @@ import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey, NoteColors } from "../theme/NoteColors";
+import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
@@ -25,6 +26,7 @@ type NoteProps = {
   note: NoteType;
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
+  noteFont: NoteFontPreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 };
@@ -222,6 +224,7 @@ function Note(props: NoteProps) {
 
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
+  const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteColorKeys = Object.values(NoteColorKey);
   const noteContextColorLabel = hoveredNoteColor === null
     ? t("mainWindow.note.contextMenu.noteColor")
@@ -351,6 +354,7 @@ function Note(props: NoteProps) {
                 key={props.theme}
                 className={classes.noteTitleInput}
                 style={{
+                  fontFamily: noteFontFamily,
                   color: appColors.NOTE_TEXT,
                   caretColor: appColors.NOTE_TEXT,
                   WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
@@ -365,7 +369,7 @@ function Note(props: NoteProps) {
               />
             </div>
             <div className={classes.noteContent}>
-              <NoteTextarea theme={props.theme} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
+              <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
             <Autosave data={note} onSave={(note) => {
               if (!isDeleting.current) {

@@ -10,3 +10,17 @@ export enum NoteFontPreference {
   SANS_SERIF = "sansSerif",
   MONOSPACE = "monospace"
 }
+
+export function getNoteFontFamily(noteFont: NoteFontPreference): string | undefined {
+  switch (noteFont) {
+    case NoteFontPreference.SERIF:
+      return "Georgia, 'Times New Roman', serif";
+    case NoteFontPreference.SANS_SERIF:
+      return "Arial, Helvetica, sans-serif";
+    case NoteFontPreference.MONOSPACE:
+      return "'SFMono-Regular', Consolas, 'Liberation Mono', monospace";
+    case NoteFontPreference.SYSTEM:
+    default:
+      return undefined;
+  }
+}
