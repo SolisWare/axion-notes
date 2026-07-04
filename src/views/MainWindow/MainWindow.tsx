@@ -172,6 +172,12 @@ function MainWindow(props: MainWindowProps) {
       showWelcomeScreenOnLaunch: !event.target.checked
     });
   };
+
+  function handleMainWindowContextMenu(event: React.MouseEvent) {
+    if (UserAgent.isElectron && !event.defaultPrevented) {
+      event.preventDefault();
+    }
+  }
   
   let page = <></>;
   switch (props.view) {
@@ -187,7 +193,11 @@ function MainWindow(props: MainWindowProps) {
   
   return (
     <ThemeProvider theme={appTheme}>
-      <div className={classes.root} style={{ backgroundColor: appTheme.palette.background.default }}>
+      <div
+        className={classes.root}
+        style={{ backgroundColor: appTheme.palette.background.default }}
+        onContextMenu={handleMainWindowContextMenu}
+      >
         <CssBaseline/>
         <ConfirmationDialog theme={props.theme}
                             open={isDeleteAllNotesDialogOpen}

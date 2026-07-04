@@ -30,7 +30,12 @@
       "titlePlaceholder": "Title",
       "contentPlaceholder": "Type here...",
       "lastModified": "Last modified:",
-      "at": "at"
+      "at": "at",
+      "contextMenu": {
+        "delete": "Delete note",
+        "color": "Note color",
+        "noteColor": "Note color..."
+      }
     },
     "deleteAllNotesDialog": {
       "title": "Delete All Notes",
