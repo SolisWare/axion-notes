@@ -55,9 +55,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     alignItems: "center"
   },
   toolbarBtn: {
-    width: 130,
-    minHeight: 36,
-    padding: "4px 10px !important",
+    width: 118,
+    minHeight: 32,
+    padding: "3px 8px !important",
   },
   windowsToolbarBtn: {
     backgroundColor: ({ appColors }) => appColors.WINDOWS_TOOLBAR_BUTTON_BACKGROUND + " !important",
@@ -93,12 +93,22 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    gap: 7,
     minWidth: 0,
-    width: "100%"
+    width: "100%",
+    height: "100%",
+    "& svg": {
+      flex: "0 0 auto"
+    }
   },
   toolbarBtnText: {
-    lineHeight: "1.15 !important",
-    marginLeft: "7px !important",
+    maxWidth: 76,
+    minHeight: 24,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    lineHeight: "13px !important",
+    marginLeft: "0 !important",
     overflowWrap: "anywhere",
     textAlign: "center",
     whiteSpace: "normal"
@@ -110,8 +120,8 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     color: ({ appColors }) => appColors.WINDOWS_TOOLBAR_TEXT
   },
   toolbarSettingsBtn: {
-    width: 130,
-    minHeight: 36,
+    width: 118,
+    minHeight: 32,
     color: "#fff !important"
   }
 }));
@@ -196,7 +206,7 @@ function WebToolbar(props: WebToolbarProps) {
 }
 
 function WebToolbarLabel(props: WebToolbarLabelProps) {
-  const TOOLBAR_SINGLE_LINE_TEXT_WIDTH = 88;
+  const TOOLBAR_SINGLE_LINE_TEXT_WIDTH = 76;
   const TOOLBAR_TEXT_MAX_FONT_SIZE = 14;
   const TOOLBAR_TEXT_MIN_FONT_SIZE = 7;
 
