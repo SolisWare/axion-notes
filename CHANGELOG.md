@@ -7,6 +7,9 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Updated the language selector to show English language names with native labels generated from the language code
 - Shared translation loading between React and Electron using the supported language list
 - Reduced reported dependency vulnerabilities from 40 to 25 through compatible package updates
+- Fixed date and time format radio buttons and preview alignment in General settings
+- Fixed wrapped web toolbar button labels so translated text stays vertically centered
+- Fixed new note placement so newly created notes appear first before the next sort is applied
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text

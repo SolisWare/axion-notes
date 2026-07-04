@@ -18,20 +18,6 @@ export function sortNotes(notes: NoteType[], notesSortOrder: NoteSortOrder): Not
     .map(({ note }) => note);
 }
 
-export function insertNoteBySortOrder(notes: NoteType[], note: NoteType, notesSortOrder: NoteSortOrder): NoteType[] {
-  const insertionIndex = notes.findIndex((existingNote) => compareNotes(note, existingNote, notesSortOrder) < 0);
-
-  if (insertionIndex === -1) {
-    return [...notes, note];
-  }
-
-  return [
-    ...notes.slice(0, insertionIndex),
-    note,
-    ...notes.slice(insertionIndex)
-  ];
-}
-
 function compareNotes(firstNote: NoteType, secondNote: NoteType, notesSortOrder: NoteSortOrder): number {
   switch (notesSortOrder) {
     case NoteSortOrder.TITLE_ASC:

@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { UserAgent } from "../../utils/UserAgent";
-import { insertNoteBySortOrder, sortNotes } from "../../utils/noteSorting";
+import { sortNotes } from "../../utils/noteSorting";
 
 type MainWindowProps = {
   view: AppView;
@@ -66,7 +66,7 @@ function MainWindow(props: MainWindowProps) {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const previousNotesSortOrder = useRef(appSettings.notesSortOrder);
+  const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
@@ -85,13 +85,13 @@ function MainWindow(props: MainWindowProps) {
       lastModifiedOn: new Date()
     };
 
-    setNotes((prevNotes) => insertNoteBySortOrder(prevNotes, newNote, appSettings.notesSortOrder));
-  }, [appSettings.defaultNoteColor, appSettings.notesSortOrder]);
+    setNotes((prevNotes) => [newNote, ...prevNotes]);
+  }, [appSettings.defaultNoteColor]);
 
   useEffect(() => {
     window.api.storage.getNotes()
       .then((notes: NoteType[]) => {
-        setNotes(sortNotes(notes, previousNotesSortOrder.current));
+        setNotes(sortNotes(notes, currentNotesSortOrder.current));
       })
       .catch((err: Error) => {
         console.error('Unexpected error loading notes:', err.message);
@@ -100,17 +100,17 @@ function MainWindow(props: MainWindowProps) {
   }, []);
 
   useEffect(() => {
-    if (previousNotesSortOrder.current === appSettings.notesSortOrder) {
+    if (currentNotesSortOrder.current === appSettings.notesSortOrder) {
       return;
     }
 
-    previousNotesSortOrder.current = appSettings.notesSortOrder;
+    currentNotesSortOrder.current = appSettings.notesSortOrder;
     setNotes((prevNotes) => sortNotes(prevNotes, appSettings.notesSortOrder));
   }, [appSettings.notesSortOrder]);
 
   useEffect(() => {
     return window.api.noteSort.onSortRequest(() => {
-      setNotes((prevNotes) => sortNotes(prevNotes, previousNotesSortOrder.current));
+      setNotes((prevNotes) => sortNotes(prevNotes, currentNotesSortOrder.current));
     });
   }, []);
 
