@@ -36,15 +36,17 @@ function General(props: GeneralProps) {
   const dateTimeFormatPreview = new Date();
   const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
   const noteSortOptions = [
-    { value: NoteSortOrder.CUSTOM, label: t("settingsWindow.general.sortOptions.custom") },
     { value: NoteSortOrder.DATE_CREATED_ASC, label: t("settingsWindow.general.sortOptions.dateCreatedAsc") },
     { value: NoteSortOrder.DATE_CREATED_DESC, label: t("settingsWindow.general.sortOptions.dateCreatedDesc") },
     { value: NoteSortOrder.LAST_MODIFIED, label: t("settingsWindow.general.sortOptions.lastModified") },
     { value: NoteSortOrder.TITLE_ASC, label: t("settingsWindow.general.sortOptions.titleAsc") },
     { value: NoteSortOrder.TITLE_DESC, label: t("settingsWindow.general.sortOptions.titleDesc") }
   ];
-  const selectedNoteSortLabel = noteSortOptions.find((option) => option.value === props.appSettings.notesSortOrder)?.label ?? "";
   const isResortNotesDisabled = props.appSettings.notesSortOrder === NoteSortOrder.CUSTOM;
+  const customNoteSortLabel = t("settingsWindow.general.sortOptions.custom");
+  const selectedNoteSortLabel = isResortNotesDisabled
+    ? customNoteSortLabel
+    : noteSortOptions.find((option) => option.value === props.appSettings.notesSortOrder)?.label ?? "";
 
   function handleKeepNotesOnTopChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -101,6 +103,9 @@ function General(props: GeneralProps) {
                 value={props.appSettings.notesSortOrder}
                 onChange={handleNoteSortOrderChange}
               >
+                {isResortNotesDisabled && (
+                  <option value={NoteSortOrder.CUSTOM} hidden>{customNoteSortLabel}</option>
+                )}
                 {noteSortOptions.map((option) => (
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
