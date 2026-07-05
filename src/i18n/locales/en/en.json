@@ -89,6 +89,13 @@
         "light": "Light",
         "dark": "Dark"
       },
+      "noteSize": "Note size",
+      "noteSizeOptions": {
+        "compact": "Compact",
+        "default": "Default",
+        "large": "Large",
+        "wide": "Wide"
+      },
       "newNoteDefaultColor": "New note default color",
       "noteColors": {
         "auto": "Auto",

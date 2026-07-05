@@ -10,6 +10,7 @@ import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
+import { NoteSizePreference } from "./noteSizePreference";
 import { DEFAULT_LANGUAGE } from "../i18n/languages";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -23,7 +24,8 @@ export const defaultAppSettings: AppSettings = {
   language: DEFAULT_LANGUAGE,
   dateFormat: DateFormat.MonthDayYearSlash,
   timeFormat: TimeFormat.Regular,
-  noteFont: NoteFontPreference.SYSTEM
+  noteFont: NoteFontPreference.SYSTEM,
+  noteSize: NoteSizePreference.DEFAULT
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {

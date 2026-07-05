@@ -10,6 +10,7 @@ import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
 import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
 import { getNoteFontFamily, NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
 import styles from "./SettingsPages.module.css";
@@ -63,6 +64,15 @@ function Appearance(props: AppearanceProps) {
       ...props.appSettings,
       defaultNoteColor: event.target.value as DefaultNoteColorPreference
     });
+  }
+
+  function handleNoteSizeChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      noteSize: event.target.value as NoteSizePreference
+    });
+
+    event.currentTarget.blur();
   }
 
   function handleNoteFontChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -119,6 +129,22 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.radioControl} aria-hidden="true" />
               </label>
             </fieldset>
+          </div>
+          <div className={styles.settingsRow}>
+            <label className={styles.settingsSectionTitle} htmlFor="note-size">
+              {t("settingsWindow.appearance.noteSize")}
+            </label>
+            <select
+              className={styles.settingsSelect}
+              id="note-size"
+              value={props.appSettings.noteSize}
+              onChange={handleNoteSizeChange}
+            >
+              <option value={NoteSizePreference.COMPACT}>{t("settingsWindow.appearance.noteSizeOptions.compact")}</option>
+              <option value={NoteSizePreference.DEFAULT}>{t("settingsWindow.appearance.noteSizeOptions.default")}</option>
+              <option value={NoteSizePreference.LARGE}>{t("settingsWindow.appearance.noteSizeOptions.large")}</option>
+              <option value={NoteSizePreference.WIDE}>{t("settingsWindow.appearance.noteSizeOptions.wide")}</option>
+            </select>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
