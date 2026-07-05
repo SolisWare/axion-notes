@@ -7,7 +7,7 @@
 import { ipcMain } from "electron";
 import { NoteType } from "../../src/models/NoteType";
 import { channels } from "./channels";
-import { deleteAllNotes, deleteNote, getNotes, setNote } from "../storage/noteStorage";
+import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "../storage/noteStorage";
 
 type StorageIpcOptions = {
   appDataDir: string;
@@ -16,6 +16,10 @@ type StorageIpcOptions = {
 export function registerStorageIpc(options: StorageIpcOptions): void {
   ipcMain.on(channels.storage.setNote, (_, note: NoteType) => {
     setNote(options.appDataDir, note);
+  });
+
+  ipcMain.on(channels.storage.setNoteOrder, (_, noteIds: string[]) => {
+    setNoteOrder(options.appDataDir, noteIds);
   });
 
   ipcMain.handle(channels.storage.getNotes, async () => {

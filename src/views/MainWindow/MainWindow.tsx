@@ -23,6 +23,7 @@ import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
+import { NoteSortOrder } from "../../settings/NoteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
 import { sortNotes } from "../../utils/noteSorting";
 
@@ -153,6 +154,37 @@ function MainWindow(props: MainWindowProps) {
       prevNotes.map((prevNote) => prevNote.id === note.id ? note : prevNote)
     );
   }
+
+  function handleNoteReorder(activeNoteId: string, overNoteId: string) {
+    if (activeNoteId === overNoteId) {
+      return;
+    }
+
+    currentNotesSortOrder.current = NoteSortOrder.CUSTOM;
+
+    setNotes((prevNotes) => {
+      const activeNoteIndex = prevNotes.findIndex((note) => note.id === activeNoteId);
+      const overNoteIndex = prevNotes.findIndex((note) => note.id === overNoteId);
+
+      if (activeNoteIndex < 0 || overNoteIndex < 0) {
+        return prevNotes;
+      }
+
+      const reorderedNotes = [...prevNotes];
+      const [activeNote] = reorderedNotes.splice(activeNoteIndex, 1);
+      reorderedNotes.splice(overNoteIndex, 0, activeNote);
+      window.api.storage.setNoteOrder(reorderedNotes.map((note) => note.id));
+
+      return reorderedNotes;
+    });
+
+    if (appSettings.notesSortOrder !== NoteSortOrder.CUSTOM) {
+      props.onAppSettingsChange({
+        ...appSettings,
+        notesSortOrder: NoteSortOrder.CUSTOM
+      });
+    }
+  }
   
   function handleDeleteAllNotes() {
     setNotes([]);
@@ -185,10 +217,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   
   return (

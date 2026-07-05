@@ -14,6 +14,10 @@ export const storageApi = {
     send(channels.storage.setNote, note);
   },
 
+  setNoteOrder: (noteIds: string[]) => {
+    send(channels.storage.setNoteOrder, noteIds);
+  },
+
   getNotes: async (): Promise<NoteType[]> => {
     try {
       const notes = await receive<NoteType[]>(channels.storage.getNotes);

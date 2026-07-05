@@ -7,8 +7,10 @@
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLayoutEffect, useRef, useState } from "react";
-import Note from "./Note";
+import { closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import EmptyNoteList from "./EmptyNoteList";
+import SortableNote from "./SortableNote";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
@@ -25,6 +27,7 @@ type NoteListProps = {
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
 }
 
 const NOTE_GRID_GAP = 25;
@@ -47,10 +50,16 @@ function NoteList (props: NoteListProps) {
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const classes = useStyles();
   const isNoteListEmpty = props.notes.length <= 0;
+  const sensors = useSensors(useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: 8
+    }
+  }));
   const [columnCount, setColumnCount] = useState(1);
   const noteGridStyle = {
     gridTemplateColumns: `repeat(${columnCount}, ${noteSizeDefinition.width}px)`
   };
+  const noteIds = props.notes.map((note) => note.id);
 
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
@@ -74,6 +83,14 @@ function NoteList (props: NoteListProps) {
     return () => window.removeEventListener("resize", updateColumnCount);
   }, [noteSizeDefinition.width, props.notes.length]);
   
+  function handleDragEnd(event: DragEndEvent) {
+    if (!event.over || event.active.id === event.over.id) {
+      return;
+    }
+
+    props.handleNoteReorder(String(event.active.id), String(event.over.id));
+  }
+
   return (
     <div className={classes.wrapper} ref={wrapperRef}>
       {isNoteListEmpty ?
@@ -81,22 +98,30 @@ function NoteList (props: NoteListProps) {
           <EmptyNoteList theme={props.theme} />
         </>
         :
-        <div className={classes.noteGrid} style={noteGridStyle}>
-          {props.notes.map((note) => (
-            <Note
-              key={note.id}
-              theme={props.theme}
-              note={note}
-              dateFormat={props.dateFormat}
-              timeFormat={props.timeFormat}
-              noteFont={props.noteFont}
-              noteSize={props.noteSize}
-              handleNoteSave={props.handleNoteSave}
-              handleDeleteNoteButton={props.handleDeleteNoteButton}
-            />
-            ))
-          }
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={noteIds} strategy={rectSortingStrategy}>
+            <div className={classes.noteGrid} style={noteGridStyle}>
+              {props.notes.map((note) => (
+                <SortableNote
+                  key={note.id}
+                  note={note}
+                  theme={props.theme}
+                  dateFormat={props.dateFormat}
+                  timeFormat={props.timeFormat}
+                  noteFont={props.noteFont}
+                  noteSize={props.noteSize}
+                  handleNoteSave={props.handleNoteSave}
+                  handleDeleteNoteButton={props.handleDeleteNoteButton}
+                />
+                ))
+              }
+            </div>
+          </SortableContext>
+        </DndContext>
       }
     </div>
   );

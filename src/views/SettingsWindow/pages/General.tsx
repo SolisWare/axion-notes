@@ -36,6 +36,7 @@ function General(props: GeneralProps) {
   const dateTimeFormatPreview = new Date();
   const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
   const noteSortOptions = [
+    { value: NoteSortOrder.CUSTOM, label: t("settingsWindow.general.sortOptions.custom") },
     { value: NoteSortOrder.DATE_CREATED_ASC, label: t("settingsWindow.general.sortOptions.dateCreatedAsc") },
     { value: NoteSortOrder.DATE_CREATED_DESC, label: t("settingsWindow.general.sortOptions.dateCreatedDesc") },
     { value: NoteSortOrder.LAST_MODIFIED, label: t("settingsWindow.general.sortOptions.lastModified") },

@@ -65,11 +65,14 @@ export function setNote(note: NoteType): void {
   }
 }
 
+export function setNoteOrder(noteIds: string[]): void {
+  writeNoteIds(noteIds);
+}
+
 export async function getNotes(): Promise<NoteType[]> {
   return readNoteIds()
     .map(readNote)
-    .filter((note): note is NoteType => note !== null)
-    .sort((oldestNote, latestNote) => oldestNote.createdOn.getTime() - latestNote.createdOn.getTime());
+    .filter((note): note is NoteType => note !== null);
 }
 
 export function deleteNote(noteId: string): void {

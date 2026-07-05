@@ -65,6 +65,7 @@
       "requiresRestart": "(Requires restart)",
       "sortNotesBy": "Sort notes by",
       "sortOptions": {
+        "custom": "Custom order",
         "dateCreatedAsc": "Date created (oldest first)",
         "dateCreatedDesc": "Date created (newest first)",
         "lastModified": "Last modified",

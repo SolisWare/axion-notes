@@ -6,7 +6,7 @@
  */
 import { NoteType } from "../../models/NoteType";
 import i18n from "../../i18n/i18n";
-import { deleteAllNotes, deleteNote, getNotes, setNote } from "./noteStorage";
+import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "./noteStorage";
 
 export const storageApi = {
 
@@ -15,6 +15,14 @@ export const storageApi = {
       setNote(note);
     } catch (err) {
       console.error("Failed to save browser note:", err);
+    }
+  },
+
+  setNoteOrder: (noteIds: string[]) => {
+    try {
+      setNoteOrder(noteIds);
+    } catch (err) {
+      console.error("Failed to save browser note order:", err);
     }
   },
 

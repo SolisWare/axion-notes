@@ -8,6 +8,10 @@ import { NoteType } from "../models/NoteType";
 import { NoteSortOrder } from "../settings/NoteSortOrder";
 
 export function sortNotes(notes: NoteType[], notesSortOrder: NoteSortOrder): NoteType[] {
+  if (notesSortOrder === NoteSortOrder.CUSTOM) {
+    return notes;
+  }
+
   return notes
     .map((note, index) => ({ note, index }))
     .sort((first, second) => {

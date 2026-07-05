@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 export enum NoteSortOrder {
+  CUSTOM = "custom",
   DATE_CREATED_ASC = "dateCreatedAsc",
   DATE_CREATED_DESC = "dateCreatedDesc",
   LAST_MODIFIED = "lastModified",

@@ -16,6 +16,7 @@ interface IElectronAPI {
     getNotes: () => Promise<NoteType[]>;
     getNotesFolderLocation: () => Promise<string>;
     setNote: (note: NoteType) => void;
+    setNoteOrder: (noteIds: string[]) => void;
     deleteNote: (noteId: string) => void;
     deleteAllNotes: () => void;
   },
