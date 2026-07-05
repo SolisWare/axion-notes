@@ -12,6 +12,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed new note placement so newly created notes appear first before the next sort is applied
 - Added a note context menu for deleting notes and changing individual note colors
 - Added a Note font setting with a live preview for changing note title and content fonts
+- Added a Note size setting for changing note card dimensions with four predefined sizes
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text

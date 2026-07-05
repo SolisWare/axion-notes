@@ -26,11 +26,11 @@ export const NOTE_SIZE_DEFINITIONS: Record<NoteSizePreference, NoteSizeDefinitio
     height: 250
   },
   [NoteSizePreference.LARGE]: {
-    width: 320,
-    height: 290
+    width: 340,
+    height: 310
   },
   [NoteSizePreference.WIDE]: {
-    width: 360,
+    width: 420,
     height: 250
   }
 };

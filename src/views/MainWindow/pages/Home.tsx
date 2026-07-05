@@ -7,6 +7,7 @@
 import NoteList from "../../../components/NoteList";
 import { NoteType } from "../../../models/NoteType";
 import { NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../../../utils/dt-formatter/TimeFormat";
@@ -17,6 +18,7 @@ type HomeProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 }
@@ -30,6 +32,7 @@ function Home(props: HomeProps) {
         dateFormat={props.dateFormat}
         timeFormat={props.timeFormat}
         noteFont={props.noteFont}
+        noteSize={props.noteSize}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
         handleNoteSave={props.handleNoteSave}
       />

@@ -18,6 +18,7 @@ import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useStat
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey, NoteColors } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
@@ -27,6 +28,7 @@ type NoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 };
@@ -43,8 +45,6 @@ type NoteContextMenuPosition = {
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   note: {
-    width: "275px",
-    height: "250px",
     marginBottom: "10px",
   },
   noteInnerContainer: {
@@ -64,7 +64,8 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     justifyContent: "space-between"
   },
   noteBody: {
-    height: "192px",
+    flex: "1 1 auto",
+    minHeight: 0,
     display: "flex",
     flexDirection: "column"
   },
@@ -225,6 +226,7 @@ function Note(props: NoteProps) {
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
+  const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const noteColorKeys = Object.values(NoteColorKey);
   const noteContextColorLabel = hoveredNoteColor === null
     ? t("mainWindow.note.contextMenu.noteColor")
@@ -338,13 +340,17 @@ function Note(props: NoteProps) {
       elevation={4}
       className={classes.note}
       onContextMenu={handleNoteContextMenu}
-      style={isDarkTheme ? {
-        boxShadow: [
-          "0px 2px 4px -1px rgba(118, 137, 156, 0.2)",
-          "0px 4px 5px 0px rgba(118, 137, 156, 0.14)",
-          "0px 1px 10px 0px rgba(118, 137, 156, 0.12)"
-        ].join(",")
-      } : undefined}
+      style={{
+        width: noteSizeDefinition.width,
+        height: noteSizeDefinition.height,
+        ...(isDarkTheme ? {
+          boxShadow: [
+            "0px 2px 4px -1px rgba(118, 137, 156, 0.2)",
+            "0px 4px 5px 0px rgba(118, 137, 156, 0.14)",
+            "0px 1px 10px 0px rgba(118, 137, 156, 0.12)"
+          ].join(",")
+        } : {})
+      }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
         <div className={classes.noteContentWrapper}>
