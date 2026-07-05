@@ -393,6 +393,17 @@
   text-decoration: underline;
 }
 
+.linkButton:disabled {
+  color: var(--settings-section-text);
+  opacity: 0.55;
+  text-decoration: none;
+}
+
+.linkButton:disabled:hover {
+  color: var(--settings-section-text);
+  text-decoration: none;
+}
+
 .linkButton:focus-visible {
   outline: 2px solid var(--settings-nav-selected-border);
   outline-offset: 3px;

@@ -44,6 +44,7 @@ function General(props: GeneralProps) {
     { value: NoteSortOrder.TITLE_DESC, label: t("settingsWindow.general.sortOptions.titleDesc") }
   ];
   const selectedNoteSortLabel = noteSortOptions.find((option) => option.value === props.appSettings.notesSortOrder)?.label ?? "";
+  const isResortNotesDisabled = props.appSettings.notesSortOrder === NoteSortOrder.CUSTOM;
 
   function handleKeepNotesOnTopChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -104,7 +105,7 @@ function General(props: GeneralProps) {
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </FittedSelect>
-              <button className={styles.linkButton} type="button" onClick={window.api.noteSort.requestSort}>
+              <button className={styles.linkButton} disabled={isResortNotesDisabled} type="button" onClick={window.api.noteSort.requestSort}>
                 <SyncIcon fontSize="small" />
                 <span>{t("settingsWindow.general.resortNotes")}</span>
               </button>
