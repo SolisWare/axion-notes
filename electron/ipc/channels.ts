@@ -13,7 +13,8 @@ export const channels = {
     showWelcome: "menu.showWelcome",
     deleteAllNotes: "menu.deleteAllNotes",
     setNewNoteEnabled: "menu.setNewNoteEnabled",
-    setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled"
+    setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled",
+    setEditSelectionState: "menu.setEditSelectionState"
   },
   noteSort: {
     requestSort: "noteSort.requestSort",

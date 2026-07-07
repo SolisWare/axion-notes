@@ -14,6 +14,10 @@ export const menuIds = {
   },
   edit: {
     root: "editMenu",
+    cut: "cut",
+    copy: "copy",
+    paste: "paste",
+    delete: "delete",
     deleteAllNotes: "deleteAllNotes"
   }
 } as const;

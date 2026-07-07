@@ -46,6 +46,7 @@ export function installBrowserApi(): void {
       onMenuShowWelcome: () => unsubscribe,
       onMenuDeleteAllNotes: () => unsubscribe,
       setDeleteAllNotesEnabled: noop,
+      setEditSelectionState: noop,
       setNewNoteEnabled: noop
     },
     noteSort: {

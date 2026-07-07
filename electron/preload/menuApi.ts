@@ -6,6 +6,7 @@
  */
 import { channels } from "../ipc/channels";
 import { off, on, send } from "./ipcHelpers";
+import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
 
 export const menuApi = {
 
@@ -29,6 +30,10 @@ export const menuApi = {
   
   setDeleteAllNotesEnabled: (enabled: boolean) => {
     send(channels.menu.setDeleteAllNotesEnabled, enabled);
+  },
+
+  setEditSelectionState: (state: MenuEditSelectionState) => {
+    send(channels.menu.setEditSelectionState, state);
   },
 
   setNewNoteEnabled: (enabled: boolean) => {

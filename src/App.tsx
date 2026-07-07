@@ -17,6 +17,7 @@ import { SystemTheme } from './theme/SystemTheme';
 import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
 import { resolveAppThemePreference } from './settings/AppThemePreference';
+import { MenuEditSelectionState } from './models/MenuEditSelectionState';
 
 export enum AppView {
   home = "/home",
@@ -30,6 +31,10 @@ function App() {
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
   const [startupMainWindowPage, setStartupMainWindowPage] = useState<AppView>(AppView.welcome);
   const settingsBroadcastChannel = useRef<BroadcastChannel | undefined>();
+  const currentMenuEditSelectionState = useRef<MenuEditSelectionState>({
+    hasSelection: false,
+    hasEditableSelection: false
+  });
 
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
 
@@ -78,6 +83,78 @@ function App() {
     return () => {
       settingsBroadcastChannel.current = undefined;
       channel.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!UserAgent.isElectron) {
+      return;
+    }
+
+    function getTextInputSelectionState(element: Element | null): MenuEditSelectionState | null {
+      if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) {
+        return null;
+      }
+
+      const selectionStart = element.selectionStart ?? 0;
+      const selectionEnd = element.selectionEnd ?? 0;
+      const hasSelection = selectionEnd > selectionStart;
+      const hasEditableSelection = hasSelection && !element.disabled && !element.readOnly;
+
+      return { hasSelection, hasEditableSelection };
+    }
+
+    function getDocumentSelectionState(): MenuEditSelectionState {
+      const textInputSelectionState = getTextInputSelectionState(document.activeElement);
+
+      if (textInputSelectionState) {
+        return textInputSelectionState;
+      }
+
+      const selection = document.getSelection();
+      const hasSelection = (selection?.toString().length ?? 0) > 0;
+      const activeElement = document.activeElement;
+      const hasEditableSelection = hasSelection && activeElement instanceof HTMLElement && activeElement.isContentEditable;
+
+      return { hasSelection, hasEditableSelection };
+    }
+
+    function updateEditSelectionState() {
+      const nextState = getDocumentSelectionState();
+      const currentState = currentMenuEditSelectionState.current;
+
+      if (
+        currentState.hasSelection === nextState.hasSelection &&
+        currentState.hasEditableSelection === nextState.hasEditableSelection
+      ) {
+        window.api.menu.setEditSelectionState(nextState);
+        return;
+      }
+
+      currentMenuEditSelectionState.current = nextState;
+      window.api.menu.setEditSelectionState(nextState);
+    }
+
+    function scheduleEditSelectionStateUpdate() {
+      window.setTimeout(updateEditSelectionState, 0);
+    }
+
+    updateEditSelectionState();
+
+    document.addEventListener("selectionchange", scheduleEditSelectionStateUpdate);
+    window.addEventListener("focus", scheduleEditSelectionStateUpdate);
+    window.addEventListener("keyup", scheduleEditSelectionStateUpdate);
+    window.addEventListener("mouseup", scheduleEditSelectionStateUpdate);
+    window.addEventListener("pointerup", scheduleEditSelectionStateUpdate);
+    const clipboardRefreshInterval = window.setInterval(updateEditSelectionState, 1000);
+
+    return () => {
+      document.removeEventListener("selectionchange", scheduleEditSelectionStateUpdate);
+      window.removeEventListener("focus", scheduleEditSelectionStateUpdate);
+      window.removeEventListener("keyup", scheduleEditSelectionStateUpdate);
+      window.removeEventListener("mouseup", scheduleEditSelectionStateUpdate);
+      window.removeEventListener("pointerup", scheduleEditSelectionStateUpdate);
+      window.clearInterval(clipboardRefreshInterval);
     };
   }, []);
 

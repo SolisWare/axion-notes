@@ -7,6 +7,7 @@
 import { NoteType } from '../../src/models/NoteType';
 import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
+import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
 
 interface IElectronAPI {
   appWindow: {
@@ -25,6 +26,7 @@ interface IElectronAPI {
     onMenuShowWelcome: (callback: () => void) => () => void;
     onMenuDeleteAllNotes: (callback: () => void) => () => void;
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
+    setEditSelectionState: (state: MenuEditSelectionState) => void;
     setNewNoteEnabled: (enabled: boolean) => void;
   },
   noteSort: {
