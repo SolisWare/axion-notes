@@ -24,6 +24,10 @@ export const SUPPORTED_LANGUAGES = [
   {
     code: "et",
     label: "Estonian"
+  },
+  {
+    code: "pl",
+    label: "Polish"
   }
 ] as const satisfies readonly Language[];
 

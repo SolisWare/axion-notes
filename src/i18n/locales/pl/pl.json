@@ -1,0 +1,179 @@
+{
+  "common": {
+    "cancel": "Anuluj",
+    "close": "Zamknij"
+  },
+  "mainWindow": {
+    "welcome": {
+      "title": "Witamy w aplikacji Axion Notes!",
+      "intro": "Twoje przemyślenia - zawsze blisko i bez chaosu!",
+      "getStarted": "Rozpocznij",
+      "doNotShowAgain": "Nie pokazuj więcej ekranu powitalnego",
+      "preview": {
+        "today": "Dziś",
+        "freshWorkspace": "Nowa przestrzeń robocza",
+        "ideas": "Pomysły",
+        "colorfulNotes": "Kolorowe notatki",
+        "next": "Następny"
+      }
+    },
+    "toolbar": { 
+      "newNote": "Nowa notatka",
+      "deleteAll": "Usuń wszyskie notatki",
+      "settings": "Ustawienia"
+    },
+    "emptyNotes": {
+      "title": "Nie masz jeszcze żadnych notatek!",
+      "addFirstNote": "Naciśnij {{shortcut}} aby dodać swoją pierwszą notatkę"
+    },
+    "note": {
+      "titlePlaceholder": "Tytuł",
+      "contentPlaceholder": "Napisz notatkę...",
+      "lastModified": "Zmodyfikowano:",
+      "at": "o",
+      "contextMenu": {
+        "moveToTop": "Przenieś na początek",
+        "moveToBottom": "Przenieś na koniec",
+        "duplicate": "Duplikuj",
+        "hideTitle": "Ukryj tytuł",
+        "showTitle": "Pokaż tytuł",
+        "delete": "Usuń notatkę",
+        "noteColorAriaLabel": "Kolor notatki",
+        "noteColor": "Kolor notatki..."
+      }
+    },
+    "deleteAllNotesDialog": {
+      "title": "Usuń wszystkie notatki",
+      "message": "Czy jesteś pewien? Ta akcja jest nieodwracalna!",
+      "confirmLabel": "Usuń wszystkie notatki"
+    }
+  },
+  "settingsWindow": {
+    "navigation": {
+      "sections": {
+        "preferences": "Preferencje",
+        "storage": "Dane",
+        "info": "Info"
+      },
+      "pages": {
+        "general": "Ogólne",
+        "appearance": "Wygląd",
+        "shortcuts": "Skróty klawiszowe",
+        "dataStorage": "Przechowywanie danych",
+        "license": "Licencja",
+        "links": "Linki",
+        "about": "O aplikacji"
+      }
+    },
+    "general": {
+      "language": "Język",
+      "requiresRestart": "(Wymaga ponownego uruchomienia)",
+      "sortNotesBy": "Sortuj notatki według",
+      "sortOptions": {
+        "custom": "Własna kolejność",
+        "dateCreatedAsc": "Date utworzenia (najpierw stare)",
+        "dateCreatedDesc": "Data utworzenia (najpierw nowe)",
+        "lastModified": "Ostatnio zmodyfikowano:",
+        "titleAsc": "Tytuł A-Z",
+        "titleDesc": "Tytuł Z-A"
+      },
+      "resortNotes": "Sortuj ponownie",
+      "keepNotesOnTop": "Zachowaj okno aplikacji na górze",
+      "keepNotesOnTopDescription": "Okno z notatkami pozostaje ponad wszystkimi innymi okienkami",
+      "dateTimeFormat": "Format daty i godziny",
+      "timeFormat": "Format godzinny",
+      "dateTimeFormatExample": "Przykład:",
+      "timeFormatOptions": {
+        "regular": "12 godzin",
+        "military": "24 godziny"
+      }
+    },
+    "appearance": {
+      "applicationTheme": "Motyw aplikacji",
+      "themeOptions": {
+        "auto": "Systemowy",
+        "light": "Jasny",
+        "dark": "Ciemny"
+      },
+      "showNoteTitles": "Pokaż tytuły notatek",
+      "showNoteTitlesDescription": "Pokazuje lub ukrywa pole tytułu. To ustawienie może być nadpisane dla pojedynczej notatki.",
+      "noteSize": "Rozmiar notatki",
+      "noteSizeOptions": {
+        "compact": "Kompaktowy",
+        "default": "Standardowy",
+        "large": "Duży",
+        "wide": "Szeroki"
+      },
+      "newNoteDefaultColor": "Domyślny kolor nowych notatek",
+      "noteColors": {
+        "auto": "Automatyczny",
+        "yellow": "Żółty",
+        "green": "Zielony",
+        "indigo": "Indygo",
+        "red": "Czerwony",
+        "teal": "Turkusowy",
+        "lilac": "Jasny fiolet"
+      },
+      "noteFont": "Czcionka",
+      "noteFontOptions": {
+        "system": "Domyślna (systemowa)",
+        "serif": "Serif",
+        "sansSerif": "Sans-serif",
+        "monospace": "Monospace"
+      },
+      "noteFontPreview": "Zażółć gęślą jaźń."
+    },
+    "dataStorage": {
+      "notesFolderLocation": "Lokalizacja folderu z notatkami",
+      "settingsFolderLocation": "Lokalizacja folderu z ustawieniami",
+      "browserLocalStorage": "Lokalny magazyn przeglądarki"
+    },
+    "shortcuts": {
+      "newNote": "Nowa notatka",
+      "openSettings": "Otwórz ustawienia",
+      "deleteAllNotes": "Usuń wszystkie notatki",
+      "keys": {
+        "command": "Komenda",
+        "control": "Ctrl",
+        "shift": "Shift",
+        "backspace": "Backspace",
+        "comma": "Przecinek"
+      }
+    },
+    "links": {
+      "description": "Dziękujemy za wybór {{appName}}. Poniższe łącza pozwolą Ci śledzić nowe wydania, aktualizacje źródeł oraz inne projekty SolisWare.",
+      "website": {
+        "label": "Strona internetowa",
+        "description": "Odwiedź witrynę SolisWare by trzymać rękę na pulsie i pobierać nasze produkty."
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Śledź SolisWare na GitHubie aby odkryć aktualizacje, nowe wydania i źródła."
+      }
+    },
+    "about": {
+      "webVersionLabel": "Web",
+      "version": "Wersja {{version}}",
+      "rights": "Wszelkie prawa zastrzeżone."
+    }
+  },
+  "electron": {
+    "menu": {
+      "settings": "Ustawienia...",
+      "file": "Plik",
+      "newNote": "Nowa notatka...",
+      "edit": "Edycja",
+      "deleteAllNotes": "Usuń wszystkie notatki...",
+      "view": "Widok",
+      "toggleFullScreen": "Przełącz widok pełnego ekranu",
+      "welcome": "Ekran powitalny",
+      "viewLicense": "Przeczytaj licencję",
+      "visitWebsite": "Odwiedź witrynę SolisWare",
+      "checkoutGitHub": "Sprawdź GitHub"
+    },
+    "windows": {
+      "settings": "Ustawienia",
+      "license": "Licencja"
+    }
+  }
+}
