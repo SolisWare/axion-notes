@@ -155,6 +155,34 @@ function MainWindow(props: MainWindowProps) {
     );
   }
 
+  function handleDuplicateNote(note: NoteType) {
+    const now = new Date();
+    const duplicatedNote = {
+      ...note,
+      id: nanoid(),
+      createdOn: now,
+      lastModifiedOn: now
+    };
+
+    window.api.storage.setNote(duplicatedNote);
+    setNotes((prevNotes) => {
+      const noteIndex = prevNotes.findIndex((prevNote) => prevNote.id === note.id);
+
+      if (noteIndex < 0) {
+        return [duplicatedNote, ...prevNotes];
+      }
+
+      const nextNotes = [...prevNotes];
+      nextNotes.splice(noteIndex + 1, 0, duplicatedNote);
+
+      if (currentNotesSortOrder.current === NoteSortOrder.CUSTOM) {
+        window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
+      }
+
+      return nextNotes;
+    });
+  }
+
   function handleNoteReorder(activeNoteId: string, overNoteId: string) {
     if (activeNoteId === overNoteId) {
       return;
@@ -217,10 +245,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   
   return (
