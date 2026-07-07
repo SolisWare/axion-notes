@@ -32,6 +32,8 @@ type NoteProps = {
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleMoveNoteToBottom: (noteId: string) => void;
+  handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
 };
 
@@ -212,6 +214,16 @@ function Note(props: NoteProps) {
     props.handleDuplicateNote(latestNote.current);
   };
 
+  const handleContextMenuMoveNoteToTop = () => {
+    handleCloseNoteContextMenu();
+    props.handleMoveNoteToTop(note.id);
+  };
+
+  const handleContextMenuMoveNoteToBottom = () => {
+    handleCloseNoteContextMenu();
+    props.handleMoveNoteToBottom(note.id);
+  };
+
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
     handleDeleteNote();
@@ -333,6 +345,8 @@ function Note(props: NoteProps) {
           selectedColor={note.bgcolor}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
+          onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
+          onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}
         />
       )}

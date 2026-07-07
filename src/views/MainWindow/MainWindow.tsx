@@ -183,14 +183,34 @@ function MainWindow(props: MainWindowProps) {
     });
   }
 
+  function applyCustomNoteOrder(reorderNotes: (notes: NoteType[]) => NoteType[]) {
+    setNotes((prevNotes) => {
+      const reorderedNotes = reorderNotes(prevNotes);
+
+      if (reorderedNotes === prevNotes) {
+        return prevNotes;
+      }
+
+      currentNotesSortOrder.current = NoteSortOrder.CUSTOM;
+      window.api.storage.setNoteOrder(reorderedNotes.map((note) => note.id));
+
+      if (appSettings.notesSortOrder !== NoteSortOrder.CUSTOM) {
+        props.onAppSettingsChange({
+          ...appSettings,
+          notesSortOrder: NoteSortOrder.CUSTOM
+        });
+      }
+
+      return reorderedNotes;
+    });
+  }
+
   function handleNoteReorder(activeNoteId: string, overNoteId: string) {
     if (activeNoteId === overNoteId) {
       return;
     }
 
-    currentNotesSortOrder.current = NoteSortOrder.CUSTOM;
-
-    setNotes((prevNotes) => {
+    applyCustomNoteOrder((prevNotes) => {
       const activeNoteIndex = prevNotes.findIndex((note) => note.id === activeNoteId);
       const overNoteIndex = prevNotes.findIndex((note) => note.id === overNoteId);
 
@@ -201,17 +221,41 @@ function MainWindow(props: MainWindowProps) {
       const reorderedNotes = [...prevNotes];
       const [activeNote] = reorderedNotes.splice(activeNoteIndex, 1);
       reorderedNotes.splice(overNoteIndex, 0, activeNote);
-      window.api.storage.setNoteOrder(reorderedNotes.map((note) => note.id));
 
       return reorderedNotes;
     });
+  }
 
-    if (appSettings.notesSortOrder !== NoteSortOrder.CUSTOM) {
-      props.onAppSettingsChange({
-        ...appSettings,
-        notesSortOrder: NoteSortOrder.CUSTOM
-      });
-    }
+  function handleMoveNoteToTop(noteId: string) {
+    applyCustomNoteOrder((prevNotes) => {
+      const noteIndex = prevNotes.findIndex((note) => note.id === noteId);
+
+      if (noteIndex <= 0) {
+        return prevNotes;
+      }
+
+      const reorderedNotes = [...prevNotes];
+      const [note] = reorderedNotes.splice(noteIndex, 1);
+      reorderedNotes.unshift(note);
+
+      return reorderedNotes;
+    });
+  }
+
+  function handleMoveNoteToBottom(noteId: string) {
+    applyCustomNoteOrder((prevNotes) => {
+      const noteIndex = prevNotes.findIndex((note) => note.id === noteId);
+
+      if (noteIndex < 0 || noteIndex === prevNotes.length - 1) {
+        return prevNotes;
+      }
+
+      const reorderedNotes = [...prevNotes];
+      const [note] = reorderedNotes.splice(noteIndex, 1);
+      reorderedNotes.push(note);
+
+      return reorderedNotes;
+    });
   }
   
   function handleDeleteAllNotes() {
@@ -245,10 +289,10 @@ function MainWindow(props: MainWindowProps) {
       page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   
   return (

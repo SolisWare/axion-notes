@@ -23,6 +23,8 @@ type NoteContextMenuProps = {
   selectedColor: NoteColorKey;
   onDeleteNote: () => void;
   onDuplicateNote: () => void;
+  onMoveNoteToBottom: () => void;
+  onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
 };
 
@@ -53,6 +55,19 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => event.stopPropagation()}
     >
+      <div
+        className={styles.noteContextMenuItem}
+        onClick={props.onMoveNoteToTop}
+      >
+        {t("mainWindow.note.contextMenu.moveToTop")}
+      </div>
+      <div
+        className={styles.noteContextMenuItem}
+        onClick={props.onMoveNoteToBottom}
+      >
+        {t("mainWindow.note.contextMenu.moveToBottom")}
+      </div>
+      <Divider className={styles.noteContextMenuDivider} />
       <div
         className={styles.noteContextMenuItem}
         onClick={props.onDuplicateNote}

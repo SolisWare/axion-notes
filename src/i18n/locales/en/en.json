@@ -32,6 +32,8 @@
       "lastModified": "Last modified:",
       "at": "at",
       "contextMenu": {
+        "moveToTop": "Move to top",
+        "moveToBottom": "Move to bottom",
         "duplicate": "Duplicate",
         "delete": "Delete note",
         "noteColorAriaLabel": "Note color",

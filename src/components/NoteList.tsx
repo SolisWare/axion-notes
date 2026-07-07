@@ -27,6 +27,8 @@ type NoteListProps = {
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleMoveNoteToBottom: (noteId: string) => void;
+  handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
 }
@@ -118,6 +120,8 @@ function NoteList (props: NoteListProps) {
                   handleNoteSave={props.handleNoteSave}
                   handleDeleteNoteButton={props.handleDeleteNoteButton}
                   handleDuplicateNote={props.handleDuplicateNote}
+                  handleMoveNoteToBottom={props.handleMoveNoteToBottom}
+                  handleMoveNoteToTop={props.handleMoveNoteToTop}
                 />
                 ))
               }
