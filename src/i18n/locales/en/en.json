@@ -32,6 +32,7 @@
       "lastModified": "Last modified:",
       "at": "at",
       "contextMenu": {
+        "duplicate": "Duplicate",
         "delete": "Delete note",
         "noteColorAriaLabel": "Note color",
         "noteColor": "Note color..."

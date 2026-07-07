@@ -30,6 +30,7 @@ type NoteProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
+  handleDuplicateNote: (note: NoteType) => void;
   handleNoteSave: (note: NoteType) => void;
 };
 
@@ -217,6 +218,7 @@ function Note(props: NoteProps) {
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
   const [hoveredNoteColor, setHoveredNoteColor] = useState<NoteColorKey | null>(null);
+  const [isDuplicateMenuItemHovered, setDuplicateMenuItemHovered] = useState(false);
   const [isDeleteMenuItemHovered, setDeleteMenuItemHovered] = useState(false);
 
   const isDeleting = useRef(false);
@@ -288,7 +290,13 @@ function Note(props: NoteProps) {
   const handleCloseNoteContextMenu = () => {
     setNoteContextMenuPosition(null);
     setHoveredNoteColor(null);
+    setDuplicateMenuItemHovered(false);
     setDeleteMenuItemHovered(false);
+  };
+
+  const handleContextMenuDuplicateNote = () => {
+    handleCloseNoteContextMenu();
+    props.handleDuplicateNote(latestNote.current);
   };
 
   const handleContextMenuDeleteNote = () => {
@@ -419,15 +427,15 @@ function Note(props: NoteProps) {
       >
         <div
           className={classes.noteContextMenuItem}
-          style={isDeleteMenuItemHovered ? {
+          style={isDuplicateMenuItemHovered ? {
             backgroundColor: appColors.SETTINGS_NAV_HOVER_BACKGROUND,
             color: appColors.SETTINGS_NAV_HOVER_TEXT
           } : undefined}
-          onMouseEnter={() => setDeleteMenuItemHovered(true)}
-          onMouseLeave={() => setDeleteMenuItemHovered(false)}
-          onClick={handleContextMenuDeleteNote}
+          onMouseEnter={() => setDuplicateMenuItemHovered(true)}
+          onMouseLeave={() => setDuplicateMenuItemHovered(false)}
+          onClick={handleContextMenuDuplicateNote}
         >
-          {t("mainWindow.note.contextMenu.delete")}
+          {t("mainWindow.note.contextMenu.duplicate")}
         </div>
         <Divider className={classes.noteContextMenuDivider} />
         <div
@@ -476,6 +484,19 @@ function Note(props: NoteProps) {
         </div>
         <div className={classes.noteContextMenuLabelItem}>
           {noteContextColorLabel}
+        </div>
+        <Divider className={classes.noteContextMenuDivider} />
+        <div
+          className={classes.noteContextMenuItem}
+          style={isDeleteMenuItemHovered ? {
+            backgroundColor: appColors.SETTINGS_NAV_HOVER_BACKGROUND,
+            color: appColors.SETTINGS_NAV_HOVER_TEXT
+          } : undefined}
+          onMouseEnter={() => setDeleteMenuItemHovered(true)}
+          onMouseLeave={() => setDeleteMenuItemHovered(false)}
+          onClick={handleContextMenuDeleteNote}
+        >
+          {t("mainWindow.note.contextMenu.delete")}
         </div>
       </div>
       )}

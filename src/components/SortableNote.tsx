@@ -22,6 +22,7 @@ type SortableNoteProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
+  handleDuplicateNote: (note: NoteType) => void;
   handleNoteSave: (note: NoteType) => void;
 };
 
@@ -56,6 +57,7 @@ function SortableNote(props: SortableNoteProps) {
         noteSize={props.noteSize}
         handleNoteSave={props.handleNoteSave}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
+        handleDuplicateNote={props.handleDuplicateNote}
       />
     </div>
   );

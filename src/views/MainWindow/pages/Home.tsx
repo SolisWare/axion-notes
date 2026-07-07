@@ -20,6 +20,7 @@ type HomeProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   handleDeleteNoteButton: (noteId: string) => void;
+  handleDuplicateNote: (note: NoteType) => void;
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
 }
@@ -35,6 +36,7 @@ function Home(props: HomeProps) {
         noteFont={props.noteFont}
         noteSize={props.noteSize}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
+        handleDuplicateNote={props.handleDuplicateNote}
         handleNoteSave={props.handleNoteSave}
         handleNoteReorder={props.handleNoteReorder}
       />
