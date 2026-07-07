@@ -21,11 +21,13 @@ type NoteContextMenuProps = {
   theme: SystemTheme;
   position: NoteContextMenuPosition;
   selectedColor: NoteColorKey;
+  isTitleHidden: boolean;
   onDeleteNote: () => void;
   onDuplicateNote: () => void;
   onMoveNoteToBottom: () => void;
   onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
+  onToggleTitleVisibility: () => void;
 };
 
 function NoteContextMenu(props: NoteContextMenuProps) {
@@ -73,6 +75,14 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         onClick={props.onDuplicateNote}
       >
         {t("mainWindow.note.contextMenu.duplicate")}
+      </div>
+      <div
+        className={styles.noteContextMenuItem}
+        onClick={props.onToggleTitleVisibility}
+      >
+        {props.isTitleHidden
+          ? t("mainWindow.note.contextMenu.showTitle")
+          : t("mainWindow.note.contextMenu.hideTitle")}
       </div>
       <Divider className={styles.noteContextMenuDivider} />
       <div

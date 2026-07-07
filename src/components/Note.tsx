@@ -151,6 +151,7 @@ function Note(props: NoteProps) {
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
+  const isTitleHidden = note.isTitleHidden === true;
   const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
@@ -247,6 +248,20 @@ function Note(props: NoteProps) {
     props.handleNoteSave(updatedNote);
   };
 
+  const handleContextMenuToggleTitleVisibility = () => {
+    handleCloseNoteContextMenu();
+
+    const updatedNote = {
+      ...latestNote.current,
+      isTitleHidden: !isTitleHidden
+    };
+
+    latestNote.current = updatedNote;
+    hasUnsavedChanges.current = false;
+    setNote(updatedNote);
+    props.handleNoteSave(updatedNote);
+  };
+
   useEffect(() => {
     if (noteContextMenuPosition === null) {
       return;
@@ -288,25 +303,27 @@ function Note(props: NoteProps) {
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
-            <div className={classes.noteTitleWrapper}>
-              <input
-                key={props.theme}
-                className={classes.noteTitleInput}
-                style={{
-                  fontFamily: noteFontFamily,
-                  color: appColors.NOTE_TEXT,
-                  caretColor: appColors.NOTE_TEXT,
-                  WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
-                }}
-                value={note.title ?? ""}
-                placeholder={t("mainWindow.note.titlePlaceholder")}
-                onChange={handleTitleChange}
-              />
-              <div
-                className={classes.noteTitleUnderline}
-                style={{ backgroundColor: appColors.NOTE_TITLE_UNDERLINE }}
-              />
-            </div>
+            {!isTitleHidden && (
+              <div className={classes.noteTitleWrapper}>
+                <input
+                  key={props.theme}
+                  className={classes.noteTitleInput}
+                  style={{
+                    fontFamily: noteFontFamily,
+                    color: appColors.NOTE_TEXT,
+                    caretColor: appColors.NOTE_TEXT,
+                    WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
+                  }}
+                  value={note.title ?? ""}
+                  placeholder={t("mainWindow.note.titlePlaceholder")}
+                  onChange={handleTitleChange}
+                />
+                <div
+                  className={classes.noteTitleUnderline}
+                  style={{ backgroundColor: appColors.NOTE_TITLE_UNDERLINE }}
+                />
+              </div>
+            )}
             <div className={classes.noteContent}>
               <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
@@ -343,11 +360,13 @@ function Note(props: NoteProps) {
           theme={props.theme}
           position={noteContextMenuPosition}
           selectedColor={note.bgcolor}
+          isTitleHidden={isTitleHidden}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}
+          onToggleTitleVisibility={handleContextMenuToggleTitleVisibility}
         />
       )}
     </Paper>

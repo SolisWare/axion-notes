@@ -10,6 +10,7 @@ export type NoteType = {
   id: string;
   bgcolor: NoteColorKey;
   title?: string;
+  isTitleHidden?: boolean;
   content: string;
   createdOn: Date;
   lastModifiedOn: Date;
