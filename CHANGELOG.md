@@ -19,6 +19,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added global and per-note controls for showing or hiding note titles
 - Fixed Electron Edit menu actions so text commands enable only when actions are available and Delete appears only on macOS
 - Added a global setting for showing or hiding note footers
+- Fixed compact notes showing unnecessary scrollbars on Windows
+- Reduced the compact note size for denser note layouts
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text

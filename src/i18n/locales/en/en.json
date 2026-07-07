@@ -30,6 +30,7 @@
       "titlePlaceholder": "Title",
       "contentPlaceholder": "Type here...",
       "lastModified": "Last modified:",
+      "lastModifiedCompact": "Modified:",
       "at": "at",
       "contextMenu": {
         "moveToTop": "Move to top",

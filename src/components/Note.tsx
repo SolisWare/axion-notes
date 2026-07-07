@@ -154,7 +154,8 @@ function Note(props: NoteProps) {
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
-  const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
+  const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
+  const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
