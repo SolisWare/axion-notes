@@ -10,13 +10,14 @@ import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
 import NoteTextarea from "./NoteTextarea";
+import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
-import { getNoteColor, NoteColorKey, NoteColors } from "../theme/NoteColors";
+import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -37,11 +38,6 @@ type NoteProps = {
 type NoteDateLabelProps = {
   className: string;
   text: string;
-};
-
-type NoteContextMenuPosition = {
-  mouseX: number;
-  mouseY: number;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -134,79 +130,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     flex: "0 0 auto",
     width: 30,
     height: 30,
-  },
-  noteContextMenu: {
-    minWidth: 190,
-    position: "fixed",
-    zIndex: 1300,
-    padding: "7px 0",
-    borderRadius: 7,
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.2)",
-    cursor: "default",
-    userSelect: "none"
-  },
-  noteContextMenuItem: {
-    minHeight: 28,
-    display: "flex",
-    alignItems: "center",
-    padding: "4px 14px",
-    fontSize: 13,
-    lineHeight: "18px",
-    transition: "background-color 120ms ease, color 120ms ease"
-  },
-  noteContextMenuDivider: {
-    margin: "6px 8px !important"
-  },
-  noteContextColorRow: {
-    display: "flex",
-    alignItems: "center",
-    padding: "4px 8px"
-  },
-  noteContextColorStrip: {
-    display: "inline-flex",
-    alignItems: "center"
-  },
-  noteContextColorButton: {
-    width: 25,
-    height: 25,
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxSizing: "border-box",
-    padding: 0,
-    border: 0,
-    background: "transparent",
-    cursor: "default"
-  },
-  noteContextColorSwatch: {
-    width: 17,
-    height: 17,
-    position: "relative",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxSizing: "border-box",
-    border: "1px solid rgba(0, 0, 0, 0.3)",
-    borderRadius: "50%",
-    transition: "border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease",
-    pointerEvents: "none"
-  },
-  noteContextColorSelectionDot: {
-    width: 8,
-    height: 8,
-    boxSizing: "border-box",
-    border: "1px solid rgba(31, 41, 51, 0.35)",
-    borderRadius: "50%"
-  },
-  noteContextMenuLabelItem: {
-    minHeight: 28,
-    display: "flex",
-    alignItems: "center",
-    padding: "4px 14px",
-    color: ({ appColors }) => appColors.DIALOG_TEXT,
-    fontSize: 13,
-    lineHeight: "18px",
-    opacity: 0.72
   }
 }));
 
@@ -217,9 +140,6 @@ function Note(props: NoteProps) {
   
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
-  const [hoveredNoteColor, setHoveredNoteColor] = useState<NoteColorKey | null>(null);
-  const [isDuplicateMenuItemHovered, setDuplicateMenuItemHovered] = useState(false);
-  const [isDeleteMenuItemHovered, setDeleteMenuItemHovered] = useState(false);
 
   const isDeleting = useRef(false);
   const latestNote = useRef<NoteType>(props.note);
@@ -229,10 +149,6 @@ function Note(props: NoteProps) {
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
-  const noteColorKeys = Object.values(NoteColorKey);
-  const noteContextColorLabel = hoveredNoteColor === null
-    ? t("mainWindow.note.contextMenu.noteColor")
-    : t(`settingsWindow.appearance.noteColors.${hoveredNoteColor}`);
   const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
@@ -289,9 +205,6 @@ function Note(props: NoteProps) {
 
   const handleCloseNoteContextMenu = () => {
     setNoteContextMenuPosition(null);
-    setHoveredNoteColor(null);
-    setDuplicateMenuItemHovered(false);
-    setDeleteMenuItemHovered(false);
   };
 
   const handleContextMenuDuplicateNote = () => {
@@ -414,91 +327,14 @@ function Note(props: NoteProps) {
         </div>
       </div>
       {noteContextMenuPosition !== null && (
-      <div
-        className={classes.noteContextMenu}
-        style={{
-          backgroundColor: appColors.DIALOG_BACKGROUND,
-          color: appColors.DIALOG_TEXT,
-          top: noteContextMenuPosition.mouseY,
-          left: noteContextMenuPosition.mouseX
-        }}
-        onContextMenu={(event) => event.preventDefault()}
-        onPointerDown={(event) => event.stopPropagation()}
-      >
-        <div
-          className={classes.noteContextMenuItem}
-          style={isDuplicateMenuItemHovered ? {
-            backgroundColor: appColors.SETTINGS_NAV_HOVER_BACKGROUND,
-            color: appColors.SETTINGS_NAV_HOVER_TEXT
-          } : undefined}
-          onMouseEnter={() => setDuplicateMenuItemHovered(true)}
-          onMouseLeave={() => setDuplicateMenuItemHovered(false)}
-          onClick={handleContextMenuDuplicateNote}
-        >
-          {t("mainWindow.note.contextMenu.duplicate")}
-        </div>
-        <Divider className={classes.noteContextMenuDivider} />
-        <div
-          className={classes.noteContextColorRow}
-          role="radiogroup"
-          aria-label={t("mainWindow.note.contextMenu.noteColorAriaLabel")}
-        >
-          <div className={classes.noteContextColorStrip} onMouseLeave={() => setHoveredNoteColor(null)}>
-            {noteColorKeys.map((colorKey) => {
-              const isSelected = note.bgcolor === colorKey;
-              const isHovered = hoveredNoteColor === colorKey;
-
-              return (
-                <button
-                  aria-checked={isSelected}
-                  aria-label={t(`settingsWindow.appearance.noteColors.${colorKey}`)}
-                  className={classes.noteContextColorButton}
-                  key={colorKey}
-                  role="radio"
-                  title={t(`settingsWindow.appearance.noteColors.${colorKey}`)}
-                  type="button"
-                  onClick={() => handleContextMenuNoteColorChange(colorKey)}
-                  onMouseEnter={() => setHoveredNoteColor(colorKey)}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={classes.noteContextColorSwatch}
-                    style={{
-                      backgroundColor: NoteColors.light[colorKey],
-                      borderColor: isHovered ? appColors.MAIN : "rgba(0, 0, 0, 0.3)",
-                      boxShadow: isHovered ? "inset 0 0 0 1px rgba(255, 255, 255, 0.65)" : undefined,
-                      transform: isHovered ? "scale(1.24)" : undefined
-                    }}
-                  >
-                    {isSelected && (
-                      <span
-                        className={classes.noteContextColorSelectionDot}
-                        style={{ backgroundColor: "#FFFFFF" }}
-                      />
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div className={classes.noteContextMenuLabelItem}>
-          {noteContextColorLabel}
-        </div>
-        <Divider className={classes.noteContextMenuDivider} />
-        <div
-          className={classes.noteContextMenuItem}
-          style={isDeleteMenuItemHovered ? {
-            backgroundColor: appColors.SETTINGS_NAV_HOVER_BACKGROUND,
-            color: appColors.SETTINGS_NAV_HOVER_TEXT
-          } : undefined}
-          onMouseEnter={() => setDeleteMenuItemHovered(true)}
-          onMouseLeave={() => setDeleteMenuItemHovered(false)}
-          onClick={handleContextMenuDeleteNote}
-        >
-          {t("mainWindow.note.contextMenu.delete")}
-        </div>
-      </div>
+        <NoteContextMenu
+          theme={props.theme}
+          position={noteContextMenuPosition}
+          selectedColor={note.bgcolor}
+          onDeleteNote={handleContextMenuDeleteNote}
+          onDuplicateNote={handleContextMenuDuplicateNote}
+          onNoteColorChange={handleContextMenuNoteColorChange}
+        />
       )}
     </Paper>
   );

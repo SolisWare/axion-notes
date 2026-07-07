@@ -1,0 +1,86 @@
+.noteContextMenu {
+  min-width: 190px;
+  position: fixed;
+  z-index: 1300;
+  padding: 7px 0;
+  border-radius: 7px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  cursor: default;
+  user-select: none;
+}
+
+.noteContextMenuItem {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 4px 14px;
+  font-size: 13px;
+  line-height: 18px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.noteContextMenuItem:hover {
+  background-color: var(--note-context-menu-item-hover-background);
+  color: var(--note-context-menu-item-hover-text);
+}
+
+.noteContextMenuDivider {
+  margin: 6px 8px !important;
+}
+
+.noteContextColorRow {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+}
+
+.noteContextColorStrip {
+  display: inline-flex;
+  align-items: center;
+}
+
+.noteContextColorButton {
+  width: 25px;
+  height: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.noteContextColorSwatch {
+  width: 17px;
+  height: 17px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  pointer-events: none;
+}
+
+.noteContextColorSelectionDot {
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border: 1px solid rgba(31, 41, 51, 0.35);
+  border-radius: 50%;
+}
+
+.noteContextMenuLabelItem {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 4px 14px;
+  color: var(--note-context-menu-label-text);
+  font-size: 13px;
+  line-height: 18px;
+  opacity: 0.72;
+}
