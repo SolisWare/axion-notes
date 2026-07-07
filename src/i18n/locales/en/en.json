@@ -97,6 +97,8 @@
       },
       "showNoteTitles": "Show note titles",
       "showNoteTitlesDescription": "Shows/hides title fields. Individual notes can override this.",
+      "showNoteFooters": "Show note footers",
+      "showNoteFootersDescription": "Shows/hides note footer sections.",
       "noteSize": "Note size",
       "noteSizeOptions": {
         "compact": "Compact",

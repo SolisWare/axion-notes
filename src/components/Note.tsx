@@ -31,6 +31,7 @@ type NoteProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
+  showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
@@ -352,25 +353,27 @@ function Note(props: NoteProps) {
               }
             }} />
           </div>
-          <div className={classes.noteFooter}>
-            <Divider />
-            <div className={classes.noteFooterUtilBar}>
-              <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
-              <Button
-                className={classes.noteFooterUtilBarDeleteBtn}
-                onClick={handleDeleteNote}
-                sx={{
-                  color: appColors.NOTE_DELETE_BUTTON_COLOR,
-                  "&:hover": {
-                    color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
-                    backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
-                  }
-                }}
-              >
-                <DeleteForeverOutlinedIcon />
-              </Button>
+          {props.showNoteFooters && (
+            <div className={classes.noteFooter}>
+              <Divider />
+              <div className={classes.noteFooterUtilBar}>
+                <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
+                <Button
+                  className={classes.noteFooterUtilBarDeleteBtn}
+                  onClick={handleDeleteNote}
+                  sx={{
+                    color: appColors.NOTE_DELETE_BUTTON_COLOR,
+                    "&:hover": {
+                      color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
+                      backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
+                    }
+                  }}
+                >
+                  <DeleteForeverOutlinedIcon />
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {noteContextMenuPosition !== null && (

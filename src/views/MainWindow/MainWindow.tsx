@@ -312,13 +312,13 @@ function MainWindow(props: MainWindowProps) {
       break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
-                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} handleDeleteNoteButton={handleDeleteNote}
+                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
                    handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
-                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} handleDeleteNoteButton={handleDeleteNote}
+                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
                    handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }

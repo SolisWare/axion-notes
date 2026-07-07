@@ -91,6 +91,13 @@ function Appearance(props: AppearanceProps) {
     });
   }
 
+  function handleShowNoteFootersChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      showNoteFooters: event.target.checked
+    });
+  }
+
   return (
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
@@ -154,6 +161,25 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.switchThumb} />
               </span>
               <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteTitles")}</span>
+            </label>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="show-note-footers-title">{t("settingsWindow.appearance.showNoteFooters")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showNoteFootersDescription")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="show-note-footers-title"
+                checked={props.appSettings.showNoteFooters}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleShowNoteFootersChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteFooters")}</span>
             </label>
           </div>
           <div className={styles.settingsRow}>
