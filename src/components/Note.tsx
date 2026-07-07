@@ -31,6 +31,7 @@ type NoteProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
+  showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
@@ -153,7 +154,8 @@ function Note(props: NoteProps) {
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
-  const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
+  const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
+  const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
@@ -352,25 +354,27 @@ function Note(props: NoteProps) {
               }
             }} />
           </div>
-          <div className={classes.noteFooter}>
-            <Divider />
-            <div className={classes.noteFooterUtilBar}>
-              <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
-              <Button
-                className={classes.noteFooterUtilBarDeleteBtn}
-                onClick={handleDeleteNote}
-                sx={{
-                  color: appColors.NOTE_DELETE_BUTTON_COLOR,
-                  "&:hover": {
-                    color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
-                    backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
-                  }
-                }}
-              >
-                <DeleteForeverOutlinedIcon />
-              </Button>
+          {props.showNoteFooters && (
+            <div className={classes.noteFooter}>
+              <Divider />
+              <div className={classes.noteFooterUtilBar}>
+                <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
+                <Button
+                  className={classes.noteFooterUtilBarDeleteBtn}
+                  onClick={handleDeleteNote}
+                  sx={{
+                    color: appColors.NOTE_DELETE_BUTTON_COLOR,
+                    "&:hover": {
+                      color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
+                      backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
+                    }
+                  }}
+                >
+                  <DeleteForeverOutlinedIcon />
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {noteContextMenuPosition !== null && (

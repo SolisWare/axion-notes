@@ -34,7 +34,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     display: "block",
     width: "100%",
     minHeight: "100%",
-    height: "auto",
+    height: "100%",
     boxSizing: "border-box",
     background: "transparent",
     outline: "none",
@@ -66,8 +66,8 @@ function NoteTextarea(props: NoteTextareaProps) {
       return;
     }
 
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
+    textarea.style.height = "100%";
+    textarea.style.height = `${Math.max(textarea.clientHeight, textarea.scrollHeight)}px`;
   }, []);
 
   useEffect(() => {

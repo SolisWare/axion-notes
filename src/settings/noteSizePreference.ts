@@ -18,8 +18,8 @@ export type NoteSizeDefinition = {
 
 export const NOTE_SIZE_DEFINITIONS: Record<NoteSizePreference, NoteSizeDefinition> = {
   [NoteSizePreference.COMPACT]: {
-    width: 240,
-    height: 210
+    width: 220,
+    height: 190
   },
   [NoteSizePreference.DEFAULT]: {
     width: 275,

@@ -20,6 +20,7 @@ type HomeProps = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
+  showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
@@ -39,6 +40,7 @@ function Home(props: HomeProps) {
         noteFont={props.noteFont}
         noteSize={props.noteSize}
         showNoteTitles={props.showNoteTitles}
+        showNoteFooters={props.showNoteFooters}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
         handleDuplicateNote={props.handleDuplicateNote}
         handleMoveNoteToBottom={props.handleMoveNoteToBottom}

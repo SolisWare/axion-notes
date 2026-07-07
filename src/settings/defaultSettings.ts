@@ -26,7 +26,8 @@ export const defaultAppSettings: AppSettings = {
   timeFormat: TimeFormat.Regular,
   noteFont: NoteFontPreference.SYSTEM,
   noteSize: NoteSizePreference.DEFAULT,
-  showNoteTitles: true
+  showNoteTitles: true,
+  showNoteFooters: true
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {

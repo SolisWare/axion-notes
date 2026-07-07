@@ -25,4 +25,5 @@ export type AppSettings = {
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
+  showNoteFooters: boolean;
 };
