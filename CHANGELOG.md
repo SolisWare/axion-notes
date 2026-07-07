@@ -17,6 +17,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added note duplication from the note context menu
 - Added note context menu actions for moving notes to the top or bottom of the note list
 - Added global and per-note controls for showing or hiding note titles
+- Fixed Electron Edit menu actions so text commands enable only when actions are available and Delete appears only on macOS
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text

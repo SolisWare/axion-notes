@@ -77,7 +77,9 @@ export function createMenubar(): Menu {
         { id: menuIds.edit.copy, role: 'copy', enabled: false },
         { id: menuIds.edit.paste, role: 'paste', enabled: false },
         { role: 'selectAll' },
-        { id: menuIds.edit.delete, role: 'delete', enabled: false },
+        ...(isMac ? [
+          { id: menuIds.edit.delete, role: 'delete' as const, enabled: false }
+        ] : []),
         { type: 'separator' },
         {
           id: menuIds.edit.deleteAllNotes,
