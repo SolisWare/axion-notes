@@ -38,6 +38,8 @@ const NOTE_GRID_HORIZONTAL_PADDING = 60;
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
+    width: "100%",
+    boxSizing: "border-box",
     padding: "30px 30px",
     display: "flex",
     justifyContent: "center"
@@ -102,6 +104,7 @@ function NoteList (props: NoteListProps) {
         </>
         :
         <DndContext
+          autoScroll={false}
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}

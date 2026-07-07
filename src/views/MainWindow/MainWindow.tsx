@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {
     flex: 1,
     minHeight: 0,
+    overflowX: "hidden",
     overflowY: "auto"
   },
   menu: {
