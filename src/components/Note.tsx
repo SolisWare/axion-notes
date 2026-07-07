@@ -30,6 +30,7 @@ type NoteProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
+  showNoteTitles: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
@@ -151,7 +152,7 @@ function Note(props: NoteProps) {
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
-  const isTitleHidden = note.isTitleHidden === true;
+  const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
   const noteFooterDateText = `${t("mainWindow.note.lastModified")} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
   const updateNote = (updatedNote: NoteType) => {
@@ -176,6 +177,23 @@ function Note(props: NoteProps) {
       lastModifiedOn: new Date()
     });
   };
+
+  useEffect(() => {
+    setNote((currentNote) => {
+      if (currentNote.isTitleHidden === props.note.isTitleHidden) {
+        return currentNote;
+      }
+
+      const updatedNote = {
+        ...currentNote,
+        isTitleHidden: props.note.isTitleHidden
+      };
+
+      latestNote.current = updatedNote;
+
+      return updatedNote;
+    });
+  }, [props.note.isTitleHidden]);
 
   useEffect(() => {
     const flushUnsavedNote = () => {

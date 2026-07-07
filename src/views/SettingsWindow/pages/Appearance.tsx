@@ -84,6 +84,13 @@ function Appearance(props: AppearanceProps) {
     event.currentTarget.blur();
   }
 
+  function handleShowNoteTitlesChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      showNoteTitles: event.target.checked
+    });
+  }
+
   return (
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
@@ -129,6 +136,25 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.radioControl} aria-hidden="true" />
               </label>
             </fieldset>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="show-note-titles-title">{t("settingsWindow.appearance.showNoteTitles")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showNoteTitlesDescription")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="show-note-titles-title"
+                checked={props.appSettings.showNoteTitles}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleShowNoteTitlesChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteTitles")}</span>
+            </label>
           </div>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} htmlFor="note-size">

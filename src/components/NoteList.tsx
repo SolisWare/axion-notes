@@ -25,6 +25,7 @@ type NoteListProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
+  showNoteTitles: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
@@ -120,6 +121,7 @@ function NoteList (props: NoteListProps) {
                   timeFormat={props.timeFormat}
                   noteFont={props.noteFont}
                   noteSize={props.noteSize}
+                  showNoteTitles={props.showNoteTitles}
                   handleNoteSave={props.handleNoteSave}
                   handleDeleteNoteButton={props.handleDeleteNoteButton}
                   handleDuplicateNote={props.handleDuplicateNote}

@@ -24,4 +24,5 @@ export type AppSettings = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteSize: NoteSizePreference;
+  showNoteTitles: boolean;
 };

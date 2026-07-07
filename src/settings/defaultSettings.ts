@@ -25,7 +25,8 @@ export const defaultAppSettings: AppSettings = {
   dateFormat: DateFormat.MonthDayYearSlash,
   timeFormat: TimeFormat.Regular,
   noteFont: NoteFontPreference.SYSTEM,
-  noteSize: NoteSizePreference.DEFAULT
+  noteSize: NoteSizePreference.DEFAULT,
+  showNoteTitles: true
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {

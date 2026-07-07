@@ -95,6 +95,8 @@
         "light": "Light",
         "dark": "Dark"
       },
+      "showNoteTitles": "Show note titles",
+      "showNoteTitlesDescription": "Shows/hides title fields. Individual notes can override this.",
       "noteSize": "Note size",
       "noteSizeOptions": {
         "compact": "Compact",

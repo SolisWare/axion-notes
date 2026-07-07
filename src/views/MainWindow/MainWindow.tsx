@@ -69,6 +69,7 @@ function MainWindow(props: MainWindowProps) {
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
+  const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
     
   const isDeleteAllButtonDisabled = notes.length === 0;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
@@ -82,13 +83,14 @@ function MainWindow(props: MainWindowProps) {
     const newNote = {
       id: nanoid(),
       bgcolor: noteColor,
+      isTitleHidden: !appSettings.showNoteTitles,
       content: "",
       createdOn: new Date(),
       lastModifiedOn: new Date()
     };
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
-  }, [appSettings.defaultNoteColor]);
+  }, [appSettings.defaultNoteColor, appSettings.showNoteTitles]);
 
   useEffect(() => {
     window.api.storage.getNotes()
@@ -109,6 +111,24 @@ function MainWindow(props: MainWindowProps) {
     currentNotesSortOrder.current = appSettings.notesSortOrder;
     setNotes((prevNotes) => sortNotes(prevNotes, appSettings.notesSortOrder));
   }, [appSettings.notesSortOrder]);
+
+  useEffect(() => {
+    if (previousShowNoteTitles.current === appSettings.showNoteTitles) {
+      return;
+    }
+
+    previousShowNoteTitles.current = appSettings.showNoteTitles;
+    setNotes((prevNotes) => prevNotes.map((note) => {
+      const updatedNote = {
+        ...note,
+        isTitleHidden: !appSettings.showNoteTitles
+      };
+
+      window.api.storage.setNote(updatedNote);
+
+      return updatedNote;
+    }));
+  }, [appSettings.showNoteTitles]);
 
   useEffect(() => {
     return window.api.noteSort.onSortRequest(() => {
@@ -287,13 +307,20 @@ function MainWindow(props: MainWindowProps) {
   let page = <></>;
   switch (props.view) {
     case AppView.welcome:
-      page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted} onNeverShowAgainChange={handleNeverShowAgainChange} />
+      page = <WelcomeScreen theme={props.theme} neverShowAgain={!appSettings.showWelcomeScreenOnLaunch} onGetStarted={handleGetStarted}
+                            onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} handleDeleteNoteButton={handleDeleteNote}
+                   handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont} noteSize={appSettings.noteSize} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop} handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+                   noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} handleDeleteNoteButton={handleDeleteNote}
+                   handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   
   return (
