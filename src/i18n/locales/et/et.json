@@ -1,6 +1,7 @@
 {
   "common": {
-    "cancel": "Katkesta"
+    "cancel": "Katkesta",
+    "close": "Sulge"
   },
   "mainWindow": {
     "welcome": {
@@ -12,7 +13,9 @@
         "next": "Järgmine"
       },
       "getStarted": "Alustame siis",
-      "doNotShowAgain": "Ära näita seda tervitusvaadet uuesti"
+      "doNotShowAgain": "Ära näita seda tervitusvaadet uuesti",
+      "title": "Tere tulemast, see on Axion Notes",
+      "intro": "Hoia oma mõtete kiired ülestähendused käepärast, hallatuna ja valmis, et neid vajaduse korral kohe kasutada saaksid."
     },
     "toolbar": {
       "newNote": "Uus märge",
@@ -27,7 +30,18 @@
       "titlePlaceholder": "Pealkiri",
       "contentPlaceholder": "Kirjuta siia…",
       "lastModified": "Viimati muudetud:",
-      "at": "kell"
+      "at": "kell",
+      "lastModifiedCompact": "Muudetud:",
+      "contextMenu": {
+        "moveToTop": "Tõsta üles",
+        "moveToBottom": "Tõsta alla",
+        "duplicate": "Tee koopia",
+        "hideTitle": "Peida pealkiri",
+        "showTitle": "Näita pealkirja",
+        "delete": "Kustuta märge",
+        "noteColorAriaLabel": "Märkme värv",
+        "noteColor": "Märkme värv…"
+      }
     },
     "deleteAllNotesDialog": {
       "title": "Kustuta kõik märkmed",
@@ -61,7 +75,8 @@
         "dateCreatedDesc": "Loomise kuupäev (esmalt uuemad)",
         "lastModified": "Viimati muudetud",
         "titleAsc": "Pealkiri A-Z",
-        "titleDesc": "Pealkiri Z-A"
+        "titleDesc": "Pealkiri Z-A",
+        "custom": "Kohendatud järjestuses"
       },
       "resortNotes": "Järjesta märkmed uuesti",
       "keepNotesOnTop": "Märkmed on kõige peal",
@@ -90,10 +105,31 @@
         "red": "Punane",
         "teal": "Sinakasroheline",
         "lilac": "Kahvatulilla"
+      },
+      "showNoteTitles": "Näita märkmete pealkirju",
+      "showNoteTitlesDescription": "Näitab märkmete pealkirjad või peidab need. Üksikte märkmete puhul saad seda sürjutada.",
+      "noteFont": "Märkme kirjatüüp",
+      "noteFontOptions": {
+        "system": "Süsteemi vaikimisi kirjatüüp",
+        "serif": "Seriifidega kirjatüüp",
+        "sansSerif": "Seriifideta kirjatüüp",
+        "monospace": "Fikseeritud laiusega kirjatüüp"
+      },
+      "noteFontPreview": "See väike mölder jõuab rongile hüpata.",
+      "showNoteFooters": "Näita märkmete jaluseid",
+      "showNoteFootersDescription": "Näitab märkmete jalused või peidab need.",
+      "noteSize": "Märkme suurus",
+      "noteSizeOptions": {
+        "compact": "Kompaktne",
+        "default": "Vaikimisi",
+        "large": "Suur",
+        "wide": "Lai"
       }
     },
     "dataStorage": {
-      "notesFolderLocation": "Märkmete kausta asukoht"
+      "notesFolderLocation": "Märkmete kausta asukoht",
+      "settingsFolderLocation": "Seadistuste kausta asukoht",
+      "browserLocalStorage": "Veebibrauseri kohalik andmeruum"
     },
     "about": {
       "webVersionLabel": "Veeb",
@@ -111,6 +147,17 @@
         "backspace": "Tagasisammuklahv (Backspace)",
         "comma": "Koma"
       }
+    },
+    "links": {
+      "website": {
+        "label": "Veebisait",
+        "description": "Vaata SolisWare’i veebilehte, et saada teavet viimaste tootevärskenduste, allalaadimiste ja muudki tiimi tegemiste kohta."
+      },
+      "github": {
+        "label": "GitHub",
+        "description": "Jälgi SolisWare’i tegevust GitHubis, et leida projekte, uusi versioone ja lähtekoodi uuendusi."
+      },
+      "description": "Täname, et kasutad rakendust {{appName}}. Nende linkide abil saad jälgida uute väljaannete avaldamistlähtekoodi uuendusi ja muude SolisWare'i projektide tegemisi."
     }
   },
   "electron": {
