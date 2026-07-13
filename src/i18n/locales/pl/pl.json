@@ -19,7 +19,7 @@
     },
     "toolbar": { 
       "newNote": "Nowa notatka",
-      "deleteAll": "Usuń wszyskie notatki",
+      "deleteAll": "Usuń wszyskie",
       "settings": "Ustawienia"
     },
     "emptyNotes": {
@@ -29,7 +29,8 @@
     "note": {
       "titlePlaceholder": "Tytuł",
       "contentPlaceholder": "Napisz notatkę...",
-      "lastModified": "Zmodyfikowano:",
+      "lastModified": "Ostatnio zmodyfikowano:",
+      "lastModifiedCompact": "Zmodyfikowano:",
       "at": "o",
       "contextMenu": {
         "moveToTop": "Przenieś na początek",
@@ -73,8 +74,7 @@
         "custom": "Własna kolejność",
         "dateCreatedAsc": "Date utworzenia (najpierw stare)",
         "dateCreatedDesc": "Data utworzenia (najpierw nowe)",
-        "lastModified": "Ostatnio zmodyfikowano:",
-        "lastModifiedCompact": "Zmodyfikowano:",
+        "lastModified": "Data modyfikacji",
         "titleAsc": "Tytuł A-Z",
         "titleDesc": "Tytuł Z-A"
       },
@@ -134,7 +134,7 @@
     "shortcuts": {
       "newNote": "Nowa notatka",
       "openSettings": "Otwórz ustawienia",
-      "deleteAllNotes": "Usuń wszystkie",
+      "deleteAllNotes": "Usuń wszystkie notatki",
       "keys": {
         "command": "Komenda",
         "control": "Ctrl",
