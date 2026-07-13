@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
@@ -21,36 +21,14 @@ type AppearanceProps = {
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
-const NOTE_FONT_PREVIEW_COLLAPSED_WIDTH = 260;
-const NOTE_FONT_PREVIEW_EXPAND_THRESHOLD = 340;
-const NOTE_FONT_PREVIEW_MAX_WIDTH = 360;
-
 function Appearance(props: AppearanceProps) {
   const { t } = useTranslation();
-  const noteFontPreviewMeasurementRef = useRef<HTMLSpanElement | null>(null);
-  const [noteFontPreviewWidth, setNoteFontPreviewWidth] = useState(NOTE_FONT_PREVIEW_COLLAPSED_WIDTH);
   const noteColorKeys = Object.values(NoteColorKey);
-  const isNoteFontPreviewExpanded = noteFontPreviewWidth > NOTE_FONT_PREVIEW_COLLAPSED_WIDTH;
   const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
   const noteFontPreview = t("settingsWindow.appearance.noteFontPreview");
   const autoColorBackground = `conic-gradient(${noteColorKeys
     .map((colorKey) => NoteColors.light[colorKey])
     .join(", ")}, ${NoteColors.light[noteColorKeys[0]]})`;
-
-  useLayoutEffect(() => {
-    const measurement = noteFontPreviewMeasurementRef.current;
-
-    if (!measurement) {
-      return;
-    }
-
-    if (measurement.scrollWidth <= NOTE_FONT_PREVIEW_EXPAND_THRESHOLD) {
-      setNoteFontPreviewWidth(NOTE_FONT_PREVIEW_COLLAPSED_WIDTH);
-      return;
-    }
-
-    setNoteFontPreviewWidth(Math.min(Math.ceil(measurement.scrollWidth) + 3, NOTE_FONT_PREVIEW_MAX_WIDTH));
-  }, [noteFontPreview, noteFontPreviewFontFamily]);
 
   function handleThemeChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -280,19 +258,8 @@ function Appearance(props: AppearanceProps) {
                 </option>
               </select>
               <span
-                className={`${styles.noteFontPreview} ${isNoteFontPreviewExpanded ? styles.noteFontPreviewExpanded : ""}`}
-                style={{
-                  fontFamily: noteFontPreviewFontFamily,
-                  width: `${noteFontPreviewWidth}px`
-                }}
-              >
-                {noteFontPreview}
-              </span>
-              <span
-                ref={noteFontPreviewMeasurementRef}
-                className={styles.noteFontPreviewMeasurement}
+                className={styles.noteFontPreview}
                 style={{ fontFamily: noteFontPreviewFontFamily }}
-                aria-hidden="true"
               >
                 {noteFontPreview}
               </span>
