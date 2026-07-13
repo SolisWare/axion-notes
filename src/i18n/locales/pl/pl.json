@@ -74,6 +74,7 @@
         "dateCreatedAsc": "Date utworzenia (najpierw stare)",
         "dateCreatedDesc": "Data utworzenia (najpierw nowe)",
         "lastModified": "Ostatnio zmodyfikowano:",
+        "lastModifiedCompact": "Zmodyfikowano:",
         "titleAsc": "Tytuł A-Z",
         "titleDesc": "Tytuł Z-A"
       },
@@ -84,8 +85,8 @@
       "timeFormat": "Format godzinny",
       "dateTimeFormatExample": "Przykład:",
       "timeFormatOptions": {
-        "regular": "12 godzin",
-        "military": "24 godziny"
+        "regular": "12-godzinny",
+        "military": "24-godzinny"
       }
     },
     "appearance": {
@@ -97,6 +98,8 @@
       },
       "showNoteTitles": "Pokaż tytuły notatek",
       "showNoteTitlesDescription": "Pokazuje lub ukrywa pole tytułu. To ustawienie może być nadpisane dla pojedynczej notatki.",
+      "showNoteFooters": "Pokaż stopki notatek",
+      "showNoteFootersDescription": "Pokazuje lub ukrywa sekcję stopki.",
       "noteSize": "Rozmiar notatki",
       "noteSizeOptions": {
         "compact": "Kompaktowy",
@@ -131,7 +134,7 @@
     "shortcuts": {
       "newNote": "Nowa notatka",
       "openSettings": "Otwórz ustawienia",
-      "deleteAllNotes": "Usuń wszystkie notatki",
+      "deleteAllNotes": "Usuń wszystkie",
       "keys": {
         "command": "Komenda",
         "control": "Ctrl",
