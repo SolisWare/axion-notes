@@ -41,7 +41,7 @@
 
 .settingsSection {
   width: 100%;
-  max-width: 460px;
+  max-width: 470px;
 }
 
 .settingsRows {
@@ -237,7 +237,7 @@
 }
 
 .settingsSelect {
-  width: 260px;
+  width: 230px;
   min-width: 0;
   height: 34px;
   align-self: center;
@@ -255,6 +255,10 @@
   font: inherit;
   font-size: 13px;
   line-height: 18px;
+}
+
+.settingsRow > .settingsSelect {
+  flex: 0 0 230px;
 }
 
 .settingsSelect:focus-visible {

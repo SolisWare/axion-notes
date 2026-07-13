@@ -78,6 +78,12 @@
         "titleAsc": "Title A-Z",
         "titleDesc": "Title Z-A"
       },
+      "noteLayout": "Note layout",
+      "noteLayoutDescription": "Changes how notes are arranged",
+      "noteLayoutOptions": {
+        "grid": "Grid",
+        "list": "List"
+      },
       "resortNotes": "Re-sort notes",
       "keepNotesOnTop": "Keep notes on top",
       "keepNotesOnTopDescription": "Notes stays above all other windows",

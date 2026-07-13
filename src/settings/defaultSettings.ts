@@ -10,6 +10,7 @@ import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
+import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
 import { DEFAULT_LANGUAGE } from "../i18n/languages";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -27,7 +28,8 @@ export const defaultAppSettings: AppSettings = {
   noteFont: NoteFontPreference.SYSTEM,
   noteSize: NoteSizePreference.DEFAULT,
   showNoteTitles: true,
-  showNoteFooters: true
+  showNoteFooters: true,
+  noteLayout: NoteLayoutPreference.GRID
 };
 
 export const defaultMainWindowBounds: AppWindowBounds = {
