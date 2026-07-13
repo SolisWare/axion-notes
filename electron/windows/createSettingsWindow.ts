@@ -16,7 +16,7 @@ export function createSettingsWindow(): BrowserWindow {
   const windowTitle = `Axion Notes — ${translate("electron.windows.settings")}`;
 
   const settingsWindow = new BrowserWindow({
-    width: 660,
+    width: 710,
     height: 542,
     minWidth: 600,
     minHeight: 420,

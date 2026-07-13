@@ -9,6 +9,7 @@ import SyncIcon from "@mui/icons-material/Sync";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { getLanguagePickerLabel, SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
+import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
 import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
@@ -59,6 +60,15 @@ function General(props: GeneralProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       notesSortOrder: event.target.value as NoteSortOrder
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleNoteLayoutChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      noteLayout: event.target.value as NoteLayoutPreference
     });
 
     event.currentTarget.blur();
@@ -116,6 +126,23 @@ function General(props: GeneralProps) {
               </button>
             </div>
           </div>
+          {UserAgent.isElectron && (
+            <div className={styles.settingsRow}>
+              <div className={styles.settingsRowText}>
+                <label className={styles.settingsSectionTitle} id="note-layout-title" htmlFor="note-layout">{t("settingsWindow.general.noteLayout")}</label>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.general.noteLayoutDescription")}</p>
+              </div>
+              <select
+                className={styles.settingsSelect}
+                id="note-layout"
+                value={props.appSettings.noteLayout}
+                onChange={handleNoteLayoutChange}
+              >
+                <option value={NoteLayoutPreference.GRID}>{t("settingsWindow.general.noteLayoutOptions.grid")}</option>
+                <option value={NoteLayoutPreference.LIST}>{t("settingsWindow.general.noteLayoutOptions.list")}</option>
+              </select>
+            </div>
+          )}
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
               <div className={styles.settingsRowText}>
