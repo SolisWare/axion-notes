@@ -4,9 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { Button, Divider, Paper, Theme, Typography } from "@mui/material";
+import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
 import NoteTextarea from "./NoteTextarea";
@@ -121,7 +120,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   },
   noteFooterUtilBarDate: {
     flex: "1 1 auto",
-    marginRight: "8px !important",
     minWidth: 0,
     paddingTop: "5px",
     fontStyle: "italic",
@@ -129,11 +127,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     overflow: "hidden",
     textAlign: "left",
     whiteSpace: "nowrap"
-  },
-  noteFooterUtilBarDeleteBtn: {
-    flex: "0 0 auto",
-    width: 30,
-    height: 30,
   }
 }));
 
@@ -213,11 +206,6 @@ function Note(props: NoteProps) {
     };
   }, [props]);
 
-  const handleDeleteNote = () => {
-    isDeleting.current = true;
-    props.handleDeleteNoteButton(note.id);
-  };
-
   const handleNoteContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     setNoteContextMenuPosition({
@@ -247,7 +235,8 @@ function Note(props: NoteProps) {
 
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
-    handleDeleteNote();
+    isDeleting.current = true;
+    props.handleDeleteNoteButton(note.id);
   };
 
   const handleContextMenuNoteColorChange = (colorKey: NoteColorKey) => {
@@ -359,19 +348,6 @@ function Note(props: NoteProps) {
               <Divider />
               <div className={classes.noteFooterUtilBar}>
                 <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
-                <Button
-                  className={classes.noteFooterUtilBarDeleteBtn}
-                  onClick={handleDeleteNote}
-                  sx={{
-                    color: appColors.NOTE_DELETE_BUTTON_COLOR,
-                    "&:hover": {
-                      color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
-                      backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
-                    }
-                  }}
-                >
-                  <DeleteForeverOutlinedIcon />
-                </Button>
               </div>
             </div>
           )}
