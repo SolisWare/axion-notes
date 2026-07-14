@@ -17,7 +17,7 @@ export function createMenubar(): Menu {
     ...(isMac ? [{
       label: app.name,
       submenu: [
-        { role: 'about' },
+        { role: 'about', label: translate("electron.menu.about", { appName: "Axion Notes" }) },
         { type: 'separator' },
         {
           id: menuIds.app.settings,
@@ -28,20 +28,20 @@ export function createMenubar(): Menu {
           }
         },
         { type: 'separator' },
-        { role: 'services' },
+        { role: 'services', label: translate("electron.menu.services") },
         { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideOthers' },
-        { role: 'unhide' },
+        { role: 'hide', label: translate("electron.menu.hide") },
+        { role: 'hideOthers', label: translate("electron.menu.hideOthers") },
+        { role: 'unhide', label: translate("electron.menu.unhide") },
         { type: 'separator' },
-        { role: 'quit' },
+        { role: 'quit', label: translate("electron.menu.quit") },
       ]
     }] : []),
     {
       label: translate("electron.menu.file"),
       submenu: [
         ...(isWindows ? [
-          { role: 'about' as const },
+          { role: 'about' as const, label: translate("electron.menu.about", { appName: "Axion Notes" }) },
           { type: 'separator' as const }
         ] : []),
         {
@@ -63,22 +63,24 @@ export function createMenubar(): Menu {
           },
           { type: 'separator' as const }
         ] : []),
-        isMac ? { role: 'close' } : { role: 'quit' }
+        isMac
+          ? { role: 'close', label: translate("electron.menu.close") }
+          : { role: 'quit', label: translate("electron.menu.quit") }
       ]
     },
     {
       id: menuIds.edit.root,
       label: translate("electron.menu.edit"),
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
+        { role: 'undo', label: translate("electron.menu.undo") },
+        { role: 'redo', label: translate("electron.menu.redo") },
         { type: 'separator' },
-        { id: menuIds.edit.cut, role: 'cut', enabled: false },
-        { id: menuIds.edit.copy, role: 'copy', enabled: false },
-        { id: menuIds.edit.paste, role: 'paste', enabled: false },
-        { role: 'selectAll' },
+        { id: menuIds.edit.cut, role: 'cut', label: translate("electron.menu.cut"), enabled: false },
+        { id: menuIds.edit.copy, role: 'copy', label: translate("electron.menu.copy"), enabled: false },
+        { id: menuIds.edit.paste, role: 'paste', label: translate("electron.menu.paste"), enabled: false },
+        { role: 'selectAll', label: translate("electron.menu.selectAll") },
         ...(isMac ? [
-          { id: menuIds.edit.delete, role: 'delete' as const, enabled: false }
+          { id: menuIds.edit.delete, role: 'delete' as const, label: translate("electron.menu.delete"), enabled: false }
         ] : []),
         { type: 'separator' },
         {
@@ -95,11 +97,11 @@ export function createMenubar(): Menu {
     {
       label: translate("electron.menu.view"),
       submenu: [
-        { role: 'reload' },
+        { role: 'reload', label: translate("electron.menu.reload") },
         { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
+        { role: 'resetZoom', label: translate("electron.menu.resetZoom") },
+        { role: 'zoomIn', label: translate("electron.menu.zoomIn") },
+        { role: 'zoomOut', label: translate("electron.menu.zoomOut") },
         { type: 'separator' },
         {
           label: translate("electron.menu.toggleFullScreen"),
@@ -111,9 +113,10 @@ export function createMenubar(): Menu {
         }
       ]
     },
-    { role: 'windowMenu' },
+    { role: 'windowMenu', label: translate("electron.menu.window") },
     {
       role: 'help',
+      label: translate("electron.menu.help"),
       submenu: [
         {
           label: translate("electron.menu.welcome"),

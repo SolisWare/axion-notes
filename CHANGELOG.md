@@ -21,6 +21,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a global setting for showing or hiding note footers
 - Fixed compact notes showing unnecessary scrollbars on Windows
 - Reduced the compact note size for denser note layouts
+- Added explicit English labels and fallback translations for user-facing Electron role menu items
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text
