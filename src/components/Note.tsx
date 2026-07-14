@@ -14,7 +14,7 @@ import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
-import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -46,6 +46,9 @@ type NoteDateLabelProps = {
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   note: {
     marginBottom: "10px",
+    "&:hover $noteDragIndicator": {
+      opacity: 0.24
+    }
   },
   noteInnerContainer: {
     width: "100%",
@@ -53,7 +56,24 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    position: "relative"
+  },
+  noteDragIndicator: {
+    position: "absolute",
+    top: 7,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 34,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    cursor: "grab",
+    opacity: 0,
+    transition: "opacity 120ms ease",
+    "&:active": {
+      cursor: "grabbing"
+    }
   },
   noteContentWrapper: {
     height: "100%",
@@ -171,6 +191,10 @@ function Note(props: NoteProps) {
       content: updatedContent,
       lastModifiedOn: new Date()
     });
+  };
+
+  const stopSortableDragActivation = (event: PointerEvent<HTMLElement>) => {
+    event.stopPropagation();
   };
 
   useEffect(() => {
@@ -310,10 +334,11 @@ function Note(props: NoteProps) {
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
+        <div className={classes.noteDragIndicator} aria-hidden="true" />
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
-              <div className={classes.noteTitleWrapper}>
+              <div className={classes.noteTitleWrapper} onPointerDown={stopSortableDragActivation}>
                 <input
                   key={props.theme}
                   className={classes.noteTitleInput}
@@ -333,7 +358,7 @@ function Note(props: NoteProps) {
                 />
               </div>
             )}
-            <div className={classes.noteContent}>
+            <div className={classes.noteContent} onPointerDown={stopSortableDragActivation}>
               <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
             <Autosave data={note} onSave={(note) => {
