@@ -87,6 +87,12 @@
       "timeFormatOptions": {
         "regular": "12 tundi",
         "military": "24 tundi"
+      },
+      "noteLayout": "Märkmete paigutus",
+      "noteLayoutDescription": "Saad muuta märkmete paigutuse viisi",
+      "noteLayoutOptions": {
+        "grid": "Ruudustikuvaade",
+        "list": "Loendivaade"
       }
     },
     "appearance": {
