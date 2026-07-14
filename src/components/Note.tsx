@@ -4,9 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { Button, Divider, Paper, Theme, Typography } from "@mui/material";
+import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import DeleteForeverOutlinedIcon from '@mui/icons-material/DeleteForeverOutlined';
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
 import NoteTextarea from "./NoteTextarea";
@@ -15,7 +14,7 @@ import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
-import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -47,6 +46,9 @@ type NoteDateLabelProps = {
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   note: {
     marginBottom: "10px",
+    "&:hover $noteDragIndicator": {
+      opacity: 0.24
+    }
   },
   noteInnerContainer: {
     width: "100%",
@@ -54,7 +56,24 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    position: "relative"
+  },
+  noteDragIndicator: {
+    position: "absolute",
+    top: 7,
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: 34,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    cursor: "grab",
+    opacity: 0,
+    transition: "opacity 120ms ease",
+    "&:active": {
+      cursor: "grabbing"
+    }
   },
   noteContentWrapper: {
     height: "100%",
@@ -121,7 +140,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   },
   noteFooterUtilBarDate: {
     flex: "1 1 auto",
-    marginRight: "8px !important",
     minWidth: 0,
     paddingTop: "5px",
     fontStyle: "italic",
@@ -129,11 +147,6 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     overflow: "hidden",
     textAlign: "left",
     whiteSpace: "nowrap"
-  },
-  noteFooterUtilBarDeleteBtn: {
-    flex: "0 0 auto",
-    width: 30,
-    height: 30,
   }
 }));
 
@@ -180,6 +193,10 @@ function Note(props: NoteProps) {
     });
   };
 
+  const stopSortableDragActivation = (event: PointerEvent<HTMLElement>) => {
+    event.stopPropagation();
+  };
+
   useEffect(() => {
     setNote((currentNote) => {
       if (currentNote.isTitleHidden === props.note.isTitleHidden) {
@@ -213,11 +230,6 @@ function Note(props: NoteProps) {
     };
   }, [props]);
 
-  const handleDeleteNote = () => {
-    isDeleting.current = true;
-    props.handleDeleteNoteButton(note.id);
-  };
-
   const handleNoteContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     setNoteContextMenuPosition({
@@ -247,7 +259,8 @@ function Note(props: NoteProps) {
 
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
-    handleDeleteNote();
+    isDeleting.current = true;
+    props.handleDeleteNoteButton(note.id);
   };
 
   const handleContextMenuNoteColorChange = (colorKey: NoteColorKey) => {
@@ -321,10 +334,11 @@ function Note(props: NoteProps) {
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
+        <div className={classes.noteDragIndicator} aria-hidden="true" />
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
-              <div className={classes.noteTitleWrapper}>
+              <div className={classes.noteTitleWrapper} onPointerDown={stopSortableDragActivation}>
                 <input
                   key={props.theme}
                   className={classes.noteTitleInput}
@@ -344,7 +358,7 @@ function Note(props: NoteProps) {
                 />
               </div>
             )}
-            <div className={classes.noteContent}>
+            <div className={classes.noteContent} onPointerDown={stopSortableDragActivation}>
               <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
             <Autosave data={note} onSave={(note) => {
@@ -359,19 +373,6 @@ function Note(props: NoteProps) {
               <Divider />
               <div className={classes.noteFooterUtilBar}>
                 <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
-                <Button
-                  className={classes.noteFooterUtilBarDeleteBtn}
-                  onClick={handleDeleteNote}
-                  sx={{
-                    color: appColors.NOTE_DELETE_BUTTON_COLOR,
-                    "&:hover": {
-                      color: appColors.NOTE_DELETE_BUTTON_HOVER_TEXT,
-                      backgroundColor: appColors.NOTE_DELETE_BUTTON_HOVER_BACKGROUND
-                    }
-                  }}
-                >
-                  <DeleteForeverOutlinedIcon />
-                </Button>
               </div>
             </div>
           )}
