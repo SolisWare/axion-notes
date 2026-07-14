@@ -45,10 +45,7 @@ type NoteDateLabelProps = {
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   note: {
-    marginBottom: "10px",
-    "&:hover $noteDragIndicator": {
-      opacity: 0.24
-    }
+    marginBottom: "10px"
   },
   noteInnerContainer: {
     width: "100%",
@@ -56,28 +53,17 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     maxWidth: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
-    position: "relative"
+    justifyContent: "space-between"
   },
   noteDragIndicator: {
-    position: "absolute",
-    top: 7,
-    left: "50%",
-    transform: "translateX(-50%)",
-    width: 34,
-    height: 3,
-    borderRadius: 999,
-    backgroundColor: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
-    cursor: "grab",
-    opacity: 0,
-    transition: "opacity 120ms ease",
     "&:active": {
       cursor: "grabbing"
     }
   },
   noteContentWrapper: {
-    height: "100%",
-    padding: "15px 10px 5px 10px",
+    flex: "1 1 auto",
+    minHeight: 0,
+    padding: "0 10px 5px 10px",
     wordBreak: "keep-all",
     display: "flex",
     flexDirection: "column",
@@ -157,6 +143,7 @@ function Note(props: NoteProps) {
   
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
+  const [isNoteHovered, setIsNoteHovered] = useState(false);
 
   const isDeleting = useRef(false);
   const latestNote = useRef<NoteType>(props.note);
@@ -321,6 +308,8 @@ function Note(props: NoteProps) {
       elevation={4}
       className={classes.note}
       onContextMenu={handleNoteContextMenu}
+      onMouseEnter={() => setIsNoteHovered(true)}
+      onMouseLeave={() => setIsNoteHovered(false)}
       style={{
         width: noteSizeDefinition.width,
         height: noteSizeDefinition.height,
@@ -334,7 +323,21 @@ function Note(props: NoteProps) {
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
-        <div className={classes.noteDragIndicator} aria-hidden="true" />
+        <div
+          className={classes.noteDragIndicator}
+          aria-hidden="true"
+          style={{
+            flex: "0 0 auto",
+            width: 34,
+            height: 3,
+            margin: "7px auto 5px auto",
+            borderRadius: 999,
+            backgroundColor: appColors.NOTE_FOOTER_TEXT,
+            cursor: "grab",
+            opacity: isNoteHovered ? 0.24 : 0,
+            transition: "opacity 120ms ease"
+          }}
+        />
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
