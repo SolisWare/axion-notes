@@ -14,7 +14,7 @@ import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
-import { ChangeEvent, CSSProperties, PointerEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -180,10 +180,6 @@ function Note(props: NoteProps) {
     });
   };
 
-  const stopSortableDragActivation = (event: PointerEvent<HTMLElement>) => {
-    event.stopPropagation();
-  };
-
   useEffect(() => {
     setNote((currentNote) => {
       if (currentNote.isTitleHidden === props.note.isTitleHidden) {
@@ -341,7 +337,7 @@ function Note(props: NoteProps) {
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
-              <div className={classes.noteTitleWrapper} onPointerDown={stopSortableDragActivation}>
+              <div className={classes.noteTitleWrapper}>
                 <input
                   key={props.theme}
                   className={classes.noteTitleInput}
@@ -361,7 +357,7 @@ function Note(props: NoteProps) {
                 />
               </div>
             )}
-            <div className={classes.noteContent} onPointerDown={stopSortableDragActivation}>
+            <div className={classes.noteContent}>
               <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
             <Autosave data={note} onSave={(note) => {
