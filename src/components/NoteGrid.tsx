@@ -84,19 +84,23 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function NoteGrid (props: NoteGridProps) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const classes = useStyles();
-  const isNoteListEmpty = props.notes.length <= 0;
+
+  const [columnCount, setColumnCount] = useState(1);
+
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  
   const sensors = useSensors(useSensor(NotePointerSensor, {
     activationConstraint: {
       distance: 8
     }
   }));
-  const [columnCount, setColumnCount] = useState(1);
+
+  const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const noteGridStyle = {
     gridTemplateColumns: `repeat(${columnCount}, ${noteSizeDefinition.width}px)`
   };
+  const isNoteListEmpty = props.notes.length <= 0;
   const noteIds = props.notes.map((note) => note.id);
 
   useLayoutEffect(() => {

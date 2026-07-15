@@ -1,0 +1,38 @@
+.wrapper {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.list {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItem {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid rgba(31, 41, 51, 0.12);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.listItemText {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--note-list-text);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
