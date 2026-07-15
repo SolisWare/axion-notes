@@ -78,6 +78,15 @@ function NoteList(props: NoteListProps) {
     });
   }
 
+  function handleFoldNote(noteId: string) {
+    setExpandedNoteIds((currentExpandedNoteIds) => {
+      const nextExpandedNoteIds = new Set(currentExpandedNoteIds);
+      nextExpandedNoteIds.delete(noteId);
+
+      return nextExpandedNoteIds;
+    });
+  }
+
   return (
     <div className={styles.wrapper} style={noteListStyle}>
       <div className={styles.list}>
@@ -102,6 +111,13 @@ function NoteList(props: NoteListProps) {
                   handleMoveNoteToTop={props.handleMoveNoteToTop}
                   handleNoteSave={props.handleNoteSave}
                 />
+                <button
+                  aria-label={t("mainWindow.note.fold")}
+                  className={styles.foldButton}
+                  onClick={() => handleFoldNote(note.id)}
+                  title={t("mainWindow.note.fold")}
+                  type="button"
+                />
               </div>
             );
           }
@@ -121,10 +137,10 @@ function NoteList(props: NoteListProps) {
                 </span>
               </div>
               <button
-                aria-label={t("mainWindow.note.list.unfold")}
+                aria-label={t("mainWindow.note.unfold")}
                 className={styles.unfoldButton}
                 onClick={() => handleUnfoldNote(note.id)}
-                title={t("mainWindow.note.list.unfold")}
+                title={t("mainWindow.note.unfold")}
                 type="button"
               />
             </div>

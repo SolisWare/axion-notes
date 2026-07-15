@@ -14,6 +14,7 @@
 }
 
 .expandedListItem {
+  position: relative;
   width: 100%;
 }
 
@@ -82,6 +83,62 @@
 }
 
 .unfoldButton:focus-visible {
+  outline: 2px solid rgba(31, 41, 51, 0.48);
+  outline-offset: -4px;
+}
+
+.foldButton {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.foldButton::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.5);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  box-shadow: -2px -2px 3px rgba(31, 41, 51, 0.16);
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.foldButton::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 23px;
+  width: 34px;
+  height: 1px;
+  background: rgba(31, 41, 51, 0.22);
+  transform: rotate(-45deg);
+  transform-origin: right center;
+  transition: background-color 120ms ease;
+}
+
+.foldButton:hover::before,
+.foldButton:focus-visible::before {
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: -2px -2px 4px rgba(31, 41, 51, 0.24);
+}
+
+.foldButton:hover::after,
+.foldButton:focus-visible::after {
+  background: rgba(31, 41, 51, 0.36);
+}
+
+.foldButton:focus-visible {
   outline: 2px solid rgba(31, 41, 51, 0.48);
   outline-offset: -4px;
 }
