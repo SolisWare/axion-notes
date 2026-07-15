@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -60,8 +60,7 @@ function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNo
 
 function NoteList(props: NoteListProps) {
   const { t } = useTranslation();
-  
-  const [expandedNoteIds, setExpandedNoteIds] = useState<Set<string>>(new Set());
+  const foldedNoteIds = useRef<Set<string>>(new Set());
   
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
@@ -69,21 +68,28 @@ function NoteList(props: NoteListProps) {
     "--note-list-text": appColors.NOTE_TEXT
   } as CSSProperties;
 
-  function handleUnfoldNote(noteId: string) {
-    setExpandedNoteIds((currentExpandedNoteIds) => {
-      const nextExpandedNoteIds = new Set(currentExpandedNoteIds);
-      nextExpandedNoteIds.add(noteId);
+  function handleUnfoldNote(note: NoteType) {
+    foldedNoteIds.current.delete(note.id);
 
-      return nextExpandedNoteIds;
+    props.handleNoteSave({
+      ...note,
+      isFolded: false
     });
   }
 
-  function handleFoldNote(noteId: string) {
-    setExpandedNoteIds((currentExpandedNoteIds) => {
-      const nextExpandedNoteIds = new Set(currentExpandedNoteIds);
-      nextExpandedNoteIds.delete(noteId);
+  function handleFoldNote(note: NoteType) {
+    foldedNoteIds.current.add(note.id);
 
-      return nextExpandedNoteIds;
+    props.handleNoteSave({
+      ...note,
+      isFolded: true
+    });
+  }
+
+  function handleExpandedNoteSave(note: NoteType) {
+    props.handleNoteSave({
+      ...note,
+      isFolded: foldedNoteIds.current.has(note.id) ? true : note.isFolded
     });
   }
 
@@ -91,31 +97,29 @@ function NoteList(props: NoteListProps) {
     <div className={styles.wrapper} style={noteListStyle}>
       <div className={styles.list}>
         {props.notes.map((note) => {
+          const isFolded = note.isFolded ?? true;
           const foldedNoteContent = getFoldedNoteContent(note, props.showNoteTitles);
 
-          if (expandedNoteIds.has(note.id)) {
+          if (isFolded) {
             return (
-              <div className={styles.expandedListItem} key={note.id}>
-                <Note
-                  theme={props.theme}
-                  note={note}
-                  dateFormat={props.dateFormat}
-                  timeFormat={props.timeFormat}
-                  noteFont={props.noteFont}
-                  noteSize={NoteSizePreference.WIDE}
-                  showNoteTitles={props.showNoteTitles}
-                  showNoteFooters={props.showNoteFooters}
-                  handleDeleteNoteButton={props.handleDeleteNoteButton}
-                  handleDuplicateNote={props.handleDuplicateNote}
-                  handleMoveNoteToBottom={props.handleMoveNoteToBottom}
-                  handleMoveNoteToTop={props.handleMoveNoteToTop}
-                  handleNoteSave={props.handleNoteSave}
-                />
+              <div
+                className={styles.listItem}
+                key={note.id}
+                style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
+              >
+                <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>
+                  {foldedNoteContent.title && (
+                    <span className={styles.listItemTitle}>{foldedNoteContent.title}</span>
+                  )}
+                  <span className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}>
+                    {foldedNoteContent.body}
+                  </span>
+                </div>
                 <button
-                  aria-label={t("mainWindow.note.fold")}
-                  className={styles.foldButton}
-                  onClick={() => handleFoldNote(note.id)}
-                  title={t("mainWindow.note.fold")}
+                  aria-label={t("mainWindow.note.unfold")}
+                  className={styles.unfoldButton}
+                  onClick={() => handleUnfoldNote(note)}
+                  title={t("mainWindow.note.unfold")}
                   type="button"
                 />
               </div>
@@ -123,24 +127,27 @@ function NoteList(props: NoteListProps) {
           }
 
           return (
-            <div
-              className={styles.listItem}
-              key={note.id}
-              style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
-            >
-              <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>
-                {foldedNoteContent.title && (
-                  <span className={styles.listItemTitle}>{foldedNoteContent.title}</span>
-                )}
-                <span className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}>
-                  {foldedNoteContent.body}
-                </span>
-              </div>
+            <div className={styles.expandedListItem} key={note.id}>
+              <Note
+                theme={props.theme}
+                note={note}
+                dateFormat={props.dateFormat}
+                timeFormat={props.timeFormat}
+                noteFont={props.noteFont}
+                noteSize={NoteSizePreference.WIDE}
+                showNoteTitles={props.showNoteTitles}
+                showNoteFooters={props.showNoteFooters}
+                handleDeleteNoteButton={props.handleDeleteNoteButton}
+                handleDuplicateNote={props.handleDuplicateNote}
+                handleMoveNoteToBottom={props.handleMoveNoteToBottom}
+                handleMoveNoteToTop={props.handleMoveNoteToTop}
+                handleNoteSave={handleExpandedNoteSave}
+              />
               <button
-                aria-label={t("mainWindow.note.unfold")}
-                className={styles.unfoldButton}
-                onClick={() => handleUnfoldNote(note.id)}
-                title={t("mainWindow.note.unfold")}
+                aria-label={t("mainWindow.note.fold")}
+                className={styles.foldButton}
+                onClick={() => handleFoldNote(note)}
+                title={t("mainWindow.note.fold")}
                 type="button"
               />
             </div>

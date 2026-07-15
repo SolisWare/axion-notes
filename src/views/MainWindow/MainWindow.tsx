@@ -84,6 +84,7 @@ function MainWindow(props: MainWindowProps) {
       id: nanoid(),
       bgcolor: noteColor,
       isTitleHidden: !appSettings.showNoteTitles,
+      isFolded: true,
       content: "",
       createdOn: new Date(),
       lastModifiedOn: new Date()
