@@ -243,7 +243,7 @@ function SortableNoteListItem(props: SortableNoteListItemProps) {
       ref={setNodeRef}
       style={{
         opacity: isDragging ? 0.72 : 1,
-        transform: CSS.Transform.toString(transform),
+        transform: CSS.Translate.toString(transform),
         transition,
         zIndex: isDragging ? 1 : undefined
       }}
