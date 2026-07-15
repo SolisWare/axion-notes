@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties } from "react";
+import { CSSProperties, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -14,6 +14,7 @@ import { getNoteColor } from "../theme/NoteColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
+import Note from "./Note";
 import styles from "./NoteList.module.css";
 
 type NoteListProps = {
@@ -59,17 +60,51 @@ function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNo
 
 function NoteList(props: NoteListProps) {
   const { t } = useTranslation();
+  
+  const [expandedNoteIds, setExpandedNoteIds] = useState<Set<string>>(new Set());
+  
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteListStyle = {
     "--note-list-text": appColors.NOTE_TEXT
   } as CSSProperties;
 
+  function handleUnfoldNote(noteId: string) {
+    setExpandedNoteIds((currentExpandedNoteIds) => {
+      const nextExpandedNoteIds = new Set(currentExpandedNoteIds);
+      nextExpandedNoteIds.add(noteId);
+
+      return nextExpandedNoteIds;
+    });
+  }
+
   return (
     <div className={styles.wrapper} style={noteListStyle}>
       <div className={styles.list}>
         {props.notes.map((note) => {
           const foldedNoteContent = getFoldedNoteContent(note, props.showNoteTitles);
+
+          if (expandedNoteIds.has(note.id)) {
+            return (
+              <div className={styles.expandedListItem} key={note.id}>
+                <Note
+                  theme={props.theme}
+                  note={note}
+                  dateFormat={props.dateFormat}
+                  timeFormat={props.timeFormat}
+                  noteFont={props.noteFont}
+                  noteSize={NoteSizePreference.WIDE}
+                  showNoteTitles={props.showNoteTitles}
+                  showNoteFooters={props.showNoteFooters}
+                  handleDeleteNoteButton={props.handleDeleteNoteButton}
+                  handleDuplicateNote={props.handleDuplicateNote}
+                  handleMoveNoteToBottom={props.handleMoveNoteToBottom}
+                  handleMoveNoteToTop={props.handleMoveNoteToTop}
+                  handleNoteSave={props.handleNoteSave}
+                />
+              </div>
+            );
+          }
 
           return (
             <div
@@ -88,6 +123,7 @@ function NoteList(props: NoteListProps) {
               <button
                 aria-label={t("mainWindow.note.list.unfold")}
                 className={styles.unfoldButton}
+                onClick={() => handleUnfoldNote(note.id)}
                 title={t("mainWindow.note.list.unfold")}
                 type="button"
               />

@@ -13,6 +13,10 @@
   gap: 8px;
 }
 
+.expandedListItem {
+  width: 100%;
+}
+
 .listItem {
   position: relative;
   width: 100%;
@@ -37,7 +41,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  cursor: default;
+  cursor: pointer;
 }
 
 .unfoldButton::before {
