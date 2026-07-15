@@ -32,15 +32,28 @@ type NoteListProps = {
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
 }
 
-function getFoldedNoteText(note: NoteType, showNoteTitles: boolean): string {
+type FoldedNoteContent = {
+  body: string;
+  title?: string;
+};
+
+function getFirstContentLine(note: NoteType): string {
+  return note.content.split(/\r?\n/).find((line) => line.trim().length > 0)?.trim() ?? "";
+}
+
+function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNoteContent {
   const isTitleHidden = note.isTitleHidden ?? !showNoteTitles;
   const title = note.title?.trim();
+  const body = getFirstContentLine(note);
 
   if (!isTitleHidden && title) {
-    return title;
+    return {
+      title,
+      body
+    };
   }
 
-  return note.content.split(/\r?\n/).find((line) => line.trim().length > 0)?.trim() ?? "";
+  return { body };
 }
 
 function NoteList(props: NoteListProps) {
@@ -53,20 +66,26 @@ function NoteList(props: NoteListProps) {
   return (
     <div className={styles.wrapper} style={noteListStyle}>
       <div className={styles.list}>
-        {props.notes.map((note) => (
-          <div
-            className={styles.listItem}
-            key={note.id}
-            style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
-          >
-            <span
-              className={styles.listItemText}
-              style={{ fontFamily: noteFontFamily }}
+        {props.notes.map((note) => {
+          const foldedNoteContent = getFoldedNoteContent(note, props.showNoteTitles);
+
+          return (
+            <div
+              className={styles.listItem}
+              key={note.id}
+              style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
             >
-              {getFoldedNoteText(note, props.showNoteTitles)}
-            </span>
-          </div>
-        ))}
+              <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>
+                {foldedNoteContent.title && (
+                  <span className={styles.listItemTitle}>{foldedNoteContent.title}</span>
+                )}
+                <span className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}>
+                  {foldedNoteContent.body}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
