@@ -8,10 +8,12 @@ import { NoteType } from '../../src/models/NoteType';
 import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
 import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
+import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
 
 interface IElectronAPI {
   appWindow: {
     setAlwaysOnTop: (enabled: boolean) => void;
+    setLayout: (layout: NoteLayoutPreference) => void;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

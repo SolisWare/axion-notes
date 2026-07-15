@@ -161,6 +161,12 @@ function MainWindow(props: MainWindowProps) {
       window.api.appWindow.setAlwaysOnTop(appSettings.keepNotesMainWindowOnTop);
     }
   }, [appSettings.keepNotesMainWindowOnTop]);
+
+  useEffect(() => {
+    if (UserAgent.isElectron) {
+      window.api.appWindow.setLayout(appSettings.noteLayout);
+    }
+  }, [appSettings.noteLayout]);
   
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);

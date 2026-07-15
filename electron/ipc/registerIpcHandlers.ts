@@ -15,12 +15,15 @@ import { AppSettings } from "../../src/settings/AppSettings";
 type IpcHandlerOptions = {
   appDataDir: string;
   appSettingsFilePath: string;
+  mainWindowStateFilePath: string;
   initialSettings?: AppSettings;
   onSettingsChange?: (settings: AppSettings) => void;
 };
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
-  registerAppWindowIpc();
+  registerAppWindowIpc({
+    mainWindowStateFilePath: options.mainWindowStateFilePath
+  });
   registerSystemThemeIpc();
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();

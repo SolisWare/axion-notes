@@ -6,7 +6,8 @@
  */
 export const channels = {
   appWindow: {
-    setAlwaysOnTop: "appWindow.setAlwaysOnTop"
+    setAlwaysOnTop: "appWindow.setAlwaysOnTop",
+    setLayout: "appWindow.setLayout"
   },
   menu: {
     newNote: "menu.newNote",

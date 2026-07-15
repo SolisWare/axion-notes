@@ -11,19 +11,24 @@ import { dev, production } from "./routes";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose } from "./mainWindowState";
+import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
+  initialNoteLayout: NoteLayoutPreference;
 };
 
 export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   const mainWindowState = readMainWindowState(options.mainWindowStateFilePath);
-  const mainWindowBounds = getMainWindowLaunchBounds(mainWindowState);
+  const mainWindowBounds = getMainWindowLaunchBounds(mainWindowState, options.initialNoteLayout);
+  const isListLayout = options.initialNoteLayout === NoteLayoutPreference.LIST;
 
   const mainWindow = new BrowserWindow({
     ...mainWindowBounds,
     minWidth: 335,
     minHeight: 250,
+    resizable: !isListLayout,
+    maximizable: !isListLayout,
     show: false,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     webPreferences: {
@@ -34,7 +39,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
     }
   });
 
-  if (mainWindowState.isMaximized) {
+  if (!isListLayout && mainWindowState.isMaximized) {
     mainWindow.maximize();
   }
 

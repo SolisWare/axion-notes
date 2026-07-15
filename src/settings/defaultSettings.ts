@@ -32,7 +32,12 @@ export const defaultAppSettings: AppSettings = {
   noteLayout: NoteLayoutPreference.GRID
 };
 
-export const defaultMainWindowBounds: AppWindowBounds = {
+export const defaultMainWindowGridBounds: AppWindowBounds = {
   width: 1250,
+  height: 800
+};
+
+export const defaultMainWindowListBounds: AppWindowBounds = {
+  width: 480,
   height: 800
 };

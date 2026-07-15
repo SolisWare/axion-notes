@@ -18,12 +18,14 @@ import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
 import { getSettings } from "./storage/appSettingsStorage";
 import { setElectronLanguage } from "./utils/electronI18n";
 import { AppSettings } from "../src/settings/AppSettings";
+import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
+let currentSettings: AppSettings | undefined;
 
 // Create the 'data' directory if it doesn't exist.
 if (!fs.existsSync(appDataDir)) {
@@ -47,6 +49,7 @@ if (isDev) {
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   const settings = await getSettings(appSettingsFilePath);
+  currentSettings = settings;
 
   if (settings) {
     setElectronLanguage(settings.language);
@@ -62,11 +65,16 @@ app.on("ready", async () => {
     appDataDir,
     appSettingsFilePath,
     initialSettings: settings,
+    mainWindowStateFilePath,
     onSettingsChange: (settings: AppSettings) => {
+      currentSettings = settings;
       setElectronLanguage(settings.language);
     }
   });
-  createMainWindow({ mainWindowStateFilePath });
+  createMainWindow({
+    mainWindowStateFilePath,
+    initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID
+  });
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -82,7 +90,10 @@ app.on('window-all-closed', () => {
 // when the dock icon is clicked and there are no other windows opened.
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow({ mainWindowStateFilePath });
+    createMainWindow({
+      mainWindowStateFilePath,
+      initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID
+    });
   }
 });
 
