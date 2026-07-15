@@ -5,7 +5,6 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { CSSProperties } from "react";
-import EmptyNoteList from "./EmptyNoteList";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteSizePreference } from "../settings/noteSizePreference";
@@ -47,33 +46,28 @@ function getFoldedNoteText(note: NoteType, showNoteTitles: boolean): string {
 function NoteList(props: NoteListProps) {
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
-  const isNoteListEmpty = props.notes.length <= 0;
   const noteListStyle = {
     "--note-list-text": appColors.NOTE_TEXT
   } as CSSProperties;
 
   return (
     <div className={styles.wrapper} style={noteListStyle}>
-      {isNoteListEmpty ?
-        <EmptyNoteList theme={props.theme} />
-        :
-        <div className={styles.list}>
-          {props.notes.map((note) => (
-            <div
-              className={styles.listItem}
-              key={note.id}
-              style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
+      <div className={styles.list}>
+        {props.notes.map((note) => (
+          <div
+            className={styles.listItem}
+            key={note.id}
+            style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
+          >
+            <span
+              className={styles.listItemText}
+              style={{ fontFamily: noteFontFamily }}
             >
-              <span
-                className={styles.listItemText}
-                style={{ fontFamily: noteFontFamily }}
-              >
-                {getFoldedNoteText(note, props.showNoteTitles)}
-              </span>
-            </div>
-          ))}
-        </div>
-      }
+              {getFoldedNoteText(note, props.showNoteTitles)}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

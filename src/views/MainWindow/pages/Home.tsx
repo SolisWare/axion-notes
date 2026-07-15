@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import EmptyNoteList from "../../../components/EmptyNoteList";
 import NoteGrid from "../../../components/NoteGrid";
 import NoteList from "../../../components/NoteList";
 import { NoteType } from "../../../models/NoteType";
@@ -33,9 +34,14 @@ type HomeProps = {
 }
 
 function Home(props: HomeProps) {
+  const isNoteListEmpty = props.notes.length <= 0;
+
   return (
     <div>
-      {props.noteLayout === NoteLayoutPreference.LIST ?
+      {isNoteListEmpty ?
+        <EmptyNoteList theme={props.theme} />
+        :
+        props.noteLayout === NoteLayoutPreference.LIST ?
         <NoteList
           theme={props.theme}
           notes={props.notes}
@@ -52,7 +58,7 @@ function Home(props: HomeProps) {
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
         />
-        :
+          :
         <NoteGrid
           theme={props.theme}
           notes={props.notes}

@@ -9,7 +9,6 @@ import { makeStyles } from "@mui/styles";
 import { PointerEvent as ReactPointerEvent, useLayoutEffect, useRef, useState } from "react";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
-import EmptyNoteList from "./EmptyNoteList";
 import SortableNote from "./SortableNote";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
@@ -100,7 +99,6 @@ function NoteGrid (props: NoteGridProps) {
   const noteGridStyle = {
     gridTemplateColumns: `repeat(${columnCount}, ${noteSizeDefinition.width}px)`
   };
-  const isNoteListEmpty = props.notes.length <= 0;
   const noteIds = props.notes.map((note) => note.id);
 
   useLayoutEffect(() => {
@@ -135,42 +133,36 @@ function NoteGrid (props: NoteGridProps) {
 
   return (
     <div className={classes.wrapper} ref={wrapperRef}>
-      {isNoteListEmpty ?
-        <>
-          <EmptyNoteList theme={props.theme} />
-        </>
-        :
-        <DndContext
-          autoScroll={false}
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={noteIds} strategy={rectSortingStrategy}>
-            <div className={classes.noteGrid} style={noteGridStyle}>
-              {props.notes.map((note) => (
-                <SortableNote
-                  key={note.id}
-                  note={note}
-                  theme={props.theme}
-                  dateFormat={props.dateFormat}
-                  timeFormat={props.timeFormat}
-                  noteFont={props.noteFont}
-                  noteSize={props.noteSize}
-                  showNoteTitles={props.showNoteTitles}
-                  showNoteFooters={props.showNoteFooters}
-                  handleNoteSave={props.handleNoteSave}
-                  handleDeleteNoteButton={props.handleDeleteNoteButton}
-                  handleDuplicateNote={props.handleDuplicateNote}
-                  handleMoveNoteToBottom={props.handleMoveNoteToBottom}
-                  handleMoveNoteToTop={props.handleMoveNoteToTop}
-                />
-                ))
-              }
-            </div>
-          </SortableContext>
-        </DndContext>
-      }
+      <DndContext
+        autoScroll={false}
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={noteIds} strategy={rectSortingStrategy}>
+          <div className={classes.noteGrid} style={noteGridStyle}>
+            {props.notes.map((note) => (
+              <SortableNote
+                key={note.id}
+                note={note}
+                theme={props.theme}
+                dateFormat={props.dateFormat}
+                timeFormat={props.timeFormat}
+                noteFont={props.noteFont}
+                noteSize={props.noteSize}
+                showNoteTitles={props.showNoteTitles}
+                showNoteFooters={props.showNoteFooters}
+                handleNoteSave={props.handleNoteSave}
+                handleDeleteNoteButton={props.handleDeleteNoteButton}
+                handleDuplicateNote={props.handleDuplicateNote}
+                handleMoveNoteToBottom={props.handleMoveNoteToBottom}
+                handleMoveNoteToTop={props.handleMoveNoteToTop}
+              />
+              ))
+            }
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }
