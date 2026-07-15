@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteSizePreference } from "../settings/noteSizePreference";
@@ -57,6 +58,7 @@ function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNo
 }
 
 function NoteList(props: NoteListProps) {
+  const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteListStyle = {
@@ -83,6 +85,12 @@ function NoteList(props: NoteListProps) {
                   {foldedNoteContent.body}
                 </span>
               </div>
+              <button
+                aria-label={t("mainWindow.note.list.unfold")}
+                className={styles.unfoldButton}
+                title={t("mainWindow.note.list.unfold")}
+                type="button"
+              />
             </div>
           );
         })}

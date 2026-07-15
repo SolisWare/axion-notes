@@ -41,6 +41,9 @@
         "delete": "Delete note",
         "noteColorAriaLabel": "Note color",
         "noteColor": "Note color..."
+      },
+      "list": {
+        "unfold": "Unfold note"
       }
     },
     "deleteAllNotesDialog": {

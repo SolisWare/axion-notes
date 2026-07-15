@@ -14,15 +14,72 @@
 }
 
 .listItem {
+  position: relative;
   width: 100%;
   min-height: 48px;
   display: flex;
   align-items: flex-start;
   box-sizing: border-box;
-  padding: 9px 14px;
-  border: 1px solid rgba(31, 41, 51, 0.12);
-  border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 9px 30px 9px 14px;
+  border: 1px solid rgba(31, 41, 51, 0.16);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.unfoldButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.unfoldButton::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.46);
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  box-shadow: -2px -2px 3px rgba(31, 41, 51, 0.16);
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.unfoldButton::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 21px;
+  width: 31px;
+  height: 1px;
+  background: rgba(31, 41, 51, 0.2);
+  transform: rotate(-45deg);
+  transform-origin: right center;
+  transition: background-color 120ms ease;
+}
+
+.unfoldButton:hover::before,
+.unfoldButton:focus-visible::before {
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow: -2px -2px 4px rgba(31, 41, 51, 0.24);
+}
+
+.unfoldButton:hover::after,
+.unfoldButton:focus-visible::after {
+  background: rgba(31, 41, 51, 0.34);
+}
+
+.unfoldButton:focus-visible {
+  outline: 2px solid rgba(31, 41, 51, 0.48);
+  outline-offset: -4px;
 }
 
 .listItemContent {
