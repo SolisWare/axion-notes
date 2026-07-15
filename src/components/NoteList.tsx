@@ -169,7 +169,9 @@ function NoteList(props: NoteListProps) {
                       className={styles.listItem}
                       style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
                     >
-                      <div className={styles.foldedNoteDragIndicator} aria-hidden="true" />
+                      <div className={styles.foldedNoteDragIndicatorRow} aria-hidden="true">
+                        <div className={styles.foldedNoteDragIndicator} />
+                      </div>
                       <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>
                         {foldedNoteContent.title && (
                           <span className={styles.listItemTitle}>{foldedNoteContent.title}</span>

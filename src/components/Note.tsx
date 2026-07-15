@@ -56,10 +56,23 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     flexDirection: "column",
     justifyContent: "space-between"
   },
-  noteDragIndicator: {
+  noteDragIndicatorRow: {
+    flex: "0 0 auto",
+    height: 15,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingTop: 7,
+    boxSizing: "border-box",
+    cursor: "grab",
     "&:active": {
       cursor: "grabbing"
     }
+  },
+  noteDragIndicator: {
+    width: 34,
+    height: 3,
+    borderRadius: 999
   },
   noteContentWrapper: {
     flex: "1 1 auto",
@@ -321,21 +334,16 @@ function Note(props: NoteProps) {
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
-        <div
-          className={classes.noteDragIndicator}
-          aria-hidden="true"
-          style={{
-            flex: "0 0 auto",
-            width: 34,
-            height: 3,
-            margin: "7px auto 5px auto",
-            borderRadius: 999,
-            backgroundColor: appColors.NOTE_FOOTER_TEXT,
-            cursor: "grab",
-            opacity: isNoteHovered ? 0.24 : 0,
-            transition: "opacity 120ms ease"
-          }}
-        />
+        <div className={classes.noteDragIndicatorRow} aria-hidden="true">
+          <div
+            className={classes.noteDragIndicator}
+            style={{
+              backgroundColor: appColors.NOTE_FOOTER_TEXT,
+              opacity: isNoteHovered ? 0.24 : 0,
+              transition: "opacity 120ms ease"
+            }}
+          />
+        </div>
         <div className={classes.noteContentWrapper}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
