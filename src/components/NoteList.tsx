@@ -6,8 +6,8 @@
  */
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { useLayoutEffect, useRef, useState } from "react";
-import { closestCenter, DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { PointerEvent as ReactPointerEvent, useLayoutEffect, useRef, useState } from "react";
+import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import EmptyNoteList from "./EmptyNoteList";
 import SortableNote from "./SortableNote";
@@ -37,6 +37,37 @@ type NoteListProps = {
 
 const NOTE_GRID_GAP = 25;
 const NOTE_GRID_HORIZONTAL_PADDING = 60;
+const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable='true']";
+
+function isFocusedEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  const editableTarget = target.closest(NOTE_EDITABLE_SELECTOR);
+
+  if (!(editableTarget instanceof HTMLElement)) {
+    return false;
+  }
+
+  const activeElement = editableTarget.ownerDocument.activeElement;
+
+  return activeElement === editableTarget || editableTarget.contains(activeElement);
+}
+
+class NotePointerSensor extends PointerSensor {
+  static activators = [{
+    eventName: "onPointerDown" as const,
+    handler: ({ nativeEvent: event }: ReactPointerEvent, { onActivation }: PointerSensorOptions) => {
+      if (!event.isPrimary || event.button !== 0 || isFocusedEditableTarget(event.target)) {
+        return false;
+      }
+
+      onActivation?.({ event });
+      return true;
+    }
+  }];
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   wrapper: {
@@ -57,7 +88,7 @@ function NoteList (props: NoteListProps) {
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const classes = useStyles();
   const isNoteListEmpty = props.notes.length <= 0;
-  const sensors = useSensors(useSensor(PointerSensor, {
+  const sensors = useSensors(useSensor(NotePointerSensor, {
     activationConstraint: {
       distance: 8
     }
