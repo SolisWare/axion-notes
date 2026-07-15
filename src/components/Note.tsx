@@ -36,6 +36,7 @@ type NoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  style?: CSSProperties;
 };
 
 type NoteDateLabelProps = {
@@ -315,7 +316,8 @@ function Note(props: NoteProps) {
             "0px 4px 5px 0px rgba(118, 137, 156, 0.14)",
             "0px 1px 10px 0px rgba(118, 137, 156, 0.12)"
           ].join(",")
-        } : {})
+        } : {}),
+        ...props.style
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>

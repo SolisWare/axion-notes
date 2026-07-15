@@ -142,6 +142,7 @@ function NoteList(props: NoteListProps) {
                 handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                 handleMoveNoteToTop={props.handleMoveNoteToTop}
                 handleNoteSave={handleExpandedNoteSave}
+                style={{ marginBottom: 0 }}
               />
               <button
                 aria-label={t("mainWindow.note.fold")}
