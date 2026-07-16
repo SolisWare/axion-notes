@@ -15,14 +15,20 @@ import { dev } from "./routes";
 const noteWindows = new Map<string, BrowserWindow>();
 
 function getNoteWindowRoute(noteId: string): string {
-  return `${dev("note")}?noteId=${encodeURIComponent(noteId)}`;
+  const noteRoute = dev("note");
+  const [baseUrl, hashRoute] = noteRoute.split("#");
+
+  return `${baseUrl}?noteId=${encodeURIComponent(noteId)}#${hashRoute}`;
 }
 
 function getProductionNoteWindowRoute(noteId: string): [string, LoadFileOptions] {
   return [
     path.join(__dirname, "../../index.html"),
     {
-      hash: `/note?noteId=${encodeURIComponent(noteId)}`
+      hash: "/note",
+      query: {
+        noteId
+      }
     }
   ];
 }

@@ -6,7 +6,12 @@
  */
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
+import { nanoid } from "nanoid";
+import { useEffect, useState } from "react";
+import Note from "../../components/Note";
+import { NoteType } from "../../models/NoteType";
 import { AppSettings } from "../../settings/AppSettings";
+import { NoteSizePreference } from "../../settings/noteSizePreference";
 import { AppTheme } from "../../theme/AppTheme";
 import { SystemTheme } from "../../theme/SystemTheme";
 import styles from "./NoteWindow.module.css";
@@ -17,13 +22,72 @@ type NoteWindowProps = {
 };
 
 function NoteWindow(props: NoteWindowProps) {
+  const noteId = new URLSearchParams(window.location.search).get("noteId");
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
-  void props.appSettings;
+  const [note, setNote] = useState<NoteType | null>(null);
+
+  useEffect(() => {
+    if (!noteId) {
+      return;
+    }
+
+    window.api.storage.getNotes()
+      .then((notes) => {
+        setNote(notes.find((note) => note.id === noteId) ?? null);
+      })
+      .catch((err: Error) => {
+        console.error("Unexpected error loading note window:", err.message);
+      });
+  }, [noteId]);
+
+  function handleNoteSave(updatedNote: NoteType) {
+    window.api.storage.setNote(updatedNote);
+    setNote(updatedNote);
+  }
+
+  function handleDeleteNote(noteId: string) {
+    window.api.storage.deleteNote(noteId);
+    setNote(null);
+  }
+
+  function handleDuplicateNote(note: NoteType) {
+    const now = new Date();
+    const duplicatedNote = {
+      ...note,
+      id: nanoid(),
+      createdOn: now,
+      lastModifiedOn: now
+    };
+
+    window.api.storage.setNote(duplicatedNote);
+  }
 
   return (
     <ThemeProvider theme={appTheme}>
       <div className={styles.root} style={{ backgroundColor: appTheme.palette.background.default }}>
         <CssBaseline />
+        {note && (
+          <Note
+            theme={props.theme}
+            note={note}
+            dateFormat={props.appSettings.dateFormat}
+            timeFormat={props.appSettings.timeFormat}
+            noteFont={props.appSettings.noteFont}
+            noteSize={NoteSizePreference.DEFAULT}
+            showNoteTitles={props.appSettings.showNoteTitles}
+            showNoteFooters={props.appSettings.showNoteFooters}
+            handleDeleteNoteButton={handleDeleteNote}
+            handleDuplicateNote={handleDuplicateNote}
+            handleMoveNoteToBottom={() => {}}
+            handleMoveNoteToTop={() => {}}
+            handleNoteSave={handleNoteSave}
+            style={{
+              width: "100%",
+              height: "100%",
+              marginBottom: 0
+            }}
+          />
+        )}
       </div>
     </ThemeProvider>
   );
