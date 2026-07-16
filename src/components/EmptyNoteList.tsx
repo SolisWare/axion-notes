@@ -18,8 +18,16 @@ type EmptyNoteListProps = {
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   wrapper: {
-    position: "fixed",
-    width: "95%"
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "30px 30px",
+    display: "flex",
+    justifyContent: "center"
+  },
+  content: {
+    width: "100%",
+    maxWidth: 420,
+    textAlign: "center"
   },
   text: {
     paddingBottom: 7,
@@ -39,8 +47,10 @@ function EmptyNoteList(props: EmptyNoteListProps) {
   
   return (
     <div className={classes.wrapper}>
-      <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{t("mainWindow.emptyNotes.title")}</Typography>
-      <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` })}</Typography>
+      <div className={classes.content}>
+        <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{t("mainWindow.emptyNotes.title")}</Typography>
+        <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` })}</Typography>
+      </div>
     </div>
   );
 }

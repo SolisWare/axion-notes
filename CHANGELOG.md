@@ -3,6 +3,9 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.4.0] - Unreleased - Viewport
+- Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
+
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code
 - Shared translation loading between React and Electron using the supported language list
