@@ -41,7 +41,9 @@
         "delete": "Kustuta märge",
         "noteColorAriaLabel": "Märkme värv",
         "noteColor": "Märkme värv…"
-      }
+      },
+      "unfold": "Lappa märge lahti",
+      "fold": "Lappa märge kokku"
     },
     "deleteAllNotesDialog": {
       "title": "Kustuta kõik märkmed",
