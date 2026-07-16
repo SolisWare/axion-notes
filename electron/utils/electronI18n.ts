@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { DEFAULT_LANGUAGE, SupportedLanguageCode } from "../../src/i18n/languages";
+import { DEFAULT_LANGUAGE, isSupportedLanguageCode, SupportedLanguageCode } from "../../src/i18n/languages";
 import { getTranslation, TranslationNode } from "../../src/i18n/translationLoader";
 
 type TranslationVariables = Record<string, string | number>;
@@ -12,7 +12,7 @@ type TranslationVariables = Record<string, string | number>;
 let currentLanguage: SupportedLanguageCode = DEFAULT_LANGUAGE;
 
 export function setElectronLanguage(language: SupportedLanguageCode): void {
-  currentLanguage = language;
+  currentLanguage = isSupportedLanguageCode(language) ? language : DEFAULT_LANGUAGE;
 }
 
 function getTranslationValue(translations: TranslationNode, key: string): string | undefined {

@@ -24,6 +24,7 @@ type NoteContextMenuProps = {
   isTitleHidden: boolean;
   onDeleteNote: () => void;
   onDuplicateNote: () => void;
+  onOpenNoteWindow?: () => void;
   onMoveNoteToBottom: () => void;
   onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
@@ -57,6 +58,17 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => event.stopPropagation()}
     >
+      {props.onOpenNoteWindow && (
+        <>
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onOpenNoteWindow}
+          >
+            {t("mainWindow.note.contextMenu.openInNewWindow")}
+          </div>
+          <Divider className={styles.noteContextMenuDivider} />
+        </>
+      )}
       <div
         className={styles.noteContextMenuItem}
         onClick={props.onMoveNoteToTop}

@@ -33,6 +33,7 @@ type NoteProps = {
   showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleOpenNoteWindow?: (noteId: string) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
@@ -244,6 +245,19 @@ function Note(props: NoteProps) {
     props.handleDuplicateNote(latestNote.current);
   };
 
+  const handleContextMenuOpenNoteWindow = props.handleOpenNoteWindow
+    ? () => {
+      handleCloseNoteContextMenu();
+
+      if (hasUnsavedChanges.current) {
+        props.handleNoteSave(latestNote.current);
+        hasUnsavedChanges.current = false;
+      }
+
+      props.handleOpenNoteWindow?.(note.id);
+    }
+    : undefined;
+
   const handleContextMenuMoveNoteToTop = () => {
     handleCloseNoteContextMenu();
     props.handleMoveNoteToTop(note.id);
@@ -395,6 +409,7 @@ function Note(props: NoteProps) {
           isTitleHidden={isTitleHidden}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
+          onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}

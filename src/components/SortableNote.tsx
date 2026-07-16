@@ -25,6 +25,7 @@ type SortableNoteProps = {
   showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleOpenNoteWindow?: (noteId: string) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
@@ -64,6 +65,7 @@ function SortableNote(props: SortableNoteProps) {
         handleNoteSave={props.handleNoteSave}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
         handleDuplicateNote={props.handleDuplicateNote}
+        handleOpenNoteWindow={props.handleOpenNoteWindow}
         handleMoveNoteToBottom={props.handleMoveNoteToBottom}
         handleMoveNoteToTop={props.handleMoveNoteToTop}
       />

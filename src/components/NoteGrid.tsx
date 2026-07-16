@@ -28,6 +28,7 @@ export type NoteGridProps = {
   showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleOpenNoteWindow?: (noteId: string) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
@@ -111,9 +112,8 @@ function NoteGrid (props: NoteGridProps) {
     function updateColumnCount() {
       const availableWidth = Math.max(0, wrapper!.getBoundingClientRect().width - NOTE_GRID_HORIZONTAL_PADDING);
       const maxColumnCount = Math.max(1, Math.floor((availableWidth + NOTE_GRID_GAP) / (noteSizeDefinition.width + NOTE_GRID_GAP)));
-      const nextColumnCount = Math.max(1, Math.min(maxColumnCount, props.notes.length || 1));
 
-      setColumnCount(nextColumnCount);
+      setColumnCount(maxColumnCount);
     }
 
     updateColumnCount();
@@ -121,7 +121,7 @@ function NoteGrid (props: NoteGridProps) {
     window.addEventListener("resize", updateColumnCount);
 
     return () => window.removeEventListener("resize", updateColumnCount);
-  }, [noteSizeDefinition.width, props.notes.length]);
+  }, [noteSizeDefinition.width]);
   
   function handleDragEnd(event: DragEndEvent) {
     if (!event.over || event.active.id === event.over.id) {
@@ -155,6 +155,7 @@ function NoteGrid (props: NoteGridProps) {
                 handleNoteSave={props.handleNoteSave}
                 handleDeleteNoteButton={props.handleDeleteNoteButton}
                 handleDuplicateNote={props.handleDuplicateNote}
+                handleOpenNoteWindow={props.handleOpenNoteWindow}
                 handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                 handleMoveNoteToTop={props.handleMoveNoteToTop}
               />

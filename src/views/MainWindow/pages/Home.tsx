@@ -27,6 +27,7 @@ type HomeProps = {
   showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
+  handleOpenNoteWindow?: (noteId: string) => void;
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
@@ -53,6 +54,7 @@ function Home(props: HomeProps) {
           showNoteFooters={props.showNoteFooters}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
+          handleOpenNoteWindow={props.handleOpenNoteWindow}
           handleMoveNoteToBottom={props.handleMoveNoteToBottom}
           handleMoveNoteToTop={props.handleMoveNoteToTop}
           handleNoteSave={props.handleNoteSave}
@@ -70,6 +72,7 @@ function Home(props: HomeProps) {
           showNoteFooters={props.showNoteFooters}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
+          handleOpenNoteWindow={props.handleOpenNoteWindow}
           handleMoveNoteToBottom={props.handleMoveNoteToBottom}
           handleMoveNoteToTop={props.handleMoveNoteToTop}
           handleNoteSave={props.handleNoteSave}

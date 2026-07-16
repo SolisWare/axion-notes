@@ -9,6 +9,7 @@ import i18n from './i18n/i18n';
 import { BrowserRouter, Routes, Route as WebRoute } from "react-router-dom";
 import { Router, Route } from 'electron-router-dom'
 import MainWindow from './views/MainWindow/MainWindow';
+import NoteWindow from './views/NoteWindow/NoteWindow';
 import LicenseWindow from './views/LicenseWindow/LicenseWindow';
 import SettingsWindow from './views/SettingsWindow/SettingsWindow';
 import { UserAgent } from './utils/UserAgent';
@@ -182,6 +183,10 @@ function App() {
         } license={
           <Route path="/" element={
             <LicenseWindow theme={effectiveTheme} />
+          } />
+        } note={
+          <Route path="/" element={
+            <NoteWindow theme={effectiveTheme} appSettings={appSettings} />
           } />
         } settings={
           <Route path="/" element={

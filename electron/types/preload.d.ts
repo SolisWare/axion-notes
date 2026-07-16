@@ -35,6 +35,9 @@ interface IElectronAPI {
     requestSort: () => void;
     onSortRequest: (callback: () => void) => () => void;
   },
+  noteWindow: {
+    open: (noteId: string) => void;
+  },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
     getSettingsFolderLocation: () => Promise<string>;

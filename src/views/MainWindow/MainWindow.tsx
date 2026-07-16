@@ -211,6 +211,12 @@ function MainWindow(props: MainWindowProps) {
     });
   }
 
+  function handleOpenNoteWindow(noteId: string) {
+    if (UserAgent.isElectron) {
+      window.api.noteWindow.open(noteId);
+    }
+  }
+
   function applyCustomNoteOrder(reorderNotes: (notes: NoteType[]) => NoteType[]) {
     setNotes((prevNotes) => {
       const reorderedNotes = reorderNotes(prevNotes);
@@ -320,13 +326,13 @@ function MainWindow(props: MainWindowProps) {
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
-                   handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={UserAgent.isElectron ? handleOpenNoteWindow : undefined} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
-                   handleDuplicateNote={handleDuplicateNote} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={UserAgent.isElectron ? handleOpenNoteWindow : undefined} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   

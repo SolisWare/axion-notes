@@ -7,6 +7,7 @@
 import { registerAppWindowIpc } from "./appWindowIpc";
 import { registerMenuIpc } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
+import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
 import { registerStorageIpc } from "./storageIpc";
 import { registerSystemThemeIpc } from "./systemThemeIpc";
@@ -28,6 +29,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();
   registerNoteSortIpc();
+  registerNoteWindowIpc();
   registerSettingsIpc({
     appSettingsFilePath: options.appSettingsFilePath,
     initialSettings: options.initialSettings,

@@ -33,6 +33,7 @@
       "lastModifiedCompact": "Modified:",
       "at": "at",
       "contextMenu": {
+        "openInNewWindow": "Open in new window",
         "moveToTop": "Move to top",
         "moveToBottom": "Move to bottom",
         "duplicate": "Duplicate",
@@ -204,7 +205,8 @@
     },
     "windows": {
       "settings": "Settings",
-      "license": "License"
+      "license": "License",
+      "note": "Note"
     }
   }
 }

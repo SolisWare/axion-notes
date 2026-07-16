@@ -63,6 +63,9 @@ export function installBrowserApi(): void {
         };
       }
     },
+    noteWindow: {
+      open: noop
+    },
     settings: settingsApi,
     version: {
       getShortDisplayVersion: getBrowserVersionLabel
