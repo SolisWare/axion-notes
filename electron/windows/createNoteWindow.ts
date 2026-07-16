@@ -38,10 +38,10 @@ export function createNoteWindow(noteId: string): BrowserWindow {
   const windowTitle = `Axion Notes — ${translate("electron.windows.note")}`;
 
   const noteWindow = new BrowserWindow({
-    width: 360,
-    height: 360,
-    minWidth: 320,
-    minHeight: 300,
+    width: 900,
+    height: 700,
+    minWidth: 800,
+    minHeight: 600,
     show: false,
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
