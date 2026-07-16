@@ -111,7 +111,8 @@ function NoteList(props: NoteListProps) {
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteListStyle = {
-    "--note-list-text": appColors.NOTE_TEXT
+    "--note-list-text": appColors.NOTE_TEXT,
+    "--note-list-background": appColors.ACCENT
   } as CSSProperties;
   const noteIds = props.notes.map((note) => note.id);
 
@@ -163,11 +164,16 @@ function NoteList(props: NoteListProps) {
               const foldedNoteContent = getFoldedNoteContent(note, props.showNoteTitles);
 
               if (isFolded) {
+                const noteColor = getNoteColor(note.bgcolor, props.theme);
+
                 return (
                   <SortableNoteListItem id={note.id} isFolded={isFolded} key={note.id}>
                     <div
                       className={styles.listItem}
-                      style={{ backgroundColor: getNoteColor(note.bgcolor, props.theme) }}
+                      style={{
+                        "--note-bg-color": noteColor,
+                        backgroundColor: noteColor
+                      } as CSSProperties}
                     >
                       <div className={styles.foldedNoteDragIndicatorRow} aria-hidden="true">
                         <div className={styles.foldedNoteDragIndicator} />
@@ -194,7 +200,10 @@ function NoteList(props: NoteListProps) {
 
               return (
                 <SortableNoteListItem id={note.id} isFolded={isFolded} key={note.id}>
-                  <div className={styles.expandedListItem}>
+                  <div
+                    className={styles.expandedListItem}
+                    style={{ "--note-bg-color": getNoteColor(note.bgcolor, props.theme) } as CSSProperties}
+                  >
                     <Note
                       theme={props.theme}
                       note={note}
