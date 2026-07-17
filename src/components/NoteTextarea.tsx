@@ -85,7 +85,7 @@ function NoteTextarea(props: NoteTextareaProps) {
                 className={classes.noteTextarea}
                 style={{ fontFamily: props.fontFamily }}
                 placeholder={props.placeholder}
-                defaultValue={props.content}
+                value={props.content}
                 onChange={handleChange} />
     </div>
   );

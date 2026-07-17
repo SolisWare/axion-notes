@@ -17,6 +17,7 @@ import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NoteType } from "../../models/NoteType";
+import { NotesChangeEvent } from "../../models/NotesChangeEvent";
 import { getRandomNoteColor } from "../../theme/NoteColors";
 import { nanoid } from "nanoid";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
@@ -25,6 +26,7 @@ import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { NoteSortOrder } from "../../settings/NoteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
+import { Formatter } from "../../utils/dt-formatter/Formatter";
 import { sortNotes } from "../../utils/noteSorting";
 
 type MainWindowProps = {
@@ -102,6 +104,12 @@ function MainWindow(props: MainWindowProps) {
         console.error('Unexpected error loading notes:', err.message);
       });
 
+  }, []);
+
+  useEffect(() => {
+    return window.api.storage.onNotesChange((event) => {
+      applyNotesChange(event);
+    });
   }, []);
 
   useEffect(() => {
@@ -209,6 +217,57 @@ function MainWindow(props: MainWindowProps) {
 
       return nextNotes;
     });
+  }
+
+  function applyNotesChange(event: NotesChangeEvent) {
+    switch (event.type) {
+      case "setNote":
+        setNotes((prevNotes) => {
+          const updatedNote = {
+            ...event.note,
+            createdOn: Formatter.toDate(event.note.createdOn),
+            lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn)
+          };
+          const noteIndex = prevNotes.findIndex((note) => note.id === updatedNote.id);
+
+          if (noteIndex < 0) {
+            return sortNotes([...prevNotes, updatedNote], currentNotesSortOrder.current);
+          }
+
+          return prevNotes.map((note) => note.id === updatedNote.id ? updatedNote : note);
+        });
+        break;
+      case "setNoteOrder":
+        setNotes((prevNotes) => {
+          const noteOrderIndexes = new Map(event.noteIds.map((noteId, index) => [noteId, index]));
+
+          return [...prevNotes].sort((firstNote, secondNote) => {
+            const firstNoteOrderIndex = noteOrderIndexes.get(firstNote.id);
+            const secondNoteOrderIndex = noteOrderIndexes.get(secondNote.id);
+
+            if (firstNoteOrderIndex !== undefined && secondNoteOrderIndex !== undefined) {
+              return firstNoteOrderIndex - secondNoteOrderIndex;
+            }
+
+            if (firstNoteOrderIndex !== undefined) {
+              return -1;
+            }
+
+            if (secondNoteOrderIndex !== undefined) {
+              return 1;
+            }
+
+            return 0;
+          });
+        });
+        break;
+      case "deleteNote":
+        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== event.noteId));
+        break;
+      case "deleteAllNotes":
+        setNotes([]);
+        break;
+    }
   }
 
   function handleOpenNoteWindow(noteId: string) {

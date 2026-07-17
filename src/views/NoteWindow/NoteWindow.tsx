@@ -14,6 +14,7 @@ import { AppSettings } from "../../settings/AppSettings";
 import { NoteSizePreference } from "../../settings/noteSizePreference";
 import { AppTheme } from "../../theme/AppTheme";
 import { SystemTheme } from "../../theme/SystemTheme";
+import { Formatter } from "../../utils/dt-formatter/Formatter";
 import styles from "./NoteWindow.module.css";
 
 type NoteWindowProps = {
@@ -38,6 +39,36 @@ function NoteWindow(props: NoteWindowProps) {
       .catch((err: Error) => {
         console.error("Unexpected error loading note window:", err.message);
       });
+  }, [noteId]);
+
+  useEffect(() => {
+    if (!noteId) {
+      return;
+    }
+
+    return window.api.storage.onNotesChange((event) => {
+      switch (event.type) {
+        case "setNote":
+          if (event.note.id === noteId) {
+            setNote({
+              ...event.note,
+              createdOn: Formatter.toDate(event.note.createdOn),
+              lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn)
+            });
+          }
+          break;
+        case "deleteNote":
+          if (event.noteId === noteId) {
+            setNote(null);
+          }
+          break;
+        case "deleteAllNotes":
+          setNote(null);
+          break;
+        case "setNoteOrder":
+          break;
+      }
+    });
   }, [noteId]);
 
   function handleNoteSave(updatedNote: NoteType) {

@@ -9,6 +9,7 @@ import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
 import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
 import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
+import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
 
 interface IElectronAPI {
   appWindow: {
@@ -22,6 +23,7 @@ interface IElectronAPI {
     setNoteOrder: (noteIds: string[]) => void;
     deleteNote: (noteId: string) => void;
     deleteAllNotes: () => void;
+    onNotesChange: (callback: (event: NotesChangeEvent) => void) => () => void;
   },
   menu: {
     onMenuNewNote: (callback: () => void) => () => void;

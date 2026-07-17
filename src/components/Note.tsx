@@ -12,7 +12,6 @@ import NoteTextarea from "./NoteTextarea";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
-import { Autosave } from "react-autosave";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -174,8 +173,12 @@ function Note(props: NoteProps) {
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
-    hasUnsavedChanges.current = true;
+    hasUnsavedChanges.current = false;
     setNote(updatedNote);
+
+    if (!isDeleting.current) {
+      props.handleNoteSave(updatedNote);
+    }
   };
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -196,21 +199,10 @@ function Note(props: NoteProps) {
   };
 
   useEffect(() => {
-    setNote((currentNote) => {
-      if (currentNote.isTitleHidden === props.note.isTitleHidden) {
-        return currentNote;
-      }
-
-      const updatedNote = {
-        ...currentNote,
-        isTitleHidden: props.note.isTitleHidden
-      };
-
-      latestNote.current = updatedNote;
-
-      return updatedNote;
-    });
-  }, [props.note.isTitleHidden]);
+    latestNote.current = props.note;
+    hasUnsavedChanges.current = false;
+    setNote(props.note);
+  }, [props.note]);
 
   useEffect(() => {
     const flushUnsavedNote = () => {
@@ -384,12 +376,6 @@ function Note(props: NoteProps) {
             <div className={classes.noteContent}>
               <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
             </div>
-            <Autosave data={note} onSave={(note) => {
-              if (!isDeleting.current) {
-                props.handleNoteSave(note);
-                hasUnsavedChanges.current = false;
-              }
-            }} />
           </div>
           {props.showNoteFooters && (
             <div className={classes.noteFooter}>

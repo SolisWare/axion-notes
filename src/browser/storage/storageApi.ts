@@ -53,5 +53,9 @@ export const storageApi = {
     } catch (err) {
       console.error("Failed to delete all browser notes:", err);
     }
+  },
+
+  onNotesChange: () => {
+    return () => {};
   }
 };

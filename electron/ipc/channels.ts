@@ -36,7 +36,8 @@ export const channels = {
     getNotes: "storage.getNotes",
     getNotesFolderLocation: "storage.getNotesFolderLocation",
     deleteNote: "storage.deleteNote",
-    deleteAllNotes: "storage.deleteAllNotes"
+    deleteAllNotes: "storage.deleteAllNotes",
+    onNotesChange: "storage.onNotesChange"
   },
   systemTheme: {
     onThemeChange: "systemTheme.onThemeChange"

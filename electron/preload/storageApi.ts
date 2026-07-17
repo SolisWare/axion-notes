@@ -5,8 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../../src/models/NoteType";
+import { NotesChangeEvent } from "../../src/models/NotesChangeEvent";
 import { channels } from "../ipc/channels";
-import { receive, send } from "./ipcHelpers";
+import { off, on, receive, send } from "./ipcHelpers";
 
 export const storageApi = {
 
@@ -44,5 +45,17 @@ export const storageApi = {
   
   deleteAllNotes: () => {
     send(channels.storage.deleteAllNotes);
+  },
+
+  onNotesChange: (callback: (event: NotesChangeEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, notesChangeEvent: NotesChangeEvent) => {
+      callback(notesChangeEvent);
+    };
+
+    on(channels.storage.onNotesChange, listener);
+
+    return () => {
+      off(channels.storage.onNotesChange, listener);
+    };
   }
 };
