@@ -79,6 +79,7 @@ function NoteWindow(props: NoteWindowProps) {
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);
     setNote(null);
+    window.api.appWindow.close();
   }
 
   function handleDuplicateNote(note: NoteType) {
@@ -91,6 +92,7 @@ function NoteWindow(props: NoteWindowProps) {
     };
 
     window.api.storage.setNote(duplicatedNote);
+    window.api.noteWindow.open(duplicatedNote.id);
   }
 
   return (
@@ -112,6 +114,9 @@ function NoteWindow(props: NoteWindowProps) {
             handleMoveNoteToBottom={() => {}}
             handleMoveNoteToTop={() => {}}
             handleNoteSave={handleNoteSave}
+            showMoveContextActions={false}
+            showOpenNoteWindowContextAction={false}
+            showTitleVisibilityContextAction={false}
             style={{
               width: "100%",
               height: "100%",

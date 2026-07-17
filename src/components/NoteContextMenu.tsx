@@ -29,6 +29,8 @@ type NoteContextMenuProps = {
   onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
   onToggleTitleVisibility: () => void;
+  showMoveActions?: boolean;
+  showTitleVisibilityAction?: boolean;
 };
 
 function NoteContextMenu(props: NoteContextMenuProps) {
@@ -69,34 +71,42 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <Divider className={styles.noteContextMenuDivider} />
         </>
       )}
-      <div
-        className={styles.noteContextMenuItem}
-        onClick={props.onMoveNoteToTop}
-      >
-        {t("mainWindow.note.contextMenu.moveToTop")}
-      </div>
-      <div
-        className={styles.noteContextMenuItem}
-        onClick={props.onMoveNoteToBottom}
-      >
-        {t("mainWindow.note.contextMenu.moveToBottom")}
-      </div>
-      <Divider className={styles.noteContextMenuDivider} />
+      {props.showMoveActions !== false && (
+        <>
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onMoveNoteToTop}
+          >
+            {t("mainWindow.note.contextMenu.moveToTop")}
+          </div>
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onMoveNoteToBottom}
+          >
+            {t("mainWindow.note.contextMenu.moveToBottom")}
+          </div>
+          <Divider className={styles.noteContextMenuDivider} />
+        </>
+      )}
       <div
         className={styles.noteContextMenuItem}
         onClick={props.onDuplicateNote}
       >
         {t("mainWindow.note.contextMenu.duplicate")}
       </div>
-      <div
-        className={styles.noteContextMenuItem}
-        onClick={props.onToggleTitleVisibility}
-      >
-        {props.isTitleHidden
-          ? t("mainWindow.note.contextMenu.showTitle")
-          : t("mainWindow.note.contextMenu.hideTitle")}
-      </div>
-      <Divider className={styles.noteContextMenuDivider} />
+      {props.showTitleVisibilityAction !== false && (
+        <>
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onToggleTitleVisibility}
+          >
+            {props.isTitleHidden
+              ? t("mainWindow.note.contextMenu.showTitle")
+              : t("mainWindow.note.contextMenu.hideTitle")}
+          </div>
+          <Divider className={styles.noteContextMenuDivider} />
+        </>
+      )}
       <div
         className={styles.noteContextColorRow}
         role="radiogroup"

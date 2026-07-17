@@ -13,6 +13,7 @@ import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
 
 interface IElectronAPI {
   appWindow: {
+    close: () => void;
     setAlwaysOnTop: (enabled: boolean) => void;
     setLayout: (layout: NoteLayoutPreference) => void;
   },

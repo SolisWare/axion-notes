@@ -9,6 +9,9 @@ import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { send } from "./ipcHelpers";
 
 export const appWindowApi = {
+  close: () => {
+    send(channels.appWindow.close);
+  },
   setAlwaysOnTop: (enabled: boolean) => {
     send(channels.appWindow.setAlwaysOnTop, enabled);
   },

@@ -36,6 +36,9 @@ type NoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  showMoveContextActions?: boolean;
+  showOpenNoteWindowContextAction?: boolean;
+  showTitleVisibilityContextAction?: boolean;
   style?: CSSProperties;
 };
 
@@ -237,7 +240,7 @@ function Note(props: NoteProps) {
     props.handleDuplicateNote(latestNote.current);
   };
 
-  const handleContextMenuOpenNoteWindow = props.handleOpenNoteWindow
+  const handleContextMenuOpenNoteWindow = props.handleOpenNoteWindow && props.showOpenNoteWindowContextAction !== false
     ? () => {
       handleCloseNoteContextMenu();
 
@@ -400,6 +403,8 @@ function Note(props: NoteProps) {
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}
           onToggleTitleVisibility={handleContextMenuToggleTitleVisibility}
+          showMoveActions={props.showMoveContextActions}
+          showTitleVisibilityAction={props.showTitleVisibilityContextAction}
         />
       )}
     </Paper>

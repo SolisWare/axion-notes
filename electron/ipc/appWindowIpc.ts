@@ -14,6 +14,10 @@ type AppWindowIpcOptions = {
 };
 
 export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
+  ipcMain.on(channels.appWindow.close, (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.close();
+  });
+
   ipcMain.on(channels.appWindow.setAlwaysOnTop, (event, enabled: boolean) => {
     BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(enabled);
   });
