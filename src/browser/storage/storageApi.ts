@@ -5,14 +5,29 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../../models/NoteType";
+import { NotesChangeEvent } from "../../models/NotesChangeEvent";
 import i18n from "../../i18n/i18n";
 import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "./noteStorage";
+
+type NotesChangeListener = (event: NotesChangeEvent) => void;
+
+const notesChangeListeners = new Set<NotesChangeListener>();
+
+function notifyNotesChange(event: NotesChangeEvent): void {
+  notesChangeListeners.forEach((listener) => {
+    listener(event);
+  });
+}
 
 export const storageApi = {
 
   setNote: (note: NoteType) => {
     try {
       setNote(note);
+      notifyNotesChange({
+        type: "setNote",
+        note
+      });
     } catch (err) {
       console.error("Failed to save browser note:", err);
     }
@@ -21,6 +36,10 @@ export const storageApi = {
   setNoteOrder: (noteIds: string[]) => {
     try {
       setNoteOrder(noteIds);
+      notifyNotesChange({
+        type: "setNoteOrder",
+        noteIds
+      });
     } catch (err) {
       console.error("Failed to save browser note order:", err);
     }
@@ -42,6 +61,10 @@ export const storageApi = {
   deleteNote: (noteId: string) => {
     try {
       deleteNote(noteId);
+      notifyNotesChange({
+        type: "deleteNote",
+        noteId
+      });
     } catch (err) {
       console.error("Failed to delete browser note:", err);
     }
@@ -50,12 +73,19 @@ export const storageApi = {
   deleteAllNotes: () => {
     try {
       deleteAllNotes();
+      notifyNotesChange({
+        type: "deleteAllNotes"
+      });
     } catch (err) {
       console.error("Failed to delete all browser notes:", err);
     }
   },
 
-  onNotesChange: () => {
-    return () => {};
+  onNotesChange: (callback: NotesChangeListener) => {
+    notesChangeListeners.add(callback);
+
+    return () => {
+      notesChangeListeners.delete(callback);
+    };
   }
 };
