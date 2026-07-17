@@ -107,6 +107,9 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <Divider className={styles.noteContextMenuDivider} />
         </>
       )}
+      {props.showTitleVisibilityAction === false && (
+        <Divider className={styles.noteContextMenuDivider} />
+      )}
       <div
         className={styles.noteContextColorRow}
         role="radiogroup"

@@ -33,11 +33,15 @@ function getOffsetBaseWindow(openerWindow?: BrowserWindow): BrowserWindow | unde
 
   const latestNoteWindow = getLatestNoteWindow();
 
-  if (latestNoteWindow && latestNoteWindow !== openerWindow) {
+  if (latestNoteWindow === openerWindow) {
+    return openerWindow;
+  }
+
+  if (latestNoteWindow) {
     return latestNoteWindow;
   }
 
-  return openerWindow;
+  return undefined;
 }
 
 function getNoteWindowRoute(noteId: string): string {
