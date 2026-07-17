@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   min-width: 100%;
   min-height: 100vh;
   width: 100%;
@@ -10,4 +11,20 @@
 .embeddedRoot {
   min-height: 100%;
   height: 100%;
+}
+
+.closeButton {
+  position: absolute !important;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  color: rgba(31, 41, 51, 0.48) !important;
+  background-color: transparent !important;
+  transition: color 120ms ease !important;
+}
+
+.closeButton:hover {
+  color: rgba(31, 41, 51, 0.82) !important;
+  background-color: transparent !important;
 }

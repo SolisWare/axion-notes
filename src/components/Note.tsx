@@ -40,6 +40,7 @@ type NoteProps = {
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
+  reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
 };
 
@@ -360,7 +361,10 @@ function Note(props: NoteProps) {
         <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
-              <div className={classes.noteTitleWrapper}>
+              <div
+                className={classes.noteTitleWrapper}
+                style={props.reserveCloseButtonSpace ? { paddingRight: 34 } : undefined}
+              >
                 <input
                   key={props.theme}
                   className={classes.noteTitleInput}

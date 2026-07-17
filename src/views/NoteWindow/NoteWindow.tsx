@@ -4,10 +4,12 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CssBaseline } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { CssBaseline, IconButton } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import Note from "../../components/Note";
 import { NoteType } from "../../models/NoteType";
 import { AppSettings } from "../../settings/AppSettings";
@@ -27,6 +29,7 @@ type NoteWindowProps = {
 };
 
 function NoteWindow(props: NoteWindowProps) {
+  const { t } = useTranslation();
   const noteId = props.noteId ?? new URLSearchParams(window.location.search).get("noteId");
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const [note, setNote] = useState<NoteType | null>(null);
@@ -114,30 +117,43 @@ function NoteWindow(props: NoteWindowProps) {
       >
         <CssBaseline />
         {note && (
-          <Note
-            theme={props.theme}
-            note={note}
-            dateFormat={props.appSettings.dateFormat}
-            timeFormat={props.appSettings.timeFormat}
-            noteFont={props.appSettings.noteFont}
-            noteSize={NoteSizePreference.DEFAULT}
-            showNoteTitles={props.appSettings.showNoteTitles}
-            showNoteFooters={props.appSettings.showNoteFooters}
-            handleDeleteNoteButton={handleDeleteNote}
-            handleDuplicateNote={handleDuplicateNote}
-            handleMoveNoteToBottom={() => {}}
-            handleMoveNoteToTop={() => {}}
-            handleNoteSave={handleNoteSave}
-            showDragIndicator={false}
-            showMoveContextActions={false}
-            showOpenNoteWindowContextAction={false}
-            showTitleVisibilityContextAction={false}
-            style={{
-              width: "100%",
-              height: "100%",
-              marginBottom: 0
-            }}
-          />
+          <>
+            <Note
+              theme={props.theme}
+              note={note}
+              dateFormat={props.appSettings.dateFormat}
+              timeFormat={props.appSettings.timeFormat}
+              noteFont={props.appSettings.noteFont}
+              noteSize={NoteSizePreference.DEFAULT}
+              showNoteTitles={props.appSettings.showNoteTitles}
+              showNoteFooters={props.appSettings.showNoteFooters}
+              handleDeleteNoteButton={handleDeleteNote}
+              handleDuplicateNote={handleDuplicateNote}
+              handleMoveNoteToBottom={() => {}}
+              handleMoveNoteToTop={() => {}}
+              handleNoteSave={handleNoteSave}
+              showDragIndicator={false}
+              showMoveContextActions={false}
+              showOpenNoteWindowContextAction={false}
+              showTitleVisibilityContextAction={false}
+              reserveCloseButtonSpace={props.embedded}
+              style={{
+                width: "100%",
+                height: "100%",
+                marginBottom: 0
+              }}
+            />
+            {props.embedded && props.onClose && (
+              <IconButton
+                aria-label={t("common.close")}
+                className={styles.closeButton}
+                onClick={props.onClose}
+                size="small"
+              >
+                <CloseRoundedIcon fontSize="small" />
+              </IconButton>
+            )}
+          </>
         )}
       </div>
     </ThemeProvider>
