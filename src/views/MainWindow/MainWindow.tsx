@@ -272,7 +272,9 @@ function MainWindow(props: MainWindowProps) {
 
   function handleOpenNoteWindow(noteId: string) {
     if (UserAgent.isElectron) {
-      window.api.noteWindow.open(noteId);
+      window.api.noteWindow.open(noteId, {
+        offsetFromCurrentWindow: true
+      });
     }
   }
 

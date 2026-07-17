@@ -92,7 +92,9 @@ function NoteWindow(props: NoteWindowProps) {
     };
 
     window.api.storage.setNote(duplicatedNote);
-    window.api.noteWindow.open(duplicatedNote.id);
+    window.api.noteWindow.open(duplicatedNote.id, {
+      offsetFromCurrentWindow: true
+    });
   }
 
   return (

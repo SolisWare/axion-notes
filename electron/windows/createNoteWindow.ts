@@ -13,6 +13,32 @@ import { translate } from "../utils/electronI18n";
 import { dev } from "./routes";
 
 const noteWindows = new Map<string, BrowserWindow>();
+const NOTE_WINDOW_OFFSET = 28;
+
+type CreateNoteWindowOptions = {
+  noteId: string;
+  openerWindow?: BrowserWindow;
+};
+
+function getLatestNoteWindow(): BrowserWindow | undefined {
+  return [...noteWindows.values()]
+    .reverse()
+    .find((window) => !window.isDestroyed());
+}
+
+function getOffsetBaseWindow(openerWindow?: BrowserWindow): BrowserWindow | undefined {
+  if (!openerWindow) {
+    return undefined;
+  }
+
+  const latestNoteWindow = getLatestNoteWindow();
+
+  if (latestNoteWindow && latestNoteWindow !== openerWindow) {
+    return latestNoteWindow;
+  }
+
+  return openerWindow;
+}
 
 function getNoteWindowRoute(noteId: string): string {
   const noteRoute = dev("note");
@@ -33,7 +59,8 @@ function getProductionNoteWindowRoute(noteId: string): [string, LoadFileOptions]
   ];
 }
 
-export function createNoteWindow(noteId: string): BrowserWindow {
+export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindow {
+  const { noteId } = options;
   const existingWindow = noteWindows.get(noteId);
 
   if (existingWindow && !existingWindow.isDestroyed()) {
@@ -42,8 +69,13 @@ export function createNoteWindow(noteId: string): BrowserWindow {
   }
 
   const windowTitle = `Axion Notes — ${translate("electron.windows.note")}`;
+  const offsetBaseBounds = getOffsetBaseWindow(options.openerWindow)?.getBounds();
 
   const noteWindow = new BrowserWindow({
+    ...(offsetBaseBounds ? {
+      x: offsetBaseBounds.x + NOTE_WINDOW_OFFSET,
+      y: offsetBaseBounds.y + NOTE_WINDOW_OFFSET
+    } : {}),
     width: 900,
     height: 700,
     minWidth: 800,

@@ -10,6 +10,7 @@ import { AppSettings } from '../../src/settings/AppSettings';
 import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
 import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
 import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
+import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
 
 interface IElectronAPI {
   appWindow: {
@@ -39,7 +40,7 @@ interface IElectronAPI {
     onSortRequest: (callback: () => void) => () => void;
   },
   noteWindow: {
-    open: (noteId: string) => void;
+    open: (noteId: string, options?: OpenNoteWindowOptions) => void;
   },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
