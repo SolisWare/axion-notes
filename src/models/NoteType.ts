@@ -10,6 +10,9 @@ export type NoteType = {
   id: string;
   bgcolor: NoteColorKey;
   title?: string;
+  isPinned?: boolean;
+  pinnedOn?: Date;
+  pinnedFromNoteIds?: string[];
   isTitleHidden?: boolean;
   isFolded?: boolean;
   content: string;

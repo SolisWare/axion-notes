@@ -12,6 +12,10 @@ export class Formatter {
   public static toDate(date: Date | string): Date {
     return date instanceof Date ? date : new Date(date);
   }
+
+  public static toOptionalDate(date: Date | string | undefined): Date | undefined {
+    return date === undefined ? undefined : Formatter.toDate(date);
+  }
   
   public static getFormattedDate(date: Date, format: DateFormat = DateFormat.MonthDayYearSlash): string {
     let month = date.getMonth() + 1; //January is 0; February is 1, etc

@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "react-i18next";
@@ -36,6 +37,7 @@ type NoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  handleToggleNotePin?: (note: NoteType) => void;
   showDragIndicator?: boolean;
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
@@ -51,7 +53,18 @@ type NoteDateLabelProps = {
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
   note: {
+    position: "relative",
     marginBottom: "10px"
+  },
+  pinnedNoteMarker: {
+    position: "absolute",
+    top: 9,
+    right: 9,
+    zIndex: 2,
+    color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    opacity: 0.42,
+    transform: "rotate(28deg)",
+    pointerEvents: "none"
   },
   noteInnerContainer: {
     width: "100%",
@@ -176,6 +189,10 @@ function Note(props: NoteProps) {
   const noteFontFamily = getNoteFontFamily(props.noteFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
+  const isPinned = note.isPinned === true;
+  const noteTitleWrapperStyle: CSSProperties | undefined = (props.reserveCloseButtonSpace || isPinned)
+    ? { paddingRight: (props.reserveCloseButtonSpace ? 34 : 0) + (isPinned ? 24 : 0) }
+    : undefined;
   const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
   const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
 
@@ -266,6 +283,13 @@ function Note(props: NoteProps) {
     props.handleMoveNoteToBottom(note.id);
   };
 
+  const handleContextMenuTogglePin = props.handleToggleNotePin
+    ? () => {
+      handleCloseNoteContextMenu();
+      props.handleToggleNotePin?.(latestNote.current);
+    }
+    : undefined;
+
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
     isDeleting.current = true;
@@ -345,6 +369,13 @@ function Note(props: NoteProps) {
         ...props.style
       }}
     >
+      {isPinned && (
+        <PushPinRoundedIcon
+          className={classes.pinnedNoteMarker}
+          fontSize="small"
+          style={props.reserveCloseButtonSpace ? { right: 36 } : undefined}
+        />
+      )}
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
         {props.showDragIndicator !== false && (
           <div className={classes.noteDragIndicatorRow} aria-hidden="true">
@@ -363,7 +394,7 @@ function Note(props: NoteProps) {
             {!isTitleHidden && (
               <div
                 className={classes.noteTitleWrapper}
-                style={props.reserveCloseButtonSpace ? { paddingRight: 34 } : undefined}
+                style={noteTitleWrapperStyle}
               >
                 <input
                   key={props.theme}
@@ -404,9 +435,11 @@ function Note(props: NoteProps) {
           position={noteContextMenuPosition}
           selectedColor={note.bgcolor}
           isTitleHidden={isTitleHidden}
+          isPinned={isPinned}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
+          onTogglePin={handleContextMenuTogglePin}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}

@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode, useRef } from "react";
+import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -36,6 +37,7 @@ type NoteListProps = {
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
+  handleToggleNotePin: (note: NoteType) => void;
 }
 
 type FoldedNoteContent = {
@@ -176,6 +178,9 @@ function NoteList(props: NoteListProps) {
                         backgroundColor: noteColor
                       } as CSSProperties}
                     >
+                      {note.isPinned && (
+                        <PushPinRoundedIcon className={styles.pinnedFoldedNoteMarker} fontSize="small" />
+                      )}
                       <div className={styles.foldedNoteDragIndicatorRow} aria-hidden="true">
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
@@ -219,6 +224,7 @@ function NoteList(props: NoteListProps) {
                       handleOpenNoteWindow={props.handleOpenNoteWindow}
                       handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                       handleMoveNoteToTop={props.handleMoveNoteToTop}
+                      handleToggleNotePin={props.handleToggleNotePin}
                       handleNoteSave={handleExpandedNoteSave}
                       style={{ marginBottom: 0 }}
                     />

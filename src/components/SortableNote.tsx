@@ -29,6 +29,7 @@ type SortableNoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  handleToggleNotePin: (note: NoteType) => void;
 };
 
 function SortableNote(props: SortableNoteProps) {
@@ -68,6 +69,7 @@ function SortableNote(props: SortableNoteProps) {
         handleOpenNoteWindow={props.handleOpenNoteWindow}
         handleMoveNoteToBottom={props.handleMoveNoteToBottom}
         handleMoveNoteToTop={props.handleMoveNoteToTop}
+        handleToggleNotePin={props.handleToggleNotePin}
       />
     </div>
   );

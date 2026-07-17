@@ -60,7 +60,8 @@ function NoteWindow(props: NoteWindowProps) {
             setNote({
               ...event.note,
               createdOn: Formatter.toDate(event.note.createdOn),
-              lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn)
+              lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn),
+              pinnedOn: Formatter.toOptionalDate(event.note.pinnedOn)
             });
           }
           break;

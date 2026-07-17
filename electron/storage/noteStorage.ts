@@ -7,6 +7,7 @@
 import * as fs from "node:fs";
 import * as path from "path";
 import { NoteType } from "../../src/models/NoteType";
+import { Formatter } from "../../src/utils/dt-formatter/Formatter";
 
 const noteOrderFileName = "note-order.json";
 
@@ -71,7 +72,8 @@ export async function getNotes(appDataDir: string): Promise<NoteType[]> {
           return {
             ...parsed,
             createdOn: new Date(parsed.createdOn),
-            lastModifiedOn: new Date(parsed.lastModifiedOn)
+            lastModifiedOn: new Date(parsed.lastModifiedOn),
+            pinnedOn: Formatter.toOptionalDate(parsed.pinnedOn)
           };
         } catch (err) {
           console.warn(`Skipping corrupt note file: ${file}`);

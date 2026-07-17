@@ -34,6 +34,8 @@
       "at": "at",
       "contextMenu": {
         "openInNewWindow": "Open in new window",
+        "pin": "Pin note",
+        "unpin": "Unpin note",
         "moveToTop": "Move to top",
         "moveToBottom": "Move to bottom",
         "duplicate": "Duplicate",

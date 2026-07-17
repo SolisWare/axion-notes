@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../../models/NoteType";
+import { Formatter } from "../../utils/dt-formatter/Formatter";
 
 const noteIndexKey = "solisware.axion-notes.notes.index";
 const noteKeyPrefix = "solisware.axion-notes.notes";
@@ -47,7 +48,8 @@ function readNote(noteId: string): NoteType | null {
     return {
       ...parsed,
       createdOn: new Date(parsed.createdOn),
-      lastModifiedOn: new Date(parsed.lastModifiedOn)
+      lastModifiedOn: new Date(parsed.lastModifiedOn),
+      pinnedOn: Formatter.toOptionalDate(parsed.pinnedOn)
     };
   } catch (err) {
     console.warn(`Skipping corrupt browser note: ${noteId}`, err);

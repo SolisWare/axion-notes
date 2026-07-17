@@ -28,7 +28,7 @@ import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { NoteSortOrder } from "../../settings/NoteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
-import { sortNotes } from "../../utils/noteSorting";
+import { insertUnpinnedNote, isPinnedNote, sortNotes } from "../../utils/noteSorting";
 
 type MainWindowProps = {
   view: AppView;
@@ -198,6 +198,8 @@ function MainWindow(props: MainWindowProps) {
     const duplicatedNote = {
       ...note,
       id: nanoid(),
+      pinnedOn: isPinnedNote(note) ? now : note.pinnedOn,
+      pinnedFromNoteIds: undefined,
       createdOn: now,
       lastModifiedOn: now
     };
@@ -213,7 +215,7 @@ function MainWindow(props: MainWindowProps) {
       const nextNotes = [...prevNotes];
       nextNotes.splice(noteIndex + 1, 0, duplicatedNote);
 
-      if (currentNotesSortOrder.current === NoteSortOrder.CUSTOM) {
+      if (currentNotesSortOrder.current === NoteSortOrder.CUSTOM || isPinnedNote(duplicatedNote)) {
         window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
       }
 
@@ -228,7 +230,8 @@ function MainWindow(props: MainWindowProps) {
           const updatedNote = {
             ...event.note,
             createdOn: Formatter.toDate(event.note.createdOn),
-            lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn)
+            lastModifiedOn: Formatter.toDate(event.note.lastModifiedOn),
+            pinnedOn: Formatter.toOptionalDate(event.note.pinnedOn)
           };
           const noteIndex = prevNotes.findIndex((note) => note.id === updatedNote.id);
 
@@ -305,6 +308,55 @@ function MainWindow(props: MainWindowProps) {
     });
   }
 
+  function handleToggleNotePin(note: NoteType) {
+    if (isPinnedNote(note)) {
+      handleUnpinNote(note);
+      return;
+    }
+
+    handlePinNote(note);
+  }
+
+  function handlePinNote(note: NoteType) {
+    setNotes((prevNotes) => {
+      const pinnedNote = {
+        ...note,
+        isPinned: true,
+        pinnedOn: new Date(),
+        pinnedFromNoteIds: prevNotes.map((prevNote) => prevNote.id)
+      };
+      const notesWithoutPinnedNote = prevNotes.filter((prevNote) => prevNote.id !== note.id);
+      const lastPinnedNoteIndex = notesWithoutPinnedNote.reduce((lastPinnedIndex, prevNote, index) => {
+        return isPinnedNote(prevNote) ? index : lastPinnedIndex;
+      }, -1);
+      const nextNotes = [...notesWithoutPinnedNote];
+
+      nextNotes.splice(lastPinnedNoteIndex + 1, 0, pinnedNote);
+      queueMicrotask(() => {
+        window.api.storage.setNote(pinnedNote);
+        window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
+      });
+
+      return nextNotes;
+    });
+  }
+
+  function handleUnpinNote(note: NoteType) {
+    setNotes((prevNotes) => {
+      const nextNotes = insertUnpinnedNote(prevNotes, note, currentNotesSortOrder.current);
+      const unpinnedNote = nextNotes.find((nextNote) => nextNote.id === note.id);
+
+      queueMicrotask(() => {
+        if (unpinnedNote) {
+          window.api.storage.setNote(unpinnedNote);
+        }
+        window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
+      });
+
+      return nextNotes;
+    });
+  }
+
   function handleNoteReorder(activeNoteId: string, overNoteId: string) {
     if (activeNoteId === overNoteId) {
       return;
@@ -320,7 +372,27 @@ function MainWindow(props: MainWindowProps) {
 
       const reorderedNotes = [...prevNotes];
       const [activeNote] = reorderedNotes.splice(activeNoteIndex, 1);
-      reorderedNotes.splice(overNoteIndex, 0, activeNote);
+      const overNote = prevNotes[overNoteIndex];
+
+      if (isPinnedNote(activeNote) === isPinnedNote(overNote)) {
+        const nextOverNoteIndex = reorderedNotes.findIndex((note) => note.id === overNote.id);
+
+        reorderedNotes.splice(nextOverNoteIndex, 0, activeNote);
+        return reorderedNotes;
+      }
+
+      if (isPinnedNote(activeNote)) {
+        const firstUnpinnedNoteIndex = reorderedNotes.findIndex((note) => !isPinnedNote(note));
+
+        reorderedNotes.splice(firstUnpinnedNoteIndex < 0 ? reorderedNotes.length : firstUnpinnedNoteIndex, 0, activeNote);
+        return reorderedNotes;
+      }
+
+      const lastPinnedNoteIndex = reorderedNotes.reduce((lastIndex, note, index) => {
+        return isPinnedNote(note) ? index : lastIndex;
+      }, -1);
+
+      reorderedNotes.splice(lastPinnedNoteIndex + 1, 0, activeNote);
 
       return reorderedNotes;
     });
@@ -336,7 +408,9 @@ function MainWindow(props: MainWindowProps) {
 
       const reorderedNotes = [...prevNotes];
       const [note] = reorderedNotes.splice(noteIndex, 1);
-      reorderedNotes.unshift(note);
+      const firstSameSectionIndex = reorderedNotes.findIndex((prevNote) => isPinnedNote(prevNote) === isPinnedNote(note));
+
+      reorderedNotes.splice(Math.max(0, firstSameSectionIndex), 0, note);
 
       return reorderedNotes;
     });
@@ -352,7 +426,11 @@ function MainWindow(props: MainWindowProps) {
 
       const reorderedNotes = [...prevNotes];
       const [note] = reorderedNotes.splice(noteIndex, 1);
-      reorderedNotes.push(note);
+      const lastSameSectionIndex = reorderedNotes.reduce((lastIndex, prevNote, index) => {
+        return isPinnedNote(prevNote) === isPinnedNote(note) ? index : lastIndex;
+      }, -1);
+
+      reorderedNotes.splice(lastSameSectionIndex + 1, 0, note);
 
       return reorderedNotes;
     });
@@ -393,13 +471,13 @@ function MainWindow(props: MainWindowProps) {
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
                    handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
                    handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
   }
   
   return (

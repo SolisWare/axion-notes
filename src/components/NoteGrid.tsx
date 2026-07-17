@@ -33,6 +33,7 @@ export type NoteGridProps = {
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
+  handleToggleNotePin: (note: NoteType) => void;
 }
 
 const NOTE_GRID_GAP = 25;
@@ -158,6 +159,7 @@ function NoteGrid (props: NoteGridProps) {
                 handleOpenNoteWindow={props.handleOpenNoteWindow}
                 handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                 handleMoveNoteToTop={props.handleMoveNoteToTop}
+                handleToggleNotePin={props.handleToggleNotePin}
               />
               ))
             }

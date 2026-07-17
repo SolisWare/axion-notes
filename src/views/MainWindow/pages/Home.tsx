@@ -32,6 +32,7 @@ type HomeProps = {
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
+  handleToggleNotePin: (note: NoteType) => void;
 }
 
 function Home(props: HomeProps) {
@@ -59,6 +60,7 @@ function Home(props: HomeProps) {
           handleMoveNoteToTop={props.handleMoveNoteToTop}
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
+          handleToggleNotePin={props.handleToggleNotePin}
         />
           :
         <NoteGrid
@@ -77,6 +79,7 @@ function Home(props: HomeProps) {
           handleMoveNoteToTop={props.handleMoveNoteToTop}
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
+          handleToggleNotePin={props.handleToggleNotePin}
         />
       }
     </div>

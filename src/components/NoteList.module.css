@@ -42,6 +42,17 @@
   overflow: hidden;
 }
 
+.pinnedFoldedNoteMarker {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  z-index: 2;
+  color: var(--note-list-text);
+  opacity: 0.42;
+  transform: rotate(28deg);
+  pointer-events: none;
+}
+
 .foldedNoteDragIndicatorRow {
   position: absolute;
   top: 0;
@@ -183,6 +194,10 @@
   flex-direction: column;
   gap: 2px;
   text-align: left;
+}
+
+.listItem:has(.pinnedFoldedNoteMarker) .listItemContent {
+  padding-right: 24px;
 }
 
 .listItemTitle,
