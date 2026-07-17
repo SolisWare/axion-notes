@@ -179,7 +179,20 @@ function NoteList(props: NoteListProps) {
                       } as CSSProperties}
                     >
                       {note.isPinned && (
-                        <PushPinRoundedIcon className={styles.pinnedFoldedNoteMarker} fontSize="small" />
+                        <button
+                          aria-label={t("mainWindow.note.contextMenu.unpin")}
+                          className={styles.pinnedFoldedNoteMarker}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            props.handleToggleNotePin(note);
+                          }}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          title={t("mainWindow.note.contextMenu.unpin")}
+                          type="button"
+                        >
+                          <PushPinRoundedIcon fontSize="small" />
+                        </button>
                       )}
                       <div className={styles.foldedNoteDragIndicatorRow} aria-hidden="true">
                         <div className={styles.foldedNoteDragIndicator} />

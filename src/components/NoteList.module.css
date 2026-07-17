@@ -46,11 +46,24 @@
   position: absolute;
   top: 9px;
   right: 9px;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
   z-index: 2;
   color: var(--note-list-text);
   opacity: 0.42;
   transform: rotate(28deg);
-  pointer-events: none;
+  transition: color 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.pinnedFoldedNoteMarker:hover {
+  opacity: 0.72;
+  transform: rotate(18deg);
 }
 
 .foldedNoteDragIndicatorRow {

@@ -14,7 +14,7 @@ import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { SystemTheme } from "../theme/SystemTheme";
-import { ChangeEvent, CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -60,11 +60,23 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     position: "absolute",
     top: 9,
     right: 9,
+    width: 24,
+    height: 24,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 0,
+    border: 0,
+    background: "transparent",
     zIndex: 2,
     color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
     opacity: 0.42,
     transform: "rotate(28deg)",
-    pointerEvents: "none"
+    transition: "color 120ms ease, opacity 120ms ease, transform 120ms ease",
+    "&:hover": {
+      opacity: 0.72,
+      transform: "rotate(18deg)"
+    }
   },
   noteInnerContainer: {
     width: "100%",
@@ -290,6 +302,12 @@ function Note(props: NoteProps) {
     }
     : undefined;
 
+  const handlePinnedNoteMarkerClick = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    props.handleToggleNotePin?.(latestNote.current);
+  };
+
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
     isDeleting.current = true;
@@ -369,12 +387,27 @@ function Note(props: NoteProps) {
         ...props.style
       }}
     >
-      {isPinned && (
-        <PushPinRoundedIcon
+      {isPinned && props.handleToggleNotePin && (
+        <button
+          aria-label={t("mainWindow.note.contextMenu.unpin")}
           className={classes.pinnedNoteMarker}
-          fontSize="small"
+          onClick={handlePinnedNoteMarkerClick}
+          onPointerDown={(event) => event.stopPropagation()}
           style={props.reserveCloseButtonSpace ? { right: 36 } : undefined}
-        />
+          title={t("mainWindow.note.contextMenu.unpin")}
+          type="button"
+        >
+          <PushPinRoundedIcon fontSize="small" />
+        </button>
+      )}
+      {isPinned && !props.handleToggleNotePin && (
+        <span
+          aria-hidden="true"
+          className={classes.pinnedNoteMarker}
+          style={props.reserveCloseButtonSpace ? { right: 36 } : undefined}
+        >
+          <PushPinRoundedIcon fontSize="small" />
+        </span>
       )}
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
         {props.showDragIndicator !== false && (
