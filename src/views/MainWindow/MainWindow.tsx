@@ -7,6 +7,7 @@
 import { CssBaseline, Theme } from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import { useTranslation } from "react-i18next";
+import WebNoteWindowDialog from "../../components/WebNoteWindowDialog";
 import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
 import { AppTheme } from "../../theme/AppTheme";
@@ -70,6 +71,7 @@ function MainWindow(props: MainWindowProps) {
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
     
@@ -275,7 +277,10 @@ function MainWindow(props: MainWindowProps) {
       window.api.noteWindow.open(noteId, {
         offsetFromCurrentWindow: true
       });
+      return;
     }
+
+    setWebNoteWindowNoteId(noteId);
   }
 
   function applyCustomNoteOrder(reorderNotes: (notes: NoteType[]) => NoteType[]) {
@@ -387,13 +392,13 @@ function MainWindow(props: MainWindowProps) {
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
-                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={UserAgent.isElectron ? handleOpenNoteWindow : undefined} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters} handleDeleteNoteButton={handleDeleteNote}
-                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={UserAgent.isElectron ? handleOpenNoteWindow : undefined} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
+                   handleDuplicateNote={handleDuplicateNote} handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} />
   }
   
@@ -417,6 +422,16 @@ function MainWindow(props: MainWindowProps) {
                            open={isSettingsDialogOpen}
                            onClose={() => setSettingsDialogOpen(false)}
                            onAppSettingsChange={props.onAppSettingsChange} />
+        {!UserAgent.isElectron && (
+          <WebNoteWindowDialog
+            theme={props.theme}
+            appSettings={appSettings}
+            noteId={webNoteWindowNoteId}
+            open={webNoteWindowNoteId !== null}
+            onClose={() => setWebNoteWindowNoteId(null)}
+            onOpenNote={setWebNoteWindowNoteId}
+          />
+        )}
         <nav className={classes.menu}>
           {/* In-app menu goes here. */}
         </nav>

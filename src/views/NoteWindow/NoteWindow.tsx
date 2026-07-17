@@ -20,10 +20,14 @@ import styles from "./NoteWindow.module.css";
 type NoteWindowProps = {
   theme: SystemTheme;
   appSettings: AppSettings;
+  embedded?: boolean;
+  noteId?: string | null;
+  onClose?: () => void;
+  onOpenNote?: (noteId: string) => void;
 };
 
 function NoteWindow(props: NoteWindowProps) {
-  const noteId = new URLSearchParams(window.location.search).get("noteId");
+  const noteId = props.noteId ?? new URLSearchParams(window.location.search).get("noteId");
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const [note, setNote] = useState<NoteType | null>(null);
 
@@ -79,7 +83,7 @@ function NoteWindow(props: NoteWindowProps) {
   function handleDeleteNote(noteId: string) {
     window.api.storage.deleteNote(noteId);
     setNote(null);
-    window.api.appWindow.close();
+    props.onClose?.() ?? window.api.appWindow.close();
   }
 
   function handleDuplicateNote(note: NoteType) {
@@ -92,6 +96,11 @@ function NoteWindow(props: NoteWindowProps) {
     };
 
     window.api.storage.setNote(duplicatedNote);
+    if (props.onOpenNote) {
+      props.onOpenNote(duplicatedNote.id);
+      return;
+    }
+
     window.api.noteWindow.open(duplicatedNote.id, {
       offsetFromCurrentWindow: true
     });
@@ -99,7 +108,10 @@ function NoteWindow(props: NoteWindowProps) {
 
   return (
     <ThemeProvider theme={appTheme}>
-      <div className={styles.root} style={{ backgroundColor: appTheme.palette.background.default }}>
+      <div
+        className={`${styles.root} ${props.embedded ? styles.embeddedRoot : ""}`}
+        style={{ backgroundColor: appTheme.palette.background.default }}
+      >
         <CssBaseline />
         {note && (
           <Note

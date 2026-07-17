@@ -248,10 +248,8 @@ function Note(props: NoteProps) {
     ? () => {
       handleCloseNoteContextMenu();
 
-      if (hasUnsavedChanges.current) {
-        props.handleNoteSave(latestNote.current);
-        hasUnsavedChanges.current = false;
-      }
+      props.handleNoteSave(latestNote.current);
+      hasUnsavedChanges.current = false;
 
       props.handleOpenNoteWindow?.(note.id);
     }

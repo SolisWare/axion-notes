@@ -6,3 +6,8 @@
   box-sizing: border-box;
   overflow: auto;
 }
+
+.embeddedRoot {
+  min-height: 100%;
+  height: 100%;
+}
