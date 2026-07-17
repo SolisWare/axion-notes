@@ -36,6 +36,7 @@ type NoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  showDragIndicator?: boolean;
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
@@ -85,6 +86,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between"
+  },
+  noteContentWrapperWithoutDragIndicator: {
+    paddingTop: 12
   },
   noteBody: {
     flex: "1 1 auto",
@@ -343,17 +347,19 @@ function Note(props: NoteProps) {
       }}
     >
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
-        <div className={classes.noteDragIndicatorRow} aria-hidden="true">
-          <div
-            className={classes.noteDragIndicator}
-            style={{
-              backgroundColor: appColors.NOTE_FOOTER_TEXT,
-              opacity: isNoteHovered ? 0.24 : 0,
-              transition: "opacity 120ms ease"
-            }}
-          />
-        </div>
-        <div className={classes.noteContentWrapper}>
+        {props.showDragIndicator !== false && (
+          <div className={classes.noteDragIndicatorRow} aria-hidden="true">
+            <div
+              className={classes.noteDragIndicator}
+              style={{
+                backgroundColor: appColors.NOTE_FOOTER_TEXT,
+                opacity: isNoteHovered ? 0.24 : 0,
+                transition: "opacity 120ms ease"
+              }}
+            />
+          </div>
+        )}
+        <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
           <div className={classes.noteBody}>
             {!isTitleHidden && (
               <div className={classes.noteTitleWrapper}>

@@ -116,6 +116,7 @@ function NoteWindow(props: NoteWindowProps) {
             handleMoveNoteToBottom={() => {}}
             handleMoveNoteToTop={() => {}}
             handleNoteSave={handleNoteSave}
+            showDragIndicator={false}
             showMoveContextActions={false}
             showOpenNoteWindowContextAction={false}
             showTitleVisibilityContextAction={false}
