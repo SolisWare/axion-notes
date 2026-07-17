@@ -1,1 +1,78 @@
-{}
+{
+  "common": {
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  },
+  "mainWindow": {
+    "welcome": {
+      "title": "Bienvenido a Axion Notes",
+      "intro": "Deja tus ideas rápidas a mano, ordenadas y listas para cuando las necesites.",
+      "getStarted": "Empieza",
+      "doNotShowAgain": "No mostrar esta pantalla de bienvenida de nuevo",
+      "preview": {
+        "today": "Hoy",
+        "freshWorkspace": "Nuevo espacio de trabajo",
+        "ideas": "Ideas",
+        "colorfulNotes": "Notas coloridas",
+        "next": "Siguiente"
+      }
+    },
+    "toolbar": {
+      "newNote": "Nota nueva",
+      "deleteAll": "Borrar todo",
+      "settings": "Ajustes"
+    },
+    "emptyNotes": {
+      "title": "¡Todavía no tienes ninguna nota!",
+      "addFirstNote": "Presiona {{shortcut}} para añadir tu primera nota"
+    },
+    "note": {
+      "titlePlaceholder": "Título",
+      "contentPlaceholder": "Escribe aquí...",
+      "lastModified": "Modificado por última vez:",
+      "lastModifiedCompact": "Modificado:",
+      "at": "en",
+      "contextMenu": {
+        "openInNewWindow": "Abrir en una nueva ventana",
+        "moveToTop": "Mover al principio",
+        "moveToBottom": "Mover al final",
+        "duplicate": "Duplicar",
+        "hideTitle": "Esconde el título",
+        "showTitle": "Muestra el título",
+        "delete": "Borra la nota"
+      }
+    }
+  },
+  "settingsWindow": {
+    "navigation": {
+      "pages": {
+        "links": "Enlaces"
+      }
+    },
+    "general": {
+      "noteLayoutOptions": {
+        "list": "Lista",
+        "grid": "Parrilla"
+      },
+      "resortNotes": "Re-clasifica las notas",
+      "keepNotesOnTop": "Deja las notas al principio",
+      "keepNotesOnTopDescription": "Las notas sobre todas las otras ventanas",
+      "dateTimeFormat": "Formato de fecha y hora",
+      "timeFormat": "Formato de hora",
+      "dateTimeFormatExample": "Ejemplo:",
+      "timeFormatOptions": {
+        "regular": "12-horas",
+        "military": "24-horas"
+      }
+    },
+    "appearance": {
+      "applicationTheme": "Tema de la aplicación",
+      "themeOptions": {
+        "auto": "Automático",
+        "light": "Claro",
+        "dark": "Oscuro"
+      },
+      "showNoteTitles": "Muestra los títulos"
+    }
+  }
+}
