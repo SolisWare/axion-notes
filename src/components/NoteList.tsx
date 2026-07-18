@@ -4,11 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode, useEffect, useRef, useState } from "react";
+import { CSSProperties, PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useTranslation } from "react-i18next";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
@@ -20,6 +19,7 @@ import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 import Note from "./Note";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
+import SortableNoteListItem from "./SortableNoteListItem";
 import styles from "./NoteList.module.css";
 
 type NoteListProps = {
@@ -44,12 +44,6 @@ type NoteListProps = {
 type FoldedNoteContent = {
   body: string;
   title?: string;
-};
-
-type SortableNoteListItemProps = {
-  children: ReactNode;
-  id: string;
-  isFolded: boolean;
 };
 
 const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable='true']";
@@ -408,34 +402,6 @@ function NoteList(props: NoteListProps) {
           onToggleTitleVisibility={handleContextMenuToggleTitleVisibility}
         />
       )}
-    </div>
-  );
-}
-
-function SortableNoteListItem(props: SortableNoteListItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: props.id });
-
-  return (
-    <div
-      className={props.isFolded ? styles.sortableFoldedItem : styles.sortableExpandedItem}
-      ref={setNodeRef}
-      style={{
-        opacity: isDragging ? 0.72 : 1,
-        transform: CSS.Translate.toString(transform),
-        transition,
-        zIndex: isDragging ? 1 : undefined
-      }}
-      {...attributes}
-      {...listeners}
-    >
-      {props.children}
     </div>
   );
 }
