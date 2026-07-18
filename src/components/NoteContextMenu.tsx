@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { Divider } from "@mui/material";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAppColors } from "../theme/AppColors";
 import { NoteColorKey, NoteColors } from "../theme/NoteColors";
@@ -35,11 +35,15 @@ type NoteContextMenuProps = {
   showTitleVisibilityAction?: boolean;
 };
 
+const MENU_VIEWPORT_MARGIN = 8;
+
 function NoteContextMenu(props: NoteContextMenuProps) {
   const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const [hoveredNoteColor, setHoveredNoteColor] = useState<NoteColorKey | null>(null);
+  const [menuPosition, setMenuPosition] = useState(props.position);
 
   const noteColorKeys = Object.values(NoteColorKey);
   const noteContextColorLabel = hoveredNoteColor === null
@@ -48,16 +52,50 @@ function NoteContextMenu(props: NoteContextMenuProps) {
   const menuStyle = {
     backgroundColor: appColors.DIALOG_BACKGROUND,
     color: appColors.DIALOG_TEXT,
-    top: props.position.mouseY,
-    left: props.position.mouseX,
+    top: menuPosition.mouseY,
+    left: menuPosition.mouseX,
     "--note-context-menu-item-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-context-menu-item-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
     "--note-context-menu-label-text": appColors.DIALOG_TEXT
   } as CSSProperties;
 
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+
+    if (!menu) {
+      return;
+    }
+
+    const updateMenuPosition = () => {
+      const menuRect = menu.getBoundingClientRect();
+      const shouldOpenLeft = props.position.mouseX + menuRect.width + MENU_VIEWPORT_MARGIN > window.innerWidth;
+      const shouldOpenUp = props.position.mouseY + menuRect.height + MENU_VIEWPORT_MARGIN > window.innerHeight;
+      const left = shouldOpenLeft
+        ? Math.max(MENU_VIEWPORT_MARGIN, props.position.mouseX - menuRect.width)
+        : Math.min(props.position.mouseX, window.innerWidth - menuRect.width - MENU_VIEWPORT_MARGIN);
+      const top = shouldOpenUp
+        ? Math.max(MENU_VIEWPORT_MARGIN, props.position.mouseY - menuRect.height)
+        : Math.min(props.position.mouseY, window.innerHeight - menuRect.height - MENU_VIEWPORT_MARGIN);
+
+      setMenuPosition((currentPosition) => (
+        currentPosition.mouseX === left && currentPosition.mouseY === top
+          ? currentPosition
+          : { mouseX: left, mouseY: top }
+      ));
+    };
+
+    updateMenuPosition();
+    window.addEventListener("resize", updateMenuPosition);
+
+    return () => {
+      window.removeEventListener("resize", updateMenuPosition);
+    };
+  }, [props.position]);
+
   return (
     <div
       className={styles.noteContextMenu}
+      ref={menuRef}
       style={menuStyle}
       onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => event.stopPropagation()}
