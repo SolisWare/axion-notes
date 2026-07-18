@@ -368,9 +368,7 @@ function MainWindow(props: MainWindowProps) {
       const overNote = prevNotes[overNoteIndex];
 
       if (isPinnedNote(activeNote) === isPinnedNote(overNote)) {
-        const nextOverNoteIndex = reorderedNotes.findIndex((note) => note.id === overNote.id);
-
-        reorderedNotes.splice(nextOverNoteIndex, 0, activeNote);
+        reorderedNotes.splice(overNoteIndex, 0, activeNote);
         return reorderedNotes;
       }
 
