@@ -41,7 +41,9 @@
         "delete": "Kustuta märge",
         "noteColorAriaLabel": "Märkme värv",
         "noteColor": "Märkme värv…"
-      }
+      },
+      "unfold": "Lappa märge lahti",
+      "fold": "Lappa märge kokku"
     },
     "deleteAllNotesDialog": {
       "title": "Kustuta kõik märkmed",
@@ -178,7 +180,27 @@
       "welcome": "Tere tulemast",
       "viewLicense": "Vaata litsentsi",
       "visitWebsite": "Vaata veebisaiti",
-      "checkoutGitHub": "Vaata GitHubi"
+      "checkoutGitHub": "Vaata GitHubi",
+      "about": "Rakenduse teave: {{appName}}",
+      "services": "Teenused",
+      "hide": "Peida",
+      "hideOthers": "Peida teised",
+      "unhide": "Näita kõiki",
+      "quit": "Välju",
+      "close": "Sulge",
+      "undo": "Võta tegevus tagasi",
+      "redo": "Korda tegevust",
+      "cut": "Lõika",
+      "copy": "Kopeeri",
+      "paste": "Aseta",
+      "selectAll": "Vali kõik",
+      "delete": "Kustuta",
+      "reload": "Laadi uuesti",
+      "resetZoom": "Tegelik suurus",
+      "zoomIn": "Suumi sisse/suurenda",
+      "zoomOut": "Suumi välja/vähenda",
+      "window": "Aken",
+      "help": "Abiteave"
     },
     "windows": {
       "settings": "Seadistused",
