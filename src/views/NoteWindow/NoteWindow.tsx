@@ -17,6 +17,7 @@ import { NoteSizePreference } from "../../settings/noteSizePreference";
 import { AppTheme } from "../../theme/AppTheme";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
+import { getNotesWithPinnedNote, getNotesWithUnpinnedNote, isPinnedNote } from "../../utils/notePinning";
 import styles from "./NoteWindow.module.css";
 
 type NoteWindowProps = {
@@ -110,6 +111,28 @@ function NoteWindow(props: NoteWindowProps) {
     });
   }
 
+  function handleToggleNotePin(note: NoteType) {
+    window.api.storage.getNotes()
+      .then((notes) => {
+        const storedNote = notes.find((storedNote) => storedNote.id === note.id) ?? note;
+        const nextNotes = isPinnedNote(storedNote)
+          ? getNotesWithUnpinnedNote(notes, storedNote, props.appSettings.notesSortOrder)
+          : getNotesWithPinnedNote(notes, storedNote);
+        const updatedNote = nextNotes.find((nextNote) => nextNote.id === note.id);
+
+        if (!updatedNote) {
+          return;
+        }
+
+        window.api.storage.setNote(updatedNote);
+        window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
+        setNote(updatedNote);
+      })
+      .catch((err: Error) => {
+        console.error("Unexpected error toggling note pin:", err.message);
+      });
+  }
+
   return (
     <ThemeProvider theme={appTheme}>
       <div
@@ -133,6 +156,7 @@ function NoteWindow(props: NoteWindowProps) {
               handleMoveNoteToBottom={() => {}}
               handleMoveNoteToTop={() => {}}
               handleNoteSave={handleNoteSave}
+              handleToggleNotePin={handleToggleNotePin}
               showDragIndicator={false}
               showMoveContextActions={false}
               showOpenNoteWindowContextAction={false}

@@ -28,7 +28,8 @@ import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { NoteSortOrder } from "../../settings/NoteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
-import { insertUnpinnedNote, isPinnedNote, sortNotes } from "../../utils/noteSorting";
+import { getNotesWithPinnedNote, getNotesWithUnpinnedNote, isPinnedNote } from "../../utils/notePinning";
+import { sortNotes } from "../../utils/noteSorting";
 
 type MainWindowProps = {
   view: AppView;
@@ -319,21 +320,13 @@ function MainWindow(props: MainWindowProps) {
 
   function handlePinNote(note: NoteType) {
     setNotes((prevNotes) => {
-      const pinnedNote = {
-        ...note,
-        isPinned: true,
-        pinnedOn: new Date(),
-        pinnedFromNoteIds: prevNotes.map((prevNote) => prevNote.id)
-      };
-      const notesWithoutPinnedNote = prevNotes.filter((prevNote) => prevNote.id !== note.id);
-      const lastPinnedNoteIndex = notesWithoutPinnedNote.reduce((lastPinnedIndex, prevNote, index) => {
-        return isPinnedNote(prevNote) ? index : lastPinnedIndex;
-      }, -1);
-      const nextNotes = [...notesWithoutPinnedNote];
+      const nextNotes = getNotesWithPinnedNote(prevNotes, note);
+      const pinnedNote = nextNotes.find((nextNote) => nextNote.id === note.id);
 
-      nextNotes.splice(lastPinnedNoteIndex + 1, 0, pinnedNote);
       queueMicrotask(() => {
-        window.api.storage.setNote(pinnedNote);
+        if (pinnedNote) {
+          window.api.storage.setNote(pinnedNote);
+        }
         window.api.storage.setNoteOrder(nextNotes.map((nextNote) => nextNote.id));
       });
 
@@ -343,7 +336,7 @@ function MainWindow(props: MainWindowProps) {
 
   function handleUnpinNote(note: NoteType) {
     setNotes((prevNotes) => {
-      const nextNotes = insertUnpinnedNote(prevNotes, note, currentNotesSortOrder.current);
+      const nextNotes = getNotesWithUnpinnedNote(prevNotes, note, currentNotesSortOrder.current);
       const unpinnedNote = nextNotes.find((nextNote) => nextNote.id === note.id);
 
       queueMicrotask(() => {

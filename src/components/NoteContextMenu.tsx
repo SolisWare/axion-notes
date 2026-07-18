@@ -72,6 +72,9 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             : t("mainWindow.note.contextMenu.pin")}
         </div>
       )}
+      {props.onTogglePin && !props.onOpenNoteWindow && (
+        <Divider className={styles.noteContextMenuDivider} />
+      )}
       {props.onOpenNoteWindow && (
         <>
           {props.onTogglePin && (
