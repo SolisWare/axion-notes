@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import supportedLanguages from "./supported-languages.json";
 
 /**
  * Describes a language available for localization.
@@ -16,20 +17,7 @@ export type Language = {
 /**
  * List of languages currently available in Axion Notes.
  */
-export const SUPPORTED_LANGUAGES = [
-  {
-    code: "en",
-    label: "English"
-  },
-  {
-    code: "et",
-    label: "Estonian"
-  },
-  {
-    code: "pl",
-    label: "Polish"
-  }
-] as const satisfies readonly Language[];
+export const SUPPORTED_LANGUAGES = supportedLanguages satisfies readonly Language[];
 
 /**
  * Language code inferred from the supported language list.

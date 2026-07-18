@@ -13,6 +13,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a note context menu item for pinning and unpinning notes
 - Added a list view only context menu item for folding and unfolding notes
 - Added double-click folding and unfolding from the list-view note drag row
+- Added Spanish translation, contributed by GitHub user @airamdesarrollador
+- Moved the supported language list into a dedicated JSON file
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code
@@ -34,6 +36,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Reduced the compact note size for denser note layouts
 - Added explicit English labels and fallback translations for user-facing Electron role menu items
 - Improved note drag handling with a hover drag indicator and focus-aware text selection in note titles and content
+- Added Estonian translation, contributed by Weblate user @jrthwlate
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text

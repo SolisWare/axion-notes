@@ -6,7 +6,7 @@
  */
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { DEFAULT_LANGUAGE, getBaseLanguageCode, isSupportedLanguageCode, SupportedLanguageCode } from "./languages";
+import { DEFAULT_LANGUAGE, getBaseLanguageCode, isSupportedLanguageCode, SupportedLanguageCode } from "./languageConfig";
 import { getI18nResources } from "./translationLoader";
 
 function resolveInitialLanguage(): SupportedLanguageCode {

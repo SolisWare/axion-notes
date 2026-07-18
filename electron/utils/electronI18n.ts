@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { DEFAULT_LANGUAGE, isSupportedLanguageCode, SupportedLanguageCode } from "../../src/i18n/languages";
+import { DEFAULT_LANGUAGE, isSupportedLanguageCode, SupportedLanguageCode } from "../../src/i18n/languageConfig";
 import { getTranslation, TranslationNode } from "../../src/i18n/translationLoader";
 
 type TranslationVariables = Record<string, string | number>;

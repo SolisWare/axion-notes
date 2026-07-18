@@ -8,7 +8,7 @@ import { ChangeEvent, CSSProperties, ReactNode, useLayoutEffect, useRef, useStat
 import SyncIcon from "@mui/icons-material/Sync";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
-import { getLanguagePickerLabel, SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languages";
+import { getLanguagePickerLabel, SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languageConfig";
 import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";
 import { NoteSortOrder } from "../../../settings/NoteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";

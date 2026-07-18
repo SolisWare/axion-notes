@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from "./languages";
+import { SUPPORTED_LANGUAGES, SupportedLanguageCode } from "./languageConfig";
 
 export type TranslationNode = string | {
   [key: string]: TranslationNode;

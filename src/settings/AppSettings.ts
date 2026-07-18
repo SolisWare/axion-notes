@@ -10,7 +10,7 @@ import { NoteSortOrder } from "./NoteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
-import { SupportedLanguageCode } from "../i18n/languages";
+import { SupportedLanguageCode } from "../i18n/languageConfig";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
