@@ -23,10 +23,12 @@ type NoteContextMenuProps = {
   selectedColor: NoteColorKey;
   isTitleHidden: boolean;
   isPinned: boolean;
+  isFolded?: boolean;
   onDeleteNote: () => void;
   onDuplicateNote: () => void;
   onOpenNoteWindow?: () => void;
   onTogglePin?: () => void;
+  onToggleFold?: () => void;
   onMoveNoteToBottom: () => void;
   onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
@@ -123,6 +125,29 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             onClick={props.onOpenNoteWindow}
           >
             {t("mainWindow.note.contextMenu.openInNewWindow")}
+          </div>
+          {props.onToggleFold && (
+            <div
+              className={styles.noteContextMenuItem}
+              onClick={props.onToggleFold}
+            >
+              {props.isFolded
+                ? t("mainWindow.note.unfold")
+                : t("mainWindow.note.fold")}
+            </div>
+          )}
+          <Divider className={styles.noteContextMenuDivider} />
+        </>
+      )}
+      {!props.onOpenNoteWindow && props.onToggleFold && (
+        <>
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onToggleFold}
+          >
+            {props.isFolded
+              ? t("mainWindow.note.unfold")
+              : t("mainWindow.note.fold")}
           </div>
           <Divider className={styles.noteContextMenuDivider} />
         </>

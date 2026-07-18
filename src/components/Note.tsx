@@ -37,6 +37,7 @@ type NoteProps = {
   handleMoveNoteToBottom: (noteId: string) => void;
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
+  handleToggleNoteFold?: (note: NoteType) => void;
   handleToggleNotePin?: (note: NoteType) => void;
   showDragIndicator?: boolean;
   showMoveContextActions?: boolean;
@@ -302,6 +303,13 @@ function Note(props: NoteProps) {
     }
     : undefined;
 
+  const handleContextMenuToggleFold = props.handleToggleNoteFold
+    ? () => {
+      handleCloseNoteContextMenu();
+      props.handleToggleNoteFold?.(latestNote.current);
+    }
+    : undefined;
+
   const handlePinnedNoteMarkerClick = (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -469,10 +477,12 @@ function Note(props: NoteProps) {
           selectedColor={note.bgcolor}
           isTitleHidden={isTitleHidden}
           isPinned={isPinned}
+          isFolded={note.isFolded}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}
+          onToggleFold={handleContextMenuToggleFold}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}

@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode, useRef } from "react";
+import { CSSProperties, PointerEvent as ReactPointerEvent, ReactNode, useEffect, useRef, useState } from "react";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -14,11 +14,12 @@ import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteSizePreference } from "../settings/noteSizePreference";
 import { getAppColors } from "../theme/AppColors";
-import { getNoteColor } from "../theme/NoteColors";
+import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 import Note from "./Note";
+import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import styles from "./NoteList.module.css";
 
 type NoteListProps = {
@@ -105,6 +106,8 @@ function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNo
 function NoteList(props: NoteListProps) {
   const { t } = useTranslation();
   const foldedNoteIds = useRef<Set<string>>(new Set());
+  const [foldedNoteContextMenuPosition, setFoldedNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
+  const [contextMenuNote, setContextMenuNote] = useState<NoteType | null>(null);
   const sensors = useSensors(useSensor(NoteListPointerSensor, {
     activationConstraint: {
       distance: 8
@@ -152,6 +155,134 @@ function NoteList(props: NoteListProps) {
     props.handleNoteReorder(String(event.active.id), String(event.over.id));
   }
 
+  function handleFoldedNoteContextMenu(event: React.MouseEvent, note: NoteType) {
+    event.preventDefault();
+    setContextMenuNote(note);
+    setFoldedNoteContextMenuPosition({
+      mouseX: event.clientX + 2,
+      mouseY: event.clientY - 6
+    });
+  }
+
+  function handleCloseFoldedNoteContextMenu() {
+    setFoldedNoteContextMenuPosition(null);
+    setContextMenuNote(null);
+  }
+
+  function handleContextMenuDuplicateNote() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleDuplicateNote(contextMenuNote);
+  }
+
+  const handleContextMenuOpenNoteWindow = props.handleOpenNoteWindow && contextMenuNote
+    ? () => {
+      handleCloseFoldedNoteContextMenu();
+      props.handleNoteSave(contextMenuNote);
+      props.handleOpenNoteWindow?.(contextMenuNote.id);
+    }
+    : undefined;
+
+  function handleContextMenuMoveNoteToTop() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleMoveNoteToTop(contextMenuNote.id);
+  }
+
+  function handleContextMenuMoveNoteToBottom() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleMoveNoteToBottom(contextMenuNote.id);
+  }
+
+  function handleContextMenuDeleteNote() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleDeleteNoteButton(contextMenuNote.id);
+  }
+
+  function handleContextMenuNoteColorChange(colorKey: NoteColorKey) {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+
+    if (contextMenuNote.bgcolor === colorKey) {
+      return;
+    }
+
+    props.handleNoteSave({
+      ...contextMenuNote,
+      bgcolor: colorKey
+    });
+  }
+
+  function handleContextMenuToggleTitleVisibility() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    const isTitleHidden = contextMenuNote.isTitleHidden ?? !props.showNoteTitles;
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleNoteSave({
+      ...contextMenuNote,
+      isTitleHidden: !isTitleHidden
+    });
+  }
+
+  function handleContextMenuTogglePin() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    props.handleToggleNotePin(contextMenuNote);
+  }
+
+  function handleContextMenuToggleFold() {
+    if (!contextMenuNote) {
+      return;
+    }
+
+    handleCloseFoldedNoteContextMenu();
+    handleUnfoldNote(contextMenuNote);
+  }
+
+  useEffect(() => {
+    if (foldedNoteContextMenuPosition === null) {
+      return;
+    }
+
+    const handleDocumentPointerDown = () => handleCloseFoldedNoteContextMenu();
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleCloseFoldedNoteContextMenu();
+      }
+    };
+
+    document.addEventListener("pointerdown", handleDocumentPointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleDocumentPointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [foldedNoteContextMenuPosition]);
+
   return (
     <div className={styles.wrapper} style={noteListStyle}>
       <DndContext
@@ -173,6 +304,7 @@ function NoteList(props: NoteListProps) {
                   <SortableNoteListItem id={note.id} isFolded={isFolded} key={note.id}>
                     <div
                       className={styles.listItem}
+                      onContextMenu={(event) => handleFoldedNoteContextMenu(event, note)}
                       style={{
                         "--note-bg-color": noteColor,
                         backgroundColor: noteColor
@@ -209,6 +341,7 @@ function NoteList(props: NoteListProps) {
                         aria-label={t("mainWindow.note.unfold")}
                         className={styles.unfoldButton}
                         onClick={() => handleUnfoldNote(note)}
+                        onPointerDown={(event) => event.stopPropagation()}
                         title={t("mainWindow.note.unfold")}
                         type="button"
                       />
@@ -238,6 +371,7 @@ function NoteList(props: NoteListProps) {
                       handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                       handleMoveNoteToTop={props.handleMoveNoteToTop}
                       handleToggleNotePin={props.handleToggleNotePin}
+                      handleToggleNoteFold={handleFoldNote}
                       handleNoteSave={handleExpandedNoteSave}
                       style={{ marginBottom: 0 }}
                     />
@@ -255,6 +389,25 @@ function NoteList(props: NoteListProps) {
           </div>
         </SortableContext>
       </DndContext>
+      {contextMenuNote && foldedNoteContextMenuPosition !== null && (
+        <NoteContextMenu
+          theme={props.theme}
+          position={foldedNoteContextMenuPosition}
+          selectedColor={contextMenuNote.bgcolor}
+          isTitleHidden={contextMenuNote.isTitleHidden ?? !props.showNoteTitles}
+          isPinned={contextMenuNote.isPinned === true}
+          isFolded={true}
+          onDeleteNote={handleContextMenuDeleteNote}
+          onDuplicateNote={handleContextMenuDuplicateNote}
+          onOpenNoteWindow={handleContextMenuOpenNoteWindow}
+          onTogglePin={handleContextMenuTogglePin}
+          onToggleFold={handleContextMenuToggleFold}
+          onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
+          onMoveNoteToTop={handleContextMenuMoveNoteToTop}
+          onNoteColorChange={handleContextMenuNoteColorChange}
+          onToggleTitleVisibility={handleContextMenuToggleTitleVisibility}
+        />
+      )}
     </div>
   );
 }
