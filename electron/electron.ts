@@ -15,10 +15,12 @@ import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver"
 import { createMainWindow } from "./windows/createMainWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
-import { getSettings } from "./storage/appSettingsStorage";
+import { getSettings, setSettings } from "./storage/appSettingsStorage";
 import { setElectronLanguage } from "./utils/electronI18n";
 import { AppSettings } from "../src/settings/AppSettings";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
+import { defaultAppSettings } from "../src/settings/defaultSettings";
+import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfig";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -49,10 +51,17 @@ if (isDev) {
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
   const settings = await getSettings(appSettingsFilePath);
-  currentSettings = settings;
+  const initialSettings = {
+    ...defaultAppSettings,
+    ...settings,
+    ...(!settings ? { language: resolvePreferredSupportedLanguageCode([app.getLocale()]) } : {})
+  };
 
-  if (settings) {
-    setElectronLanguage(settings.language);
+  currentSettings = initialSettings;
+  setElectronLanguage(initialSettings.language);
+
+  if (!settings) {
+    setSettings(appSettingsFilePath, initialSettings);
   }
 
   Menu.setApplicationMenu(createMenubar());
@@ -64,7 +73,7 @@ app.on("ready", async () => {
   registerIpcHandlers({
     appDataDir,
     appSettingsFilePath,
-    initialSettings: settings,
+    initialSettings,
     mainWindowStateFilePath,
     onSettingsChange: (settings: AppSettings) => {
       currentSettings = settings;

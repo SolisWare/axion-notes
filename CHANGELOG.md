@@ -15,6 +15,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added double-click folding and unfolding from the list-view note drag row
 - Added Spanish translation, contributed by GitHub user @airamdesarrollador
 - Moved the supported language list into a dedicated JSON file
+- Added first-launch language detection from the OS or browser with fallback to English
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code

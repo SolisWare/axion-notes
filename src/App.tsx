@@ -19,11 +19,30 @@ import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
 import { resolveAppThemePreference } from './settings/AppThemePreference';
 import { MenuEditSelectionState } from './models/MenuEditSelectionState';
+import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
 
 export enum AppView {
   home = "/home",
   welcome = "/welcome",
   license = "/license"
+}
+
+function getPreferredBrowserLanguage(): string[] {
+  return navigator.languages.length > 0 ? navigator.languages : [navigator.language];
+}
+
+function getInitialAppSettings(settings: AppSettings | undefined): AppSettings {
+  if (settings) {
+    return {
+      ...defaultAppSettings,
+      ...settings
+    };
+  }
+
+  return {
+    ...defaultAppSettings,
+    language: resolvePreferredSupportedLanguageCode(getPreferredBrowserLanguage())
+  };
 }
 
 function App() {
@@ -52,13 +71,13 @@ function App() {
   useEffect(() => {
     window.api.settings.getSettings()
       .then((settings) => {
-        const loadedSettings = {
-          ...defaultAppSettings,
-          ...settings
-        };
+        const loadedSettings = getInitialAppSettings(settings);
 
         i18n.changeLanguage(loadedSettings.language);
         setAppSettings(loadedSettings);
+        if (!settings) {
+          window.api.settings.setSettings(loadedSettings);
+        }
         setStartupMainWindowPage(loadedSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home);
         setHasLoadedAppSettings(true);
       })

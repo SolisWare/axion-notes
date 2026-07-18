@@ -37,6 +37,21 @@ export function isSupportedLanguageCode(languageCode: string): languageCode is S
 }
 
 /**
+ * Returns the highest-priority supported language from a preferred language list.
+ */
+export function resolvePreferredSupportedLanguageCode(languageCodes: readonly string[]): SupportedLanguageCode {
+  for (const languageCode of languageCodes) {
+    const baseLanguageCode = getBaseLanguageCode(languageCode);
+
+    if (isSupportedLanguageCode(baseLanguageCode)) {
+      return baseLanguageCode;
+    }
+  }
+
+  return DEFAULT_LANGUAGE;
+}
+
+/**
  * Returns the base language code from a regional code, such as "en" from "en-US".
  */
 export function getBaseLanguageCode(languageCode: string): string {

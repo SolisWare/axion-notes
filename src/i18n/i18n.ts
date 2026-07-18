@@ -6,17 +6,11 @@
  */
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { DEFAULT_LANGUAGE, getBaseLanguageCode, isSupportedLanguageCode, SupportedLanguageCode } from "./languageConfig";
+import { DEFAULT_LANGUAGE, resolvePreferredSupportedLanguageCode, SupportedLanguageCode } from "./languageConfig";
 import { getI18nResources } from "./translationLoader";
 
 function resolveInitialLanguage(): SupportedLanguageCode {
-  const browserLanguage = getBaseLanguageCode(navigator.language);
-
-  if (isSupportedLanguageCode(browserLanguage)) {
-    return browserLanguage;
-  }
-
-  return DEFAULT_LANGUAGE;
+  return resolvePreferredSupportedLanguageCode(navigator.languages.length > 0 ? navigator.languages : [navigator.language]);
 }
 
 i18n
