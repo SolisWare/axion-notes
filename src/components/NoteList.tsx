@@ -320,7 +320,11 @@ function NoteList(props: NoteListProps) {
                           <PushPinRoundedIcon fontSize="small" />
                         </button>
                       )}
-                      <div className={styles.foldedNoteDragIndicatorRow} aria-hidden="true">
+                      <div
+                        className={styles.foldedNoteDragIndicatorRow}
+                        aria-hidden="true"
+                        onDoubleClick={() => handleUnfoldNote(note)}
+                      >
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
                       <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>

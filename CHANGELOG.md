@@ -9,6 +9,10 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added dedicated note windows with live note synchronization, focused note-window context actions, and offset placement for multiple open note windows
 - Added pinned notes with pin/unpin actions, pinned-first ordering, drag-aware pinned sections, and live synchronization across note windows
 - Fixed note context menus opening off screen by flipping their placement near window edges
+- Added context menu support to folded notes in list view
+- Added a note context menu item for pinning and unpinning notes
+- Added a list view only context menu item for folding and unfolding notes
+- Added double-click folding and unfolding from the list-view note drag row
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code

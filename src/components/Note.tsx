@@ -419,7 +419,11 @@ function Note(props: NoteProps) {
       )}
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
         {props.showDragIndicator !== false && (
-          <div className={classes.noteDragIndicatorRow} aria-hidden="true">
+          <div
+            className={classes.noteDragIndicatorRow}
+            aria-hidden="true"
+            onDoubleClick={props.handleToggleNoteFold ? () => props.handleToggleNoteFold?.(latestNote.current) : undefined}
+          >
             <div
               className={classes.noteDragIndicator}
               style={{
