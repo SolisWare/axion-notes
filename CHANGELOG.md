@@ -17,6 +17,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Moved the supported language list into a dedicated JSON file
 - Added first-launch language detection from the OS or browser with fallback to English
 - Added an Electron splash screen to cover desktop app startup
+- Hid the macOS-only Open Settings shortcut from the shortcuts list on other platforms
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code
