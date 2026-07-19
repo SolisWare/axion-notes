@@ -15,9 +15,11 @@ export const channels = {
     newNote: "menu.newNote",
     showWelcome: "menu.showWelcome",
     deleteAllNotes: "menu.deleteAllNotes",
+    formatRichText: "menu.formatRichText",
     setNewNoteEnabled: "menu.setNewNoteEnabled",
     setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled",
-    setEditSelectionState: "menu.setEditSelectionState"
+    setEditSelectionState: "menu.setEditSelectionState",
+    setRichTextFormatState: "menu.setRichTextFormatState"
   },
   noteSort: {
     requestSort: "noteSort.requestSort",

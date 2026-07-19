@@ -6,6 +6,7 @@
  */
 import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
+import { RichTextFormatState } from "../../src/models/RichTextFormatState";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 
@@ -14,6 +15,13 @@ let isDeleteAllNotesEnabled = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
+};
+let richTextFormatState: RichTextFormatState = {
+  canFormat: false,
+  isBoldActive: false,
+  isItalicActive: false,
+  isUnderlineActive: false,
+  isStrikethroughActive: false
 };
 
 function updateNoteMenuItems(): void {
@@ -24,8 +32,14 @@ function updateNoteMenuItems(): void {
   const copyMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.copy);
   const pasteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.paste);
   const deleteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.delete);
+  const formatMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.format);
+  const formatBoldMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatBold);
+  const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatItalic);
+  const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatUnderline);
+  const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatStrikethrough);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
+  const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
 
   if (newNoteMenuItem) {
     newNoteMenuItem.enabled = isNewNoteEnabled;
@@ -53,6 +67,30 @@ function updateNoteMenuItems(): void {
     deleteMenuItem.enabled = isNewNoteEnabled && editSelectionState.hasEditableSelection;
   }
 
+  if (formatMenuItem) {
+    formatMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  if (formatBoldMenuItem) {
+    formatBoldMenuItem.enabled = isRichTextFormattingEnabled;
+    formatBoldMenuItem.checked = richTextFormatState.isBoldActive;
+  }
+
+  if (formatItalicMenuItem) {
+    formatItalicMenuItem.enabled = isRichTextFormattingEnabled;
+    formatItalicMenuItem.checked = richTextFormatState.isItalicActive;
+  }
+
+  if (formatUnderlineMenuItem) {
+    formatUnderlineMenuItem.enabled = isRichTextFormattingEnabled;
+    formatUnderlineMenuItem.checked = richTextFormatState.isUnderlineActive;
+  }
+
+  if (formatStrikethroughMenuItem) {
+    formatStrikethroughMenuItem.enabled = isRichTextFormattingEnabled;
+    formatStrikethroughMenuItem.checked = richTextFormatState.isStrikethroughActive;
+  }
+
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
   }
@@ -71,6 +109,11 @@ export function registerMenuIpc(): void {
 
   ipcMain.on(channels.menu.setEditSelectionState, (_, state: MenuEditSelectionState) => {
     editSelectionState = state;
+    updateNoteMenuItems();
+  });
+
+  ipcMain.on(channels.menu.setRichTextFormatState, (_, state: RichTextFormatState) => {
+    richTextFormatState = state;
     updateNoteMenuItems();
   });
 }

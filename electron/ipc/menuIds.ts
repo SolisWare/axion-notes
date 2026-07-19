@@ -18,6 +18,11 @@ export const menuIds = {
     copy: "copy",
     paste: "paste",
     delete: "delete",
+    format: "format",
+    formatBold: "formatBold",
+    formatItalic: "formatItalic",
+    formatUnderline: "formatUnderline",
+    formatStrikethrough: "formatStrikethrough",
     deleteAllNotes: "deleteAllNotes"
   }
 } as const;

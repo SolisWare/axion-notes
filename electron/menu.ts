@@ -11,6 +11,7 @@ import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
 import { translate } from "./utils/electronI18n";
+import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 
 export function createMenubar(): Menu {
   const template: any = [
@@ -82,6 +83,54 @@ export function createMenubar(): Menu {
         ...(isMac ? [
           { id: menuIds.edit.delete, role: 'delete' as const, label: translate("electron.menu.delete"), enabled: false }
         ] : []),
+        { type: 'separator' },
+        {
+          id: menuIds.edit.format,
+          label: translate("electron.menu.format"),
+          enabled: false,
+          submenu: [
+            {
+              id: menuIds.edit.formatBold,
+              label: translate("electron.menu.bold"),
+              accelerator: 'CmdOrCtrl+B',
+              type: 'checkbox',
+              enabled: false,
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.BOLD);
+              }
+            },
+            {
+              id: menuIds.edit.formatItalic,
+              label: translate("electron.menu.italic"),
+              accelerator: 'CmdOrCtrl+I',
+              type: 'checkbox',
+              enabled: false,
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.ITALIC);
+              }
+            },
+            {
+              id: menuIds.edit.formatUnderline,
+              label: translate("electron.menu.underline"),
+              accelerator: 'CmdOrCtrl+U',
+              type: 'checkbox',
+              enabled: false,
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.UNDERLINE);
+              }
+            },
+            {
+              id: menuIds.edit.formatStrikethrough,
+              label: translate("electron.menu.strikethrough"),
+              accelerator: 'Shift+CmdOrCtrl+X',
+              type: 'checkbox',
+              enabled: false,
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.STRIKETHROUGH);
+              }
+            }
+          ]
+        },
         { type: 'separator' },
         {
           id: menuIds.edit.deleteAllNotes,

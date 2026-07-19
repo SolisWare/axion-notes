@@ -7,6 +7,8 @@
 import { channels } from "../ipc/channels";
 import { off, on, send } from "./ipcHelpers";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
+import { RichTextFormatCommand } from "../../src/models/RichTextFormatCommand";
+import { RichTextFormatState } from "../../src/models/RichTextFormatState";
 
 export const menuApi = {
 
@@ -27,6 +29,12 @@ export const menuApi = {
     on(channels.menu.deleteAllNotes, listener);
     return () => off(channels.menu.deleteAllNotes, listener);
   },
+
+  onMenuRichTextFormat: (callback: (command: RichTextFormatCommand) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, command: RichTextFormatCommand) => callback(command);
+    on(channels.menu.formatRichText, listener);
+    return () => off(channels.menu.formatRichText, listener);
+  },
   
   setDeleteAllNotesEnabled: (enabled: boolean) => {
     send(channels.menu.setDeleteAllNotesEnabled, enabled);
@@ -34,6 +42,10 @@ export const menuApi = {
 
   setEditSelectionState: (state: MenuEditSelectionState) => {
     send(channels.menu.setEditSelectionState, state);
+  },
+
+  setRichTextFormatState: (state: RichTextFormatState) => {
+    send(channels.menu.setRichTextFormatState, state);
   },
 
   setNewNoteEnabled: (enabled: boolean) => {

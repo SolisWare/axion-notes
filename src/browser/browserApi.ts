@@ -48,8 +48,10 @@ export function installBrowserApi(): void {
       onMenuNewNote: () => unsubscribe,
       onMenuShowWelcome: () => unsubscribe,
       onMenuDeleteAllNotes: () => unsubscribe,
+      onMenuRichTextFormat: () => unsubscribe,
       setDeleteAllNotesEnabled: noop,
       setEditSelectionState: noop,
+      setRichTextFormatState: noop,
       setNewNoteEnabled: noop
     },
     noteSort: {
