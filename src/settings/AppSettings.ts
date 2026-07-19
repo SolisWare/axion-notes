@@ -28,4 +28,5 @@ export type AppSettings = {
   showNoteTitles: boolean;
   showNoteFooters: boolean;
   noteLayout: NoteLayoutPreference;
+  showFloatingFormatToolbar: boolean;
 };

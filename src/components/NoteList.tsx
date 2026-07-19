@@ -31,6 +31,7 @@ type NoteListProps = {
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
+  showFloatingFormatToolbar: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -363,6 +364,7 @@ function NoteList(props: NoteListProps) {
                       noteSize={NoteSizePreference.WIDE}
                       showNoteTitles={props.showNoteTitles}
                       showNoteFooters={props.showNoteFooters}
+                      showFloatingFormatToolbar={props.showFloatingFormatToolbar}
                       handleDeleteNoteButton={props.handleDeleteNoteButton}
                       handleDuplicateNote={props.handleDuplicateNote}
                       handleOpenNoteWindow={props.handleOpenNoteWindow}

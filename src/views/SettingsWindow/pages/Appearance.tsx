@@ -76,6 +76,13 @@ function Appearance(props: AppearanceProps) {
     });
   }
 
+  function handleShowFloatingFormatToolbarChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      showFloatingFormatToolbar: event.target.checked
+    });
+  }
+
   return (
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
@@ -158,6 +165,25 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.switchThumb} />
               </span>
               <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteFooters")}</span>
+            </label>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="show-floating-format-toolbar-title">{t("settingsWindow.appearance.showFloatingFormatToolbar")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showFloatingFormatToolbarDescription")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="show-floating-format-toolbar-title"
+                checked={props.appSettings.showFloatingFormatToolbar}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleShowFloatingFormatToolbarChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showFloatingFormatToolbar")}</span>
             </label>
           </div>
           <div className={styles.settingsRow}>

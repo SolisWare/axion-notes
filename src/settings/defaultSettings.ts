@@ -29,7 +29,8 @@ export const defaultAppSettings: AppSettings = {
   noteSize: NoteSizePreference.DEFAULT,
   showNoteTitles: true,
   showNoteFooters: true,
-  noteLayout: NoteLayoutPreference.GRID
+  noteLayout: NoteLayoutPreference.GRID,
+  showFloatingFormatToolbar: true
 };
 
 export const defaultMainWindowGridBounds: AppWindowBounds = {

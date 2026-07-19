@@ -48,6 +48,7 @@ type NoteProps = {
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
   showFormatToolbar?: boolean;
+  showFloatingFormatToolbar?: boolean;
   reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
 };
@@ -500,7 +501,7 @@ function Note(props: NoteProps) {
               />
             )}
             <div className={classes.noteContent}>
-              {!props.showFormatToolbar && (
+              {!props.showFormatToolbar && props.showFloatingFormatToolbar !== false && (
                 <FloatingNoteFormatToolbar
                   theme={props.theme}
                   formatState={formatState}

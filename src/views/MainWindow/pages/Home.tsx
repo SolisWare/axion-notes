@@ -25,6 +25,7 @@ type HomeProps = {
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
+  showFloatingFormatToolbar: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -53,6 +54,7 @@ function Home(props: HomeProps) {
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
+          showFloatingFormatToolbar={props.showFloatingFormatToolbar}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
           handleOpenNoteWindow={props.handleOpenNoteWindow}
@@ -72,6 +74,7 @@ function Home(props: HomeProps) {
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
+          showFloatingFormatToolbar={props.showFloatingFormatToolbar}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
           handleOpenNoteWindow={props.handleOpenNoteWindow}
