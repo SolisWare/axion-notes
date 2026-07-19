@@ -32,6 +32,10 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
       { label: t("settingsWindow.shortcuts.openSettings"), keys: [commandKey, { label: ",", ariaLabel: t("settingsWindow.shortcuts.keys.comma") }] },
     ] : []),
     { label: t("settingsWindow.shortcuts.deleteAllNotes"), keys: [commandKey, shiftKey, backspaceKey] },
+    { label: t("settingsWindow.shortcuts.bold"), keys: [commandKey, { label: "B", ariaLabel: "B" }] },
+    { label: t("settingsWindow.shortcuts.italic"), keys: [commandKey, { label: "I", ariaLabel: "I" }] },
+    { label: t("settingsWindow.shortcuts.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }] },
+    { label: t("settingsWindow.shortcuts.strikethrough"), keys: [commandKey, shiftKey, { label: "X", ariaLabel: "X" }] },
   ];
 }
 

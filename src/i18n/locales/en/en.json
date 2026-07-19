@@ -146,6 +146,10 @@
       "newNote": "New note",
       "openSettings": "Open settings",
       "deleteAllNotes": "Delete all notes",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strikethrough": "Strikethrough",
       "keys": {
         "command": "Command",
         "control": "Control",
