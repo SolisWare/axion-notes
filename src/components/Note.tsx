@@ -9,7 +9,7 @@ import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
-import NoteTextarea from "./NoteTextarea";
+import NoteRichTextEditor from "./NoteRichTextEditor";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
@@ -227,11 +227,11 @@ function Note(props: NoteProps) {
     });
   };
   
-  const handleNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    const updatedContent = event.target.value;
+  const handleNoteChange = (content: string, richContent: NoteType["richContent"]) => {
     updateNote({
       ...note,
-      content: updatedContent,
+      content,
+      richContent,
       lastModifiedOn: new Date()
     });
   };
@@ -461,7 +461,14 @@ function Note(props: NoteProps) {
               </div>
             )}
             <div className={classes.noteContent}>
-              <NoteTextarea theme={props.theme} fontFamily={noteFontFamily} placeholder={t("mainWindow.note.contentPlaceholder")} content={note.content} onChange={handleNoteChange} />
+              <NoteRichTextEditor
+                theme={props.theme}
+                fontFamily={noteFontFamily}
+                placeholder={t("mainWindow.note.contentPlaceholder")}
+                content={note.content}
+                richContent={note.richContent}
+                onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
+              />
             </div>
           </div>
           {props.showNoteFooters && (
