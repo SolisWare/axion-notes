@@ -9,6 +9,7 @@ import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
+import FloatingNoteFormatToolbar from "./FloatingNoteFormatToolbar";
 import NoteFormatToolbar from "./NoteFormatToolbar";
 import NoteRichTextEditor from "./NoteRichTextEditor";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
@@ -166,6 +167,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     width: "100%"
   },
   noteContent: {
+    position: "relative",
     paddingLeft: "2px",
     paddingRight: "2px",
     flex: "1 1 auto",
@@ -493,10 +495,19 @@ function Note(props: NoteProps) {
               <NoteFormatToolbar
                 theme={props.theme}
                 formatState={formatState}
+                surfaceColor={color}
                 onFormatAction={handleFormatAction}
               />
             )}
             <div className={classes.noteContent}>
+              {!props.showFormatToolbar && (
+                <FloatingNoteFormatToolbar
+                  theme={props.theme}
+                  formatState={formatState}
+                  surfaceColor={color}
+                  onFormatAction={handleFormatAction}
+                />
+              )}
               <NoteRichTextEditor
                 theme={props.theme}
                 fontFamily={noteFontFamily}

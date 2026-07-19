@@ -1,0 +1,16 @@
+.floatingToolbar {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  z-index: 5;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.floatingToolbar :global(.MuiIconButton-root) {
+  box-shadow: none;
+}
+
+.toolbar {
+  margin: 0;
+}

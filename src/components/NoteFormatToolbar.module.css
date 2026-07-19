@@ -8,7 +8,7 @@
   padding: 2px;
   border: 1px solid rgba(80, 93, 110, 0.18);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--note-format-toolbar-background, rgba(255, 255, 255, 0.26));
   box-shadow: 0 1px 2px rgba(35, 43, 55, 0.08);
 }
 
@@ -29,13 +29,19 @@
   ) !important;
 }
 
-.toolbarButtonActive {
+.toolbarButtonActive,
+.toolbarButtonActive:hover {
   color: var(--note-format-toolbar-button-hover-text) !important;
   background-color: color-mix(
     in srgb,
-    var(--note-format-toolbar-button-hover-background) 76%,
-    transparent
+    var(--note-format-toolbar-button-hover-background) 84%,
+    var(--note-format-toolbar-button-hover-text) 16%
   ) !important;
+  box-shadow: inset 0 0 0 1px color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-text) 26%,
+    transparent
+  );
 }
 
 .toolbarButton:disabled {

@@ -21,6 +21,8 @@ type NoteFormatToolbarProps = {
   theme: SystemTheme;
   formatState: RichTextFormatState;
   onFormatAction: (command: RichTextFormatCommand) => void;
+  className?: string;
+  surfaceColor?: string;
 };
 
 function NoteFormatToolbar(props: NoteFormatToolbarProps) {
@@ -28,12 +30,15 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const appColors = getAppColors(props.theme);
   const toolbarStyle = {
     "--note-format-toolbar-button-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
-    "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT
+    "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
+    "--note-format-toolbar-background": props.surfaceColor
+      ? `color-mix(in srgb, ${props.surfaceColor} 42%, rgba(255, 255, 255, 0.96))`
+      : undefined
   } as CSSProperties;
 
   return (
     <div
-      className={styles.toolbar}
+      className={`${styles.toolbar} ${props.className ?? ""}`}
       role="toolbar"
       aria-label={t("electron.menu.format")}
       data-note-format-toolbar="true"
