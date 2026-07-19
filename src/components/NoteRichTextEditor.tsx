@@ -12,6 +12,7 @@ import { Editor, JSONContent } from "@tiptap/core";
 import { CSSProperties, MouseEvent, useEffect, useMemo } from "react";
 import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
@@ -30,7 +31,15 @@ type NoteRichTextEditorProps = {
   placeholder: string;
   content: string;
   richContent?: TiptapDocument;
+  formatActionRequest?: RichTextFormatActionRequest | null;
   onChange?: (change: NoteRichTextEditorChange) => void;
+  onFormatStateChange?: (state: RichTextFormatState) => void;
+  onFormatActionRequestHandled?: (requestId: number) => void;
+};
+
+export type RichTextFormatActionRequest = {
+  id: number;
+  command: RichTextFormatCommand;
 };
 
 function getPlainTextDocument(content: string): TiptapDocument {
@@ -85,6 +94,31 @@ function clearFocusedFormatState(editorId: string) {
   window.api.menu.setRichTextFormatState(getInactiveFormatState());
 }
 
+function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatCommand) {
+  const commandChain = editor.chain().focus();
+
+  switch (command) {
+    case RichTextFormatCommand.BOLD:
+      commandChain.toggleBold().run();
+      break;
+    case RichTextFormatCommand.ITALIC:
+      commandChain.toggleItalic().run();
+      break;
+    case RichTextFormatCommand.UNDERLINE:
+      commandChain.toggleUnderline().run();
+      break;
+    case RichTextFormatCommand.STRIKETHROUGH:
+      commandChain.toggleStrike().run();
+      break;
+  }
+}
+
+function publishFormatState(editor: Editor, onFormatStateChange?: (state: RichTextFormatState) => void) {
+  const formatState = getFormatState(editor);
+  window.api.menu.setRichTextFormatState(formatState);
+  onFormatStateChange?.(formatState);
+}
+
 function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   const editorId = useMemo(() => crypto.randomUUID(), []);
   const appColors = getAppColors(props.theme ?? SystemTheme.LIGHT);
@@ -121,20 +155,20 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     },
     onFocus: ({ editor }) => {
       focusedEditorId = editorId;
-      window.api.menu.setRichTextFormatState(getFormatState(editor));
+      publishFormatState(editor, props.onFormatStateChange);
     },
     onSelectionUpdate: ({ editor }) => {
       if (focusedEditorId !== editorId) {
         return;
       }
 
-      window.api.menu.setRichTextFormatState(getFormatState(editor));
+      publishFormatState(editor, props.onFormatStateChange);
     },
     onUpdate: ({ editor }) => {
       const richContent = editor.getJSON();
 
       if (focusedEditorId === editorId) {
-        window.api.menu.setRichTextFormatState(getFormatState(editor));
+        publishFormatState(editor, props.onFormatStateChange);
       }
 
       props.onChange?.({
@@ -158,11 +192,18 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     }
 
     function handleDocumentFocusOrMouseDown(event: FocusEvent | globalThis.MouseEvent) {
-      if (event.target instanceof Element && event.target.closest(".ProseMirror")) {
+      if (
+        event.target instanceof Element
+        && (
+          event.target.closest(".ProseMirror")
+          || event.target.closest("[data-note-format-toolbar]")
+        )
+      ) {
         return;
       }
 
       clearFocusedFormatState(editorId);
+      props.onFormatStateChange?.(getInactiveFormatState());
     }
 
     document.addEventListener("focusin", handleDocumentFocusOrMouseDown, true);
@@ -194,32 +235,28 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         return;
       }
 
-      const commandChain = editor.chain().focus();
-
-      switch (command) {
-        case RichTextFormatCommand.BOLD:
-          commandChain.toggleBold().run();
-          break;
-        case RichTextFormatCommand.ITALIC:
-          commandChain.toggleItalic().run();
-          break;
-        case RichTextFormatCommand.UNDERLINE:
-          commandChain.toggleUnderline().run();
-          break;
-        case RichTextFormatCommand.STRIKETHROUGH:
-          commandChain.toggleStrike().run();
-          break;
-      }
-
-      window.api.menu.setRichTextFormatState(getFormatState(editor));
+      applyRichTextFormatCommand(editor, command);
+      publishFormatState(editor, props.onFormatStateChange);
     });
-  }, [editor, editorId]);
+  }, [editor, editorId, props.onFormatStateChange]);
+
+  useEffect(() => {
+    if (!editor || !props.formatActionRequest) {
+      return;
+    }
+
+    focusedEditorId = editorId;
+    applyRichTextFormatCommand(editor, props.formatActionRequest.command);
+    publishFormatState(editor, props.onFormatStateChange);
+    props.onFormatActionRequestHandled?.(props.formatActionRequest.id);
+  }, [editor, editorId, props.formatActionRequest, props.onFormatActionRequestHandled, props.onFormatStateChange]);
 
   useEffect(() => {
     return () => {
       clearFocusedFormatState(editorId);
+      props.onFormatStateChange?.(getInactiveFormatState());
     };
-  }, [editorId]);
+  }, [editorId, props.onFormatStateChange]);
 
   function handleWrapperMouseDown(event: MouseEvent<HTMLDivElement>) {
     if (!editor || (event.target instanceof Element && event.target.closest(".ProseMirror"))) {

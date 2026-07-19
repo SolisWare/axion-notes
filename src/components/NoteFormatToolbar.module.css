@@ -29,6 +29,19 @@
   ) !important;
 }
 
+.toolbarButtonActive {
+  color: var(--note-format-toolbar-button-hover-text) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 76%,
+    transparent
+  ) !important;
+}
+
+.toolbarButton:disabled {
+  color: rgba(35, 43, 55, 0.28) !important;
+}
+
 .toolbarButton:active {
   color: var(--note-format-toolbar-button-hover-text) !important;
   background-color: color-mix(

@@ -14,6 +14,8 @@ import NoteRichTextEditor from "./NoteRichTextEditor";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
+import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatState } from "../models/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -52,6 +54,11 @@ type NoteProps = {
 type NoteDateLabelProps = {
   className: string;
   text: string;
+};
+
+type FormatActionRequest = {
+  id: number;
+  command: RichTextFormatCommand;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -194,6 +201,14 @@ function Note(props: NoteProps) {
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
   const [isNoteHovered, setIsNoteHovered] = useState(false);
+  const [formatState, setFormatState] = useState<RichTextFormatState>({
+    canFormat: false,
+    isBoldActive: false,
+    isItalicActive: false,
+    isUnderlineActive: false,
+    isStrikethroughActive: false
+  });
+  const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);
 
   const isDeleting = useRef(false);
   const latestNote = useRef<NoteType>(props.note);
@@ -316,6 +331,13 @@ function Note(props: NoteProps) {
     event.preventDefault();
     event.stopPropagation();
     props.handleToggleNotePin?.(latestNote.current);
+  };
+
+  const handleFormatAction = (command: RichTextFormatCommand) => {
+    setFormatActionRequest({
+      id: Date.now(),
+      command
+    });
   };
 
   const handleContextMenuDeleteNote = () => {
@@ -463,7 +485,11 @@ function Note(props: NoteProps) {
               </div>
             )}
             {props.showFormatToolbar && (
-              <NoteFormatToolbar theme={props.theme} />
+              <NoteFormatToolbar
+                theme={props.theme}
+                formatState={formatState}
+                onFormatAction={handleFormatAction}
+              />
             )}
             <div className={classes.noteContent}>
               <NoteRichTextEditor
@@ -472,7 +498,14 @@ function Note(props: NoteProps) {
                 placeholder={t("mainWindow.note.contentPlaceholder")}
                 content={note.content}
                 richContent={note.richContent}
+                formatActionRequest={formatActionRequest}
                 onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
+                onFormatStateChange={setFormatState}
+                onFormatActionRequestHandled={(requestId) => {
+                  setFormatActionRequest((currentRequest) => (
+                    currentRequest?.id === requestId ? null : currentRequest
+                  ));
+                }}
               />
             </div>
           </div>

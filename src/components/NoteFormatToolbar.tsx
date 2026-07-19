@@ -11,12 +11,16 @@ import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded
 import { IconButton } from "@mui/material";
 import { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
+import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteFormatToolbar.module.css";
 
 type NoteFormatToolbarProps = {
   theme: SystemTheme;
+  formatState: RichTextFormatState;
+  onFormatAction: (command: RichTextFormatCommand) => void;
 };
 
 function NoteFormatToolbar(props: NoteFormatToolbarProps) {
@@ -28,11 +32,20 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   } as CSSProperties;
 
   return (
-    <div className={styles.toolbar} role="toolbar" aria-label={t("electron.menu.format")} style={toolbarStyle}>
+    <div
+      className={styles.toolbar}
+      role="toolbar"
+      aria-label={t("electron.menu.format")}
+      data-note-format-toolbar="true"
+      onMouseDown={(event) => event.preventDefault()}
+      style={toolbarStyle}
+    >
       <IconButton
         aria-label={t("electron.menu.bold")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isBoldActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.BOLD)}
         size="small"
         title={t("electron.menu.bold")}
         type="button"
@@ -41,8 +54,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       </IconButton>
       <IconButton
         aria-label={t("electron.menu.italic")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isItalicActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.ITALIC)}
         size="small"
         title={t("electron.menu.italic")}
         type="button"
@@ -51,8 +66,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       </IconButton>
       <IconButton
         aria-label={t("electron.menu.underline")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isUnderlineActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.UNDERLINE)}
         size="small"
         title={t("electron.menu.underline")}
         type="button"
@@ -61,8 +78,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       </IconButton>
       <IconButton
         aria-label={t("electron.menu.strikethrough")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isStrikethroughActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.STRIKETHROUGH)}
         size="small"
         title={t("electron.menu.strikethrough")}
         type="button"
