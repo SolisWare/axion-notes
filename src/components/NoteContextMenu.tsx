@@ -7,6 +7,8 @@
 import { Divider } from "@mui/material";
 import { CSSProperties, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getAppColors } from "../theme/AppColors";
 import { NoteColorKey, NoteColors } from "../theme/NoteColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -29,6 +31,8 @@ type NoteContextMenuProps = {
   onOpenNoteWindow?: () => void;
   onTogglePin?: () => void;
   onToggleFold?: () => void;
+  onFormatAction?: (command: RichTextFormatCommand) => void;
+  formatState?: RichTextFormatState;
   onMoveNoteToBottom: () => void;
   onMoveNoteToTop: () => void;
   onNoteColorChange: (colorKey: NoteColorKey) => void;
@@ -46,8 +50,10 @@ function NoteContextMenu(props: NoteContextMenuProps) {
 
   const [hoveredNoteColor, setHoveredNoteColor] = useState<NoteColorKey | null>(null);
   const [menuPosition, setMenuPosition] = useState(props.position);
+  const [shouldOpenSubmenuLeft, setShouldOpenSubmenuLeft] = useState(false);
 
   const noteColorKeys = Object.values(NoteColorKey);
+  const isFormattingEnabled = props.formatState?.canFormat === true && props.onFormatAction !== undefined;
   const noteContextColorLabel = hoveredNoteColor === null
     ? t("mainWindow.note.contextMenu.noteColor")
     : t(`settingsWindow.appearance.noteColors.${hoveredNoteColor}`);
@@ -58,6 +64,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
     left: menuPosition.mouseX,
     "--note-context-menu-item-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-context-menu-item-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
+    "--note-context-menu-background": appColors.DIALOG_BACKGROUND,
+    "--note-context-menu-text": appColors.DIALOG_TEXT,
     "--note-context-menu-label-text": appColors.DIALOG_TEXT
   } as CSSProperties;
 
@@ -79,6 +87,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         ? Math.max(MENU_VIEWPORT_MARGIN, props.position.mouseY - menuRect.height)
         : Math.min(props.position.mouseY, window.innerHeight - menuRect.height - MENU_VIEWPORT_MARGIN);
 
+      setShouldOpenSubmenuLeft(left + (menuRect.width * 2) + MENU_VIEWPORT_MARGIN > window.innerWidth);
       setMenuPosition((currentPosition) => (
         currentPosition.mouseX === left && currentPosition.mouseY === top
           ? currentPosition
@@ -97,9 +106,11 @@ function NoteContextMenu(props: NoteContextMenuProps) {
   return (
     <div
       className={styles.noteContextMenu}
+      data-note-context-menu="true"
       ref={menuRef}
       style={menuStyle}
       onContextMenu={(event) => event.preventDefault()}
+      onMouseDown={(event) => event.preventDefault()}
       onPointerDown={(event) => event.stopPropagation()}
     >
       {props.onTogglePin && (
@@ -169,6 +180,45 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <Divider className={styles.noteContextMenuDivider} />
         </>
       )}
+      <div
+        className={`${styles.noteContextMenuItem} ${!isFormattingEnabled ? styles.noteContextMenuItemDisabled : ""}`}
+      >
+        <span className={styles.noteContextMenuItemText}>
+          {t("electron.menu.format")}
+        </span>
+        <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
+        {isFormattingEnabled && (
+          <div
+            className={styles.noteContextMenuSubmenu}
+            data-open-left={shouldOpenSubmenuLeft}
+          >
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isBoldActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.BOLD)}
+            >
+              {t("electron.menu.bold")}
+            </div>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isItalicActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.ITALIC)}
+            >
+              {t("electron.menu.italic")}
+            </div>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isUnderlineActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.UNDERLINE)}
+            >
+              {t("electron.menu.underline")}
+            </div>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isStrikethroughActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.STRIKETHROUGH)}
+            >
+              {t("electron.menu.strikethrough")}
+            </div>
+          </div>
+        )}
+      </div>
       <div
         className={styles.noteContextMenuItem}
         onClick={props.onDuplicateNote}

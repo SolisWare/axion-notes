@@ -10,9 +10,12 @@
 }
 
 .noteContextMenuItem {
+  position: relative;
   min-height: 28px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 18px;
   padding: 4px 14px;
   font-size: 13px;
   line-height: 18px;
@@ -22,6 +25,49 @@
 .noteContextMenuItem:hover {
   background-color: var(--note-context-menu-item-hover-background);
   color: var(--note-context-menu-item-hover-text);
+}
+
+.noteContextMenuItemActive {
+  color: var(--note-context-menu-item-hover-text);
+  font-weight: 600;
+}
+
+.noteContextMenuItemDisabled {
+  color: var(--note-context-menu-label-text);
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+.noteContextMenuItemText {
+  min-width: 0;
+}
+
+.noteContextMenuSubmenuArrow {
+  margin-left: auto;
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.noteContextMenuSubmenu {
+  min-width: 160px;
+  display: none;
+  position: absolute;
+  top: -7px;
+  left: 100%;
+  padding: 7px 0;
+  border-radius: 7px;
+  background: var(--note-context-menu-background);
+  color: var(--note-context-menu-text);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.noteContextMenuSubmenu[data-open-left="true"] {
+  right: 100%;
+  left: auto;
+}
+
+.noteContextMenuItem:hover > .noteContextMenuSubmenu {
+  display: block;
 }
 
 .noteContextMenuDivider {

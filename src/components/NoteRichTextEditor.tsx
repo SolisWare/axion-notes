@@ -197,6 +197,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         && (
           event.target.closest(".ProseMirror")
           || event.target.closest("[data-note-format-toolbar]")
+          || event.target.closest("[data-note-context-menu]")
         )
       ) {
         return;

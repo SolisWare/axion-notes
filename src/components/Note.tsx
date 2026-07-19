@@ -340,6 +340,11 @@ function Note(props: NoteProps) {
     });
   };
 
+  const handleContextMenuFormatAction = (command: RichTextFormatCommand) => {
+    handleFormatAction(command);
+    handleCloseNoteContextMenu();
+  };
+
   const handleContextMenuDeleteNote = () => {
     handleCloseNoteContextMenu();
     isDeleting.current = true;
@@ -532,6 +537,8 @@ function Note(props: NoteProps) {
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}
           onToggleFold={handleContextMenuToggleFold}
+          onFormatAction={handleContextMenuFormatAction}
+          formatState={formatState}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}
