@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { BrowserWindow } from "electron";
+import { BrowserWindow, IpcMainEvent, ipcMain } from "electron";
 import * as path from "path";
 import { isDev } from "../utils/isDev";
 import { dev, production } from "./routes";
@@ -12,10 +12,12 @@ import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose } from "./mainWindowState";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
+import { channels } from "../ipc/channels";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
   initialNoteLayout: NoteLayoutPreference;
+  splashWindow?: BrowserWindow;
 };
 
 export function createMainWindow(options: MainWindowOptions): BrowserWindow {
@@ -43,12 +45,51 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
     mainWindow.maximize();
   }
 
-  mainWindow.once("ready-to-show", () => {
+  let hasShownMainWindow = false;
+  let fallbackShowTimeout: NodeJS.Timeout | undefined;
+  const showMainWindow = () => {
+    if (hasShownMainWindow || mainWindow.isDestroyed()) {
+      return;
+    }
+
+    hasShownMainWindow = true;
+    if (fallbackShowTimeout) {
+      clearTimeout(fallbackShowTimeout);
+    }
+
     mainWindow.show();
+
+    if (options.splashWindow && !options.splashWindow.isDestroyed()) {
+      options.splashWindow.close();
+    }
+  };
+  const handleMainWindowReadyToShow = (event: IpcMainEvent) => {
+    if (event.sender === mainWindow.webContents) {
+      showMainWindow();
+    }
+  };
+
+  ipcMain.on(channels.appWindow.readyToShow, handleMainWindowReadyToShow);
+
+  mainWindow.once("ready-to-show", () => {
+    if (!options.splashWindow) {
+      showMainWindow();
+      return;
+    }
+
+    fallbackShowTimeout = setTimeout(showMainWindow, 10000);
   });
 
   mainWindow.on("close", () => {
     saveMainWindowStateOnClose(mainWindow, options.mainWindowStateFilePath);
+  });
+
+  mainWindow.on("closed", () => {
+    if (fallbackShowTimeout) {
+      clearTimeout(fallbackShowTimeout);
+    }
+
+    ipcMain.removeListener(channels.appWindow.readyToShow, handleMainWindowReadyToShow);
   });
 
   if (isDev) {

@@ -94,6 +94,12 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (UserAgent.isElectron && hasLoadedAppSettings) {
+      window.api.appWindow.readyToShow();
+    }
+  }, [hasLoadedAppSettings]);
+
+  useEffect(() => {
     const channel = new BroadcastChannel("solisware.axion-notes.app-settings");
     settingsBroadcastChannel.current = channel;
     channel.onmessage = (event: MessageEvent<AppSettings>) => {

@@ -39,6 +39,7 @@ export function installBrowserApi(): void {
   window.api = {
     appWindow: {
       close: noop,
+      readyToShow: noop,
       setAlwaysOnTop: noop,
       setLayout: noop
     },

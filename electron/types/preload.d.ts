@@ -15,6 +15,7 @@ import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
 interface IElectronAPI {
   appWindow: {
     close: () => void;
+    readyToShow: () => void;
     setAlwaysOnTop: (enabled: boolean) => void;
     setLayout: (layout: NoteLayoutPreference) => void;
   },

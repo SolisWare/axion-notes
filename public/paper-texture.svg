@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg2461"
+   viewBox="0 0 900 900"
+   version="1.0"
+   width="900"
+   height="900"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title3848">Paper Texture</title>
+  <defs
+     id="defs2463">
+    <filter
+       id="filter3837"
+       height="1"
+       width="1"
+       y="0"
+       x="0">
+      <feTurbulence
+         id="feTurbulence3839"
+         numOctaves="4"
+         seed="0"
+         type="fractalNoise"
+         baseFrequency="0.050000000000000003" />
+      <feDiffuseLighting
+         id="feDiffuseLighting3843"
+         lighting-color="#f5f6ce"
+         surfaceScale="0.5"
+         kernelUnitLength="0.01"
+         diffuseConstant="1.10000002">
+        <feDistantLight
+           id="feDistantLight3845"
+           elevation="65"
+           azimuth="75" />
+      </feDiffuseLighting>
+    </filter>
+  </defs>
+  <g
+     id="layer1"
+     transform="matrix(3,0,0,3,-257.36101,-420.77998)">
+    <rect
+       id="rect3722"
+       style="color:#000000;fill-rule:evenodd;filter:url(#filter3837)"
+       height="300"
+       width="300"
+       y="140.25999"
+       x="85.787003" />
+  </g>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>Paper Texture</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

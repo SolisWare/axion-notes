@@ -12,6 +12,9 @@ export const appWindowApi = {
   close: () => {
     send(channels.appWindow.close);
   },
+  readyToShow: () => {
+    send(channels.appWindow.readyToShow);
+  },
   setAlwaysOnTop: (enabled: boolean) => {
     send(channels.appWindow.setAlwaysOnTop, enabled);
   },

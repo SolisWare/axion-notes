@@ -7,6 +7,7 @@
 export const channels = {
   appWindow: {
     close: "appWindow.close",
+    readyToShow: "appWindow.readyToShow",
     setAlwaysOnTop: "appWindow.setAlwaysOnTop",
     setLayout: "appWindow.setLayout"
   },

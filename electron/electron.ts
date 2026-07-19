@@ -13,6 +13,7 @@ import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver";
 import { createMainWindow } from "./windows/createMainWindow";
+import { createSplashWindow } from "./windows/createSplashWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
 import { getSettings, setSettings } from "./storage/appSettingsStorage";
@@ -70,6 +71,8 @@ app.on("ready", async () => {
     app.dock?.setIcon(getAppIconPath());
   }
 
+  const splashWindow = createSplashWindow();
+
   registerIpcHandlers({
     appDataDir,
     appSettingsFilePath,
@@ -82,7 +85,8 @@ app.on("ready", async () => {
   });
   createMainWindow({
     mainWindowStateFilePath,
-    initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID
+    initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID,
+    splashWindow
   });
 });
 
