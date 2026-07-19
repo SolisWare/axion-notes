@@ -1,0 +1,45 @@
+.toolbar {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  margin: 6px 0 8px;
+  padding: 2px;
+  border: 1px solid rgba(80, 93, 110, 0.18);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 1px 2px rgba(35, 43, 55, 0.08);
+}
+
+.toolbarButton {
+  width: 28px;
+  height: 26px;
+  border-radius: 4px !important;
+  color: rgba(35, 43, 55, 0.68) !important;
+  transition: background-color 100ms ease, color 100ms ease, transform 80ms ease, box-shadow 80ms ease;
+}
+
+.toolbarButton:hover {
+  color: var(--note-format-toolbar-button-hover-text) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 68%,
+    transparent
+  ) !important;
+}
+
+.toolbarButton:active {
+  color: var(--note-format-toolbar-button-hover-text) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 82%,
+    transparent
+  ) !important;
+  box-shadow: inset 0 0 0 1px color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-text) 24%,
+    transparent
+  );
+  transform: translateY(1px);
+}

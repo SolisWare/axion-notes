@@ -161,6 +161,7 @@ function NoteWindow(props: NoteWindowProps) {
               showMoveContextActions={false}
               showOpenNoteWindowContextAction={false}
               showTitleVisibilityContextAction={false}
+              showFormatToolbar
               reserveCloseButtonSpace={props.embedded}
               style={{
                 width: "100%",

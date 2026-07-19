@@ -9,6 +9,7 @@ import { Divider, Paper, Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "react-i18next";
 import { Formatter } from "../utils/dt-formatter/Formatter";
+import NoteFormatToolbar from "./NoteFormatToolbar";
 import NoteRichTextEditor from "./NoteRichTextEditor";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
@@ -43,6 +44,7 @@ type NoteProps = {
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
+  showFormatToolbar?: boolean;
   reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
 };
@@ -459,6 +461,9 @@ function Note(props: NoteProps) {
                   style={{ backgroundColor: appColors.NOTE_TITLE_UNDERLINE }}
                 />
               </div>
+            )}
+            {props.showFormatToolbar && (
+              <NoteFormatToolbar theme={props.theme} />
             )}
             <div className={classes.noteContent}>
               <NoteRichTextEditor
