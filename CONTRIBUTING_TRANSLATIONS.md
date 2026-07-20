@@ -2,18 +2,18 @@
 
 Thank you for helping make Axion Notes available to more people.
 
-Axion Notes uses English as the source locale and includes a full Polish translation and a partial Estonian translation. Partial translations are welcome, and missing strings fall back to English while translation coverage improves.
+Axion Notes uses English as the source locale and includes Estonian, Polish, and Spanish translations. Partial translations are welcome, and missing strings fall back to English while translation coverage improves.
 
 ## How To Add A Translation
 1. Create a branch in your fork, for example `translation/spanish`.
 2. Copy `src/i18n/locales/en/en.json` to `src/i18n/locales/<lang-code>/<lang-code>.json`.
 3. Translate the values only. Keep JSON keys, nesting, punctuation placeholders, and any `{{variables}}` unchanged.
-4. Add the language to `src/i18n/languages.ts`, for example:
+4. Add the language to `src/i18n/supported-languages.json`, for example:
 
-   ```ts
+   ```json
    {
-     code: "es",
-     label: "Spanish"
+     "code": "es",
+     "label": "Spanish"
    }
    ```
 

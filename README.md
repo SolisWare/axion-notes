@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
-Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, color-code, sort, and save digital sticky notes locally on your device.
+Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, format, organize, and save digital sticky notes locally on your device.
 
 ### Early release notice
 > SolisWare Axion Notes is currently pre-1.0 software. Features, storage formats, settings, and app behavior may change between releases, and backward compatibility is not guaranteed until a stable 1.0 release.
@@ -19,20 +19,39 @@ Axion Notes is a simple, flexible workspace for capturing ideas before they slip
 The app is designed for quick personal notes, reminders, lightweight planning, and visual organization. Notes and settings are stored locally, so Axion Notes works well for users who want a fast private notes board without needing an online account.
 
 Key features:
-- Color-coded notes for visual organization
-- Auto dark mode with light, dark, and system themes
-- Smart sorting by creation date, last modified, or title
-- Browser web app with local note storage
-- Always-on-top mode for keeping desktop notes visible
-- Auto-save so notes persist across restarts
-- Native desktop builds for macOS and Windows
-- React and Electron codebase for desktop and web releases
+- Color-coded notes
+- Grid and list layouts
+- Foldable and pinned notes
+- Drag-and-drop reordering
+- Rich-text formatting
+- Separate note windows
+- Smart sorting
+- Light, dark, and system themes
+- Local storage and auto-save
+- Desktop and web apps
 
 ### Desktop App
 ![Axion Notes desktop app showing sample sticky notes](docs/images/sample-notes.png)
 
 ### Web App
 ![Axion Notes web app showing sample sticky notes](docs/images/sample-notes-webapp.png)
+
+## Features
+
+### Organize Notes
+Use note colors, sorting, pinning, duplication, and drag-and-drop reordering to shape your notes board around the way you think. The desktop app also includes a list layout for browsing notes as a compact vertical stack.
+
+### Edit Notes
+Notes auto-save as you type and support basic rich-text formatting, including bold, italic, underline, strikethrough, bullet lists, dashed lists, and numbered lists. Formatting is available through menus, keyboard shortcuts, and note formatting toolbars.
+
+### Focus On A Note
+Desktop users can open a note in its own dedicated window. Browser users can open a focused full-note dialog instead, keeping the web app workflow close to the desktop experience.
+
+### Customize The Workspace
+Axion Notes includes settings for theme, note size, note font, default note color, title visibility, footer visibility, sorting, and layout. The desktop app also supports always-on-top mode.
+
+### Language Support
+Axion Notes can choose a supported language from the OS or browser on first launch, then keeps the selected language in settings until you change it. English is the source locale, with Estonian, Polish, and Spanish translations currently available.
 
 ## Getting Started
 
@@ -82,7 +101,7 @@ All pull requests must be reviewed and approved by the **SolisWare team** before
 
 ### Technology
 
-Axion Notes is built with React, TypeScript, Electron, and Material UI. The desktop client and web app share the same note-taking interface while using storage, menus, settings, and app window features that fit each platform.
+Axion Notes is built with React, TypeScript, Electron, Material UI, and Tiptap. The desktop client and web app share the same note-taking interface while using storage, menus, settings, and app window features that fit each platform.
 
 ### Prerequisites
 > These are required for development only. The distributed app bundles its own runtime — end users do not need Node.js installed.
@@ -239,13 +258,24 @@ See more: [App Overview](#app-overview).
 ### Does Axion Notes work offline?
 Yes. Axion Notes stores notes locally on your device, so the desktop app and browser app can keep your notes without requiring an online account.
 
+### Where are my notes stored?
+Axion Notes stores notes locally on the device or browser where you create them. The app does not require an account or remote service to save your notes.
+
+### Can I sync notes between devices?
+Not currently. Desktop and web notes are stored locally for now, so notes do not automatically sync between devices or browsers.
+
 ### Which platforms does Axion Notes support?
 Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
 
 See more: [Supported Platforms](#supported-platforms).
 
+### Why does macOS or Windows warn me before opening Axion Notes?
+Axion Notes is not yet signed with an Apple Developer certificate or widely recognized by Microsoft Defender SmartScreen. The app itself is fine, but your operating system may show a warning before opening a new unsigned app.
+
+See more: [Download & Install](#download--install).
+
 ### Is Axion Notes available in other languages?
-Axion Notes is being built with internationalization support so the app can grow beyond English over time. English is the source locale, with a full Polish and a partial Estonian translation currently available. Additional languages can be added through community translation contributions. If you want Axion Notes in your language, we would love your help translating the app and improving its language support.
+Axion Notes is being built with language support so the app can grow beyond English over time. English is the source locale, with Estonian, Polish, and Spanish translations currently available. Additional languages can be added through community translation contributions. If you want Axion Notes in your language, we would love your help translating the app and improving its language support.
 
 See more: [Translation Contribution Guide](CONTRIBUTING_TRANSLATIONS.md).
 
