@@ -6,6 +6,8 @@
  */
 import FormatBoldRoundedIcon from "@mui/icons-material/FormatBoldRounded";
 import FormatItalicRoundedIcon from "@mui/icons-material/FormatItalicRounded";
+import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
+import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
 import FormatUnderlinedRoundedIcon from "@mui/icons-material/FormatUnderlinedRounded";
 import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded";
 import { IconButton } from "@mui/material";
@@ -92,6 +94,29 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         type="button"
       >
         <StrikethroughSRoundedIcon fontSize="small" />
+      </IconButton>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <IconButton
+        aria-label={t("mainWindow.note.formatToolbar.bulletList")}
+        className={styles.toolbarButton}
+        disableRipple
+        disabled={!props.formatState.canFormat}
+        size="small"
+        title={t("mainWindow.note.formatToolbar.bulletList")}
+        type="button"
+      >
+        <FormatListBulletedRoundedIcon fontSize="small" />
+      </IconButton>
+      <IconButton
+        aria-label={t("mainWindow.note.formatToolbar.numberedList")}
+        className={styles.toolbarButton}
+        disableRipple
+        disabled={!props.formatState.canFormat}
+        size="small"
+        title={t("mainWindow.note.formatToolbar.numberedList")}
+        type="button"
+      >
+        <FormatListNumberedRoundedIcon fontSize="small" />
       </IconButton>
     </div>
   );

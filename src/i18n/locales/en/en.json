@@ -32,6 +32,10 @@
       "lastModified": "Last modified:",
       "lastModifiedCompact": "Modified:",
       "at": "at",
+      "formatToolbar": {
+        "bulletList": "Bullet list",
+        "numberedList": "Numbered list"
+      },
       "contextMenu": {
         "openInNewWindow": "Open in new window",
         "pin": "Pin note",
@@ -202,6 +206,8 @@
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "bulletList": "Bullet List",
+      "numberedList": "Numbered List",
       "deleteAllNotes": "Delete All Notes...",
       "view": "View",
       "reload": "Reload",

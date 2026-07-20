@@ -48,6 +48,13 @@
   color: rgba(35, 43, 55, 0.28) !important;
 }
 
+.toolbarDivider {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: rgba(80, 93, 110, 0.24);
+}
+
 .toolbarButton:active {
   color: var(--note-format-toolbar-button-hover-text) !important;
   background-color: color-mix(

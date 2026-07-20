@@ -85,54 +85,6 @@ export function createMenubar(): Menu {
         ] : []),
         { type: 'separator' },
         {
-          id: menuIds.edit.format,
-          label: translate("electron.menu.format"),
-          enabled: false,
-          submenu: [
-            {
-              id: menuIds.edit.formatBold,
-              label: translate("electron.menu.bold"),
-              accelerator: 'CmdOrCtrl+B',
-              type: 'checkbox',
-              enabled: false,
-              click: () => {
-                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.BOLD);
-              }
-            },
-            {
-              id: menuIds.edit.formatItalic,
-              label: translate("electron.menu.italic"),
-              accelerator: 'CmdOrCtrl+I',
-              type: 'checkbox',
-              enabled: false,
-              click: () => {
-                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.ITALIC);
-              }
-            },
-            {
-              id: menuIds.edit.formatUnderline,
-              label: translate("electron.menu.underline"),
-              accelerator: 'CmdOrCtrl+U',
-              type: 'checkbox',
-              enabled: false,
-              click: () => {
-                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.UNDERLINE);
-              }
-            },
-            {
-              id: menuIds.edit.formatStrikethrough,
-              label: translate("electron.menu.strikethrough"),
-              accelerator: 'Shift+CmdOrCtrl+X',
-              type: 'checkbox',
-              enabled: false,
-              click: () => {
-                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.STRIKETHROUGH);
-              }
-            }
-          ]
-        },
-        { type: 'separator' },
-        {
           id: menuIds.edit.deleteAllNotes,
           label: translate("electron.menu.deleteAllNotes"),
           accelerator: 'Shift+CmdOrCtrl+Backspace',
@@ -140,6 +92,66 @@ export function createMenubar(): Menu {
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.deleteAllNotes);
           }
+        }
+      ]
+    },
+    {
+      id: menuIds.format.root,
+      label: translate("electron.menu.format"),
+      enabled: false,
+      submenu: [
+        {
+          id: menuIds.format.bold,
+          label: translate("electron.menu.bold"),
+          accelerator: 'CmdOrCtrl+B',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.BOLD);
+          }
+        },
+        {
+          id: menuIds.format.italic,
+          label: translate("electron.menu.italic"),
+          accelerator: 'CmdOrCtrl+I',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.ITALIC);
+          }
+        },
+        {
+          id: menuIds.format.underline,
+          label: translate("electron.menu.underline"),
+          accelerator: 'CmdOrCtrl+U',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.UNDERLINE);
+          }
+        },
+        {
+          id: menuIds.format.strikethrough,
+          label: translate("electron.menu.strikethrough"),
+          accelerator: 'Shift+CmdOrCtrl+X',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.STRIKETHROUGH);
+          }
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.format.bulletList,
+          label: translate("electron.menu.bulletList"),
+          accelerator: 'Shift+CmdOrCtrl+8',
+          enabled: false
+        },
+        {
+          id: menuIds.format.numberedList,
+          label: translate("electron.menu.numberedList"),
+          accelerator: 'Shift+CmdOrCtrl+7',
+          enabled: false
         }
       ]
     },

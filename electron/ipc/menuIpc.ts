@@ -32,11 +32,13 @@ function updateNoteMenuItems(): void {
   const copyMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.copy);
   const pasteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.paste);
   const deleteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.delete);
-  const formatMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.format);
-  const formatBoldMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatBold);
-  const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatItalic);
-  const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatUnderline);
-  const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.formatStrikethrough);
+  const formatMenuItem = applicationMenu?.getMenuItemById(menuIds.format.root);
+  const formatBoldMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bold);
+  const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.format.italic);
+  const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.format.underline);
+  const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.format.strikethrough);
+  const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
+  const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
@@ -89,6 +91,14 @@ function updateNoteMenuItems(): void {
   if (formatStrikethroughMenuItem) {
     formatStrikethroughMenuItem.enabled = isRichTextFormattingEnabled;
     formatStrikethroughMenuItem.checked = richTextFormatState.isStrikethroughActive;
+  }
+
+  if (formatBulletListMenuItem) {
+    formatBulletListMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  if (formatNumberedListMenuItem) {
+    formatNumberedListMenuItem.enabled = isRichTextFormattingEnabled;
   }
 
   if (deleteAllNotesMenuItem) {
