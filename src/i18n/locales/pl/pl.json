@@ -17,7 +17,7 @@
         "next": "Następny"
       }
     },
-    "toolbar": { 
+    "toolbar": {
       "newNote": "Nowa notatka",
       "deleteAll": "Usuń wszyskie",
       "settings": "Ustawienia"
@@ -172,7 +172,8 @@
       "welcome": "Ekran powitalny",
       "viewLicense": "Przeczytaj licencję",
       "visitWebsite": "Odwiedź witrynę SolisWare",
-      "checkoutGitHub": "Sprawdź GitHub"
+      "checkoutGitHub": "Sprawdź GitHub",
+      "about": "O {{appName}}"
     },
     "windows": {
       "settings": "Ustawienia",
