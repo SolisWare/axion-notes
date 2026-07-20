@@ -216,6 +216,19 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             >
               {t("electron.menu.strikethrough")}
             </div>
+            <Divider className={styles.noteContextMenuDivider} />
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isBulletListActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.BULLET_LIST)}
+            >
+              {t("electron.menu.bulletList")}
+            </div>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isNumberedListActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.NUMBERED_LIST)}
+            >
+              {t("electron.menu.numberedList")}
+            </div>
           </div>
         )}
       </div>

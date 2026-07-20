@@ -62,6 +62,10 @@ function hasRichFormatting(content: JSONContent): boolean {
     return true;
   }
 
+  if (content.type && !["doc", "paragraph", "text"].includes(content.type)) {
+    return true;
+  }
+
   return content.content?.some(hasRichFormatting) ?? false;
 }
 
@@ -71,7 +75,9 @@ function getInactiveFormatState() {
     isBoldActive: false,
     isItalicActive: false,
     isUnderlineActive: false,
-    isStrikethroughActive: false
+    isStrikethroughActive: false,
+    isBulletListActive: false,
+    isNumberedListActive: false
   };
 }
 
@@ -81,7 +87,9 @@ function getFormatState(editor: Editor) {
     isBoldActive: editor.isActive("bold"),
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
-    isStrikethroughActive: editor.isActive("strike")
+    isStrikethroughActive: editor.isActive("strike"),
+    isBulletListActive: editor.isActive("bulletList"),
+    isNumberedListActive: editor.isActive("orderedList")
   };
 }
 
@@ -109,6 +117,12 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
       break;
     case RichTextFormatCommand.STRIKETHROUGH:
       commandChain.toggleStrike().run();
+      break;
+    case RichTextFormatCommand.BULLET_LIST:
+      commandChain.toggleBulletList().run();
+      break;
+    case RichTextFormatCommand.NUMBERED_LIST:
+      commandChain.toggleOrderedList().run();
       break;
   }
 }
@@ -141,13 +155,10 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     extensions: [
       StarterKit.configure({
         blockquote: false,
-        bulletList: false,
         code: false,
         codeBlock: false,
         heading: false,
-        horizontalRule: false,
-        listItem: false,
-        orderedList: false
+        horizontalRule: false
       }),
       Underline,
       Placeholder.configure({

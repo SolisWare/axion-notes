@@ -209,7 +209,9 @@ function Note(props: NoteProps) {
     isBoldActive: false,
     isItalicActive: false,
     isUnderlineActive: false,
-    isStrikethroughActive: false
+    isStrikethroughActive: false,
+    isBulletListActive: false,
+    isNumberedListActive: false
   });
   const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);
 

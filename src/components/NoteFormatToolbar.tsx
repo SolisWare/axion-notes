@@ -98,9 +98,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       <span className={styles.toolbarDivider} aria-hidden="true" />
       <IconButton
         aria-label={t("mainWindow.note.formatToolbar.bulletList")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
         disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.BULLET_LIST)}
         size="small"
         title={t("mainWindow.note.formatToolbar.bulletList")}
         type="button"
@@ -109,9 +110,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       </IconButton>
       <IconButton
         aria-label={t("mainWindow.note.formatToolbar.numberedList")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
         disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.NUMBERED_LIST)}
         size="small"
         title={t("mainWindow.note.formatToolbar.numberedList")}
         type="button"

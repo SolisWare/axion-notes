@@ -21,7 +21,9 @@ let richTextFormatState: RichTextFormatState = {
   isBoldActive: false,
   isItalicActive: false,
   isUnderlineActive: false,
-  isStrikethroughActive: false
+  isStrikethroughActive: false,
+  isBulletListActive: false,
+  isNumberedListActive: false
 };
 
 function updateNoteMenuItems(): void {
@@ -95,10 +97,12 @@ function updateNoteMenuItems(): void {
 
   if (formatBulletListMenuItem) {
     formatBulletListMenuItem.enabled = isRichTextFormattingEnabled;
+    formatBulletListMenuItem.checked = richTextFormatState.isBulletListActive;
   }
 
   if (formatNumberedListMenuItem) {
     formatNumberedListMenuItem.enabled = isRichTextFormattingEnabled;
+    formatNumberedListMenuItem.checked = richTextFormatState.isNumberedListActive;
   }
 
   if (deleteAllNotesMenuItem) {

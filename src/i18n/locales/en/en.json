@@ -156,6 +156,8 @@
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "bulletList": "Bullet list",
+      "numberedList": "Numbered list",
       "keys": {
         "command": "Command",
         "control": "Control",

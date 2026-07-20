@@ -145,13 +145,21 @@ export function createMenubar(): Menu {
           id: menuIds.format.bulletList,
           label: translate("electron.menu.bulletList"),
           accelerator: 'Shift+CmdOrCtrl+8',
-          enabled: false
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.BULLET_LIST);
+          }
         },
         {
           id: menuIds.format.numberedList,
           label: translate("electron.menu.numberedList"),
           accelerator: 'Shift+CmdOrCtrl+7',
-          enabled: false
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.NUMBERED_LIST);
+          }
         }
       ]
     },

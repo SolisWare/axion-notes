@@ -10,4 +10,6 @@ export type RichTextFormatState = {
   isItalicActive: boolean;
   isUnderlineActive: boolean;
   isStrikethroughActive: boolean;
+  isBulletListActive: boolean;
+  isNumberedListActive: boolean;
 };

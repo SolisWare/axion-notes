@@ -42,6 +42,26 @@
   margin: 0;
 }
 
+.wrapper :global(.ProseMirror ul) {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.wrapper :global(.ProseMirror ol) {
+  margin: 0;
+  padding-left: 30px;
+  list-style-position: outside;
+}
+
+.wrapper :global(.ProseMirror li) {
+  margin: 0;
+  padding-left: 0;
+}
+
+.wrapper :global(.ProseMirror li p) {
+  margin: 0;
+}
+
 .wrapper :global(.ProseMirror p.is-editor-empty:first-child::before) {
   content: attr(data-placeholder);
   float: left;
