@@ -26,6 +26,8 @@ export const menuIds = {
     italic: "formatItalic",
     underline: "formatUnderline",
     strikethrough: "formatStrikethrough",
+    superscript: "formatSuperscript",
+    subscript: "formatSubscript",
     bulletList: "formatBulletList",
     dashedList: "formatDashedList",
     numberedList: "formatNumberedList"

@@ -142,12 +142,22 @@ export function createMenubar(): Menu {
         },
         { type: 'separator' },
         {
+          id: menuIds.format.superscript,
           label: translate("electron.menu.superscript"),
-          enabled: false
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.SUPERSCRIPT);
+          }
         },
         {
+          id: menuIds.format.subscript,
           label: translate("electron.menu.subscript"),
-          enabled: false
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.SUBSCRIPT);
+          }
         },
         { type: 'separator' },
         {

@@ -138,9 +138,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       <span className={styles.toolbarDivider} aria-hidden="true" />
       <IconButton
         aria-label={t("mainWindow.note.formatToolbar.superscript")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isSuperscriptActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
-        disabled
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.SUPERSCRIPT)}
         size="small"
         title={t("mainWindow.note.formatToolbar.superscript")}
         type="button"
@@ -149,9 +150,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       </IconButton>
       <IconButton
         aria-label={t("mainWindow.note.formatToolbar.subscript")}
-        className={styles.toolbarButton}
+        className={`${styles.toolbarButton} ${props.formatState.isSubscriptActive ? styles.toolbarButtonActive : ""}`}
         disableRipple
-        disabled
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.SUBSCRIPT)}
         size="small"
         title={t("mainWindow.note.formatToolbar.subscript")}
         type="button"

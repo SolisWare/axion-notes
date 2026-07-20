@@ -22,6 +22,8 @@ let richTextFormatState: RichTextFormatState = {
   isItalicActive: false,
   isUnderlineActive: false,
   isStrikethroughActive: false,
+  isSuperscriptActive: false,
+  isSubscriptActive: false,
   isBulletListActive: false,
   isDashedListActive: false,
   isNumberedListActive: false
@@ -40,6 +42,8 @@ function updateNoteMenuItems(): void {
   const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.format.italic);
   const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.format.underline);
   const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.format.strikethrough);
+  const formatSuperscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.superscript);
+  const formatSubscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.subscript);
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
   const formatDashedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.dashedList);
   const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
@@ -95,6 +99,16 @@ function updateNoteMenuItems(): void {
   if (formatStrikethroughMenuItem) {
     formatStrikethroughMenuItem.enabled = isRichTextFormattingEnabled;
     formatStrikethroughMenuItem.checked = richTextFormatState.isStrikethroughActive;
+  }
+
+  if (formatSuperscriptMenuItem) {
+    formatSuperscriptMenuItem.enabled = isRichTextFormattingEnabled;
+    formatSuperscriptMenuItem.checked = richTextFormatState.isSuperscriptActive;
+  }
+
+  if (formatSubscriptMenuItem) {
+    formatSubscriptMenuItem.enabled = isRichTextFormattingEnabled;
+    formatSubscriptMenuItem.checked = richTextFormatState.isSubscriptActive;
   }
 
   if (formatBulletListMenuItem) {

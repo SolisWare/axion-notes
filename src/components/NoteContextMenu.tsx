@@ -217,10 +217,16 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               {t("electron.menu.strikethrough")}
             </div>
             <Divider className={styles.noteContextMenuDivider} />
-            <div className={`${styles.noteContextMenuItem} ${styles.noteContextMenuItemDisabled}`}>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isSuperscriptActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUPERSCRIPT)}
+            >
               {t("electron.menu.superscript")}
             </div>
-            <div className={`${styles.noteContextMenuItem} ${styles.noteContextMenuItemDisabled}`}>
+            <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isSubscriptActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUBSCRIPT)}
+            >
               {t("electron.menu.subscript")}
             </div>
             <Divider className={styles.noteContextMenuDivider} />

@@ -211,6 +211,8 @@ function Note(props: NoteProps) {
     isItalicActive: false,
     isUnderlineActive: false,
     isStrikethroughActive: false,
+    isSuperscriptActive: false,
+    isSubscriptActive: false,
     isBulletListActive: false,
     isDashedListActive: false,
     isNumberedListActive: false

@@ -7,6 +7,8 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Editor, JSONContent } from "@tiptap/core";
@@ -101,6 +103,8 @@ function getInactiveFormatState() {
     isItalicActive: false,
     isUnderlineActive: false,
     isStrikethroughActive: false,
+    isSuperscriptActive: false,
+    isSubscriptActive: false,
     isBulletListActive: false,
     isDashedListActive: false,
     isNumberedListActive: false
@@ -121,6 +125,8 @@ function getFormatState(editor: Editor) {
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
     isStrikethroughActive: editor.isActive("strike"),
+    isSuperscriptActive: editor.isActive("superscript"),
+    isSubscriptActive: editor.isActive("subscript"),
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
     isNumberedListActive: editor.isActive("orderedList")
@@ -151,6 +157,12 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
       break;
     case RichTextFormatCommand.STRIKETHROUGH:
       commandChain.toggleStrike().run();
+      break;
+    case RichTextFormatCommand.SUPERSCRIPT:
+      editor.chain().focus().unsetSubscript().toggleSuperscript().run();
+      break;
+    case RichTextFormatCommand.SUBSCRIPT:
+      editor.chain().focus().unsetSuperscript().toggleSubscript().run();
       break;
     case RichTextFormatCommand.BULLET_LIST:
       toggleBulletList(editor, BULLET_LIST_MARKER_TYPE_BULLET);
@@ -222,6 +234,8 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         horizontalRule: false
       }),
       MarkerBulletList,
+      Superscript,
+      Subscript,
       Underline,
       Placeholder.configure({
         placeholder: props.placeholder
