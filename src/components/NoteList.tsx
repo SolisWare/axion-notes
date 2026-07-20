@@ -424,7 +424,12 @@ function NoteList(props: NoteListProps) {
                       handleToggleNotePin={props.handleToggleNotePin}
                       handleToggleNoteFold={handleExpandedNoteDragIndicatorRowClick}
                       handleNoteSave={handleExpandedNoteSave}
-                      style={{ marginBottom: 0 }}
+                      style={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        boxSizing: "border-box",
+                        marginBottom: 0
+                      }}
                     />
                     <button
                       aria-label={t("mainWindow.note.fold")}
