@@ -75,6 +75,7 @@ function MainWindow(props: MainWindowProps) {
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
+  const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
     
   const isDeleteAllButtonDisabled = notes.length === 0;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
@@ -112,6 +113,12 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     return window.api.storage.onNotesChange((event) => {
       applyNotesChange(event);
+    });
+  }, []);
+
+  useEffect(() => {
+    return window.api.noteWindow.onClosed((noteId) => {
+      openNoteWindowNoteIds.current.delete(noteId);
     });
   }, []);
 
@@ -277,6 +284,12 @@ function MainWindow(props: MainWindowProps) {
   }
 
   function handleOpenNoteWindow(noteId: string) {
+    if (openNoteWindowNoteIds.current.has(noteId)) {
+      return;
+    }
+
+    openNoteWindowNoteIds.current.add(noteId);
+
     if (UserAgent.isElectron) {
       window.api.noteWindow.open(noteId, {
         offsetFromCurrentWindow: true
@@ -285,6 +298,22 @@ function MainWindow(props: MainWindowProps) {
     }
 
     setWebNoteWindowNoteId(noteId);
+  }
+
+  function handleCloseWebNoteWindow() {
+    if (webNoteWindowNoteId) {
+      openNoteWindowNoteIds.current.delete(webNoteWindowNoteId);
+    }
+
+    setWebNoteWindowNoteId(null);
+  }
+
+  function handleOpenWebNoteWindow(noteId: string) {
+    if (webNoteWindowNoteId && webNoteWindowNoteId !== noteId) {
+      openNoteWindowNoteIds.current.delete(webNoteWindowNoteId);
+    }
+
+    handleOpenNoteWindow(noteId);
   }
 
   function applyCustomNoteOrder(reorderNotes: (notes: NoteType[]) => NoteType[]) {
@@ -499,8 +528,8 @@ function MainWindow(props: MainWindowProps) {
             appSettings={appSettings}
             noteId={webNoteWindowNoteId}
             open={webNoteWindowNoteId !== null}
-            onClose={() => setWebNoteWindowNoteId(null)}
-            onOpenNote={setWebNoteWindowNoteId}
+            onClose={handleCloseWebNoteWindow}
+            onOpenNote={handleOpenWebNoteWindow}
           />
         )}
         <nav className={classes.menu}>

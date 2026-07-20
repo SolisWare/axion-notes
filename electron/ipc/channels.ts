@@ -26,7 +26,8 @@ export const channels = {
     onSortRequest: "noteSort.onSortRequest"
   },
   noteWindow: {
-    open: "noteWindow.open"
+    open: "noteWindow.open",
+    closed: "noteWindow.closed"
   },
   settings: {
     getSettings: "settings.getSettings",

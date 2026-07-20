@@ -47,7 +47,13 @@ type FoldedNoteContent = {
   title?: string;
 };
 
+type DragIndicatorClick = {
+  noteId: string;
+  timeoutId: number;
+};
+
 const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable='true']";
+const DRAG_INDICATOR_CLICK_DELAY = 220;
 
 function isFocusedEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) {
@@ -101,6 +107,8 @@ function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNo
 function NoteList(props: NoteListProps) {
   const { t } = useTranslation();
   const foldedNoteIds = useRef<Set<string>>(new Set());
+  const lastDragIndicatorClick = useRef<DragIndicatorClick | null>(null);
+  const [initialDragIndicatorNoteId, setInitialDragIndicatorNoteId] = useState<string | null>(null);
   const [foldedNoteContextMenuPosition, setFoldedNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
   const [contextMenuNote, setContextMenuNote] = useState<NoteType | null>(null);
   const sensors = useSensors(useSensor(NoteListPointerSensor, {
@@ -117,13 +125,43 @@ function NoteList(props: NoteListProps) {
   } as CSSProperties;
   const noteIds = props.notes.map((note) => note.id);
 
-  function handleUnfoldNote(note: NoteType) {
+  function handleUnfoldNote(note: NoteType, showInitialDragIndicator = false) {
     foldedNoteIds.current.delete(note.id);
+    setInitialDragIndicatorNoteId(showInitialDragIndicator ? note.id : null);
 
     props.handleNoteSave({
       ...note,
       isFolded: false
     });
+  }
+
+  function handleDragIndicatorClick(noteId: string, singleClickAction: () => void) {
+    const previousClick = lastDragIndicatorClick.current;
+
+    if (previousClick?.noteId === noteId) {
+      window.clearTimeout(previousClick.timeoutId);
+      lastDragIndicatorClick.current = null;
+      props.handleOpenNoteWindow?.(noteId);
+      return;
+    }
+
+    if (previousClick) {
+      window.clearTimeout(previousClick.timeoutId);
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      lastDragIndicatorClick.current = null;
+      singleClickAction();
+    }, DRAG_INDICATOR_CLICK_DELAY);
+
+    lastDragIndicatorClick.current = {
+      noteId,
+      timeoutId
+    };
+  }
+
+  function handleFoldedNoteDragIndicatorRowClick(note: NoteType) {
+    handleDragIndicatorClick(note.id, () => handleUnfoldNote(note, true));
   }
 
   function handleFoldNote(note: NoteType) {
@@ -133,6 +171,10 @@ function NoteList(props: NoteListProps) {
       ...note,
       isFolded: true
     });
+  }
+
+  function handleExpandedNoteDragIndicatorRowClick(note: NoteType) {
+    handleDragIndicatorClick(note.id, () => handleFoldNote(note));
   }
 
   function handleExpandedNoteSave(note: NoteType) {
@@ -278,6 +320,14 @@ function NoteList(props: NoteListProps) {
     };
   }, [foldedNoteContextMenuPosition]);
 
+  useEffect(() => {
+    return () => {
+      if (lastDragIndicatorClick.current) {
+        window.clearTimeout(lastDragIndicatorClick.current.timeoutId);
+      }
+    };
+  }, []);
+
   return (
     <div className={styles.wrapper} style={noteListStyle}>
       <DndContext
@@ -324,7 +374,7 @@ function NoteList(props: NoteListProps) {
                       <div
                         className={styles.foldedNoteDragIndicatorRow}
                         aria-hidden="true"
-                        onDoubleClick={() => handleUnfoldNote(note)}
+                        onClick={() => handleFoldedNoteDragIndicatorRowClick(note)}
                       >
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
@@ -365,13 +415,14 @@ function NoteList(props: NoteListProps) {
                       showNoteTitles={props.showNoteTitles}
                       showNoteFooters={props.showNoteFooters}
                       showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+                      initiallyShowDragIndicator={initialDragIndicatorNoteId === note.id}
                       handleDeleteNoteButton={props.handleDeleteNoteButton}
                       handleDuplicateNote={props.handleDuplicateNote}
                       handleOpenNoteWindow={props.handleOpenNoteWindow}
                       handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                       handleMoveNoteToTop={props.handleMoveNoteToTop}
                       handleToggleNotePin={props.handleToggleNotePin}
-                      handleToggleNoteFold={handleFoldNote}
+                      handleToggleNoteFold={handleExpandedNoteDragIndicatorRowClick}
                       handleNoteSave={handleExpandedNoteSave}
                       style={{ marginBottom: 0 }}
                     />

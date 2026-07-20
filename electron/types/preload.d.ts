@@ -46,6 +46,7 @@ interface IElectronAPI {
   },
   noteWindow: {
     open: (noteId: string, options?: OpenNoteWindowOptions) => void;
+    onClosed: (callback: (noteId: string) => void) => () => void;
   },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;

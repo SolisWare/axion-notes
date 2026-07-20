@@ -68,7 +68,8 @@ export function installBrowserApi(): void {
       }
     },
     noteWindow: {
-      open: noop
+      open: noop,
+      onClosed: () => unsubscribe
     },
     settings: settingsApi,
     version: {

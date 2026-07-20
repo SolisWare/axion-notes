@@ -20,6 +20,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Hid the macOS-only Open Settings shortcut from the shortcuts list on other platforms
 - Added rich-text note formatting with Tiptap, including bold, italic, underline, strikethrough, menu actions, keyboard shortcuts, and format toolbars
 - Added list formatting for note content, including bullet, dashed, and numbered lists with menu actions and keyboard shortcuts
+- Added list-view drag row clicks for folding or unfolding notes and double-clicks for opening notes in dedicated windows
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code

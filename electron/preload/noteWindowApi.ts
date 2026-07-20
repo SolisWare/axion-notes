@@ -6,10 +6,18 @@
  */
 import { channels } from "../ipc/channels";
 import { OpenNoteWindowOptions } from "../../src/models/OpenNoteWindowOptions";
-import { send } from "./ipcHelpers";
+import { off, on, send } from "./ipcHelpers";
 
 export const noteWindowApi = {
   open: (noteId: string, options?: OpenNoteWindowOptions) => {
     send(channels.noteWindow.open, noteId, options);
+  },
+  onClosed: (callback: (noteId: string) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, noteId: string) => callback(noteId);
+    on(channels.noteWindow.closed, listener);
+
+    return () => {
+      off(channels.noteWindow.closed, listener);
+    };
   }
 };

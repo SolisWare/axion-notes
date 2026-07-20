@@ -10,6 +10,7 @@ import { isDev } from "../utils/isDev";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
+import { channels } from "../ipc/channels";
 import { dev } from "./routes";
 
 const noteWindows = new Map<string, BrowserWindow>();
@@ -106,6 +107,11 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
 
   noteWindow.on("closed", () => {
     noteWindows.delete(noteId);
+    BrowserWindow.getAllWindows().forEach((window) => {
+      if (!window.isDestroyed()) {
+        window.webContents.send(channels.noteWindow.closed, noteId);
+      }
+    });
   });
 
   noteWindow.on("page-title-updated", (event) => {

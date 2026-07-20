@@ -49,6 +49,7 @@ type NoteProps = {
   showTitleVisibilityContextAction?: boolean;
   showFormatToolbar?: boolean;
   showFloatingFormatToolbar?: boolean;
+  initiallyShowDragIndicator?: boolean;
   reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
 };
@@ -203,7 +204,7 @@ function Note(props: NoteProps) {
   
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
-  const [isNoteHovered, setIsNoteHovered] = useState(false);
+  const [isNoteHovered, setIsNoteHovered] = useState(props.initiallyShowDragIndicator === true);
   const [formatState, setFormatState] = useState<RichTextFormatState>({
     canFormat: false,
     isBoldActive: false,
@@ -339,6 +340,21 @@ function Note(props: NoteProps) {
     props.handleToggleNotePin?.(latestNote.current);
   };
 
+  const handleNoteDragIndicatorRowClick = () => {
+    props.handleToggleNoteFold?.(latestNote.current);
+  };
+
+  const handleNoteDragIndicatorRowDoubleClick = () => {
+    if (props.handleOpenNoteWindow && props.showOpenNoteWindowContextAction !== false) {
+      props.handleNoteSave(latestNote.current);
+      hasUnsavedChanges.current = false;
+      props.handleOpenNoteWindow(note.id);
+      return;
+    }
+
+    props.handleToggleNoteFold?.(latestNote.current);
+  };
+
   const handleFormatAction = (command: RichTextFormatCommand) => {
     setFormatActionRequest({
       id: Date.now(),
@@ -457,7 +473,8 @@ function Note(props: NoteProps) {
           <div
             className={classes.noteDragIndicatorRow}
             aria-hidden="true"
-            onDoubleClick={props.handleToggleNoteFold ? () => props.handleToggleNoteFold?.(latestNote.current) : undefined}
+            onClick={props.handleToggleNoteFold ? handleNoteDragIndicatorRowClick : undefined}
+            onDoubleClick={props.handleOpenNoteWindow && !props.handleToggleNoteFold ? handleNoteDragIndicatorRowDoubleClick : undefined}
           >
             <div
               className={classes.noteDragIndicator}
