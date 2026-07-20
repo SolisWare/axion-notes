@@ -40,7 +40,10 @@
         "showTitle": "Näita pealkirja",
         "delete": "Kustuta märge",
         "noteColorAriaLabel": "Märkme värv",
-        "noteColor": "Märkme värv…"
+        "noteColor": "Märkme värv…",
+        "openInNewWindow": "Ava uues aknas",
+        "pin": "Tõsta märge esile",
+        "unpin": "Eemalda märke esiletõstmine"
       },
       "unfold": "Lappa märge lahti",
       "fold": "Lappa märge kokku"
@@ -204,7 +207,8 @@
     },
     "windows": {
       "settings": "Seadistused",
-      "license": "Litsents"
+      "license": "Litsents",
+      "note": "Märge"
     }
   }
 }
