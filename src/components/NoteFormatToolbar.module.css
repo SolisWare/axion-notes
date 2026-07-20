@@ -55,6 +55,14 @@
   background: rgba(80, 93, 110, 0.24);
 }
 
+.superscriptIcon {
+  margin-top: -2px;
+}
+
+.subscriptIcon {
+  margin-top: 2px;
+}
+
 .toolbarButton:active {
   color: var(--note-format-toolbar-button-hover-text) !important;
   background-color: color-mix(

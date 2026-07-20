@@ -142,6 +142,15 @@ export function createMenubar(): Menu {
         },
         { type: 'separator' },
         {
+          label: translate("electron.menu.superscript"),
+          enabled: false
+        },
+        {
+          label: translate("electron.menu.subscript"),
+          enabled: false
+        },
+        { type: 'separator' },
+        {
           id: menuIds.format.bulletList,
           label: translate("electron.menu.bulletList"),
           accelerator: 'Shift+CmdOrCtrl+7',

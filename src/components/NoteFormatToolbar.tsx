@@ -10,6 +10,8 @@ import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBullete
 import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
 import FormatUnderlinedRoundedIcon from "@mui/icons-material/FormatUnderlinedRounded";
 import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded";
+import SubscriptRoundedIcon from "@mui/icons-material/SubscriptRounded";
+import SuperscriptRoundedIcon from "@mui/icons-material/SuperscriptRounded";
 import { IconButton } from "@mui/material";
 import { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
@@ -132,6 +134,29 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         type="button"
       >
         <FormatListNumberedRoundedIcon fontSize="small" />
+      </IconButton>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <IconButton
+        aria-label={t("mainWindow.note.formatToolbar.superscript")}
+        className={styles.toolbarButton}
+        disableRipple
+        disabled
+        size="small"
+        title={t("mainWindow.note.formatToolbar.superscript")}
+        type="button"
+      >
+        <SuperscriptRoundedIcon className={styles.superscriptIcon} fontSize="small" />
+      </IconButton>
+      <IconButton
+        aria-label={t("mainWindow.note.formatToolbar.subscript")}
+        className={styles.toolbarButton}
+        disableRipple
+        disabled
+        size="small"
+        title={t("mainWindow.note.formatToolbar.subscript")}
+        type="button"
+      >
+        <SubscriptRoundedIcon className={styles.subscriptIcon} fontSize="small" />
       </IconButton>
     </div>
   );

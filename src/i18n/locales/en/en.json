@@ -35,7 +35,9 @@
       "formatToolbar": {
         "bulletList": "Bullet list",
         "dashedList": "Dashed list",
-        "numberedList": "Numbered list"
+        "numberedList": "Numbered list",
+        "superscript": "Superscript",
+        "subscript": "Subscript"
       },
       "contextMenu": {
         "openInNewWindow": "Open in new window",
@@ -210,6 +212,8 @@
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "superscript": "Superscript",
+      "subscript": "Subscript",
       "bulletList": "Bullet List",
       "dashedList": "Dashed List",
       "numberedList": "Numbered List",
