@@ -41,6 +41,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added explicit English labels and fallback translations for user-facing Electron role menu items
 - Improved note drag handling with a hover drag indicator and focus-aware text selection in note titles and content
 - Added Estonian translation, contributed by Weblate user @jrthwlate
+- Added Polish translation, contributed by GitHub user @ancf
 
 ## [v0.3.0-rc.1] - June 27, 2026 - Gateway
 - Initialized the localization framework for shared React, web, and Electron UI text
