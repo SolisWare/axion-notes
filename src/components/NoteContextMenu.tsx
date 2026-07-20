@@ -224,6 +224,12 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               {t("electron.menu.bulletList")}
             </div>
             <div
+              className={`${styles.noteContextMenuItem} ${props.formatState?.isDashedListActive ? styles.noteContextMenuItemActive : ""}`}
+              onClick={() => props.onFormatAction?.(RichTextFormatCommand.DASHED_LIST)}
+            >
+              {t("electron.menu.dashedList")}
+            </div>
+            <div
               className={`${styles.noteContextMenuItem} ${props.formatState?.isNumberedListActive ? styles.noteContextMenuItemActive : ""}`}
               onClick={() => props.onFormatAction?.(RichTextFormatCommand.NUMBERED_LIST)}
             >

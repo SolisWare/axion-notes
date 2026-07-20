@@ -27,6 +27,7 @@ export const menuIds = {
     underline: "formatUnderline",
     strikethrough: "formatStrikethrough",
     bulletList: "formatBulletList",
+    dashedList: "formatDashedList",
     numberedList: "formatNumberedList"
   }
 } as const;

@@ -13,6 +13,7 @@ import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded
 import { IconButton } from "@mui/material";
 import { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
+import DashedListIcon from "./DashedListIcon";
 import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getAppColors } from "../theme/AppColors";
@@ -107,6 +108,18 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         type="button"
       >
         <FormatListBulletedRoundedIcon fontSize="small" />
+      </IconButton>
+      <IconButton
+        aria-label={t("mainWindow.note.formatToolbar.dashedList")}
+        className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
+        disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.DASHED_LIST)}
+        size="small"
+        title={t("mainWindow.note.formatToolbar.dashedList")}
+        type="button"
+      >
+        <DashedListIcon />
       </IconButton>
       <IconButton
         aria-label={t("mainWindow.note.formatToolbar.numberedList")}

@@ -152,6 +152,16 @@ export function createMenubar(): Menu {
           }
         },
         {
+          id: menuIds.format.dashedList,
+          label: translate("electron.menu.dashedList"),
+          accelerator: 'Shift+CmdOrCtrl+9',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.DASHED_LIST);
+          }
+        },
+        {
           id: menuIds.format.numberedList,
           label: translate("electron.menu.numberedList"),
           accelerator: 'Shift+CmdOrCtrl+7',

@@ -23,6 +23,7 @@ let richTextFormatState: RichTextFormatState = {
   isUnderlineActive: false,
   isStrikethroughActive: false,
   isBulletListActive: false,
+  isDashedListActive: false,
   isNumberedListActive: false
 };
 
@@ -40,6 +41,7 @@ function updateNoteMenuItems(): void {
   const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.format.underline);
   const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.format.strikethrough);
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
+  const formatDashedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.dashedList);
   const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
@@ -98,6 +100,11 @@ function updateNoteMenuItems(): void {
   if (formatBulletListMenuItem) {
     formatBulletListMenuItem.enabled = isRichTextFormattingEnabled;
     formatBulletListMenuItem.checked = richTextFormatState.isBulletListActive;
+  }
+
+  if (formatDashedListMenuItem) {
+    formatDashedListMenuItem.enabled = isRichTextFormattingEnabled;
+    formatDashedListMenuItem.checked = richTextFormatState.isDashedListActive;
   }
 
   if (formatNumberedListMenuItem) {

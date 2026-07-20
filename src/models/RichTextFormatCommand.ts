@@ -10,5 +10,6 @@ export enum RichTextFormatCommand {
   UNDERLINE = "underline",
   STRIKETHROUGH = "strikethrough",
   BULLET_LIST = "bulletList",
+  DASHED_LIST = "dashedList",
   NUMBERED_LIST = "numberedList"
 }

@@ -34,6 +34,7 @@
       "at": "at",
       "formatToolbar": {
         "bulletList": "Bullet list",
+        "dashedList": "Dashed list",
         "numberedList": "Numbered list"
       },
       "contextMenu": {
@@ -157,6 +158,7 @@
       "underline": "Underline",
       "strikethrough": "Strikethrough",
       "bulletList": "Bullet list",
+      "dashedList": "Dashed list",
       "numberedList": "Numbered list",
       "keys": {
         "command": "Command",
@@ -209,6 +211,7 @@
       "underline": "Underline",
       "strikethrough": "Strikethrough",
       "bulletList": "Bullet List",
+      "dashedList": "Dashed List",
       "numberedList": "Numbered List",
       "deleteAllNotes": "Delete All Notes...",
       "view": "View",

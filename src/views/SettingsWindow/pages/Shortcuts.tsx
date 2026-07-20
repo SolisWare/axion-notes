@@ -37,6 +37,7 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
     { label: t("settingsWindow.shortcuts.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }] },
     { label: t("settingsWindow.shortcuts.strikethrough"), keys: [commandKey, shiftKey, { label: "X", ariaLabel: "X" }] },
     { label: t("settingsWindow.shortcuts.bulletList"), keys: [commandKey, shiftKey, { label: "8", ariaLabel: "8" }] },
+    { label: t("settingsWindow.shortcuts.dashedList"), keys: [commandKey, shiftKey, { label: "9", ariaLabel: "9" }] },
     { label: t("settingsWindow.shortcuts.numberedList"), keys: [commandKey, shiftKey, { label: "7", ariaLabel: "7" }] },
   ];
 }

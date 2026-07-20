@@ -1,0 +1,29 @@
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  opacity: 0.74;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.marker {
+  width: 5px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.line {
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}

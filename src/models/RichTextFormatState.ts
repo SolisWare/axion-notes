@@ -11,5 +11,6 @@ export type RichTextFormatState = {
   isUnderlineActive: boolean;
   isStrikethroughActive: boolean;
   isBulletListActive: boolean;
+  isDashedListActive: boolean;
   isNumberedListActive: boolean;
 };

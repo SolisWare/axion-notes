@@ -6,6 +6,7 @@
  */
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { BulletList } from "@tiptap/extension-bullet-list";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Editor, JSONContent } from "@tiptap/core";
@@ -18,7 +19,31 @@ import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
 
 const NOTE_TEXTAREA_DEFAULT_FONT_FAMILY = "monospace";
+const BULLET_LIST_MARKER_TYPE_ATTRIBUTE = "listMarkerType";
+const BULLET_LIST_MARKER_TYPE_BULLET = "bullet";
+const BULLET_LIST_MARKER_TYPE_DASH = "dash";
 let focusedEditorId: string | null = null;
+
+const MarkerBulletList = BulletList.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: {
+        default: BULLET_LIST_MARKER_TYPE_BULLET,
+        parseHTML: (element: HTMLElement) => (
+          element.getAttribute("data-list-marker-type") === BULLET_LIST_MARKER_TYPE_DASH
+            ? BULLET_LIST_MARKER_TYPE_DASH
+            : BULLET_LIST_MARKER_TYPE_BULLET
+        ),
+        renderHTML: (attributes: Record<string, string>) => (
+          attributes[BULLET_LIST_MARKER_TYPE_ATTRIBUTE] === BULLET_LIST_MARKER_TYPE_DASH
+            ? { "data-list-marker-type": BULLET_LIST_MARKER_TYPE_DASH }
+            : {}
+        )
+      }
+    };
+  }
+});
 
 type NoteRichTextEditorChange = {
   content: string;
@@ -77,18 +102,27 @@ function getInactiveFormatState() {
     isUnderlineActive: false,
     isStrikethroughActive: false,
     isBulletListActive: false,
+    isDashedListActive: false,
     isNumberedListActive: false
   };
 }
 
 function getFormatState(editor: Editor) {
+  const bulletListAttributes = {
+    [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_BULLET
+  };
+  const dashedListAttributes = {
+    [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
+  };
+
   return {
     canFormat: true,
     isBoldActive: editor.isActive("bold"),
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
     isStrikethroughActive: editor.isActive("strike"),
-    isBulletListActive: editor.isActive("bulletList"),
+    isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
+    isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
     isNumberedListActive: editor.isActive("orderedList")
   };
 }
@@ -119,12 +153,38 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
       commandChain.toggleStrike().run();
       break;
     case RichTextFormatCommand.BULLET_LIST:
-      commandChain.toggleBulletList().run();
+      toggleBulletList(editor, BULLET_LIST_MARKER_TYPE_BULLET);
+      break;
+    case RichTextFormatCommand.DASHED_LIST:
+      toggleBulletList(editor, BULLET_LIST_MARKER_TYPE_DASH);
       break;
     case RichTextFormatCommand.NUMBERED_LIST:
       commandChain.toggleOrderedList().run();
       break;
   }
+}
+
+function toggleBulletList(editor: Editor, listMarkerType: string) {
+  const listMarkerTypeAttributes = {
+    [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: listMarkerType
+  };
+
+  if (!editor.isActive("bulletList")) {
+    editor
+      .chain()
+      .focus()
+      .toggleBulletList()
+      .updateAttributes("bulletList", listMarkerTypeAttributes)
+      .run();
+    return;
+  }
+
+  if (editor.isActive("bulletList", listMarkerTypeAttributes)) {
+    editor.chain().focus().toggleBulletList().run();
+    return;
+  }
+
+  editor.chain().focus().updateAttributes("bulletList", listMarkerTypeAttributes).run();
 }
 
 function publishFormatState(editor: Editor, onFormatStateChange?: (state: RichTextFormatState) => void) {
@@ -155,11 +215,13 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     extensions: [
       StarterKit.configure({
         blockquote: false,
+        bulletList: false,
         code: false,
         codeBlock: false,
         heading: false,
         horizontalRule: false
       }),
+      MarkerBulletList,
       Underline,
       Placeholder.configure({
         placeholder: props.placeholder

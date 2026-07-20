@@ -47,6 +47,21 @@
   padding-left: 20px;
 }
 
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"]) {
+  list-style: none;
+  padding-left: 22px;
+}
+
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] > li) {
+  position: relative;
+}
+
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] > li::before) {
+  content: "-";
+  position: absolute;
+  left: -14px;
+}
+
 .wrapper :global(.ProseMirror ol) {
   margin: 0;
   padding-left: 30px;
