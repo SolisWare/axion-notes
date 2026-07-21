@@ -12,10 +12,27 @@ import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 
+let licenseWindow: BrowserWindow | null = null;
+
+function focusLicenseWindow(window: BrowserWindow): void {
+  if (window.isMinimized()) {
+    window.restore();
+  }
+
+  window.show();
+  window.moveTop();
+  window.focus();
+}
+
 export function createLicenseWindow(): BrowserWindow {
+  if (licenseWindow && !licenseWindow.isDestroyed()) {
+    focusLicenseWindow(licenseWindow);
+    return licenseWindow;
+  }
+
   const windowTitle = `Axion Notes — ${translate("electron.windows.license")}`;
 
-  const licenseWindow = new BrowserWindow({
+  const createdLicenseWindow = new BrowserWindow({
     width: 560,
     height: 520,
     minWidth: 430,
@@ -36,24 +53,31 @@ export function createLicenseWindow(): BrowserWindow {
       preload: path.join(__dirname, "../preload/preload.js")
     }
   });
+  licenseWindow = createdLicenseWindow;
 
-  licenseWindow.setMenu(null);
-  licenseWindow.setMenuBarVisibility(false);
+  createdLicenseWindow.setMenu(null);
+  createdLicenseWindow.setMenuBarVisibility(false);
 
-  licenseWindow.once("ready-to-show", () => {
-    licenseWindow.show();
+  createdLicenseWindow.once("ready-to-show", () => {
+    createdLicenseWindow.show();
   });
 
-  licenseWindow.on("page-title-updated", (event) => {
+  createdLicenseWindow.on("closed", () => {
+    if (licenseWindow === createdLicenseWindow) {
+      licenseWindow = null;
+    }
+  });
+
+  createdLicenseWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    licenseWindow.setTitle(windowTitle);
+    createdLicenseWindow.setTitle(windowTitle);
   });
 
   if (isDev) {
-    licenseWindow.loadURL(dev("license"));
+    createdLicenseWindow.loadURL(dev("license"));
   } else {
-    licenseWindow.loadFile(...production("license"));
+    createdLicenseWindow.loadFile(...production("license"));
   }
 
-  return licenseWindow;
+  return createdLicenseWindow;
 }

@@ -23,6 +23,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added list-view drag row clicks for folding or unfolding notes and double-clicks for opening notes in dedicated windows
 - Added superscript and subscript formatting for note content
 - Fixed list-view note layout issues on Windows
+- Fixed Settings and License windows so repeated open attempts focus the existing window instead of creating duplicates
 
 ## [v0.3.0] - July 21, 2026 - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code

@@ -12,10 +12,27 @@ import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 
+let settingsWindow: BrowserWindow | null = null;
+
+function focusSettingsWindow(window: BrowserWindow): void {
+  if (window.isMinimized()) {
+    window.restore();
+  }
+
+  window.show();
+  window.moveTop();
+  window.focus();
+}
+
 export function createSettingsWindow(): BrowserWindow {
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    focusSettingsWindow(settingsWindow);
+    return settingsWindow;
+  }
+
   const windowTitle = `Axion Notes — ${translate("electron.windows.settings")}`;
 
-  const settingsWindow = new BrowserWindow({
+  const createdSettingsWindow = new BrowserWindow({
     width: 710,
     height: 542,
     minWidth: 600,
@@ -34,24 +51,31 @@ export function createSettingsWindow(): BrowserWindow {
       preload: path.join(__dirname, "../preload/preload.js")
     }
   });
+  settingsWindow = createdSettingsWindow;
 
-  settingsWindow.setMenu(null);
-  settingsWindow.setMenuBarVisibility(false);
+  createdSettingsWindow.setMenu(null);
+  createdSettingsWindow.setMenuBarVisibility(false);
 
-  settingsWindow.once("ready-to-show", () => {
-    settingsWindow.show();
+  createdSettingsWindow.once("ready-to-show", () => {
+    createdSettingsWindow.show();
   });
 
-  settingsWindow.on("page-title-updated", (event) => {
+  createdSettingsWindow.on("closed", () => {
+    if (settingsWindow === createdSettingsWindow) {
+      settingsWindow = null;
+    }
+  });
+
+  createdSettingsWindow.on("page-title-updated", (event) => {
     event.preventDefault();
-    settingsWindow.setTitle(windowTitle);
+    createdSettingsWindow.setTitle(windowTitle);
   });
 
   if (isDev) {
-    settingsWindow.loadURL(dev("settings"));
+    createdSettingsWindow.loadURL(dev("settings"));
   } else {
-    settingsWindow.loadFile(...production("settings"));
+    createdSettingsWindow.loadFile(...production("settings"));
   }
 
-  return settingsWindow;
+  return createdSettingsWindow;
 }
