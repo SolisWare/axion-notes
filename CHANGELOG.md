@@ -22,6 +22,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added list formatting for note content, including bullet, dashed, and numbered lists with menu actions and keyboard shortcuts
 - Added list-view drag row clicks for folding or unfolding notes and double-clicks for opening notes in dedicated windows
 - Added superscript and subscript formatting for note content
+- Fixed list-view note layout issues on Windows
 
 ## [v0.3.0] - Unreleased - Gateway
 - Updated the language selector to show English language names with native labels generated from the language code
