@@ -30,6 +30,7 @@ function FloatingNoteFormatToolbar(props: FloatingNoteFormatToolbarProps) {
         formatState={props.formatState}
         surfaceColor={props.surfaceColor}
         onFormatAction={props.onFormatAction}
+        compactInlineStyles
       />
     </div>
   );
