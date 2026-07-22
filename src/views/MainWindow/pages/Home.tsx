@@ -21,6 +21,7 @@ type HomeProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
   noteLayout: NoteLayoutPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
@@ -51,6 +52,7 @@ function Home(props: HomeProps) {
           dateFormat={props.dateFormat}
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
+          noteTitleFont={props.noteTitleFont}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
@@ -71,6 +73,7 @@ function Home(props: HomeProps) {
           dateFormat={props.dateFormat}
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
+          noteTitleFont={props.noteTitleFont}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}

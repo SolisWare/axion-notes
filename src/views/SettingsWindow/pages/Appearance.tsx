@@ -25,6 +25,7 @@ function Appearance(props: AppearanceProps) {
   const { t } = useTranslation();
   const noteColorKeys = Object.values(NoteColorKey);
   const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
+  const noteTitleFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteTitleFont);
   const noteFontPreview = t("settingsWindow.appearance.noteFontPreview");
   const autoColorBackground = `conic-gradient(${noteColorKeys
     .map((colorKey) => NoteColors.light[colorKey])
@@ -62,6 +63,15 @@ function Appearance(props: AppearanceProps) {
     event.currentTarget.blur();
   }
 
+  function handleNoteTitleFontChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      noteTitleFont: event.target.value as NoteFontPreference
+    });
+
+    event.currentTarget.blur();
+  }
+
   function handleShowNoteTitlesChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
@@ -91,7 +101,7 @@ function Appearance(props: AppearanceProps) {
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
         <div className={styles.settingsRows}>
-          <div className={styles.settingsRow}>
+          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <h3 className={styles.settingsSectionTitle} id="appearance-theme-title">{t("settingsWindow.appearance.applicationTheme")}</h3>
             <fieldset className={styles.radioGroup}>
               <legend className={styles.visuallyHidden}>{t("settingsWindow.appearance.applicationTheme")}</legend>
@@ -133,7 +143,7 @@ function Appearance(props: AppearanceProps) {
               </label>
             </fieldset>
           </div>
-          <div className={styles.settingsRow}>
+          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle} id="show-note-titles-title">{t("settingsWindow.appearance.showNoteTitles")}</h3>
               <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showNoteTitlesDescription")}</p>
@@ -250,10 +260,13 @@ function Appearance(props: AppearanceProps) {
               ))}
             </fieldset>
           </div>
-          <div className={styles.settingsRow}>
-            <label className={styles.settingsSectionTitle} htmlFor="note-font">
-              {t("settingsWindow.appearance.noteFont")}
-            </label>
+          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
+            <div>
+              <label className={styles.settingsSectionTitle} htmlFor="note-font">
+                {t("settingsWindow.appearance.noteFont")}
+              </label>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.noteFontDescription")}</p>
+            </div>
             <div className={styles.noteFontControls}>
               <select
                 className={styles.settingsSelect}
@@ -279,13 +292,53 @@ function Appearance(props: AppearanceProps) {
                   </optgroup>
                 ))}
               </select>
-              <span
-                className={styles.noteFontPreview}
-                style={{ fontFamily: noteFontPreviewFontFamily }}
-              >
-                {noteFontPreview}
-              </span>
             </div>
+            <span
+              className={styles.noteFontPreview}
+              style={{ fontFamily: noteFontPreviewFontFamily }}
+            >
+              {noteFontPreview}
+            </span>
+          </div>
+          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
+            <div>
+              <label className={styles.settingsSectionTitle} htmlFor="note-title-font">
+                {t("settingsWindow.appearance.noteTitleFont")}
+              </label>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.noteTitleFontDescription")}</p>
+            </div>
+            <div className={styles.noteFontControls}>
+              <select
+                className={styles.settingsSelect}
+                id="note-title-font"
+                style={{ fontFamily: noteTitleFontPreviewFontFamily }}
+                value={props.appSettings.noteTitleFont}
+                onChange={handleNoteTitleFontChange}
+              >
+                {NOTE_FONT_CATEGORIES.map((fontCategory) => (
+                  <optgroup
+                    key={fontCategory}
+                    label={t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
+                  >
+                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
+                      <option
+                        key={fontOption.value}
+                        style={{ fontFamily: fontOption.fontFamily }}
+                        value={fontOption.value}
+                      >
+                        {t(fontOption.labelKey)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <span
+              className={styles.noteFontPreview}
+              style={{ fontFamily: noteTitleFontPreviewFontFamily }}
+            >
+              {noteFontPreview}
+            </span>
           </div>
         </div>
       </section>

@@ -26,6 +26,7 @@ export const defaultAppSettings: AppSettings = {
   dateFormat: DateFormat.MonthDayYearSlash,
   timeFormat: TimeFormat.Regular,
   noteFont: NoteFontPreference.SYSTEM,
+  noteTitleFont: NoteFontPreference.SYSTEM,
   noteSize: NoteSizePreference.DEFAULT,
   showNoteTitles: true,
   showNoteFooters: true,

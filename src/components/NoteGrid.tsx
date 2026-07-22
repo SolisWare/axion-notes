@@ -23,6 +23,7 @@ export type NoteGridProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -151,6 +152,7 @@ function NoteGrid (props: NoteGridProps) {
                 dateFormat={props.dateFormat}
                 timeFormat={props.timeFormat}
                 noteFont={props.noteFont}
+                noteTitleFont={props.noteTitleFont}
                 noteSize={props.noteSize}
                 showNoteTitles={props.showNoteTitles}
                 showNoteFooters={props.showNoteFooters}

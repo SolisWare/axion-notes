@@ -32,6 +32,7 @@ type NoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -226,6 +227,7 @@ function Note(props: NoteProps) {
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
+  const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
   const isPinned = note.isPinned === true;
@@ -499,7 +501,7 @@ function Note(props: NoteProps) {
                   key={props.theme}
                   className={classes.noteTitleInput}
                   style={{
-                    fontFamily: noteFontFamily,
+                    fontFamily: noteTitleFontFamily,
                     color: appColors.NOTE_TEXT,
                     caretColor: appColors.NOTE_TEXT,
                     WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT

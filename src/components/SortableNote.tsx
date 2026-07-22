@@ -20,6 +20,7 @@ type SortableNoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -61,6 +62,7 @@ function SortableNote(props: SortableNoteProps) {
         dateFormat={props.dateFormat}
         timeFormat={props.timeFormat}
         noteFont={props.noteFont}
+        noteTitleFont={props.noteTitleFont}
         noteSize={props.noteSize}
         showNoteTitles={props.showNoteTitles}
         showNoteFooters={props.showNoteFooters}

@@ -28,6 +28,7 @@ type NoteListProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -119,6 +120,7 @@ function NoteList(props: NoteListProps) {
   
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
+  const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
   const noteListStyle = {
     "--note-list-text": appColors.NOTE_TEXT,
     "--note-list-background": appColors.ACCENT
@@ -378,11 +380,16 @@ function NoteList(props: NoteListProps) {
                       >
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
-                      <div className={styles.listItemContent} style={{ fontFamily: noteFontFamily }}>
+                      <div className={styles.listItemContent}>
                         {foldedNoteContent.title && (
-                          <span className={styles.listItemTitle}>{foldedNoteContent.title}</span>
+                          <span className={styles.listItemTitle} style={{ fontFamily: noteTitleFontFamily }}>
+                            {foldedNoteContent.title}
+                          </span>
                         )}
-                        <span className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}>
+                        <span
+                          className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}
+                          style={{ fontFamily: noteFontFamily }}
+                        >
                           {foldedNoteContent.body}
                         </span>
                       </div>
@@ -411,6 +418,7 @@ function NoteList(props: NoteListProps) {
                       dateFormat={props.dateFormat}
                       timeFormat={props.timeFormat}
                       noteFont={props.noteFont}
+                      noteTitleFont={props.noteTitleFont}
                       noteSize={NoteSizePreference.WIDE}
                       showNoteTitles={props.showNoteTitles}
                       showNoteFooters={props.showNoteFooters}

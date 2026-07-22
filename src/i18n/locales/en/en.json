@@ -137,7 +137,10 @@
         "teal": "Teal",
         "lilac": "Lilac"
       },
-      "noteFont": "Note font",
+      "noteFont": "Content font",
+      "noteFontDescription": "Applies to note body text.",
+      "noteTitleFont": "Title font",
+      "noteTitleFontDescription": "Applies to note title fields.",
       "noteFontCategories": {
         "generic": "Generic",
         "standard": "Standard",
