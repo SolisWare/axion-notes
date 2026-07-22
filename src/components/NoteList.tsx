@@ -32,6 +32,7 @@ type NoteListProps = {
   noteTitleFont: NoteFontPreference;
   noteContentFontSize: NoteFontSize;
   noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -424,6 +425,7 @@ function NoteList(props: NoteListProps) {
                       noteTitleFont={props.noteTitleFont}
                       noteContentFontSize={props.noteContentFontSize}
                       noteTitleFontSize={props.noteTitleFontSize}
+                      richTextEditorEnabled={props.richTextEditorEnabled}
                       noteSize={NoteSizePreference.WIDE}
                       showNoteTitles={props.showNoteTitles}
                       showNoteFooters={props.showNoteFooters}
@@ -475,6 +477,7 @@ function NoteList(props: NoteListProps) {
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}
           onToggleTitleVisibility={handleContextMenuToggleTitleVisibility}
+          showFormatActions={false}
         />
       )}
     </div>

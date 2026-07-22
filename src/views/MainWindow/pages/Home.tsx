@@ -25,6 +25,7 @@ type HomeProps = {
   noteTitleFont: NoteFontPreference;
   noteContentFontSize: NoteFontSize;
   noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteLayout: NoteLayoutPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
@@ -58,6 +59,7 @@ function Home(props: HomeProps) {
           noteTitleFont={props.noteTitleFont}
           noteContentFontSize={props.noteContentFontSize}
           noteTitleFontSize={props.noteTitleFontSize}
+          richTextEditorEnabled={props.richTextEditorEnabled}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
@@ -81,6 +83,7 @@ function Home(props: HomeProps) {
           noteTitleFont={props.noteTitleFont}
           noteContentFontSize={props.noteContentFontSize}
           noteTitleFontSize={props.noteTitleFontSize}
+          richTextEditorEnabled={props.richTextEditorEnabled}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}

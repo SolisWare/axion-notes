@@ -38,6 +38,7 @@ type NoteContextMenuProps = {
   onNoteColorChange: (colorKey: NoteColorKey) => void;
   onToggleTitleVisibility: () => void;
   showMoveActions?: boolean;
+  showFormatActions?: boolean;
   showTitleVisibilityAction?: boolean;
 };
 
@@ -180,18 +181,19 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <Divider className={styles.noteContextMenuDivider} />
         </>
       )}
-      <div
-        className={`${styles.noteContextMenuItem} ${!isFormattingEnabled ? styles.noteContextMenuItemDisabled : ""}`}
-      >
-        <span className={styles.noteContextMenuItemText}>
-          {t("electron.menu.format")}
-        </span>
-        <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
-        {isFormattingEnabled && (
-          <div
-            className={styles.noteContextMenuSubmenu}
-            data-open-left={shouldOpenSubmenuLeft}
-          >
+      {props.showFormatActions !== false && (
+        <div
+          className={`${styles.noteContextMenuItem} ${!isFormattingEnabled ? styles.noteContextMenuItemDisabled : ""}`}
+        >
+          <span className={styles.noteContextMenuItemText}>
+            {t("electron.menu.format")}
+          </span>
+          <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
+          {isFormattingEnabled && (
+            <div
+              className={styles.noteContextMenuSubmenu}
+              data-open-left={shouldOpenSubmenuLeft}
+            >
             <div
               className={`${styles.noteContextMenuItem} ${props.formatState?.isBoldActive ? styles.noteContextMenuItemActive : ""}`}
               onClick={() => props.onFormatAction?.(RichTextFormatCommand.BOLD)}
@@ -248,9 +250,10 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             >
               {t("electron.menu.numberedList")}
             </div>
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
       <div
         className={styles.noteContextMenuItem}
         onClick={props.onDuplicateNote}

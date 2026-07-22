@@ -151,6 +151,7 @@ function NoteWindow(props: NoteWindowProps) {
               noteTitleFont={props.appSettings.noteTitleFont}
               noteContentFontSize={props.appSettings.noteContentFontSize}
               noteTitleFontSize={props.appSettings.noteTitleFontSize}
+              richTextEditorEnabled={props.appSettings.richTextEditorEnabled}
               noteSize={NoteSizePreference.DEFAULT}
               showNoteTitles={props.appSettings.showNoteTitles}
               showNoteFooters={props.appSettings.showNoteFooters}
@@ -164,7 +165,7 @@ function NoteWindow(props: NoteWindowProps) {
               showMoveContextActions={false}
               showOpenNoteWindowContextAction={false}
               showTitleVisibilityContextAction={false}
-              showFormatToolbar
+              showFormatToolbar={props.appSettings.richTextEditorEnabled}
               reserveCloseButtonSpace={props.embedded}
               style={{
                 width: "100%",

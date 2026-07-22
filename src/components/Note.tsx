@@ -12,11 +12,12 @@ import { Formatter } from "../utils/dt-formatter/Formatter";
 import FloatingNoteFormatToolbar from "./FloatingNoteFormatToolbar";
 import NoteFormatToolbar from "./NoteFormatToolbar";
 import NoteRichTextEditor from "./NoteRichTextEditor";
+import NoteTextarea from "./NoteTextarea";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
 import { RichTextFormatAction } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../models/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
@@ -36,6 +37,7 @@ type NoteProps = {
   noteTitleFont: NoteFontPreference;
   noteContentFontSize: NoteFontSize;
   noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -209,20 +211,7 @@ function Note(props: NoteProps) {
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
   const [isNoteHovered, setIsNoteHovered] = useState(props.initiallyShowDragIndicator === true);
-  const [formatState, setFormatState] = useState<RichTextFormatState>({
-    canFormat: false,
-    isBoldActive: false,
-    isItalicActive: false,
-    isUnderlineActive: false,
-    isStrikethroughActive: false,
-    isSuperscriptActive: false,
-    isSubscriptActive: false,
-    isBulletListActive: false,
-    isDashedListActive: false,
-    isNumberedListActive: false,
-    activeFontSize: undefined,
-    activeFont: undefined
-  });
+  const [formatState, setFormatState] = useState<RichTextFormatState>(getInactiveRichTextFormatState);
   const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);
 
   const isDeleting = useRef(false);
@@ -265,6 +254,15 @@ function Note(props: NoteProps) {
       ...note,
       content,
       richContent,
+      lastModifiedOn: new Date()
+    });
+  };
+
+  const handlePlainTextNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    updateNote({
+      ...note,
+      content: event.target.value,
+      richContent: undefined,
       lastModifiedOn: new Date()
     });
   };
@@ -434,6 +432,16 @@ function Note(props: NoteProps) {
       document.removeEventListener("keydown", handleDocumentKeyDown);
     };
   }, [noteContextMenuPosition]);
+
+  useEffect(() => {
+    if (props.richTextEditorEnabled) {
+      return;
+    }
+
+    const inactiveFormatState = getInactiveRichTextFormatState();
+    setFormatState(inactiveFormatState);
+    window.api.menu.setRichTextFormatState(inactiveFormatState);
+  }, [props.richTextEditorEnabled]);
   
   return (
     <Paper
@@ -523,7 +531,7 @@ function Note(props: NoteProps) {
                 />
               </div>
             )}
-            {props.showFormatToolbar && (
+            {props.showFormatToolbar && props.richTextEditorEnabled && (
               <NoteFormatToolbar
                 theme={props.theme}
                 formatState={formatState}
@@ -533,7 +541,7 @@ function Note(props: NoteProps) {
               />
             )}
             <div className={classes.noteContent}>
-              {!props.showFormatToolbar && props.showFloatingFormatToolbar !== false && (
+              {!props.showFormatToolbar && props.richTextEditorEnabled && props.showFloatingFormatToolbar !== false && (
                 <FloatingNoteFormatToolbar
                   theme={props.theme}
                   formatState={formatState}
@@ -541,22 +549,33 @@ function Note(props: NoteProps) {
                   onFormatAction={handleFormatAction}
                 />
               )}
-              <NoteRichTextEditor
-                theme={props.theme}
-                fontFamily={noteFontFamily}
-                fontSize={props.noteContentFontSize}
-                placeholder={t("mainWindow.note.contentPlaceholder")}
-                content={note.content}
-                richContent={note.richContent}
-                formatActionRequest={formatActionRequest}
-                onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
-                onFormatStateChange={setFormatState}
-                onFormatActionRequestHandled={(requestId) => {
-                  setFormatActionRequest((currentRequest) => (
-                    currentRequest?.id === requestId ? null : currentRequest
-                  ));
-                }}
-              />
+              {props.richTextEditorEnabled ? (
+                <NoteRichTextEditor
+                  theme={props.theme}
+                  fontFamily={noteFontFamily}
+                  fontSize={props.noteContentFontSize}
+                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  content={note.content}
+                  richContent={note.richContent}
+                  formatActionRequest={formatActionRequest}
+                  onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
+                  onFormatStateChange={setFormatState}
+                  onFormatActionRequestHandled={(requestId) => {
+                    setFormatActionRequest((currentRequest) => (
+                      currentRequest?.id === requestId ? null : currentRequest
+                    ));
+                  }}
+                />
+              ) : (
+                <NoteTextarea
+                  theme={props.theme}
+                  fontFamily={noteFontFamily}
+                  fontSize={props.noteContentFontSize}
+                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  content={note.content}
+                  onChange={handlePlainTextNoteChange}
+                />
+              )}
             </div>
           </div>
           {props.showNoteFooters && (
@@ -584,6 +603,7 @@ function Note(props: NoteProps) {
           onToggleFold={handleContextMenuToggleFold}
           onFormatAction={handleContextMenuFormatAction}
           formatState={formatState}
+          showFormatActions={props.richTextEditorEnabled}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}

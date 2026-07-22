@@ -6,7 +6,7 @@
  */
 import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
-import { RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 
@@ -16,20 +16,7 @@ let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
 };
-let richTextFormatState: RichTextFormatState = {
-  canFormat: false,
-  isBoldActive: false,
-  isItalicActive: false,
-  isUnderlineActive: false,
-  isStrikethroughActive: false,
-  isSuperscriptActive: false,
-  isSubscriptActive: false,
-  isBulletListActive: false,
-  isDashedListActive: false,
-  isNumberedListActive: false,
-  activeFontSize: undefined,
-  activeFont: undefined
-};
+let richTextFormatState: RichTextFormatState = getInactiveRichTextFormatState();
 
 function updateNoteMenuItems(): void {
   const applicationMenu = Menu.getApplicationMenu();

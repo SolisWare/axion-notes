@@ -24,6 +24,7 @@ export type AppSettings = {
   language: SupportedLanguageCode;
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
+  richTextEditorEnabled: boolean;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
   noteContentFontSize: NoteFontSize;

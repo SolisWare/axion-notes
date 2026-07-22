@@ -19,6 +19,7 @@ import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
 import { resolveAppThemePreference } from './settings/AppThemePreference';
 import { MenuEditSelectionState } from './models/MenuEditSelectionState';
+import { getInactiveRichTextFormatState } from './models/RichTextFormatState';
 import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
 
 export enum AppView {
@@ -92,6 +93,14 @@ function App() {
   useEffect(() => {
     return window.api.settings.onSettingsChange(setAppSettings);
   }, []);
+
+  useEffect(() => {
+    if (!UserAgent.isElectron || appSettings.richTextEditorEnabled) {
+      return;
+    }
+
+    window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
+  }, [appSettings.richTextEditorEnabled]);
 
   useEffect(() => {
     if (UserAgent.isElectron && hasLoadedAppSettings) {

@@ -17,7 +17,7 @@ import { Editor, JSONContent } from "@tiptap/core";
 import { CSSProperties, MouseEvent, useEffect, useMemo, useRef } from "react";
 import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../models/RichTextFormatState";
 import { getNoteFontFamily, getNoteFontPreferenceByFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
@@ -101,23 +101,6 @@ function hasRichFormatting(content: JSONContent): boolean {
   return content.content?.some(hasRichFormatting) ?? false;
 }
 
-function getInactiveFormatState() {
-  return {
-    canFormat: false,
-    isBoldActive: false,
-    isItalicActive: false,
-    isUnderlineActive: false,
-    isStrikethroughActive: false,
-    isSuperscriptActive: false,
-    isSubscriptActive: false,
-    isBulletListActive: false,
-    isDashedListActive: false,
-    isNumberedListActive: false,
-    activeFontSize: undefined,
-    activeFont: undefined
-  };
-}
-
 function getNoteFontSizePreference(fontSize: string | undefined): NoteFontSize | undefined {
   if (!fontSize) {
     return undefined;
@@ -160,7 +143,7 @@ function clearFocusedFormatState(editorId: string) {
   }
 
   focusedEditorId = null;
-  window.api.menu.setRichTextFormatState(getInactiveFormatState());
+  window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
 }
 
 function getRichTextFormatCommand(action: RichTextFormatAction): RichTextFormatCommand {
@@ -346,7 +329,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
       }
 
       clearFocusedFormatState(editorId);
-      onFormatStateChange?.(getInactiveFormatState());
+      onFormatStateChange?.(getInactiveRichTextFormatState());
     }
 
     document.addEventListener("focusin", handleDocumentFocusOrMouseDown, true);
@@ -355,6 +338,31 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     return () => {
       document.removeEventListener("focusin", handleDocumentFocusOrMouseDown, true);
       document.removeEventListener("mousedown", handleDocumentFocusOrMouseDown, true);
+    };
+  }, [editor, editorId, onFormatStateChange]);
+
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+
+    function handleWindowFocus() {
+      if (editor?.isFocused && focusedEditorId === editorId) {
+        publishFormatState(editor, onFormatStateChange);
+      }
+    }
+
+    function handleWindowBlur() {
+      clearFocusedFormatState(editorId);
+      onFormatStateChange?.(getInactiveRichTextFormatState());
+    }
+
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("blur", handleWindowBlur);
     };
   }, [editor, editorId, onFormatStateChange]);
 
@@ -397,7 +405,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   useEffect(() => {
     return () => {
       clearFocusedFormatState(editorId);
-      onFormatStateChange?.(getInactiveFormatState());
+      onFormatStateChange?.(getInactiveRichTextFormatState());
     };
   }, [editorId, onFormatStateChange]);
 

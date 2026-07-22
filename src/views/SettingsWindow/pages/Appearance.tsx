@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { ChangeEvent } from "react";
+import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
@@ -23,6 +24,7 @@ type AppearanceProps = {
 function Appearance(props: AppearanceProps) {
   const { t } = useTranslation();
   const noteColorKeys = Object.values(NoteColorKey);
+  const isFloatingFormatToolbarDisabled = !props.appSettings.richTextEditorEnabled;
   const autoColorBackground = `conic-gradient(${noteColorKeys
     .map((colorKey) => NoteColors.light[colorKey])
     .join(", ")}, ${NoteColors.light[noteColorKeys[0]]})`;
@@ -155,25 +157,34 @@ function Appearance(props: AppearanceProps) {
               <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteFooters")}</span>
             </label>
           </div>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="show-floating-format-toolbar-title">{t("settingsWindow.appearance.showFloatingFormatToolbar")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showFloatingFormatToolbarDescription")}</p>
+          <Tooltip
+            arrow
+            disableHoverListener={!isFloatingFormatToolbarDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.disabledRichTextEditorTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isFloatingFormatToolbarDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="show-floating-format-toolbar-title">{t("settingsWindow.appearance.showFloatingFormatToolbar")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showFloatingFormatToolbarDescription")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="show-floating-format-toolbar-title"
+                  checked={props.appSettings.richTextEditorEnabled && props.appSettings.showFloatingFormatToolbar}
+                  className={styles.switchInput}
+                  disabled={!props.appSettings.richTextEditorEnabled}
+                  type="checkbox"
+                  onChange={handleShowFloatingFormatToolbarChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showFloatingFormatToolbar")}</span>
+              </label>
             </div>
-            <label className={styles.switchControl}>
-              <input
-                aria-labelledby="show-floating-format-toolbar-title"
-                checked={props.appSettings.showFloatingFormatToolbar}
-                className={styles.switchInput}
-                type="checkbox"
-                onChange={handleShowFloatingFormatToolbarChange}
-              />
-              <span className={styles.switchTrack} aria-hidden="true">
-                <span className={styles.switchThumb} />
-              </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showFloatingFormatToolbar")}</span>
-            </label>
-          </div>
+          </Tooltip>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} htmlFor="note-size">
               {t("settingsWindow.appearance.noteSize")}

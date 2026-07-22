@@ -491,6 +491,7 @@ function MainWindow(props: MainWindowProps) {
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
@@ -500,6 +501,7 @@ function MainWindow(props: MainWindowProps) {
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}

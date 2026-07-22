@@ -70,6 +70,10 @@
   border-bottom: 0;
 }
 
+.settingsRowDisabled {
+  opacity: 0.48;
+}
+
 .settingsSubsectionHeader {
   margin: 10px 0 7px;
   padding: 0 2px;
@@ -82,7 +86,7 @@
 }
 
 .settingsSubsectionHeaderFirst {
-  margin-top: 0;
+  margin-top: 22px;
 }
 
 .settingsSubsectionHeaderSpaced {
@@ -695,6 +699,10 @@
 
 .shortcutRow:last-child {
   border-bottom: 0;
+}
+
+.shortcutRowDisabled {
+  opacity: 0.48;
 }
 
 .shortcutLabel {

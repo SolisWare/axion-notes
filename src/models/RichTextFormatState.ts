@@ -21,3 +21,20 @@ export type RichTextFormatState = {
   activeFontSize?: NoteFontSize;
   activeFont?: NoteFontPreference;
 };
+
+export function getInactiveRichTextFormatState(): RichTextFormatState {
+  return {
+    canFormat: false,
+    isBoldActive: false,
+    isItalicActive: false,
+    isUnderlineActive: false,
+    isStrikethroughActive: false,
+    isSuperscriptActive: false,
+    isSubscriptActive: false,
+    isBulletListActive: false,
+    isDashedListActive: false,
+    isNumberedListActive: false,
+    activeFontSize: undefined,
+    activeFont: undefined
+  };
+}

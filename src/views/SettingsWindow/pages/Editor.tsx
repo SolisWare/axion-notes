@@ -5,22 +5,47 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { ChangeEvent } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import { AppSettings } from "../../../settings/AppSettings";
 import { getNoteFontFamily, NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS, NOTE_TITLE_FONT_SIZE_OPTIONS, NoteFontSize } from "../../../settings/NoteFontSize";
+import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./SettingsPages.module.css";
 
 type EditorProps = {
+  theme: SystemTheme;
   appSettings: AppSettings;
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
 function Editor(props: EditorProps) {
   const { t } = useTranslation();
+  const [isDisableRichTextEditorDialogOpen, setDisableRichTextEditorDialogOpen] = useState(false);
   const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
   const noteTitleFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteTitleFont);
   const noteFontPreview = t("settingsWindow.editor.noteFontPreview");
+
+  function handleRichTextEditorEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    if (!event.target.checked) {
+      setDisableRichTextEditorDialogOpen(true);
+      return;
+    }
+
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      richTextEditorEnabled: true
+    });
+  }
+
+  function handleDisableRichTextEditorConfirm() {
+    setDisableRichTextEditorDialogOpen(false);
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      richTextEditorEnabled: false
+    });
+  }
 
   function handleNoteFontChange(event: ChangeEvent<HTMLSelectElement>) {
     props.onAppSettingsChange({
@@ -64,7 +89,37 @@ function Editor(props: EditorProps) {
 
   return (
     <div className={styles.editorPage}>
+      <ConfirmationDialog
+        theme={props.theme}
+        open={isDisableRichTextEditorDialogOpen}
+        title={t("settingsWindow.editor.disableRichTextEditorDialog.title")}
+        message={t("settingsWindow.editor.disableRichTextEditorDialog.message")}
+        confirmLabel={t("settingsWindow.editor.disableRichTextEditorDialog.confirmLabel")}
+        onConfirm={handleDisableRichTextEditorConfirm}
+        onCancel={() => setDisableRichTextEditorDialogOpen(false)}
+      />
       <section className={styles.settingsSection} aria-labelledby="editor-note-text-title">
+        <div className={styles.settingsRows}>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="rich-text-editor-enabled-title">{t("settingsWindow.editor.richTextEditor")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.richTextEditorDescription")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="rich-text-editor-enabled-title"
+                checked={props.appSettings.richTextEditorEnabled}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleRichTextEditorEnabledChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("settingsWindow.editor.richTextEditor")}</span>
+            </label>
+          </div>
+        </div>
         <h3 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderFirst}`}>
           {t("settingsWindow.editor.titleSection")}
         </h3>

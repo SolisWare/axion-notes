@@ -142,7 +142,15 @@
         "lilac": "Lilac"
       }
     },
+    "disabledRichTextEditorTooltip": "Available when Rich Text Editor is on.",
     "editor": {
+      "richTextEditor": "Rich Text Editor",
+      "richTextEditorDescription": "Enables formatting, lists, font styling, and editor toolbars.",
+      "disableRichTextEditorDialog": {
+        "title": "Turn Off Rich Text Editor?",
+        "message": "Existing formatted notes will keep their formatting unless edited in the Plain Text Editor. If you edit a formatted note while Rich Text Editor is off, that note will be converted to plain text and its formatting will be permanently discarded.",
+        "confirmLabel": "Turn Off"
+      },
       "titleSection": "Title",
       "contentSection": "Content",
       "noteFont": "Content font",
