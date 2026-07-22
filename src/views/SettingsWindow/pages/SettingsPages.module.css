@@ -41,7 +41,7 @@
 
 .settingsSection {
   width: 100%;
-  max-width: 470px;
+  max-width: 510px;
 }
 
 .settingsRows {
@@ -71,6 +71,11 @@
 
 .settingsRowText {
   min-width: 0;
+  flex: 1 1 auto;
+}
+
+.settingsRow:has(.switchControl) .settingsRowText {
+  min-width: 300px;
 }
 
 .settingsSectionTitle {
@@ -188,6 +193,7 @@
   justify-content: center;
   flex: 0 0 38px;
   align-self: center;
+  margin-left: auto;
   position: relative;
   cursor: default;
 }
@@ -435,10 +441,12 @@
   display: inline-flex;
   align-items: flex-start;
   justify-content: flex-end;
-  flex: 0 0 auto;
+  flex: 0 0 225px;
   gap: 7px;
   box-sizing: border-box;
-  margin: 0;
+  margin-left: auto;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 0 0 14px;
   border: 0;
 }
@@ -645,7 +653,7 @@
 
 .shortcutsList {
   width: 100%;
-  max-width: 460px;
+  max-width: 510px;
   display: flex;
   flex-direction: column;
   overflow: hidden;

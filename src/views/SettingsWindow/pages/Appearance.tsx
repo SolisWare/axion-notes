@@ -101,7 +101,7 @@ function Appearance(props: AppearanceProps) {
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
         <div className={styles.settingsRows}>
-          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
+          <div className={styles.settingsRow}>
             <h3 className={styles.settingsSectionTitle} id="appearance-theme-title">{t("settingsWindow.appearance.applicationTheme")}</h3>
             <fieldset className={styles.radioGroup}>
               <legend className={styles.visuallyHidden}>{t("settingsWindow.appearance.applicationTheme")}</legend>
