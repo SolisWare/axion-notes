@@ -24,7 +24,7 @@
   outline: none;
   border: none;
   font-family: var(--note-rich-text-font-family);
-  font-size: 14px;
+  font-size: var(--note-rich-text-font-size);
   text-align: left;
   color: var(--note-rich-text-color);
   caret-color: var(--note-rich-text-color);

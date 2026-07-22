@@ -10,7 +10,7 @@ import { BulletList } from "@tiptap/extension-bullet-list";
 import FontFamily from "@tiptap/extension-font-family";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
-import { TextStyle } from "@tiptap/extension-text-style";
+import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Editor, JSONContent } from "@tiptap/core";
@@ -19,6 +19,7 @@ import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getNoteFontFamily, getNoteFontPreferenceByFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { DEFAULT_NOTE_FONT_SIZE, NOTE_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
@@ -111,8 +112,19 @@ function getInactiveFormatState() {
     isBulletListActive: false,
     isDashedListActive: false,
     isNumberedListActive: false,
+    activeFontSize: undefined,
     activeFont: undefined
   };
+}
+
+function getNoteFontSizePreference(fontSize: string | undefined): NoteFontSize | undefined {
+  if (!fontSize) {
+    return undefined;
+  }
+
+  const parsedFontSize = Number.parseFloat(fontSize);
+
+  return NOTE_FONT_SIZE_OPTIONS.find((fontSizeOption) => fontSizeOption === parsedFontSize);
 }
 
 function getFormatState(editor: Editor) {
@@ -122,7 +134,8 @@ function getFormatState(editor: Editor) {
   const dashedListAttributes = {
     [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
   };
-  const activeFontFamily = editor.getAttributes("textStyle").fontFamily;
+  const textStyleAttributes = editor.getAttributes("textStyle");
+  const activeFontFamily = textStyleAttributes.fontFamily;
 
   return {
     canFormat: true,
@@ -135,6 +148,7 @@ function getFormatState(editor: Editor) {
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
     isNumberedListActive: editor.isActive("orderedList"),
+    activeFontSize: getNoteFontSizePreference(textStyleAttributes.fontSize),
     activeFont: getNoteFontPreferenceByFontFamily(activeFontFamily)
   };
 }
@@ -183,6 +197,14 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
       break;
     case RichTextFormatCommand.NUMBERED_LIST:
       commandChain.toggleOrderedList().run();
+      break;
+    case RichTextFormatCommand.FONT_SIZE:
+      if (typeof action === "string" || action.fontSize === DEFAULT_NOTE_FONT_SIZE) {
+        commandChain.unsetFontSize().run();
+        break;
+      }
+
+      commandChain.setFontSize(`${action.fontSize}px`).run();
       break;
     case RichTextFormatCommand.FONT_FAMILY:
       if (typeof action === "string" || action.noteFont === NoteFontPreference.SYSTEM) {
@@ -237,6 +259,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   const editorStyle = {
     "--note-rich-text-color": appColors.NOTE_TEXT,
     "--note-rich-text-font-family": props.fontFamily ?? NOTE_TEXTAREA_DEFAULT_FONT_FAMILY,
+    "--note-rich-text-font-size": `${DEFAULT_NOTE_FONT_SIZE}px`,
     "--note-rich-text-placeholder-color": appColors.NOTE_PLACEHOLDER_TEXT
   } as CSSProperties;
   
@@ -254,6 +277,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
       }),
       MarkerBulletList,
       TextStyle,
+      FontSize,
       FontFamily,
       Superscript,
       Subscript,

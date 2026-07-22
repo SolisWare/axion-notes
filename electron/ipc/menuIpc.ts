@@ -26,7 +26,9 @@ let richTextFormatState: RichTextFormatState = {
   isSubscriptActive: false,
   isBulletListActive: false,
   isDashedListActive: false,
-  isNumberedListActive: false
+  isNumberedListActive: false,
+  activeFontSize: undefined,
+  activeFont: undefined
 };
 
 function updateNoteMenuItems(): void {

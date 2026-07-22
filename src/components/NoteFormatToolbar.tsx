@@ -20,6 +20,7 @@ import DashedListIcon from "./DashedListIcon";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../settings/NoteFontPreference";
+import { DEFAULT_NOTE_FONT_SIZE, NOTE_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteFormatToolbar.module.css";
@@ -38,7 +39,9 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const { t } = useTranslation();
   const [isInlineStyleMenuOpen, setIsInlineStyleMenuOpen] = useState(false);
   const [isListMenuOpen, setIsListMenuOpen] = useState(false);
+  const [isFontSizeMenuOpen, setIsFontSizeMenuOpen] = useState(false);
   const [isFontMenuOpen, setIsFontMenuOpen] = useState(false);
+  const [selectedFontSize, setSelectedFontSize] = useState<NoteFontSize>(props.formatState.activeFontSize ?? DEFAULT_NOTE_FONT_SIZE);
   const [selectedFont, setSelectedFont] = useState(props.formatState.activeFont ?? props.selectedFont);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
   const appColors = getAppColors(props.theme);
@@ -66,7 +69,11 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   }, [props.formatState.activeFont, props.selectedFont]);
 
   useEffect(() => {
-    if (!isInlineStyleMenuOpen && !isListMenuOpen && !isFontMenuOpen) {
+    setSelectedFontSize(props.formatState.activeFontSize ?? DEFAULT_NOTE_FONT_SIZE);
+  }, [props.formatState.activeFontSize]);
+
+  useEffect(() => {
+    if (!isInlineStyleMenuOpen && !isListMenuOpen && !isFontSizeMenuOpen && !isFontMenuOpen) {
       return;
     }
 
@@ -77,6 +84,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
 
       setIsInlineStyleMenuOpen(false);
       setIsListMenuOpen(false);
+      setIsFontSizeMenuOpen(false);
       setIsFontMenuOpen(false);
     };
 
@@ -84,6 +92,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       if (event.key === "Escape") {
         setIsInlineStyleMenuOpen(false);
         setIsListMenuOpen(false);
+        setIsFontSizeMenuOpen(false);
         setIsFontMenuOpen(false);
       }
     };
@@ -95,7 +104,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       document.removeEventListener("pointerdown", handleDocumentPointerDown);
       document.removeEventListener("keydown", handleDocumentKeyDown);
     };
-  }, [isInlineStyleMenuOpen, isListMenuOpen, isFontMenuOpen]);
+  }, [isInlineStyleMenuOpen, isListMenuOpen, isFontSizeMenuOpen, isFontMenuOpen]);
 
   return (
     <div
@@ -118,6 +127,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             disabled={!props.formatState.canFormat}
             onClick={() => {
               setIsListMenuOpen(false);
+              setIsFontSizeMenuOpen(false);
               setIsFontMenuOpen(false);
               setIsInlineStyleMenuOpen((isOpen) => !isOpen);
             }}
@@ -257,6 +267,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             disabled={!props.formatState.canFormat}
             onClick={() => {
               setIsInlineStyleMenuOpen(false);
+              setIsFontSizeMenuOpen(false);
               setIsFontMenuOpen(false);
               setIsListMenuOpen((isOpen) => !isOpen);
             }}
@@ -387,6 +398,49 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         </>
       )}
       <span className={styles.toolbarDivider} aria-hidden="true" />
+      <div className={styles.fontSizePicker}>
+        <button
+          aria-label={t("mainWindow.note.formatToolbar.fontSize")}
+          aria-expanded={isFontSizeMenuOpen}
+          aria-haspopup="true"
+          className={`${styles.fontSizePickerButton} ${props.compactInlineStyles ? styles.compactFontSizePickerButton : styles.expandedFontSizePickerButton}`}
+          disabled={!props.formatState.canFormat}
+          onClick={() => {
+            setIsInlineStyleMenuOpen(false);
+            setIsListMenuOpen(false);
+            setIsFontMenuOpen(false);
+            setIsFontSizeMenuOpen((isOpen) => !isOpen);
+          }}
+          title={t("mainWindow.note.formatToolbar.fontSize")}
+          type="button"
+        >
+          <span className={styles.fontSizePickerButtonLabel}>{selectedFontSize}</span>
+          <KeyboardArrowDownRoundedIcon className={styles.fontSizePickerButtonIcon} fontSize="small" />
+        </button>
+        {isFontSizeMenuOpen && (
+          <div className={styles.fontSizePickerMenu} role="menu" aria-label={t("mainWindow.note.formatToolbar.fontSize")}>
+            {NOTE_FONT_SIZE_OPTIONS.map((fontSize) => (
+              <button
+                className={`${styles.fontSizePickerOption} ${selectedFontSize === fontSize ? styles.fontSizePickerOptionActive : ""}`}
+                key={fontSize}
+                onClick={() => {
+                  setSelectedFontSize(fontSize);
+                  props.onFormatAction({
+                    command: RichTextFormatCommand.FONT_SIZE,
+                    fontSize
+                  });
+                  setIsFontSizeMenuOpen(false);
+                }}
+                role="menuitem"
+                type="button"
+              >
+                {fontSize}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
       <div className={styles.fontPicker}>
         <button
           aria-label={t("mainWindow.note.formatToolbar.font")}
@@ -397,6 +451,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           onClick={() => {
             setIsInlineStyleMenuOpen(false);
             setIsListMenuOpen(false);
+            setIsFontSizeMenuOpen(false);
             setIsFontMenuOpen((isOpen) => !isOpen);
           }}
           title={t("mainWindow.note.formatToolbar.font")}

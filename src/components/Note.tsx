@@ -217,6 +217,7 @@ function Note(props: NoteProps) {
     isBulletListActive: false,
     isDashedListActive: false,
     isNumberedListActive: false,
+    activeFontSize: undefined,
     activeFont: undefined
   });
   const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);

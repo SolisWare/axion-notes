@@ -39,6 +39,7 @@
         "numberedList": "Numbered list",
         "superscript": "Superscript",
         "subscript": "Subscript",
+        "fontSize": "Font size",
         "font": "Font"
       },
       "contextMenu": {

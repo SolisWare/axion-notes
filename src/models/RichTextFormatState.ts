@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 
 export type RichTextFormatState = {
   canFormat: boolean;
@@ -17,5 +18,6 @@ export type RichTextFormatState = {
   isBulletListActive: boolean;
   isDashedListActive: boolean;
   isNumberedListActive: boolean;
+  activeFontSize?: NoteFontSize;
   activeFont?: NoteFontPreference;
 };
