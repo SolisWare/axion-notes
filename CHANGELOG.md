@@ -3,7 +3,10 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
-## [v0.4.0] - Unreleased - Viewport
+## [v0.4.0-rc.2] - Unreleased - Viewport
+- Added bundled custom note fonts with grouped font categories in the Note font setting
+
+## [v0.4.0-rc.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
 - Reduced reported dependency vulnerabilities from 5 to 4 through targeted package updates as part of ongoing security maintenance
 - Added dedicated note windows with live note synchronization, focused note-window context actions, and offset placement for multiple open note windows

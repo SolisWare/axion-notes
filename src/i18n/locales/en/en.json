@@ -138,11 +138,25 @@
         "lilac": "Lilac"
       },
       "noteFont": "Note font",
+      "noteFontCategories": {
+        "generic": "Generic",
+        "standard": "Standard",
+        "typewriter": "Typewriter",
+        "handwriting": "Handwriting",
+        "calligraphic": "Calligraphic"
+      },
       "noteFontOptions": {
         "system": "System default",
         "serif": "Serif",
         "sansSerif": "Sans-serif",
-        "monospace": "Monospace"
+        "monospace": "Monospace",
+        "inter": "Inter",
+        "lora": "Lora",
+        "sourceSans3": "Source Sans 3",
+        "sourceSerif4": "Source Serif 4",
+        "spaceMono": "Space Mono",
+        "caveat": "Caveat",
+        "dancingScript": "Dancing Script"
       },
       "noteFontPreview": "The quick brown fox jumps over the lazy dog."
     },

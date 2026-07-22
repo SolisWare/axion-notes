@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
 import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
-import { getNoteFontFamily, NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { getNoteFontFamily, NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
@@ -81,6 +81,10 @@ function Appearance(props: AppearanceProps) {
       ...props.appSettings,
       showFloatingFormatToolbar: event.target.checked
     });
+  }
+
+  function getNoteFontOptionsByCategory(fontCategory: typeof NOTE_FONT_CATEGORIES[number]) {
+    return NOTE_FONT_OPTIONS.filter((fontOption) => fontOption.category === fontCategory);
   }
 
   return (
@@ -258,30 +262,22 @@ function Appearance(props: AppearanceProps) {
                 value={props.appSettings.noteFont}
                 onChange={handleNoteFontChange}
               >
-                <option
-                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SYSTEM) }}
-                  value={NoteFontPreference.SYSTEM}
-                >
-                  {t("settingsWindow.appearance.noteFontOptions.system")}
-                </option>
-                <option
-                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SERIF) }}
-                  value={NoteFontPreference.SERIF}
-                >
-                  {t("settingsWindow.appearance.noteFontOptions.serif")}
-                </option>
-                <option
-                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.SANS_SERIF) }}
-                  value={NoteFontPreference.SANS_SERIF}
-                >
-                  {t("settingsWindow.appearance.noteFontOptions.sansSerif")}
-                </option>
-                <option
-                  style={{ fontFamily: getNoteFontFamily(NoteFontPreference.MONOSPACE) }}
-                  value={NoteFontPreference.MONOSPACE}
-                >
-                  {t("settingsWindow.appearance.noteFontOptions.monospace")}
-                </option>
+                {NOTE_FONT_CATEGORIES.map((fontCategory) => (
+                  <optgroup
+                    key={fontCategory}
+                    label={t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
+                  >
+                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
+                      <option
+                        key={fontOption.value}
+                        style={{ fontFamily: fontOption.fontFamily }}
+                        value={fontOption.value}
+                      >
+                        {t(fontOption.labelKey)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
               <span
                 className={styles.noteFontPreview}
