@@ -149,6 +149,8 @@ function NoteWindow(props: NoteWindowProps) {
               timeFormat={props.appSettings.timeFormat}
               noteFont={props.appSettings.noteFont}
               noteTitleFont={props.appSettings.noteTitleFont}
+              noteContentFontSize={props.appSettings.noteContentFontSize}
+              noteTitleFontSize={props.appSettings.noteTitleFontSize}
               noteSize={NoteSizePreference.DEFAULT}
               showNoteTitles={props.appSettings.showNoteTitles}
               showNoteFooters={props.appSettings.showNoteFooters}

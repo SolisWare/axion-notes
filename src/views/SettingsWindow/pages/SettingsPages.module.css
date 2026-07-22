@@ -18,7 +18,8 @@
   max-width: 320px;
 }
 
-.appearancePage {
+.appearancePage,
+.editorPage {
   min-height: 100%;
   box-sizing: border-box;
   padding: 26px 34px 34px;
@@ -67,6 +68,25 @@
 
 .settingsRow:last-child {
   border-bottom: 0;
+}
+
+.settingsSubsectionHeader {
+  margin: 10px 0 7px;
+  padding: 0 2px;
+  color: var(--settings-section-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.settingsSubsectionHeaderFirst {
+  margin-top: 0;
+}
+
+.settingsSubsectionHeaderSpaced {
+  margin-top: 22px;
 }
 
 .settingsRowText {

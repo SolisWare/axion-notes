@@ -21,6 +21,7 @@
   width: 100%;
   min-height: 100%;
   box-sizing: border-box;
+  padding-left: 0.45em;
   outline: none;
   border: none;
   font-family: var(--note-rich-text-font-family);
@@ -44,12 +45,18 @@
 
 .wrapper :global(.ProseMirror ul) {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 1.2em;
+  list-style-position: outside;
 }
 
 .wrapper :global(.ProseMirror ul[data-list-marker-type="dash"]) {
   list-style: none;
-  padding-left: 22px;
+  padding-left: 0.8em;
+}
+
+.wrapper :global(.ProseMirror li) {
+  margin: 0;
+  padding-left: 0;
 }
 
 .wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] > li) {
@@ -59,18 +66,13 @@
 .wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] > li::before) {
   content: "-";
   position: absolute;
-  left: -14px;
+  left: -0.55em;
 }
 
 .wrapper :global(.ProseMirror ol) {
   margin: 0;
-  padding-left: 30px;
+  padding-left: 1.2em;
   list-style-position: outside;
-}
-
-.wrapper :global(.ProseMirror li) {
-  margin: 0;
-  padding-left: 0;
 }
 
 .wrapper :global(.ProseMirror li p) {

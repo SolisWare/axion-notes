@@ -12,6 +12,7 @@ import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableNote from "./SortableNote";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -24,6 +25,8 @@ export type NoteGridProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -153,6 +156,8 @@ function NoteGrid (props: NoteGridProps) {
                 timeFormat={props.timeFormat}
                 noteFont={props.noteFont}
                 noteTitleFont={props.noteTitleFont}
+                noteContentFontSize={props.noteContentFontSize}
+                noteTitleFontSize={props.noteTitleFontSize}
                 noteSize={props.noteSize}
                 showNoteTitles={props.showNoteTitles}
                 showNoteFooters={props.showNoteFooters}

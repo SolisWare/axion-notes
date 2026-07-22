@@ -19,7 +19,7 @@ import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { getNoteFontFamily, getNoteFontPreferenceByFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
-import { DEFAULT_NOTE_FONT_SIZE, NOTE_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
@@ -59,6 +59,7 @@ type NoteRichTextEditorChange = {
 type NoteRichTextEditorProps = {
   theme?: SystemTheme;
   fontFamily?: string;
+  fontSize?: NoteFontSize;
   placeholder: string;
   content: string;
   richContent?: TiptapDocument;
@@ -124,7 +125,7 @@ function getNoteFontSizePreference(fontSize: string | undefined): NoteFontSize |
 
   const parsedFontSize = Number.parseFloat(fontSize);
 
-  return NOTE_FONT_SIZE_OPTIONS.find((fontSizeOption) => fontSizeOption === parsedFontSize);
+  return NOTE_CONTENT_FONT_SIZE_OPTIONS.find((fontSizeOption) => fontSizeOption === parsedFontSize);
 }
 
 function getFormatState(editor: Editor) {
@@ -199,7 +200,7 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
       commandChain.toggleOrderedList().run();
       break;
     case RichTextFormatCommand.FONT_SIZE:
-      if (typeof action === "string" || action.fontSize === DEFAULT_NOTE_FONT_SIZE) {
+      if (typeof action === "string" || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
         commandChain.unsetFontSize().run();
         break;
       }
@@ -259,7 +260,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   const editorStyle = {
     "--note-rich-text-color": appColors.NOTE_TEXT,
     "--note-rich-text-font-family": props.fontFamily ?? NOTE_TEXTAREA_DEFAULT_FONT_FAMILY,
-    "--note-rich-text-font-size": `${DEFAULT_NOTE_FONT_SIZE}px`,
+    "--note-rich-text-font-size": `${props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE}px`,
     "--note-rich-text-placeholder-color": appColors.NOTE_PLACEHOLDER_TEXT
   } as CSSProperties;
   

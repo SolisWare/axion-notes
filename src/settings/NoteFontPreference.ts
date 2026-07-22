@@ -36,66 +36,66 @@ export type NoteFontOption = {
 export const NOTE_FONT_OPTIONS: readonly NoteFontOption[] = [
   {
     value: NoteFontPreference.SYSTEM,
-    labelKey: "settingsWindow.appearance.noteFontOptions.system",
+    labelKey: "settingsWindow.editor.noteFontOptions.system",
     category: NoteFontCategory.GENERIC
   },
   {
     value: NoteFontPreference.SERIF,
-    labelKey: "settingsWindow.appearance.noteFontOptions.serif",
+    labelKey: "settingsWindow.editor.noteFontOptions.serif",
     category: NoteFontCategory.GENERIC,
     fontFamily: "Georgia, 'Times New Roman', serif"
   },
   {
     value: NoteFontPreference.SANS_SERIF,
-    labelKey: "settingsWindow.appearance.noteFontOptions.sansSerif",
+    labelKey: "settingsWindow.editor.noteFontOptions.sansSerif",
     category: NoteFontCategory.GENERIC,
     fontFamily: "Arial, Helvetica, sans-serif"
   },
   {
     value: NoteFontPreference.MONOSPACE,
-    labelKey: "settingsWindow.appearance.noteFontOptions.monospace",
+    labelKey: "settingsWindow.editor.noteFontOptions.monospace",
     category: NoteFontCategory.GENERIC,
     fontFamily: "'SFMono-Regular', Consolas, 'Liberation Mono', monospace"
   },
   {
     value: NoteFontPreference.INTER,
-    labelKey: "settingsWindow.appearance.noteFontOptions.inter",
+    labelKey: "settingsWindow.editor.noteFontOptions.inter",
     category: NoteFontCategory.STANDARD,
     fontFamily: "'Axion Inter', system-ui, sans-serif"
   },
   {
     value: NoteFontPreference.SOURCE_SANS_3,
-    labelKey: "settingsWindow.appearance.noteFontOptions.sourceSans3",
+    labelKey: "settingsWindow.editor.noteFontOptions.sourceSans3",
     category: NoteFontCategory.STANDARD,
     fontFamily: "'Axion Source Sans 3', system-ui, sans-serif"
   },
   {
     value: NoteFontPreference.LORA,
-    labelKey: "settingsWindow.appearance.noteFontOptions.lora",
+    labelKey: "settingsWindow.editor.noteFontOptions.lora",
     category: NoteFontCategory.STANDARD,
     fontFamily: "'Axion Lora', Georgia, serif"
   },
   {
     value: NoteFontPreference.SOURCE_SERIF_4,
-    labelKey: "settingsWindow.appearance.noteFontOptions.sourceSerif4",
+    labelKey: "settingsWindow.editor.noteFontOptions.sourceSerif4",
     category: NoteFontCategory.STANDARD,
     fontFamily: "'Axion Source Serif 4', Georgia, serif"
   },
   {
     value: NoteFontPreference.SPACE_MONO,
-    labelKey: "settingsWindow.appearance.noteFontOptions.spaceMono",
+    labelKey: "settingsWindow.editor.noteFontOptions.spaceMono",
     category: NoteFontCategory.TYPEWRITER,
     fontFamily: "'Axion Space Mono', 'SFMono-Regular', Consolas, monospace"
   },
   {
     value: NoteFontPreference.CAVEAT,
-    labelKey: "settingsWindow.appearance.noteFontOptions.caveat",
+    labelKey: "settingsWindow.editor.noteFontOptions.caveat",
     category: NoteFontCategory.HANDWRITING,
     fontFamily: "'Axion Caveat', cursive"
   },
   {
     value: NoteFontPreference.DANCING_SCRIPT,
-    labelKey: "settingsWindow.appearance.noteFontOptions.dancingScript",
+    labelKey: "settingsWindow.editor.noteFontOptions.dancingScript",
     category: NoteFontCategory.CALLIGRAPHIC,
     fontFamily: "'Axion Dancing Script', cursive"
   }

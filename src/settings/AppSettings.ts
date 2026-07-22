@@ -8,6 +8,7 @@ import { AppThemePreference } from "./AppThemePreference";
 import { DefaultNoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
+import { NoteFontSize } from "./NoteFontSize";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
 import { SupportedLanguageCode } from "../i18n/languageConfig";
@@ -25,6 +26,8 @@ export type AppSettings = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;

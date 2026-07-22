@@ -9,6 +9,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import Note from "./Note";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { NoteSizePreference } from "../settings/noteSizePreference";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -21,6 +22,8 @@ type SortableNoteProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -63,6 +66,8 @@ function SortableNote(props: SortableNoteProps) {
         timeFormat={props.timeFormat}
         noteFont={props.noteFont}
         noteTitleFont={props.noteTitleFont}
+        noteContentFontSize={props.noteContentFontSize}
+        noteTitleFontSize={props.noteTitleFontSize}
         noteSize={props.noteSize}
         showNoteTitles={props.showNoteTitles}
         showNoteFooters={props.showNoteFooters}

@@ -10,6 +10,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Compact list formatting actions into a dropdown in the floating note toolbar
 - Removed superscript and subscript actions from the floating note toolbar
 - Added inline font size selection to the note formatting toolbar
+- Added an Editor settings tab with separate default font size controls for note titles and content
 
 ## [v0.4.0-rc.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing

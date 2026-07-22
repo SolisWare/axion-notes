@@ -74,6 +74,7 @@
       "pages": {
         "general": "General",
         "appearance": "Appearance",
+        "editor": "Editor",
         "shortcuts": "Shortcuts",
         "dataStorage": "Data & storage",
         "license": "License",
@@ -139,11 +140,19 @@
         "red": "Red",
         "teal": "Teal",
         "lilac": "Lilac"
-      },
+      }
+    },
+    "editor": {
+      "titleSection": "Title",
+      "contentSection": "Content",
       "noteFont": "Content font",
       "noteFontDescription": "Applies to note body text.",
+      "noteContentFontSize": "Content font size",
+      "noteContentFontSizeDescription": "Default size for note body text.",
       "noteTitleFont": "Title font",
       "noteTitleFontDescription": "Applies to note title fields.",
+      "noteTitleFontSize": "Title font size",
+      "noteTitleFontSizeDescription": "Default size for note title fields.",
       "noteFontCategories": {
         "generic": "Generic",
         "standard": "Standard",

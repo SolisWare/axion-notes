@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { AppThemePreference } from "../../../settings/AppThemePreference";
 import { DefaultNoteColorPreference, NoteColorPreference } from "../../../settings/noteColorPreference";
-import { getNoteFontFamily, NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { NoteColorKey, NoteColors } from "../../../theme/NoteColors";
@@ -24,9 +23,6 @@ type AppearanceProps = {
 function Appearance(props: AppearanceProps) {
   const { t } = useTranslation();
   const noteColorKeys = Object.values(NoteColorKey);
-  const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
-  const noteTitleFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteTitleFont);
-  const noteFontPreview = t("settingsWindow.appearance.noteFontPreview");
   const autoColorBackground = `conic-gradient(${noteColorKeys
     .map((colorKey) => NoteColors.light[colorKey])
     .join(", ")}, ${NoteColors.light[noteColorKeys[0]]})`;
@@ -54,24 +50,6 @@ function Appearance(props: AppearanceProps) {
     event.currentTarget.blur();
   }
 
-  function handleNoteFontChange(event: ChangeEvent<HTMLSelectElement>) {
-    props.onAppSettingsChange({
-      ...props.appSettings,
-      noteFont: event.target.value as NoteFontPreference
-    });
-
-    event.currentTarget.blur();
-  }
-
-  function handleNoteTitleFontChange(event: ChangeEvent<HTMLSelectElement>) {
-    props.onAppSettingsChange({
-      ...props.appSettings,
-      noteTitleFont: event.target.value as NoteFontPreference
-    });
-
-    event.currentTarget.blur();
-  }
-
   function handleShowNoteTitlesChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
@@ -91,10 +69,6 @@ function Appearance(props: AppearanceProps) {
       ...props.appSettings,
       showFloatingFormatToolbar: event.target.checked
     });
-  }
-
-  function getNoteFontOptionsByCategory(fontCategory: typeof NOTE_FONT_CATEGORIES[number]) {
-    return NOTE_FONT_OPTIONS.filter((fontOption) => fontOption.category === fontCategory);
   }
 
   return (
@@ -259,86 +233,6 @@ function Appearance(props: AppearanceProps) {
                 </label>
               ))}
             </fieldset>
-          </div>
-          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
-            <div>
-              <label className={styles.settingsSectionTitle} htmlFor="note-font">
-                {t("settingsWindow.appearance.noteFont")}
-              </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.noteFontDescription")}</p>
-            </div>
-            <div className={styles.noteFontControls}>
-              <select
-                className={styles.settingsSelect}
-                id="note-font"
-                style={{ fontFamily: noteFontPreviewFontFamily }}
-                value={props.appSettings.noteFont}
-                onChange={handleNoteFontChange}
-              >
-                {NOTE_FONT_CATEGORIES.map((fontCategory) => (
-                  <optgroup
-                    key={fontCategory}
-                    label={t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
-                  >
-                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
-                      <option
-                        key={fontOption.value}
-                        style={{ fontFamily: fontOption.fontFamily }}
-                        value={fontOption.value}
-                      >
-                        {t(fontOption.labelKey)}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </div>
-            <span
-              className={styles.noteFontPreview}
-              style={{ fontFamily: noteFontPreviewFontFamily }}
-            >
-              {noteFontPreview}
-            </span>
-          </div>
-          <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
-            <div>
-              <label className={styles.settingsSectionTitle} htmlFor="note-title-font">
-                {t("settingsWindow.appearance.noteTitleFont")}
-              </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.noteTitleFontDescription")}</p>
-            </div>
-            <div className={styles.noteFontControls}>
-              <select
-                className={styles.settingsSelect}
-                id="note-title-font"
-                style={{ fontFamily: noteTitleFontPreviewFontFamily }}
-                value={props.appSettings.noteTitleFont}
-                onChange={handleNoteTitleFontChange}
-              >
-                {NOTE_FONT_CATEGORIES.map((fontCategory) => (
-                  <optgroup
-                    key={fontCategory}
-                    label={t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
-                  >
-                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
-                      <option
-                        key={fontOption.value}
-                        style={{ fontFamily: fontOption.fontFamily }}
-                        value={fontOption.value}
-                      >
-                        {t(fontOption.labelKey)}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </div>
-            <span
-              className={styles.noteFontPreview}
-              style={{ fontFamily: noteTitleFontPreviewFontFamily }}
-            >
-              {noteFontPreview}
-            </span>
           </div>
         </div>
       </section>

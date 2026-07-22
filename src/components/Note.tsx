@@ -22,6 +22,7 @@ import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, use
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -33,6 +34,8 @@ type NoteProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -504,6 +507,8 @@ function Note(props: NoteProps) {
                   className={classes.noteTitleInput}
                   style={{
                     fontFamily: noteTitleFontFamily,
+                    fontSize: props.noteTitleFontSize,
+                    lineHeight: `${props.noteTitleFontSize + 5}px`,
                     color: appColors.NOTE_TEXT,
                     caretColor: appColors.NOTE_TEXT,
                     WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
@@ -539,6 +544,7 @@ function Note(props: NoteProps) {
               <NoteRichTextEditor
                 theme={props.theme}
                 fontFamily={noteFontFamily}
+                fontSize={props.noteContentFontSize}
                 placeholder={t("mainWindow.note.contentPlaceholder")}
                 content={note.content}
                 richContent={note.richContent}

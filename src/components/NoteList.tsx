@@ -11,6 +11,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useTranslation } from "react-i18next";
 import { NoteType } from "../models/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { NoteSizePreference } from "../settings/noteSizePreference";
 import { getAppColors } from "../theme/AppColors";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
@@ -29,6 +30,8 @@ type NoteListProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -382,13 +385,13 @@ function NoteList(props: NoteListProps) {
                       </div>
                       <div className={styles.listItemContent}>
                         {foldedNoteContent.title && (
-                          <span className={styles.listItemTitle} style={{ fontFamily: noteTitleFontFamily }}>
+                          <span className={styles.listItemTitle} style={{ fontFamily: noteTitleFontFamily, fontSize: props.noteTitleFontSize }}>
                             {foldedNoteContent.title}
                           </span>
                         )}
                         <span
                           className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}
-                          style={{ fontFamily: noteFontFamily }}
+                          style={{ fontFamily: noteFontFamily, fontSize: props.noteContentFontSize }}
                         >
                           {foldedNoteContent.body}
                         </span>
@@ -419,6 +422,8 @@ function NoteList(props: NoteListProps) {
                       timeFormat={props.timeFormat}
                       noteFont={props.noteFont}
                       noteTitleFont={props.noteTitleFont}
+                      noteContentFontSize={props.noteContentFontSize}
+                      noteTitleFontSize={props.noteTitleFontSize}
                       noteSize={NoteSizePreference.WIDE}
                       showNoteTitles={props.showNoteTitles}
                       showNoteFooters={props.showNoteFooters}

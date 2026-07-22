@@ -20,7 +20,7 @@ import DashedListIcon from "./DashedListIcon";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../settings/NoteFontPreference";
-import { DEFAULT_NOTE_FONT_SIZE, NOTE_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteFormatToolbar.module.css";
@@ -41,7 +41,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const [isListMenuOpen, setIsListMenuOpen] = useState(false);
   const [isFontSizeMenuOpen, setIsFontSizeMenuOpen] = useState(false);
   const [isFontMenuOpen, setIsFontMenuOpen] = useState(false);
-  const [selectedFontSize, setSelectedFontSize] = useState<NoteFontSize>(props.formatState.activeFontSize ?? DEFAULT_NOTE_FONT_SIZE);
+  const [selectedFontSize, setSelectedFontSize] = useState<NoteFontSize>(props.formatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
   const [selectedFont, setSelectedFont] = useState(props.formatState.activeFont ?? props.selectedFont);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
   const appColors = getAppColors(props.theme);
@@ -69,7 +69,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   }, [props.formatState.activeFont, props.selectedFont]);
 
   useEffect(() => {
-    setSelectedFontSize(props.formatState.activeFontSize ?? DEFAULT_NOTE_FONT_SIZE);
+    setSelectedFontSize(props.formatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
   }, [props.formatState.activeFontSize]);
 
   useEffect(() => {
@@ -419,7 +419,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         </button>
         {isFontSizeMenuOpen && (
           <div className={styles.fontSizePickerMenu} role="menu" aria-label={t("mainWindow.note.formatToolbar.fontSize")}>
-            {NOTE_FONT_SIZE_OPTIONS.map((fontSize) => (
+            {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
               <button
                 className={`${styles.fontSizePickerOption} ${selectedFontSize === fontSize ? styles.fontSizePickerOptionActive : ""}`}
                 key={fontSize}
@@ -470,7 +470,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             {NOTE_FONT_CATEGORIES.map((fontCategory) => (
               <div className={styles.fontPickerCategory} key={fontCategory}>
                 <div className={styles.fontPickerCategoryLabel}>
-                  {t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
+                  {t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
                 </div>
                 {NOTE_FONT_OPTIONS
                   .filter((fontOption) => fontOption.category === fontCategory)

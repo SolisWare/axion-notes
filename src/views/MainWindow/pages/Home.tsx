@@ -9,6 +9,7 @@ import NoteGrid from "../../../components/NoteGrid";
 import NoteList from "../../../components/NoteList";
 import { NoteType } from "../../../models/NoteType";
 import { NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { NoteFontSize } from "../../../settings/NoteFontSize";
 import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";
 import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
@@ -22,6 +23,8 @@ type HomeProps = {
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
   noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
   noteLayout: NoteLayoutPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
@@ -53,6 +56,8 @@ function Home(props: HomeProps) {
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
           noteTitleFont={props.noteTitleFont}
+          noteContentFontSize={props.noteContentFontSize}
+          noteTitleFontSize={props.noteTitleFontSize}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
@@ -74,6 +79,8 @@ function Home(props: HomeProps) {
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
           noteTitleFont={props.noteTitleFont}
+          noteContentFontSize={props.noteContentFontSize}
+          noteTitleFontSize={props.noteTitleFontSize}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
