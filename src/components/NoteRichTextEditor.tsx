@@ -7,15 +7,18 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
+import FontFamily from "@tiptap/extension-font-family";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Editor, JSONContent } from "@tiptap/core";
 import { CSSProperties, MouseEvent, useEffect, useMemo, useRef } from "react";
 import { TiptapDocument } from "../models/NoteType";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
+import { getNoteFontFamily, getNoteFontPreferenceByFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
@@ -66,7 +69,7 @@ type NoteRichTextEditorProps = {
 
 export type RichTextFormatActionRequest = {
   id: number;
-  command: RichTextFormatCommand;
+  command: RichTextFormatAction;
 };
 
 function getPlainTextDocument(content: string): TiptapDocument {
@@ -107,7 +110,8 @@ function getInactiveFormatState() {
     isSubscriptActive: false,
     isBulletListActive: false,
     isDashedListActive: false,
-    isNumberedListActive: false
+    isNumberedListActive: false,
+    activeFont: undefined
   };
 }
 
@@ -118,6 +122,7 @@ function getFormatState(editor: Editor) {
   const dashedListAttributes = {
     [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
   };
+  const activeFontFamily = editor.getAttributes("textStyle").fontFamily;
 
   return {
     canFormat: true,
@@ -129,7 +134,8 @@ function getFormatState(editor: Editor) {
     isSubscriptActive: editor.isActive("subscript"),
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
-    isNumberedListActive: editor.isActive("orderedList")
+    isNumberedListActive: editor.isActive("orderedList"),
+    activeFont: getNoteFontPreferenceByFontFamily(activeFontFamily)
   };
 }
 
@@ -142,7 +148,12 @@ function clearFocusedFormatState(editorId: string) {
   window.api.menu.setRichTextFormatState(getInactiveFormatState());
 }
 
-function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatCommand) {
+function getRichTextFormatCommand(action: RichTextFormatAction): RichTextFormatCommand {
+  return typeof action === "string" ? action : action.command;
+}
+
+function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction) {
+  const command = getRichTextFormatCommand(action);
   const commandChain = editor.chain().focus();
 
   switch (command) {
@@ -172,6 +183,14 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
       break;
     case RichTextFormatCommand.NUMBERED_LIST:
       commandChain.toggleOrderedList().run();
+      break;
+    case RichTextFormatCommand.FONT_FAMILY:
+      if (typeof action === "string" || action.noteFont === NoteFontPreference.SYSTEM) {
+        commandChain.unsetFontFamily().run();
+        break;
+      }
+
+      commandChain.setFontFamily(getNoteFontFamily(action.noteFont) ?? "").run();
       break;
   }
 }
@@ -234,6 +253,8 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         horizontalRule: false
       }),
       MarkerBulletList,
+      TextStyle,
+      FontFamily,
       Superscript,
       Subscript,
       Underline,

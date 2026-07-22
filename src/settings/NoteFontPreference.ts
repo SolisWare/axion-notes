@@ -112,3 +112,7 @@ export const NOTE_FONT_CATEGORIES: readonly NoteFontCategory[] = [
 export function getNoteFontFamily(noteFont: NoteFontPreference): string | undefined {
   return NOTE_FONT_OPTIONS.find((option) => option.value === noteFont)?.fontFamily;
 }
+
+export function getNoteFontPreferenceByFontFamily(fontFamily: string | undefined): NoteFontPreference | undefined {
+  return NOTE_FONT_OPTIONS.find((option) => option.fontFamily === fontFamily)?.value;
+}

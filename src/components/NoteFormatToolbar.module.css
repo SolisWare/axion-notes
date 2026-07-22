@@ -55,6 +55,156 @@
   background: rgba(80, 93, 110, 0.24);
 }
 
+.fontPicker {
+  position: relative;
+  display: inline-flex;
+}
+
+.fontPickerButton {
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 5px 0 8px;
+  border: 0;
+  border-radius: 4px;
+  color: rgba(35, 43, 55, 0.68);
+  background: transparent;
+  font: inherit;
+  cursor: default;
+  transition: background-color 100ms ease, color 100ms ease, transform 80ms ease, box-shadow 80ms ease;
+}
+
+.compactFontPickerButton {
+  min-width: 48px;
+}
+
+.expandedFontPickerButton {
+  width: 136px;
+  justify-content: space-between;
+  padding-left: 9px;
+  padding-right: 5px;
+}
+
+.fontPickerButton:hover,
+.fontPickerButton[aria-expanded="true"] {
+  color: var(--note-format-toolbar-button-hover-text);
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 68%,
+    transparent
+  );
+}
+
+.fontPickerButton:active {
+  color: var(--note-format-toolbar-button-hover-text);
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 82%,
+    transparent
+  );
+  box-shadow: inset 0 0 0 1px color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-text) 24%,
+    transparent
+  );
+  transform: translateY(1px);
+}
+
+.fontPickerButton:disabled {
+  color: rgba(35, 43, 55, 0.28);
+}
+
+.fontPickerButtonLabel {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fontPickerButtonIcon {
+  width: 17px !important;
+  height: 17px !important;
+  margin-right: -3px;
+}
+
+.fontPickerMenu {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 6;
+  width: 190px;
+  max-height: 260px;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid rgba(80, 93, 110, 0.18);
+  border-radius: 6px;
+  background: var(--note-format-toolbar-background, rgba(255, 255, 255, 0.96));
+  box-shadow: 0 2px 8px rgba(35, 43, 55, 0.16);
+}
+
+.fontPickerCategory + .fontPickerCategory {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(80, 93, 110, 0.16);
+}
+
+.fontPickerCategoryLabel {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 3px 4px;
+  color: rgba(35, 43, 55, 0.48);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.fontPickerOption {
+  width: 100%;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px 7px;
+  border: 0;
+  border-radius: 4px;
+  color: rgba(35, 43, 55, 0.78);
+  background: transparent;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: left;
+  cursor: default;
+}
+
+.fontPickerOption:hover {
+  color: var(--note-format-toolbar-button-hover-text);
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 58%,
+    transparent
+  );
+}
+
+.fontPickerOptionActive,
+.fontPickerOptionActive:hover {
+  color: var(--note-format-toolbar-button-hover-text);
+  background-color: color-mix(
+    in srgb,
+    var(--note-format-toolbar-button-hover-background) 78%,
+    var(--note-format-toolbar-button-hover-text) 10%
+  );
+}
+
 .compactGroup {
   position: relative;
   display: inline-flex;

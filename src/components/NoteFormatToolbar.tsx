@@ -9,15 +9,17 @@ import FormatItalicRoundedIcon from "@mui/icons-material/FormatItalicRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
 import FormatUnderlinedRoundedIcon from "@mui/icons-material/FormatUnderlinedRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded";
 import SubscriptRoundedIcon from "@mui/icons-material/SubscriptRounded";
 import SuperscriptRoundedIcon from "@mui/icons-material/SuperscriptRounded";
 import { IconButton } from "@mui/material";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DashedListIcon from "./DashedListIcon";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
+import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../settings/NoteFontPreference";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteFormatToolbar.module.css";
@@ -25,20 +27,28 @@ import styles from "./NoteFormatToolbar.module.css";
 type NoteFormatToolbarProps = {
   theme: SystemTheme;
   formatState: RichTextFormatState;
-  onFormatAction: (command: RichTextFormatCommand) => void;
+  onFormatAction: (command: RichTextFormatAction) => void;
   className?: string;
   surfaceColor?: string;
   compactInlineStyles?: boolean;
+  selectedFont?: NoteFontPreference;
 };
 
 function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const { t } = useTranslation();
   const [isInlineStyleMenuOpen, setIsInlineStyleMenuOpen] = useState(false);
+  const [isFontMenuOpen, setIsFontMenuOpen] = useState(false);
+  const [selectedFont, setSelectedFont] = useState(props.formatState.activeFont ?? props.selectedFont);
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
   const appColors = getAppColors(props.theme);
   const isInlineStyleActive = props.formatState.isBoldActive
     || props.formatState.isItalicActive
     || props.formatState.isUnderlineActive
     || props.formatState.isStrikethroughActive;
+  const selectedFontOption = NOTE_FONT_OPTIONS.find((fontOption) => fontOption.value === (props.formatState.activeFont ?? selectedFont));
+  const fontPickerButtonLabel = props.compactInlineStyles
+    ? "Aa"
+    : t(selectedFontOption?.labelKey ?? "mainWindow.note.formatToolbar.font");
   const toolbarStyle = {
     "--note-format-toolbar-button-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
@@ -47,9 +57,44 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       : undefined
   } as CSSProperties;
 
+  useEffect(() => {
+    setSelectedFont(props.formatState.activeFont ?? props.selectedFont);
+  }, [props.formatState.activeFont, props.selectedFont]);
+
+  useEffect(() => {
+    if (!isInlineStyleMenuOpen && !isFontMenuOpen) {
+      return;
+    }
+
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && toolbarRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsInlineStyleMenuOpen(false);
+      setIsFontMenuOpen(false);
+    };
+
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsInlineStyleMenuOpen(false);
+        setIsFontMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleDocumentPointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleDocumentPointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [isInlineStyleMenuOpen, isFontMenuOpen]);
+
   return (
     <div
       className={`${styles.toolbar} ${props.className ?? ""}`}
+      ref={toolbarRef}
       role="toolbar"
       aria-label={t("electron.menu.format")}
       data-note-format-toolbar="true"
@@ -65,7 +110,10 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             className={`${styles.toolbarButton} ${styles.inlineStyleMenuButton} ${isInlineStyleActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
-            onClick={() => setIsInlineStyleMenuOpen((isOpen) => !isOpen)}
+            onClick={() => {
+              setIsFontMenuOpen(false);
+              setIsInlineStyleMenuOpen((isOpen) => !isOpen);
+            }}
             size="small"
             title={t("electron.menu.format")}
             type="button"
@@ -252,6 +300,62 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       >
         <SubscriptRoundedIcon className={styles.subscriptIcon} fontSize="small" />
       </IconButton>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <div className={styles.fontPicker}>
+        <button
+          aria-label={t("mainWindow.note.formatToolbar.font")}
+          aria-expanded={isFontMenuOpen}
+          aria-haspopup="true"
+          className={`${styles.fontPickerButton} ${props.compactInlineStyles ? styles.compactFontPickerButton : styles.expandedFontPickerButton}`}
+          disabled={!props.formatState.canFormat}
+          onClick={() => {
+            setIsInlineStyleMenuOpen(false);
+            setIsFontMenuOpen((isOpen) => !isOpen);
+          }}
+          title={t("mainWindow.note.formatToolbar.font")}
+          type="button"
+        >
+          <span
+            className={styles.fontPickerButtonLabel}
+            style={{ fontFamily: !props.compactInlineStyles ? selectedFontOption?.fontFamily : undefined }}
+          >
+            {fontPickerButtonLabel}
+          </span>
+          <KeyboardArrowDownRoundedIcon className={styles.fontPickerButtonIcon} fontSize="small" />
+        </button>
+        {isFontMenuOpen && (
+          <div className={styles.fontPickerMenu} role="menu" aria-label={t("mainWindow.note.formatToolbar.font")}>
+            {NOTE_FONT_CATEGORIES.map((fontCategory) => (
+              <div className={styles.fontPickerCategory} key={fontCategory}>
+                <div className={styles.fontPickerCategoryLabel}>
+                  {t(`settingsWindow.appearance.noteFontCategories.${fontCategory}`)}
+                </div>
+                {NOTE_FONT_OPTIONS
+                  .filter((fontOption) => fontOption.category === fontCategory)
+                  .map((fontOption) => (
+                    <button
+                      className={`${styles.fontPickerOption} ${selectedFontOption?.value === fontOption.value ? styles.fontPickerOptionActive : ""}`}
+                      key={fontOption.value}
+                      onClick={() => {
+                        setSelectedFont(fontOption.value);
+                        props.onFormatAction({
+                          command: RichTextFormatCommand.FONT_FAMILY,
+                          noteFont: fontOption.value
+                        });
+                        setIsFontMenuOpen(false);
+                      }}
+                      role="menuitem"
+                      style={{ fontFamily: fontOption.fontFamily }}
+                      type="button"
+                    >
+                      {t(fontOption.labelKey)}
+                    </button>
+                  ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

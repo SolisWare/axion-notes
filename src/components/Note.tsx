@@ -15,7 +15,7 @@ import NoteRichTextEditor from "./NoteRichTextEditor";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatAction } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -62,7 +62,7 @@ type NoteDateLabelProps = {
 
 type FormatActionRequest = {
   id: number;
-  command: RichTextFormatCommand;
+  command: RichTextFormatAction;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -216,7 +216,8 @@ function Note(props: NoteProps) {
     isSubscriptActive: false,
     isBulletListActive: false,
     isDashedListActive: false,
-    isNumberedListActive: false
+    isNumberedListActive: false,
+    activeFont: undefined
   });
   const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);
 
@@ -359,14 +360,14 @@ function Note(props: NoteProps) {
     props.handleToggleNoteFold?.(latestNote.current);
   };
 
-  const handleFormatAction = (command: RichTextFormatCommand) => {
+  const handleFormatAction = (command: RichTextFormatAction) => {
     setFormatActionRequest({
       id: Date.now(),
       command
     });
   };
 
-  const handleContextMenuFormatAction = (command: RichTextFormatCommand) => {
+  const handleContextMenuFormatAction = (command: RichTextFormatAction) => {
     handleFormatAction(command);
     handleCloseNoteContextMenu();
   };
@@ -522,6 +523,7 @@ function Note(props: NoteProps) {
                 formatState={formatState}
                 surfaceColor={color}
                 onFormatAction={handleFormatAction}
+                selectedFont={props.noteFont}
               />
             )}
             <div className={classes.noteContent}>

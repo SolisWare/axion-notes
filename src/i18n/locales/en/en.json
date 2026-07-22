@@ -37,7 +37,8 @@
         "dashedList": "Dashed list",
         "numberedList": "Numbered list",
         "superscript": "Superscript",
-        "subscript": "Subscript"
+        "subscript": "Subscript",
+        "font": "Font"
       },
       "contextMenu": {
         "openInNewWindow": "Open in new window",

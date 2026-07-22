@@ -4,6 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { NoteFontPreference } from "../settings/NoteFontPreference";
+
 export enum RichTextFormatCommand {
   BOLD = "bold",
   ITALIC = "italic",
@@ -13,5 +15,11 @@ export enum RichTextFormatCommand {
   SUBSCRIPT = "subscript",
   BULLET_LIST = "bulletList",
   DASHED_LIST = "dashedList",
-  NUMBERED_LIST = "numberedList"
+  NUMBERED_LIST = "numberedList",
+  FONT_FAMILY = "fontFamily"
 }
+
+export type RichTextFormatAction = RichTextFormatCommand | {
+  command: RichTextFormatCommand.FONT_FAMILY;
+  noteFont: NoteFontPreference;
+};

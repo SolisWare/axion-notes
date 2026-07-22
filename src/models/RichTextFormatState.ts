@@ -4,6 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { NoteFontPreference } from "../settings/NoteFontPreference";
+
 export type RichTextFormatState = {
   canFormat: boolean;
   isBoldActive: boolean;
@@ -15,4 +17,5 @@ export type RichTextFormatState = {
   isBulletListActive: boolean;
   isDashedListActive: boolean;
   isNumberedListActive: boolean;
+  activeFont?: NoteFontPreference;
 };
