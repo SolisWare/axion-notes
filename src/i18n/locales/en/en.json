@@ -33,6 +33,7 @@
       "lastModifiedCompact": "Modified:",
       "at": "at",
       "formatToolbar": {
+        "lists": "Lists",
         "bulletList": "Bullet list",
         "dashedList": "Dashed list",
         "numberedList": "Numbered list",

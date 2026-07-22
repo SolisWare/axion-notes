@@ -7,6 +7,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added bundled custom note fonts with grouped font categories in the Note font setting
 - Split note font settings into separate title and content font pickers
 - Added inline font selection to the note formatting toolbar
+- Compact list formatting actions into a dropdown in the floating note toolbar
+- Removed superscript and subscript actions from the floating note toolbar
 
 ## [v0.4.0-rc.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing

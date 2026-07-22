@@ -79,7 +79,10 @@
 }
 
 .compactFontPickerButton {
-  min-width: 48px;
+  width: 40px;
+  min-width: 40px;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .expandedFontPickerButton {
@@ -132,6 +135,13 @@
   width: 17px !important;
   height: 17px !important;
   margin-right: -3px;
+}
+
+.compactFontPickerButton .fontPickerButtonIcon {
+  width: 15px !important;
+  height: 15px !important;
+  margin-left: -3px;
+  margin-right: -4px;
 }
 
 .fontPickerMenu {
@@ -224,7 +234,20 @@
   transform: scale(0.82);
 }
 
-.inlineStyleSubtoolbar {
+.listMenuButton {
+  width: 38px;
+}
+
+.listMenuButtonIcon {
+  width: 15px !important;
+  height: 15px !important;
+  margin-left: -2px;
+  margin-right: -4px;
+  opacity: 0.72;
+}
+
+.inlineStyleSubtoolbar,
+.listSubtoolbar {
   position: absolute;
   top: calc(100% + 5px);
   left: 0;
