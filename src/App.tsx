@@ -21,6 +21,8 @@ import { resolveAppThemePreference } from './settings/AppThemePreference';
 import { MenuEditSelectionState } from './models/MenuEditSelectionState';
 import { getInactiveRichTextFormatState } from './models/RichTextFormatState';
 import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
+import { resolvePreferredDateFormat } from './utils/dt-formatter/dateFormatConfig';
+import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfig';
 
 export enum AppView {
   home = "/home",
@@ -40,9 +42,13 @@ function getInitialAppSettings(settings: AppSettings | undefined): AppSettings {
     };
   }
 
+  const preferredBrowserLanguages = getPreferredBrowserLanguage();
+
   return {
     ...defaultAppSettings,
-    language: resolvePreferredSupportedLanguageCode(getPreferredBrowserLanguage())
+    dateFormat: resolvePreferredDateFormat(preferredBrowserLanguages),
+    language: resolvePreferredSupportedLanguageCode(preferredBrowserLanguages),
+    timeFormat: resolvePreferredTimeFormat(preferredBrowserLanguages)
   };
 }
 

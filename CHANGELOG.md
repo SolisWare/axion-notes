@@ -13,6 +13,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added an Editor settings tab with separate default font size controls for note titles and content
 - Added a setting for choosing between the Rich Text Editor and Plain Text Editor
 - Fixed note context menu submenus so they open more reliably and stay within the viewport
+- Added more date format options grouped by month-day-year, day-month-year, and year-month-day order
+- Added first-launch date and time format detection from the OS or browser locale
 
 ## [v0.4.0-rc.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
