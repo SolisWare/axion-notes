@@ -257,7 +257,8 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         code: false,
         codeBlock: false,
         heading: false,
-        horizontalRule: false
+        horizontalRule: false,
+        underline: false
       }),
       MarkerBulletList,
       TextStyle,
