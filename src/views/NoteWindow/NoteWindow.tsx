@@ -166,6 +166,7 @@ function NoteWindow(props: NoteWindowProps) {
               showOpenNoteWindowContextAction={false}
               showTitleVisibilityContextAction={false}
               showFormatToolbar={props.appSettings.richTextEditorEnabled}
+              showWordCharacterCount
               reserveCloseButtonSpace={props.embedded}
               style={{
                 width: "100%",

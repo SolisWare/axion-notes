@@ -55,6 +55,7 @@ type NoteProps = {
   showTitleVisibilityContextAction?: boolean;
   showFormatToolbar?: boolean;
   showFloatingFormatToolbar?: boolean;
+  showWordCharacterCount?: boolean;
   initiallyShowDragIndicator?: boolean;
   reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
@@ -200,8 +201,21 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     overflow: "hidden",
     textAlign: "left",
     whiteSpace: "nowrap"
+  },
+  noteFooterTextStats: {
+    flex: "0 0 auto",
+    paddingTop: "5px",
+    paddingLeft: 10,
+    color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    fontStyle: "italic",
+    textAlign: "right",
+    whiteSpace: "nowrap"
   }
 }));
+
+function getWordCount(content: string): number {
+  return content.trim().length === 0 ? 0 : content.trim().split(/\s+/).length;
+}
 
 function Note(props: NoteProps) {
   const { t } = useTranslation();
@@ -230,6 +244,10 @@ function Note(props: NoteProps) {
     : undefined;
   const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
   const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
+  const noteFooterTextStats = t("mainWindow.note.textStats", {
+    characterCount: note.content.length,
+    wordCount: getWordCount(note.content)
+  });
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
@@ -583,6 +601,11 @@ function Note(props: NoteProps) {
               <Divider />
               <div className={classes.noteFooterUtilBar}>
                 <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
+                {props.showWordCharacterCount && (
+                  <Typography className={classes.noteFooterTextStats} variant="body2">
+                    {noteFooterTextStats}
+                  </Typography>
+                )}
               </div>
             </div>
           )}

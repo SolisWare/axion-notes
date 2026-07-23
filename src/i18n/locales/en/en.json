@@ -32,6 +32,7 @@
       "lastModified": "Last modified:",
       "lastModifiedCompact": "Modified:",
       "at": "at",
+      "textStats": "{{wordCount}} words · {{characterCount}} characters",
       "formatToolbar": {
         "lists": "Lists",
         "bulletList": "Bullet list",

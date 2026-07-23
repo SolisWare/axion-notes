@@ -3,7 +3,7 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
-## [v0.4.0-rc.2] - Unreleased - Viewport
+## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
 - Split note font settings into separate title and content font pickers
 - Added inline font selection to the note formatting toolbar
@@ -15,8 +15,10 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed note context menu submenus so they open more reliably and stay within the viewport
 - Added more date format options grouped by month-day-year, day-month-year, and year-month-day order
 - Added first-launch date and time format detection from the OS or browser locale
+- Fixed duplicate rich-text underline extension registration warnings
+- Added word and character counts to full-window note footers
 
-## [v0.4.0-rc.1] - Unreleased - Viewport
+## [v0.4.0-beta.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
 - Reduced reported dependency vulnerabilities from 5 to 4 through targeted package updates as part of ongoing security maintenance
 - Added dedicated note windows with live note synchronization, focused note-window context actions, and offset placement for multiple open note windows
