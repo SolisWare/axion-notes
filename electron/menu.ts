@@ -12,6 +12,8 @@ import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
 import { translate } from "./utils/electronI18n";
 import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
+import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
+import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 
 export function createMenubar(): Menu {
   const template: any = [
@@ -189,6 +191,46 @@ export function createMenubar(): Menu {
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.NUMBERED_LIST);
           }
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.format.fontSize.root,
+          label: translate("electron.menu.fontSize"),
+          enabled: false,
+          submenu: NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => ({
+            id: menuIds.format.fontSize.option(fontSize),
+            label: `${fontSize}`,
+            type: 'checkbox',
+            enabled: false,
+            click: () => {
+              BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, {
+                command: RichTextFormatCommand.FONT_SIZE,
+                fontSize
+              });
+            }
+          }))
+        },
+        {
+          id: menuIds.format.fontFamily.root,
+          label: translate("electron.menu.font"),
+          enabled: false,
+          submenu: NOTE_FONT_CATEGORIES.map((fontCategory) => ({
+            label: translate(`settingsWindow.editor.noteFontCategories.${fontCategory}`),
+            submenu: NOTE_FONT_OPTIONS
+              .filter((fontOption) => fontOption.category === fontCategory)
+              .map((fontOption) => ({
+                id: menuIds.format.fontFamily.option(fontOption.value),
+                label: translate(fontOption.labelKey),
+                type: 'checkbox',
+                enabled: false,
+                click: () => {
+                  BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, {
+                    command: RichTextFormatCommand.FONT_FAMILY,
+                    noteFont: fontOption.value
+                  });
+                }
+              }))
+          }))
         }
       ]
     },

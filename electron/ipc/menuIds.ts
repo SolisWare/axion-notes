@@ -30,6 +30,14 @@ export const menuIds = {
     subscript: "formatSubscript",
     bulletList: "formatBulletList",
     dashedList: "formatDashedList",
-    numberedList: "formatNumberedList"
+    numberedList: "formatNumberedList",
+    fontSize: {
+      root: "formatFontSize",
+      option: (fontSize: number) => `formatFontSize-${fontSize}`
+    },
+    fontFamily: {
+      root: "formatFontFamily",
+      option: (noteFont: string) => `formatFontFamily-${noteFont}`
+    }
   }
 } as const;

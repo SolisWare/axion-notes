@@ -7,7 +7,7 @@
 import { channels } from "../ipc/channels";
 import { off, on, send } from "./ipcHelpers";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
-import { RichTextFormatCommand } from "../../src/models/RichTextFormatCommand";
+import { RichTextFormatAction } from "../../src/models/RichTextFormatCommand";
 import { RichTextFormatState } from "../../src/models/RichTextFormatState";
 
 export const menuApi = {
@@ -30,8 +30,8 @@ export const menuApi = {
     return () => off(channels.menu.deleteAllNotes, listener);
   },
 
-  onMenuRichTextFormat: (callback: (command: RichTextFormatCommand) => void) => {
-    const listener = (_event: Electron.IpcRendererEvent, command: RichTextFormatCommand) => callback(command);
+  onMenuRichTextFormat: (callback: (command: RichTextFormatAction) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, command: RichTextFormatAction) => callback(command);
     on(channels.menu.formatRichText, listener);
     return () => off(channels.menu.formatRichText, listener);
   },

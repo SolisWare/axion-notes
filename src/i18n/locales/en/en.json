@@ -254,6 +254,8 @@
       "bulletList": "Bullet List",
       "dashedList": "Dashed List",
       "numberedList": "Numbered List",
+      "fontSize": "Font Size",
+      "font": "Font",
       "deleteAllNotes": "Delete All Notes...",
       "view": "View",
       "reload": "Reload",

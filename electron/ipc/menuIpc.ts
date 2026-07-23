@@ -7,6 +7,8 @@
 import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
 import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 
@@ -36,9 +38,13 @@ function updateNoteMenuItems(): void {
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
   const formatDashedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.dashedList);
   const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
+  const formatFontSizeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.root);
+  const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
+  const activeFontSize = richTextFormatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
+  const activeFont = richTextFormatState.activeFont ?? NoteFontPreference.SYSTEM;
 
   if (newNoteMenuItem) {
     newNoteMenuItem.enabled = isNewNoteEnabled;
@@ -114,6 +120,32 @@ function updateNoteMenuItems(): void {
     formatNumberedListMenuItem.enabled = isRichTextFormattingEnabled;
     formatNumberedListMenuItem.checked = richTextFormatState.isNumberedListActive;
   }
+
+  if (formatFontSizeMenuItem) {
+    formatFontSizeMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  NOTE_CONTENT_FONT_SIZE_OPTIONS.forEach((fontSize) => {
+    const formatFontSizeOptionMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.option(fontSize));
+
+    if (formatFontSizeOptionMenuItem) {
+      formatFontSizeOptionMenuItem.enabled = isRichTextFormattingEnabled;
+      formatFontSizeOptionMenuItem.checked = activeFontSize === fontSize;
+    }
+  });
+
+  if (formatFontFamilyMenuItem) {
+    formatFontFamilyMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  NOTE_FONT_OPTIONS.forEach((fontOption) => {
+    const formatFontFamilyOptionMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.option(fontOption.value));
+
+    if (formatFontFamilyOptionMenuItem) {
+      formatFontFamilyOptionMenuItem.enabled = isRichTextFormattingEnabled;
+      formatFontFamilyOptionMenuItem.checked = activeFont === fontOption.value;
+    }
+  });
 
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;

@@ -27,6 +27,11 @@
   color: var(--note-context-menu-item-hover-text);
 }
 
+.noteContextMenu[data-submenu-aim-active="true"] .noteContextMenuItem:hover {
+  background-color: transparent;
+  color: inherit;
+}
+
 .noteContextMenuItemActive {
   color: var(--note-context-menu-item-hover-text);
   font-weight: 600;
@@ -52,8 +57,9 @@
   min-width: 160px;
   display: none;
   position: absolute;
+  z-index: 1;
   top: -7px;
-  left: 100%;
+  left: calc(100% - 4px);
   padding: 7px 0;
   border-radius: 7px;
   background: var(--note-context-menu-background);
@@ -61,13 +67,32 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
+.noteContextMenuFontSizeSubmenu {
+  min-width: 64px;
+}
+
 .noteContextMenuSubmenu[data-open-left="true"] {
-  right: 100%;
+  right: calc(100% - 4px);
   left: auto;
 }
 
-.noteContextMenuItem:hover > .noteContextMenuSubmenu {
+.noteContextMenuSubmenu[data-open-up="true"] {
+  top: auto;
+  bottom: -7px;
+}
+
+.noteContextMenuItem[data-submenu-open="true"] > .noteContextMenuSubmenu {
   display: block;
+}
+
+.noteContextMenuItem[data-submenu-open="true"] {
+  background-color: var(--note-context-menu-item-hover-background);
+  color: var(--note-context-menu-item-hover-text);
+}
+
+.noteContextMenu[data-submenu-aim-active="true"] .noteContextMenuItem[data-submenu-open="true"] {
+  background-color: var(--note-context-menu-item-hover-background);
+  color: var(--note-context-menu-item-hover-text);
 }
 
 .noteContextMenuDivider {
@@ -121,12 +146,20 @@
 }
 
 .noteContextMenuLabelItem {
-  min-height: 28px;
+  min-height: auto;
   display: flex;
   align-items: center;
-  padding: 4px 14px;
+  padding: 6px 14px 4px;
   color: var(--note-context-menu-label-text);
-  font-size: 13px;
-  line-height: 18px;
-  opacity: 0.72;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 13px;
+  opacity: 0.48;
+  text-transform: uppercase;
+}
+
+.noteContextMenuFontCategory + .noteContextMenuFontCategory {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(80, 93, 110, 0.16);
 }
