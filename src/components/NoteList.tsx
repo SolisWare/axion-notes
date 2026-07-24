@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties, PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
+import { CSSProperties, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -45,6 +45,12 @@ type NoteListProps = {
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
   handleToggleNotePin: (note: NoteType) => void;
+  isSelectionMode: boolean;
+  selectedNoteIds: Set<string>;
+  onEnterSelectionMode: () => void;
+  onSelectNoteSelection: (noteId: string) => void;
+  onDeselectNoteSelection: (noteId: string) => void;
+  onToggleNoteSelection: (noteId: string) => void;
 }
 
 type FoldedNoteContent = {
@@ -127,9 +133,10 @@ function NoteList(props: NoteListProps) {
   const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
   const noteListStyle = {
     "--note-list-text": appColors.NOTE_TEXT,
-    "--note-list-background": appColors.ACCENT
+    "--note-list-background": appColors.ACCENT,
+    "--note-list-selection-color": appColors.NOTE_SELECTION
   } as CSSProperties;
-  const noteIds = props.notes.map((note) => note.id);
+  const noteIds = useMemo(() => props.notes.map((note) => note.id), [props.notes]);
 
   function handleUnfoldNote(note: NoteType, showInitialDragIndicator = false) {
     foldedNoteIds.current.delete(note.id);
@@ -168,6 +175,17 @@ function NoteList(props: NoteListProps) {
 
   function handleFoldedNoteDragIndicatorRowClick(note: NoteType) {
     handleDragIndicatorClick(note.id, () => handleUnfoldNote(note, true));
+  }
+
+  function handleFoldedNoteDragIndicatorRowSelectionClick(event: React.MouseEvent, note: NoteType) {
+    if (!(event.metaKey || event.ctrlKey)) {
+      handleFoldedNoteDragIndicatorRowClick(note);
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    props.onToggleNoteSelection(note.id);
   }
 
   function handleFoldNote(note: NoteType) {
@@ -296,6 +314,23 @@ function NoteList(props: NoteListProps) {
     props.handleToggleNotePin(contextMenuNote);
   }
 
+  function handleContextMenuSelectNote() {
+    const noteId = contextMenuNote?.id;
+
+    handleCloseFoldedNoteContextMenu();
+
+    if (!noteId) {
+      return;
+    }
+
+    if (props.isSelectionMode && props.selectedNoteIds.has(noteId)) {
+      props.onDeselectNoteSelection(noteId);
+      return;
+    }
+
+    props.onSelectNoteSelection(noteId);
+  }
+
   function handleContextMenuToggleFold() {
     if (!contextMenuNote) {
       return;
@@ -352,15 +387,37 @@ function NoteList(props: NoteListProps) {
                 const noteColor = getNoteColor(note.bgcolor, props.theme);
 
                 return (
-                  <SortableNoteListItem id={note.id} isFolded={isFolded} key={note.id}>
+                  <SortableNoteListItem
+                    id={note.id}
+                    isFolded={isFolded}
+                    key={note.id}
+                    onToggleSelection={props.onToggleNoteSelection}
+                  >
                     <div
-                      className={styles.listItem}
+                      className={`${styles.listItem} ${props.isSelectionMode ? styles.listItemSelectionMode : ""}`}
                       onContextMenu={(event) => handleFoldedNoteContextMenu(event, note)}
                       style={{
                         "--note-bg-color": noteColor,
                         backgroundColor: noteColor
                       } as CSSProperties}
                     >
+                      {props.isSelectionMode && (
+                        <button
+                          aria-label={props.selectedNoteIds.has(note.id) ? t("mainWindow.note.deselect") : t("mainWindow.note.select")}
+                          aria-pressed={props.selectedNoteIds.has(note.id)}
+                          className={`${styles.selectionButton} ${props.selectedNoteIds.has(note.id) ? styles.selectionButtonSelected : ""}`}
+                          style={{ color: appColors.NOTE_SELECTION }}
+                          type="button"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            props.onToggleNoteSelection(note.id);
+                          }}
+                          onPointerDown={(event) => event.stopPropagation()}
+                        >
+                          {props.selectedNoteIds.has(note.id) && <span className={styles.selectionCheck} aria-hidden="true" />}
+                        </button>
+                      )}
                       {note.isPinned && (
                         <button
                           aria-label={t("mainWindow.note.contextMenu.unpin")}
@@ -380,7 +437,7 @@ function NoteList(props: NoteListProps) {
                       <div
                         className={styles.foldedNoteDragIndicatorRow}
                         aria-hidden="true"
-                        onClick={() => handleFoldedNoteDragIndicatorRowClick(note)}
+                        onClick={(event) => handleFoldedNoteDragIndicatorRowSelectionClick(event, note)}
                       >
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
@@ -411,7 +468,12 @@ function NoteList(props: NoteListProps) {
               }
 
               return (
-                <SortableNoteListItem id={note.id} isFolded={isFolded} key={note.id}>
+                <SortableNoteListItem
+                  id={note.id}
+                  isFolded={isFolded}
+                  key={note.id}
+                  onToggleSelection={props.onToggleNoteSelection}
+                >
                   <div
                     className={styles.expandedListItem}
                     style={{ "--note-bg-color": getNoteColor(note.bgcolor, props.theme) } as CSSProperties}
@@ -439,6 +501,12 @@ function NoteList(props: NoteListProps) {
                       handleToggleNotePin={props.handleToggleNotePin}
                       handleToggleNoteFold={handleExpandedNoteDragIndicatorRowClick}
                       handleNoteSave={handleExpandedNoteSave}
+                      isSelectionMode={props.isSelectionMode}
+                      isSelected={props.selectedNoteIds.has(note.id)}
+                      onEnterSelectionMode={props.onEnterSelectionMode}
+                      onSelectSelection={props.onSelectNoteSelection}
+                      onDeselectSelection={props.onDeselectNoteSelection}
+                      onToggleSelection={props.onToggleNoteSelection}
                       style={{
                         width: "100%",
                         maxWidth: "100%",
@@ -467,11 +535,14 @@ function NoteList(props: NoteListProps) {
           selectedColor={contextMenuNote.bgcolor}
           isTitleHidden={contextMenuNote.isTitleHidden ?? !props.showNoteTitles}
           isPinned={contextMenuNote.isPinned === true}
+          isSelectionMode={props.isSelectionMode}
+          isSelected={props.selectedNoteIds.has(contextMenuNote.id)}
           isFolded={true}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}
+          onSelectNote={handleContextMenuSelectNote}
           onToggleFold={handleContextMenuToggleFold}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}

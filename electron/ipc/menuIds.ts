@@ -18,6 +18,9 @@ export const menuIds = {
     copy: "copy",
     paste: "paste",
     delete: "delete",
+    selectNote: "selectNote",
+    selectAllNotes: "selectAllNotes",
+    cancelNoteSelection: "cancelNoteSelection",
     deleteAllNotes: "deleteAllNotes"
   },
   format: {

@@ -27,11 +27,14 @@ type NoteContextMenuProps = {
   selectedColor: NoteColorKey;
   isTitleHidden: boolean;
   isPinned: boolean;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
   isFolded?: boolean;
   onDeleteNote: () => void;
   onDuplicateNote: () => void;
   onOpenNoteWindow?: () => void;
   onTogglePin?: () => void;
+  onSelectNote?: () => void;
   onToggleFold?: () => void;
   onFormatAction?: (command: RichTextFormatAction) => void;
   formatState?: RichTextFormatState;
@@ -367,12 +370,23 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             : t("mainWindow.note.contextMenu.pin")}
         </div>
       )}
-      {props.onTogglePin && !props.onOpenNoteWindow && (
+      {props.onSelectNote && (
+        <div
+          className={styles.noteContextMenuItem}
+          onClick={props.onSelectNote}
+          onPointerEnter={closeAllSubmenusWithAim}
+        >
+          {props.isSelectionMode && props.isSelected
+            ? t("mainWindow.note.deselect")
+            : t("mainWindow.note.select")}
+        </div>
+      )}
+      {(props.onTogglePin || props.onSelectNote) && !props.onOpenNoteWindow && (
         <Divider className={styles.noteContextMenuDivider} />
       )}
       {props.onOpenNoteWindow && (
         <>
-          {props.onTogglePin && (
+          {(props.onTogglePin || props.onSelectNote) && (
             <Divider className={styles.noteContextMenuDivider} />
           )}
           <div

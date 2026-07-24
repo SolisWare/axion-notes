@@ -6,17 +6,24 @@
  */
 import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
+import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
 import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
+import { translate } from "../utils/electronI18n";
 
 let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
+};
+let noteSelectionState: MenuNoteSelectionState = {
+  hasNotes: false,
+  isSelectionMode: false,
+  areAllNotesSelected: false
 };
 let richTextFormatState: RichTextFormatState = getInactiveRichTextFormatState();
 
@@ -28,6 +35,9 @@ function updateNoteMenuItems(): void {
   const copyMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.copy);
   const pasteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.paste);
   const deleteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.delete);
+  const selectNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.selectNote);
+  const selectAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.selectAllNotes);
+  const cancelNoteSelectionMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.cancelNoteSelection);
   const formatMenuItem = applicationMenu?.getMenuItemById(menuIds.format.root);
   const formatBoldMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bold);
   const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.format.italic);
@@ -70,6 +80,23 @@ function updateNoteMenuItems(): void {
 
   if (deleteMenuItem) {
     deleteMenuItem.enabled = isNewNoteEnabled && editSelectionState.hasEditableSelection;
+  }
+
+  if (selectNoteMenuItem) {
+    selectNoteMenuItem.enabled = isNewNoteEnabled && noteSelectionState.hasNotes && !noteSelectionState.isSelectionMode;
+  }
+
+  if (selectAllNotesMenuItem) {
+    selectAllNotesMenuItem.enabled = isNewNoteEnabled && noteSelectionState.hasNotes;
+    selectAllNotesMenuItem.label = translate(
+      noteSelectionState.areAllNotesSelected
+        ? "electron.menu.deselectAllNotes"
+        : "electron.menu.selectAllNotes"
+    );
+  }
+
+  if (cancelNoteSelectionMenuItem) {
+    cancelNoteSelectionMenuItem.enabled = isNewNoteEnabled && noteSelectionState.isSelectionMode;
   }
 
   if (formatMenuItem) {
@@ -165,6 +192,11 @@ export function registerMenuIpc(): void {
 
   ipcMain.on(channels.menu.setEditSelectionState, (_, state: MenuEditSelectionState) => {
     editSelectionState = state;
+    updateNoteMenuItems();
+  });
+
+  ipcMain.on(channels.menu.setNoteSelectionState, (_, state: MenuNoteSelectionState) => {
+    noteSelectionState = state;
     updateNoteMenuItems();
   });
 

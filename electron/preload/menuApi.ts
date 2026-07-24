@@ -7,6 +7,7 @@
 import { channels } from "../ipc/channels";
 import { off, on, send } from "./ipcHelpers";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
+import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
 import { RichTextFormatAction } from "../../src/models/RichTextFormatCommand";
 import { RichTextFormatState } from "../../src/models/RichTextFormatState";
 
@@ -22,6 +23,24 @@ export const menuApi = {
     const listener = () => callback();
     on(channels.menu.showWelcome, listener);
     return () => off(channels.menu.showWelcome, listener);
+  },
+
+  onMenuSelectNote: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.menu.selectNote, listener);
+    return () => off(channels.menu.selectNote, listener);
+  },
+
+  onMenuSelectAllNotes: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.menu.selectAllNotes, listener);
+    return () => off(channels.menu.selectAllNotes, listener);
+  },
+
+  onMenuCancelNoteSelection: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.menu.cancelNoteSelection, listener);
+    return () => off(channels.menu.cancelNoteSelection, listener);
   },
 
   onMenuDeleteAllNotes: (callback: () => void) => {
@@ -42,6 +61,10 @@ export const menuApi = {
 
   setEditSelectionState: (state: MenuEditSelectionState) => {
     send(channels.menu.setEditSelectionState, state);
+  },
+
+  setNoteSelectionState: (state: MenuNoteSelectionState) => {
+    send(channels.menu.setNoteSelectionState, state);
   },
 
   setRichTextFormatState: (state: RichTextFormatState) => {

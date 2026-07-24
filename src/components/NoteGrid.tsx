@@ -6,7 +6,7 @@
  */
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import { PointerEvent as ReactPointerEvent, useLayoutEffect, useRef, useState } from "react";
+import { PointerEvent as ReactPointerEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableNote from "./SortableNote";
@@ -40,6 +40,12 @@ export type NoteGridProps = {
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
   handleToggleNotePin: (note: NoteType) => void;
+  isSelectionMode: boolean;
+  selectedNoteIds: Set<string>;
+  onEnterSelectionMode: () => void;
+  onSelectNoteSelection: (noteId: string) => void;
+  onDeselectNoteSelection: (noteId: string) => void;
+  onToggleNoteSelection: (noteId: string) => void;
 }
 
 const NOTE_GRID_GAP = 25;
@@ -107,7 +113,7 @@ function NoteGrid (props: NoteGridProps) {
   const noteGridStyle = {
     gridTemplateColumns: `repeat(${columnCount}, ${noteSizeDefinition.width}px)`
   };
-  const noteIds = props.notes.map((note) => note.id);
+  const noteIds = useMemo(() => props.notes.map((note) => note.id), [props.notes]);
 
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
@@ -171,6 +177,12 @@ function NoteGrid (props: NoteGridProps) {
                 handleMoveNoteToBottom={props.handleMoveNoteToBottom}
                 handleMoveNoteToTop={props.handleMoveNoteToTop}
                 handleToggleNotePin={props.handleToggleNotePin}
+                isSelectionMode={props.isSelectionMode}
+                isSelected={props.selectedNoteIds.has(note.id)}
+                onEnterSelectionMode={props.onEnterSelectionMode}
+                onSelectSelection={props.onSelectNoteSelection}
+                onDeselectSelection={props.onDeselectNoteSelection}
+                onToggleSelection={props.onToggleNoteSelection}
               />
               ))
             }

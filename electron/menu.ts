@@ -87,6 +87,31 @@ export function createMenubar(): Menu {
         ] : []),
         { type: 'separator' },
         {
+          id: menuIds.edit.selectNote,
+          label: translate("electron.menu.selectNotes"),
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectNote);
+          }
+        },
+        {
+          id: menuIds.edit.selectAllNotes,
+          label: translate("electron.menu.selectAllNotes"),
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectAllNotes);
+          }
+        },
+        {
+          id: menuIds.edit.cancelNoteSelection,
+          label: translate("electron.menu.cancelNoteSelection"),
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.cancelNoteSelection);
+          }
+        },
+        { type: 'separator' },
+        {
           id: menuIds.edit.deleteAllNotes,
           label: translate("electron.menu.deleteAllNotes"),
           accelerator: 'Shift+CmdOrCtrl+Backspace',

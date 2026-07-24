@@ -73,6 +73,8 @@ function MainWindow(props: MainWindowProps) {
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
   const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
@@ -98,6 +100,22 @@ function MainWindow(props: MainWindowProps) {
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
   }, [appSettings.defaultNoteColor, appSettings.showNoteTitles]);
+
+  const handleToggleSelectAllNotes = useCallback(() => {
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      if (notes.length > 0 && currentSelectedNoteIds.size === notes.length) {
+        return new Set();
+      }
+
+      setIsSelectionMode(true);
+      return new Set(notes.map((note) => note.id));
+    });
+  }, [notes]);
+
+  const handleCancelNoteSelection = useCallback(() => {
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+  }, []);
 
   useEffect(() => {
     window.api.storage.getNotes()
@@ -158,18 +176,52 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
+    const offMenuSelectNote = window.api.menu.onMenuSelectNote(() => setIsSelectionMode(true));
+    const offMenuSelectAllNotes = window.api.menu.onMenuSelectAllNotes(handleToggleSelectAllNotes);
+    const offMenuCancelNoteSelection = window.api.menu.onMenuCancelNoteSelection(handleCancelNoteSelection);
     const offMenuDeleteAllNotes = window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
 
     return () => {
       offMenuNewNote();
       offMenuShowWelcome();
+      offMenuSelectNote();
+      offMenuSelectAllNotes();
+      offMenuCancelNoteSelection();
       offMenuDeleteAllNotes();
     };
-  }, [handleAddNote, navigate]);
+  }, [handleAddNote, handleCancelNoteSelection, handleToggleSelectAllNotes, navigate]);
 
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);
   }, [notes.length]);
+
+  useEffect(() => {
+    const availableNoteIds = new Set(notes.map((note) => note.id));
+
+    if (notes.length === 0) {
+      setIsSelectionMode(false);
+    }
+
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(
+        [...currentSelectedNoteIds].filter((noteId) => availableNoteIds.has(noteId))
+      );
+
+      return nextSelectedNoteIds.size === currentSelectedNoteIds.size
+        ? currentSelectedNoteIds
+        : nextSelectedNoteIds;
+    });
+  }, [notes]);
+
+  useEffect(() => {
+    const hasNotes = notes.length > 0;
+
+    window.api.menu.setNoteSelectionState({
+      hasNotes,
+      isSelectionMode,
+      areAllNotesSelected: hasNotes && selectedNoteIds.size === notes.length
+    });
+  }, [isSelectionMode, notes.length, selectedNoteIds]);
 
   useEffect(() => {
     window.api.menu.setNewNoteEnabled(props.view !== AppView.welcome);
@@ -192,6 +244,48 @@ function MainWindow(props: MainWindowProps) {
     setNotes(
       notes.filter(({ id }) => id !== noteId)
     );
+  }
+
+  function handleEnterSelectionMode() {
+    setIsSelectionMode(true);
+  }
+
+  function handleSelectNoteSelection(noteId: string) {
+    setIsSelectionMode(true);
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+      nextSelectedNoteIds.add(noteId);
+
+      return nextSelectedNoteIds;
+    });
+  }
+
+  function handleDeselectNoteSelection(noteId: string) {
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+      nextSelectedNoteIds.delete(noteId);
+
+      if (nextSelectedNoteIds.size === 0) {
+        setIsSelectionMode(false);
+      }
+
+      return nextSelectedNoteIds;
+    });
+  }
+
+  function handleToggleNoteSelection(noteId: string) {
+    setIsSelectionMode(true);
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+
+      if (nextSelectedNoteIds.has(noteId)) {
+        nextSelectedNoteIds.delete(noteId);
+      } else {
+        nextSelectedNoteIds.add(noteId);
+      }
+
+      return nextSelectedNoteIds;
+    });
   }
 
   function handleSaveNote(note: NoteType) {
@@ -495,7 +589,10 @@ function MainWindow(props: MainWindowProps) {
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
+                   isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}
+                   onSelectNoteSelection={handleSelectNoteSelection} onDeselectNoteSelection={handleDeselectNoteSelection}
+                   onToggleNoteSelection={handleToggleNoteSelection} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
@@ -505,7 +602,10 @@ function MainWindow(props: MainWindowProps) {
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
+                   isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}
+                   onSelectNoteSelection={handleSelectNoteSelection} onDeselectNoteSelection={handleDeselectNoteSelection}
+                   onToggleNoteSelection={handleToggleNoteSelection} />
   }
   
   return (

@@ -39,6 +39,12 @@ type HomeProps = {
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
   handleToggleNotePin: (note: NoteType) => void;
+  isSelectionMode: boolean;
+  selectedNoteIds: Set<string>;
+  onEnterSelectionMode: () => void;
+  onSelectNoteSelection: (noteId: string) => void;
+  onDeselectNoteSelection: (noteId: string) => void;
+  onToggleNoteSelection: (noteId: string) => void;
 }
 
 function Home(props: HomeProps) {
@@ -72,6 +78,12 @@ function Home(props: HomeProps) {
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
           handleToggleNotePin={props.handleToggleNotePin}
+          isSelectionMode={props.isSelectionMode}
+          selectedNoteIds={props.selectedNoteIds}
+          onEnterSelectionMode={props.onEnterSelectionMode}
+          onSelectNoteSelection={props.onSelectNoteSelection}
+          onDeselectNoteSelection={props.onDeselectNoteSelection}
+          onToggleNoteSelection={props.onToggleNoteSelection}
         />
           :
         <NoteGrid
@@ -96,6 +108,12 @@ function Home(props: HomeProps) {
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
           handleToggleNotePin={props.handleToggleNotePin}
+          isSelectionMode={props.isSelectionMode}
+          selectedNoteIds={props.selectedNoteIds}
+          onEnterSelectionMode={props.onEnterSelectionMode}
+          onSelectNoteSelection={props.onSelectNoteSelection}
+          onDeselectNoteSelection={props.onDeselectNoteSelection}
+          onToggleNoteSelection={props.onToggleNoteSelection}
         />
       }
     </div>

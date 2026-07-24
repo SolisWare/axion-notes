@@ -8,6 +8,7 @@ import { NoteType } from '../../src/models/NoteType';
 import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
 import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
+import { MenuNoteSelectionState } from '../../src/models/MenuNoteSelectionState';
 import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
 import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
 import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
@@ -33,10 +34,14 @@ interface IElectronAPI {
   menu: {
     onMenuNewNote: (callback: () => void) => () => void;
     onMenuShowWelcome: (callback: () => void) => () => void;
+    onMenuSelectNote: (callback: () => void) => () => void;
+    onMenuSelectAllNotes: (callback: () => void) => () => void;
+    onMenuCancelNoteSelection: (callback: () => void) => () => void;
     onMenuDeleteAllNotes: (callback: () => void) => () => void;
     onMenuRichTextFormat: (callback: (command: RichTextFormatAction) => void) => () => void;
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
     setEditSelectionState: (state: MenuEditSelectionState) => void;
+    setNoteSelectionState: (state: MenuNoteSelectionState) => void;
     setRichTextFormatState: (state: RichTextFormatState) => void;
     setNewNoteEnabled: (enabled: boolean) => void;
   },

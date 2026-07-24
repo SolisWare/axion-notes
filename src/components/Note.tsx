@@ -49,6 +49,12 @@ type NoteProps = {
   handleNoteSave: (note: NoteType) => void;
   handleToggleNoteFold?: (note: NoteType) => void;
   handleToggleNotePin?: (note: NoteType) => void;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onEnterSelectionMode?: () => void;
+  onSelectSelection?: (noteId: string) => void;
+  onDeselectSelection?: (noteId: string) => void;
+  onToggleSelection?: (noteId: string) => void;
   showDragIndicator?: boolean;
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
@@ -97,6 +103,45 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
       opacity: 0.72,
       transform: "rotate(18deg)"
     }
+  },
+  noteSelectionButton: {
+    position: "absolute",
+    top: -8,
+    left: -8,
+    width: 22,
+    height: 22,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    padding: 0,
+    WebkitAppearance: "none",
+    appearance: "none",
+    border: "2px solid currentColor",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.72) !important",
+    color: ({ appColors }) => appColors.NOTE_SELECTION,
+    outline: "none",
+    zIndex: 3,
+    transition: "background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease",
+    "&:hover": {
+      transform: "scale(1.08)",
+      boxShadow: "0 1px 4px rgba(31, 41, 51, 0.22)"
+    },
+    "&:focus-visible": {
+      boxShadow: ({ appColors }) => `0 0 0 2px ${appColors.NOTE_SELECTION}66`
+    }
+  },
+  noteSelectionButtonSelected: {
+    background: "rgba(255, 255, 255, 0.72) !important"
+  },
+  noteSelectionCheck: {
+    width: 9,
+    height: 5,
+    marginTop: -1,
+    borderLeft: "2px solid currentColor",
+    borderBottom: "2px solid currentColor",
+    transform: "rotate(-45deg)"
   },
   noteInnerContainer: {
     width: "100%",
@@ -352,6 +397,19 @@ function Note(props: NoteProps) {
     }
     : undefined;
 
+  const handleContextMenuSelectNote = props.onSelectSelection
+    ? () => {
+      handleCloseNoteContextMenu();
+
+      if (props.isSelectionMode && props.isSelected) {
+        props.onDeselectSelection?.(note.id);
+        return;
+      }
+
+      props.onSelectSelection?.(note.id);
+    }
+    : undefined;
+
   const handleContextMenuToggleFold = props.handleToggleNoteFold
     ? () => {
       handleCloseNoteContextMenu();
@@ -365,7 +423,11 @@ function Note(props: NoteProps) {
     props.handleToggleNotePin?.(latestNote.current);
   };
 
-  const handleNoteDragIndicatorRowClick = () => {
+  const handleNoteDragIndicatorRowClick = (event: MouseEvent<HTMLElement>) => {
+    if (event.metaKey || event.ctrlKey) {
+      return;
+    }
+
     props.handleToggleNoteFold?.(latestNote.current);
   };
 
@@ -481,6 +543,23 @@ function Note(props: NoteProps) {
         ...props.style
       }}
     >
+      {props.isSelectionMode && (
+        <button
+          aria-label={props.isSelected ? t("mainWindow.note.deselect") : t("mainWindow.note.select")}
+          aria-pressed={props.isSelected === true}
+          className={`${classes.noteSelectionButton} ${props.isSelected ? classes.noteSelectionButtonSelected : ""}`}
+          style={{ color: appColors.NOTE_SELECTION }}
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            props.onToggleSelection?.(note.id);
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+        >
+          {props.isSelected && <span className={classes.noteSelectionCheck} aria-hidden="true" />}
+        </button>
+      )}
       {isPinned && props.handleToggleNotePin && (
         <button
           aria-label={t("mainWindow.note.contextMenu.unpin")}
@@ -618,11 +697,14 @@ function Note(props: NoteProps) {
           selectedColor={note.bgcolor}
           isTitleHidden={isTitleHidden}
           isPinned={isPinned}
+          isSelectionMode={props.isSelectionMode}
+          isSelected={props.isSelected}
           isFolded={note.isFolded}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}
+          onSelectNote={handleContextMenuSelectNote}
           onToggleFold={handleContextMenuToggleFold}
           onFormatAction={handleContextMenuFormatAction}
           formatState={formatState}
