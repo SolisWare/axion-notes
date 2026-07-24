@@ -44,6 +44,20 @@
   margin: 0;
 }
 
+.wrapper :global(.ProseMirror code) {
+  padding: 0.05em 0.25em;
+  border-radius: 3px;
+  background: var(--note-rich-text-inline-code-background);
+  color: var(--note-rich-text-inline-code-color);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.94em;
+}
+
+.wrapper :global(.ProseMirror mark) {
+  background-color: var(--note-rich-text-highlight-background);
+  color: var(--note-rich-text-highlight-color);
+}
+
 .wrapper :global(.ProseMirror ul) {
   margin: 0;
   padding-left: 1.2em;

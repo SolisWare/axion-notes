@@ -8,7 +8,7 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
 import FontFamily from "@tiptap/extension-font-family";
-import { Mark } from "@tiptap/pm/model";
+import { Mark as ProseMirrorMark } from "@tiptap/pm/model";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import TaskItem from "@tiptap/extension-task-item";
@@ -16,7 +16,7 @@ import TaskList from "@tiptap/extension-task-list";
 import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Editor, JSONContent } from "@tiptap/core";
+import { Editor, JSONContent, Mark, mergeAttributes } from "@tiptap/core";
 import { CSSProperties, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
@@ -52,6 +52,54 @@ const MarkerBulletList = BulletList.extend({
         )
       }
     };
+  }
+});
+
+const InlineCode = Mark.create({
+  name: "inlineCode",
+
+  code: true,
+
+  excludes: "_",
+
+  parseHTML() {
+    return [
+      {
+        tag: "code"
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["code", mergeAttributes(HTMLAttributes), 0];
+  }
+});
+
+const Highlight = Mark.create({
+  name: "highlight",
+
+  parseHTML() {
+    return [
+      {
+        tag: "mark"
+      },
+      {
+        style: "background-color",
+        getAttrs: (value) => (
+          typeof value === "string" && value.length > 0
+            ? {}
+            : false
+        )
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "mark",
+      mergeAttributes(HTMLAttributes),
+      0
+    ];
   }
 });
 
@@ -134,7 +182,7 @@ function getSteppedFontSize(fontSize: number, direction: 1 | -1): NoteFontSize {
   return NOTE_CONTENT_FONT_SIZE_OPTIONS[nextFontSizeIndex];
 }
 
-function getFontSizeFromTextStyleMark(textStyleMark: Mark | undefined, fallbackFontSize: NoteFontSize): NoteFontSize {
+function getFontSizeFromTextStyleMark(textStyleMark: ProseMirrorMark | undefined, fallbackFontSize: NoteFontSize): NoteFontSize {
   const fontSize = getNoteFontSizePreference(textStyleMark?.attrs.fontSize);
 
   return fontSize ?? fallbackFontSize;
@@ -170,8 +218,8 @@ function getFormatState(editor: Editor) {
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
     isStrikethroughActive: editor.isActive("strike"),
-    isInlineCodeActive: false,
-    isHighlightActive: false,
+    isInlineCodeActive: editor.isActive("inlineCode"),
+    isHighlightActive: editor.isActive("highlight"),
     isSuperscriptActive: editor.isActive("superscript"),
     isSubscriptActive: editor.isActive("subscript"),
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
@@ -268,6 +316,12 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
     case RichTextFormatCommand.STRIKETHROUGH:
       commandChain.toggleStrike().run();
       break;
+    case RichTextFormatCommand.HIGHLIGHT:
+      commandChain.toggleMark("highlight").run();
+      break;
+    case RichTextFormatCommand.INLINE_CODE:
+      commandChain.toggleMark("inlineCode").run();
+      break;
     case RichTextFormatCommand.SUPERSCRIPT:
       editor.chain().focus().unsetSubscript().toggleSuperscript().run();
       break;
@@ -287,7 +341,7 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
       commandChain.toggleTaskList().run();
       break;
     case RichTextFormatCommand.FONT_SIZE:
-      if (typeof action === "string" || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
+      if (typeof action === "string" || action.command !== RichTextFormatCommand.FONT_SIZE || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
         commandChain.unsetFontSize().run();
         break;
       }
@@ -299,12 +353,24 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
     case RichTextFormatCommand.DECREASE_FONT_SIZE:
       return applyFontSizeStep(editor, -1, fallbackFontSize);
     case RichTextFormatCommand.FONT_FAMILY:
-      if (typeof action === "string" || action.noteFont === NoteFontPreference.SYSTEM) {
+      if (typeof action === "string" || action.command !== RichTextFormatCommand.FONT_FAMILY || action.noteFont === NoteFontPreference.SYSTEM) {
         commandChain.unsetFontFamily().run();
         break;
       }
 
       commandChain.setFontFamily(getNoteFontFamily(action.noteFont) ?? "").run();
+      break;
+    case RichTextFormatCommand.CLEAR_FORMATTING:
+      commandChain
+        .unsetBold()
+        .unsetItalic()
+        .unsetUnderline()
+        .unsetStrike()
+        .unsetMark("highlight")
+        .unsetMark("inlineCode")
+        .unsetSuperscript()
+        .unsetSubscript()
+        .run();
       break;
   }
 }
@@ -355,6 +421,10 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     "--note-rich-text-color": appColors.NOTE_TEXT,
     "--note-rich-text-font-family": props.fontFamily ?? NOTE_TEXTAREA_DEFAULT_FONT_FAMILY,
     "--note-rich-text-font-size": `${props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE}px`,
+    "--note-rich-text-highlight-background": appColors.NOTE_HIGHLIGHT_BACKGROUND,
+    "--note-rich-text-highlight-color": appColors.NOTE_HIGHLIGHT_TEXT,
+    "--note-rich-text-inline-code-background": appColors.NOTE_INLINE_CODE_BACKGROUND,
+    "--note-rich-text-inline-code-color": appColors.NOTE_INLINE_CODE_TEXT,
     "--note-rich-text-placeholder-color": appColors.NOTE_PLACEHOLDER_TEXT
   } as CSSProperties;
   
@@ -400,6 +470,8 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
       TextStyle,
       FontSize,
       FontFamily,
+      InlineCode,
+      Highlight,
       Superscript,
       Subscript,
       Underline,
@@ -421,15 +493,26 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
 
         const isIncreaseShortcut = event.key === "+" || event.key === "=";
         const isDecreaseShortcut = event.key === "-";
+        const isHighlightShortcut = event.shiftKey && event.key.toLowerCase() === "h";
+        const isInlineCodeShortcut = !event.shiftKey && event.key.toLowerCase() === "m";
+        const isClearFormattingShortcut = !event.shiftKey && event.key === "\\";
 
-        if (!isIncreaseShortcut && !isDecreaseShortcut) {
+        if (!isIncreaseShortcut && !isDecreaseShortcut && !isHighlightShortcut && !isInlineCodeShortcut && !isClearFormattingShortcut) {
           return false;
         }
 
         event.preventDefault();
         focusedEditorId = editorId;
 
-        showFontSizeFeedback(applyFontSizeStep(editor, isIncreaseShortcut ? 1 : -1, fallbackFontSizeRef.current));
+        if (isIncreaseShortcut || isDecreaseShortcut) {
+          showFontSizeFeedback(applyFontSizeStep(editor, isIncreaseShortcut ? 1 : -1, fallbackFontSizeRef.current));
+        } else if (isHighlightShortcut) {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.HIGHLIGHT, fallbackFontSizeRef.current);
+        } else if (isInlineCodeShortcut) {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.INLINE_CODE, fallbackFontSizeRef.current);
+        } else {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.CLEAR_FORMATTING, fallbackFontSizeRef.current);
+        }
 
         publishFormatState(editor, onFormatStateChange);
 
