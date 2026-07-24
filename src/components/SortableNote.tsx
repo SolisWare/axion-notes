@@ -6,7 +6,6 @@
  */
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
-import { MouseEvent } from "react";
 import Note from "./Note";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
@@ -45,16 +44,6 @@ type SortableNoteProps = {
   onToggleSelection?: (noteId: string) => void;
 };
 
-const NOTE_SELECTION_IGNORED_TARGET_SELECTOR = [
-  "button",
-  "[role='button']",
-  "[data-note-context-menu='true']"
-].join(",");
-
-function isSelectionIgnoredTarget(target: EventTarget | null): boolean {
-  return target instanceof Element && target.closest(NOTE_SELECTION_IGNORED_TARGET_SELECTOR) !== null;
-}
-
 function SortableNote(props: SortableNoteProps) {
   const {
     attributes,
@@ -64,31 +53,6 @@ function SortableNote(props: SortableNoteProps) {
     transition,
     isDragging
   } = useSortable({ id: props.note.id });
-
-  function isSelectionClick(event: MouseEvent<HTMLDivElement>): boolean {
-    return event.button === 0
-      && (event.metaKey || event.ctrlKey)
-      && !isSelectionIgnoredTarget(event.target);
-  }
-
-  function handleSelectionMouseDown(event: MouseEvent<HTMLDivElement>) {
-    if (!isSelectionClick(event)) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  function handleSelectionClick(event: MouseEvent<HTMLDivElement>) {
-    if (!isSelectionClick(event)) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-    props.onToggleSelection?.(props.note.id);
-  }
 
   return (
     <div
@@ -101,8 +65,6 @@ function SortableNote(props: SortableNoteProps) {
       }}
       {...attributes}
       {...listeners}
-      onMouseDownCapture={handleSelectionMouseDown}
-      onClickCapture={handleSelectionClick}
     >
       <Note
         theme={props.theme}

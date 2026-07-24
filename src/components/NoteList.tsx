@@ -391,7 +391,6 @@ function NoteList(props: NoteListProps) {
                     id={note.id}
                     isFolded={isFolded}
                     key={note.id}
-                    onToggleSelection={props.onToggleNoteSelection}
                   >
                     <div
                       className={`${styles.listItem} ${props.isSelectionMode ? styles.listItemSelectionMode : ""}`}
@@ -472,7 +471,6 @@ function NoteList(props: NoteListProps) {
                   id={note.id}
                   isFolded={isFolded}
                   key={note.id}
-                  onToggleSelection={props.onToggleNoteSelection}
                 >
                   <div
                     className={styles.expandedListItem}
