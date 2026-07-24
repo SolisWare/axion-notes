@@ -190,7 +190,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.bulletList,
           label: translate("electron.menu.bulletList"),
-          accelerator: 'Shift+CmdOrCtrl+7',
+          accelerator: 'Shift+CmdOrCtrl+6',
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -200,7 +200,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.dashedList,
           label: translate("electron.menu.dashedList"),
-          accelerator: 'Shift+CmdOrCtrl+8',
+          accelerator: 'Shift+CmdOrCtrl+7',
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -210,7 +210,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.numberedList,
           label: translate("electron.menu.numberedList"),
-          accelerator: 'Shift+CmdOrCtrl+9',
+          accelerator: 'Shift+CmdOrCtrl+8',
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -220,7 +220,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.checklist,
           label: translate("electron.menu.checklist"),
-          accelerator: 'Shift+CmdOrCtrl+0',
+          accelerator: 'Shift+CmdOrCtrl+9',
           type: 'checkbox',
           enabled: false,
           click: () => {
