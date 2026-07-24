@@ -675,15 +675,39 @@
   color: var(--settings-nav-text);
 }
 
-.shortcutsList {
+.shortcutsSection {
   width: 100%;
   max-width: 510px;
-  display: flex;
-  flex-direction: column;
+}
+
+.shortcutGroup {
+  margin-top: 22px;
+}
+
+.shortcutGroup:first-child {
+  margin-top: 0;
+}
+
+.shortcutsList {
   overflow: hidden;
   border: 1px solid var(--settings-divider);
   border-radius: 8px;
   background: var(--settings-content-background);
+}
+
+.shortcutSectionHeader {
+  margin: 0 0 7px;
+  padding: 0 2px;
+  color: var(--settings-section-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.shortcutSectionHeaderFirst {
+  margin-top: 0;
 }
 
 .shortcutRow {
@@ -697,7 +721,7 @@
   border-bottom: 1px solid var(--settings-divider);
 }
 
-.shortcutRow:last-child {
+.shortcutsList .shortcutRow:last-child {
   border-bottom: 0;
 }
 

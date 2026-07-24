@@ -222,6 +222,12 @@
       "checklist": "Checklist",
       "increaseFontSize": "Increase font size",
       "decreaseFontSize": "Decrease font size",
+      "sections": {
+        "general": "General",
+        "noteSelection": "Note selection",
+        "textFormatting": "Text formatting",
+        "lists": "Lists"
+      },
       "keys": {
         "command": "Command",
         "control": "Control",

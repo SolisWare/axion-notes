@@ -20,6 +20,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added note selection mode with native menu, context menu, web toolbar triggers, selection checkmarks, and a floating action toolbar for batch delete, duplicate, clear, and cancel actions
 - Added checklist formatting for rich-text note content
 - Added shortcuts for note selection mode and rich-text font size adjustments
+- Grouped the Shortcuts settings page into clearer sections
 
 ## [v0.4.0-beta.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
