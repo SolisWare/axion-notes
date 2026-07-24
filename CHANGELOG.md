@@ -21,6 +21,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added checklist formatting for rich-text note content
 - Added shortcuts for note selection mode and rich-text font size adjustments
 - Grouped the Shortcuts settings page into clearer sections
+- Hid redundant system-equivalent font choices from the global title and content font settings
 
 ## [v0.4.0-beta.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing

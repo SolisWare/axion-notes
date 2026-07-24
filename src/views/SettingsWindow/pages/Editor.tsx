@@ -83,8 +83,12 @@ function Editor(props: EditorProps) {
     event.currentTarget.blur();
   }
 
-  function getNoteFontOptionsByCategory(fontCategory: typeof NOTE_FONT_CATEGORIES[number]) {
-    return NOTE_FONT_OPTIONS.filter((fontOption) => fontOption.category === fontCategory);
+  function getNoteFontOptionsByCategory(fontCategory: typeof NOTE_FONT_CATEGORIES[number], hiddenFont: NoteFontPreference) {
+    return NOTE_FONT_OPTIONS.filter((fontOption) => fontOption.category === fontCategory && fontOption.value !== hiddenFont);
+  }
+
+  function getVisibleNoteFontValue(noteFont: NoteFontPreference, hiddenFont: NoteFontPreference) {
+    return noteFont === hiddenFont ? NoteFontPreference.SYSTEM : noteFont;
   }
 
   return (
@@ -136,7 +140,7 @@ function Editor(props: EditorProps) {
                 className={styles.settingsSelect}
                 id="note-title-font"
                 style={{ fontFamily: noteTitleFontPreviewFontFamily }}
-                value={props.appSettings.noteTitleFont}
+                value={getVisibleNoteFontValue(props.appSettings.noteTitleFont, NoteFontPreference.SANS_SERIF)}
                 onChange={handleNoteTitleFontChange}
               >
                 {NOTE_FONT_CATEGORIES.map((fontCategory) => (
@@ -144,7 +148,7 @@ function Editor(props: EditorProps) {
                     key={fontCategory}
                     label={t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
                   >
-                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
+                    {getNoteFontOptionsByCategory(fontCategory, NoteFontPreference.SANS_SERIF).map((fontOption) => (
                       <option
                         key={fontOption.value}
                         style={{ fontFamily: fontOption.fontFamily }}
@@ -199,7 +203,7 @@ function Editor(props: EditorProps) {
                 className={styles.settingsSelect}
                 id="note-font"
                 style={{ fontFamily: noteFontPreviewFontFamily }}
-                value={props.appSettings.noteFont}
+                value={getVisibleNoteFontValue(props.appSettings.noteFont, NoteFontPreference.MONOSPACE)}
                 onChange={handleNoteFontChange}
               >
                 {NOTE_FONT_CATEGORIES.map((fontCategory) => (
@@ -207,7 +211,7 @@ function Editor(props: EditorProps) {
                     key={fontCategory}
                     label={t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
                   >
-                    {getNoteFontOptionsByCategory(fontCategory).map((fontOption) => (
+                    {getNoteFontOptionsByCategory(fontCategory, NoteFontPreference.MONOSPACE).map((fontOption) => (
                       <option
                         key={fontOption.value}
                         style={{ fontFamily: fontOption.fontFamily }}
