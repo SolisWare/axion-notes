@@ -13,6 +13,8 @@ export type RichTextFormatState = {
   isItalicActive: boolean;
   isUnderlineActive: boolean;
   isStrikethroughActive: boolean;
+  isInlineCodeActive: boolean;
+  isHighlightActive: boolean;
   isSuperscriptActive: boolean;
   isSubscriptActive: boolean;
   isBulletListActive: boolean;
@@ -30,6 +32,8 @@ export function getInactiveRichTextFormatState(): RichTextFormatState {
     isItalicActive: false,
     isUnderlineActive: false,
     isStrikethroughActive: false,
+    isInlineCodeActive: false,
+    isHighlightActive: false,
     isSuperscriptActive: false,
     isSubscriptActive: false,
     isBulletListActive: false,

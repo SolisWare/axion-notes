@@ -29,6 +29,8 @@ export const menuIds = {
     italic: "formatItalic",
     underline: "formatUnderline",
     strikethrough: "formatStrikethrough",
+    inlineCode: "formatInlineCode",
+    highlight: "formatHighlight",
     superscript: "formatSuperscript",
     subscript: "formatSubscript",
     bulletList: "formatBulletList",
@@ -42,6 +44,7 @@ export const menuIds = {
     fontFamily: {
       root: "formatFontFamily",
       option: (noteFont: string) => `formatFontFamily-${noteFont}`
-    }
+    },
+    clearFormatting: "formatClearFormatting"
   }
 } as const;

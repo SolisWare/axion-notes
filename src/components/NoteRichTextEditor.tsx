@@ -170,6 +170,8 @@ function getFormatState(editor: Editor) {
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
     isStrikethroughActive: editor.isActive("strike"),
+    isInlineCodeActive: false,
+    isHighlightActive: false,
     isSuperscriptActive: editor.isActive("superscript"),
     isSubscriptActive: editor.isActive("subscript"),
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),

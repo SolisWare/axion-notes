@@ -55,6 +55,9 @@
         "checklist": "Checklist",
         "superscript": "Superscript",
         "subscript": "Subscript",
+        "inlineCode": "Inline code",
+        "highlight": "Highlight",
+        "clearFormatting": "Clear formatting",
         "fontSize": "Font size",
         "font": "Font"
       },
@@ -216,6 +219,9 @@
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "inlineCode": "Inline code",
+      "highlight": "Highlight",
+      "clearFormatting": "Clear formatting",
       "bulletList": "Bullet list",
       "dashedList": "Dashed list",
       "numberedList": "Numbered list",
@@ -236,7 +242,8 @@
         "comma": "Comma",
         "escape": "Escape",
         "plus": "Plus",
-        "minus": "Minus"
+        "minus": "Minus",
+        "backslash": "Backslash"
       }
     },
     "links": {
@@ -286,6 +293,8 @@
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "inlineCode": "Inline Code",
+      "highlight": "Highlight",
       "superscript": "Superscript",
       "subscript": "Subscript",
       "bulletList": "Bullet List",
@@ -294,6 +303,7 @@
       "checklist": "Checklist",
       "fontSize": "Font Size",
       "font": "Font",
+      "clearFormatting": "Clear Formatting",
       "deleteAllNotes": "Delete All Notes...",
       "view": "View",
       "reload": "Reload",

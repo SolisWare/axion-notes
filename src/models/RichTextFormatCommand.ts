@@ -12,6 +12,8 @@ export enum RichTextFormatCommand {
   ITALIC = "italic",
   UNDERLINE = "underline",
   STRIKETHROUGH = "strikethrough",
+  INLINE_CODE = "inlineCode",
+  HIGHLIGHT = "highlight",
   SUPERSCRIPT = "superscript",
   SUBSCRIPT = "subscript",
   BULLET_LIST = "bulletList",
@@ -21,7 +23,8 @@ export enum RichTextFormatCommand {
   FONT_SIZE = "fontSize",
   INCREASE_FONT_SIZE = "increaseFontSize",
   DECREASE_FONT_SIZE = "decreaseFontSize",
-  FONT_FAMILY = "fontFamily"
+  FONT_FAMILY = "fontFamily",
+  CLEAR_FORMATTING = "clearFormatting"
 }
 
 export type RichTextFormatAction =

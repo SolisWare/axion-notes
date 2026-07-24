@@ -47,6 +47,8 @@ function updateNoteMenuItems(): void {
   const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.format.italic);
   const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.format.underline);
   const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.format.strikethrough);
+  const formatInlineCodeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.inlineCode);
+  const formatHighlightMenuItem = applicationMenu?.getMenuItemById(menuIds.format.highlight);
   const formatSuperscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.superscript);
   const formatSubscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.subscript);
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
@@ -55,6 +57,7 @@ function updateNoteMenuItems(): void {
   const formatChecklistMenuItem = applicationMenu?.getMenuItemById(menuIds.format.checklist);
   const formatFontSizeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.root);
   const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
+  const formatClearFormattingMenuItem = applicationMenu?.getMenuItemById(menuIds.format.clearFormatting);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
@@ -128,6 +131,16 @@ function updateNoteMenuItems(): void {
     formatStrikethroughMenuItem.checked = richTextFormatState.isStrikethroughActive;
   }
 
+  if (formatInlineCodeMenuItem) {
+    formatInlineCodeMenuItem.enabled = isRichTextFormattingEnabled;
+    formatInlineCodeMenuItem.checked = richTextFormatState.isInlineCodeActive;
+  }
+
+  if (formatHighlightMenuItem) {
+    formatHighlightMenuItem.enabled = isRichTextFormattingEnabled;
+    formatHighlightMenuItem.checked = richTextFormatState.isHighlightActive;
+  }
+
   if (formatSuperscriptMenuItem) {
     formatSuperscriptMenuItem.enabled = isRichTextFormattingEnabled;
     formatSuperscriptMenuItem.checked = richTextFormatState.isSuperscriptActive;
@@ -183,6 +196,10 @@ function updateNoteMenuItems(): void {
       formatFontFamilyOptionMenuItem.checked = activeFont === fontOption.value;
     }
   });
+
+  if (formatClearFormattingMenuItem) {
+    formatClearFormattingMenuItem.enabled = isRichTextFormattingEnabled;
+  }
 
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;

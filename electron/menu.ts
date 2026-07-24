@@ -168,6 +168,26 @@ export function createMenubar(): Menu {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.STRIKETHROUGH);
           }
         },
+        {
+          id: menuIds.format.highlight,
+          label: translate("electron.menu.highlight"),
+          accelerator: 'Shift+CmdOrCtrl+H',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.HIGHLIGHT);
+          }
+        },
+        {
+          id: menuIds.format.inlineCode,
+          label: translate("electron.menu.inlineCode"),
+          accelerator: 'CmdOrCtrl+M',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.INLINE_CODE);
+          }
+        },
         { type: 'separator' },
         {
           id: menuIds.format.superscript,
@@ -267,6 +287,16 @@ export function createMenubar(): Menu {
                 }
               }))
           }))
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.format.clearFormatting,
+          label: translate("electron.menu.clearFormatting"),
+          accelerator: 'CmdOrCtrl+\\',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.CLEAR_FORMATTING);
+          }
         }
       ]
     },

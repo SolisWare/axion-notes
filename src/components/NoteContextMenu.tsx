@@ -490,6 +490,20 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               >
                 {t("electron.menu.strikethrough")}
               </div>
+              <div
+                className={`${styles.noteContextMenuItem} ${props.formatState?.isHighlightActive ? styles.noteContextMenuItemActive : ""}`}
+                onClick={() => props.onFormatAction?.(RichTextFormatCommand.HIGHLIGHT)}
+                onPointerEnter={closeChildSubmenusWithAim}
+              >
+                {t("electron.menu.highlight")}
+              </div>
+              <div
+                className={`${styles.noteContextMenuItem} ${props.formatState?.isInlineCodeActive ? styles.noteContextMenuItemActive : ""}`}
+                onClick={() => props.onFormatAction?.(RichTextFormatCommand.INLINE_CODE)}
+                onPointerEnter={closeChildSubmenusWithAim}
+              >
+                {t("electron.menu.inlineCode")}
+              </div>
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isSuperscriptActive ? styles.noteContextMenuItemActive : ""}`}
@@ -601,6 +615,14 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                     </div>
                   ))}
                 </div>
+              </div>
+              <Divider className={styles.noteContextMenuDivider} />
+              <div
+                className={styles.noteContextMenuItem}
+                onClick={() => props.onFormatAction?.(RichTextFormatCommand.CLEAR_FORMATTING)}
+                onPointerEnter={closeChildSubmenusWithAim}
+              >
+                {t("electron.menu.clearFormatting")}
               </div>
             </div>
           )}

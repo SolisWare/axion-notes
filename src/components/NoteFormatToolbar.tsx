@@ -5,7 +5,10 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import FormatBoldRoundedIcon from "@mui/icons-material/FormatBoldRounded";
+import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
+import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
+import FormatClearRoundedIcon from "@mui/icons-material/FormatClearRounded";
 import FormatItalicRoundedIcon from "@mui/icons-material/FormatItalicRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
@@ -49,7 +52,9 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const isInlineStyleActive = props.formatState.isBoldActive
     || props.formatState.isItalicActive
     || props.formatState.isUnderlineActive
-    || props.formatState.isStrikethroughActive;
+    || props.formatState.isStrikethroughActive
+    || props.formatState.isInlineCodeActive
+    || props.formatState.isHighlightActive;
   const isListActive = props.formatState.isBulletListActive
     || props.formatState.isDashedListActive
     || props.formatState.isNumberedListActive
@@ -202,6 +207,36 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               >
                 <StrikethroughSRoundedIcon fontSize="small" />
               </IconButton>
+              <IconButton
+                aria-label={t("electron.menu.highlight")}
+                className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.HIGHLIGHT);
+                  setIsInlineStyleMenuOpen(false);
+                }}
+                size="small"
+                title={t("electron.menu.highlight")}
+                type="button"
+              >
+                <BorderColorRoundedIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={t("electron.menu.inlineCode")}
+                className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.INLINE_CODE);
+                  setIsInlineStyleMenuOpen(false);
+                }}
+                size="small"
+                title={t("electron.menu.inlineCode")}
+                type="button"
+              >
+                <CodeRoundedIcon fontSize="small" />
+              </IconButton>
             </div>
           )}
         </div>
@@ -254,6 +289,30 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             type="button"
           >
             <StrikethroughSRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("electron.menu.highlight")}
+            className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.HIGHLIGHT)}
+            size="small"
+            title={t("electron.menu.highlight")}
+            type="button"
+          >
+            <BorderColorRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("electron.menu.inlineCode")}
+            className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.INLINE_CODE)}
+            size="small"
+            title={t("electron.menu.inlineCode")}
+            type="button"
+          >
+            <CodeRoundedIcon fontSize="small" />
           </IconButton>
         </>
       )}
@@ -527,6 +586,19 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </div>
         )}
       </div>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <IconButton
+        aria-label={t("electron.menu.clearFormatting")}
+        className={styles.toolbarButton}
+        disableRipple
+        disabled={!props.formatState.canFormat}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.CLEAR_FORMATTING)}
+        size="small"
+        title={t("electron.menu.clearFormatting")}
+        type="button"
+      >
+        <FormatClearRoundedIcon fontSize="small" />
+      </IconButton>
     </div>
   );
 }

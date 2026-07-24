@@ -65,6 +65,9 @@ function getShortcutSections(t: TFunction): ShortcutSection[] {
         { label: t("settingsWindow.shortcuts.italic"), keys: [commandKey, { label: "I", ariaLabel: "I" }], requiresRichTextEditor: true },
         { label: t("settingsWindow.shortcuts.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }], requiresRichTextEditor: true },
         { label: t("settingsWindow.shortcuts.strikethrough"), keys: [commandKey, shiftKey, { label: "X", ariaLabel: "X" }], requiresRichTextEditor: true },
+        { label: t("settingsWindow.shortcuts.highlight"), keys: [commandKey, shiftKey, { label: "H", ariaLabel: "H" }], requiresRichTextEditor: true },
+        { label: t("settingsWindow.shortcuts.inlineCode"), keys: [commandKey, { label: "M", ariaLabel: "M" }], requiresRichTextEditor: true },
+        { label: t("settingsWindow.shortcuts.clearFormatting"), keys: [commandKey, { label: "\\", ariaLabel: t("settingsWindow.shortcuts.keys.backslash") }], requiresRichTextEditor: true },
         { label: t("settingsWindow.shortcuts.increaseFontSize"), keys: [commandKey, { label: "+", ariaLabel: t("settingsWindow.shortcuts.keys.plus") }], requiresRichTextEditor: true },
         { label: t("settingsWindow.shortcuts.decreaseFontSize"), keys: [commandKey, { label: "-", ariaLabel: t("settingsWindow.shortcuts.keys.minus") }], requiresRichTextEditor: true }
       ]
