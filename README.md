@@ -24,6 +24,8 @@ Key features:
 - Foldable and pinned notes
 - Drag-and-drop reordering
 - Rich-text formatting
+- Checklists and list formatting
+- Note selection mode
 - Separate note windows
 - Smart sorting
 - Light, dark, and system themes
@@ -39,19 +41,25 @@ Key features:
 ## Features
 
 ### Organize Notes
-Use note colors, sorting, pinning, duplication, and drag-and-drop reordering to shape your notes board around the way you think. The desktop app also includes a list layout for browsing notes as a compact vertical stack.
+Use note colors, sorting, pinning, duplication, batch selection, and drag-and-drop reordering to shape your notes board around the way you think. The desktop app also includes a list layout for browsing notes as a compact vertical stack with folded and expanded notes.
 
 ### Edit Notes
-Notes auto-save as you type and support basic rich-text formatting, including bold, italic, underline, strikethrough, bullet lists, dashed lists, and numbered lists. Formatting is available through menus, keyboard shortcuts, and note formatting toolbars.
+Notes auto-save as you type and support rich-text formatting, including bold, italic, underline, strikethrough, font face, font size, bullet lists, dashed lists, numbered lists, and checklists. Formatting is available through menus, keyboard shortcuts, and note formatting toolbars.
 
 ### Focus On A Note
-Desktop users can open a note in its own dedicated window. Browser users can open a focused full-note dialog instead, keeping the web app workflow close to the desktop experience.
+Desktop users can open a note in its own dedicated window with live synchronization back to the main notes view. Browser users can open a focused full-note dialog instead, keeping the web app workflow close to the desktop experience.
 
 ### Customize The Workspace
-Axion Notes includes settings for theme, note size, note font, default note color, title visibility, footer visibility, sorting, and layout. The desktop app also supports always-on-top mode.
+Axion Notes includes settings for theme, note size, title and content fonts, default font sizes, default note color, title visibility, footer visibility, sorting, editor mode, and layout. The desktop app also supports always-on-top mode.
 
 ### Language Support
-Axion Notes can choose a supported language from the OS or browser on first launch, then keeps the selected language in settings until you change it. English is the source locale, with Estonian, Polish, and Spanish translations currently available.
+Axion Notes can choose supported language, date, and time defaults from the OS or browser on first launch, then keeps those settings until you change them. English is the source locale, with Estonian, Polish, and Spanish translations currently available.
+
+### Shortcuts
+Common note, selection, and formatting actions are available from the keyboard. The Shortcuts settings page groups commands by General, Note selection, Text formatting, and Lists so you can quickly check what is available.
+
+### Suggested Next Features
+Some useful features being considered for future releases include note search, archiving, deleted-note recovery, import/export backups, note templates, keyboard navigation between notes, and reminders.
 
 ## Getting Started
 
@@ -263,6 +271,12 @@ Axion Notes stores notes locally on the device or browser where you create them.
 
 ### Can I sync notes between devices?
 Not currently. Desktop and web notes are stored locally for now, so notes do not automatically sync between devices or browsers.
+
+### Can I use plain text instead of rich text?
+Yes. Axion Notes includes a Rich Text Editor setting. Turning it off uses the Plain Text Editor instead. Existing formatted notes keep their rich content unless you edit them while the Plain Text Editor is active, which converts that note to plain text.
+
+### Can I open a note separately?
+Yes. The desktop app can open notes in dedicated note windows, and the web app uses a focused note dialog. Edits stay synchronized with the main note grid or list.
 
 ### Which platforms does Axion Notes support?
 Axion Notes supports macOS, Windows, and web browsers. The desktop version is built with Electron, and the web version is built with React.
