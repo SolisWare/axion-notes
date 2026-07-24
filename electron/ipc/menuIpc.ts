@@ -27,6 +27,10 @@ let noteSelectionState: MenuNoteSelectionState = {
 };
 let richTextFormatState: RichTextFormatState = getInactiveRichTextFormatState();
 
+export function isRichTextFormattingActive(): boolean {
+  return isNewNoteEnabled && richTextFormatState.canFormat;
+}
+
 function updateNoteMenuItems(): void {
   const applicationMenu = Menu.getApplicationMenu();
   const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);

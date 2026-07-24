@@ -31,6 +31,7 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
     : { label: "⌃", ariaLabel: t("settingsWindow.shortcuts.keys.control") };
   const shiftKey = { label: "⇧", ariaLabel: t("settingsWindow.shortcuts.keys.shift") };
   const backspaceKey = { label: "⌫", ariaLabel: t("settingsWindow.shortcuts.keys.backspace") };
+  const escapeKey = { label: "Esc", ariaLabel: t("settingsWindow.shortcuts.keys.escape") };
 
   return [
     { label: t("settingsWindow.shortcuts.newNote"), keys: [commandKey, { label: "N", ariaLabel: "N" }] },
@@ -38,6 +39,10 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
       { label: t("settingsWindow.shortcuts.openSettings"), keys: [commandKey, { label: ",", ariaLabel: t("settingsWindow.shortcuts.keys.comma") }] },
     ] : []),
     { label: t("settingsWindow.shortcuts.deleteAllNotes"), keys: [commandKey, shiftKey, backspaceKey] },
+    { label: t("settingsWindow.shortcuts.enterNoteSelectionMode"), keys: [commandKey, shiftKey, { label: "A", ariaLabel: "A" }] },
+    { label: t("settingsWindow.shortcuts.selectAllNotes"), keys: [commandKey, { label: "A", ariaLabel: "A" }] },
+    { label: t("settingsWindow.shortcuts.duplicateSelectedNotes"), keys: [commandKey, shiftKey, { label: "D", ariaLabel: "D" }] },
+    { label: t("settingsWindow.shortcuts.clearOrCancelNoteSelection"), keys: [escapeKey] },
     { label: t("settingsWindow.shortcuts.bold"), keys: [commandKey, { label: "B", ariaLabel: "B" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.italic"), keys: [commandKey, { label: "I", ariaLabel: "I" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }], requiresRichTextEditor: true },
@@ -46,6 +51,8 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
     { label: t("settingsWindow.shortcuts.dashedList"), keys: [commandKey, shiftKey, { label: "7", ariaLabel: "7" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.numberedList"), keys: [commandKey, shiftKey, { label: "8", ariaLabel: "8" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.checklist"), keys: [commandKey, shiftKey, { label: "9", ariaLabel: "9" }], requiresRichTextEditor: true },
+    { label: t("settingsWindow.shortcuts.increaseFontSize"), keys: [commandKey, { label: "+", ariaLabel: t("settingsWindow.shortcuts.keys.plus") }], requiresRichTextEditor: true },
+    { label: t("settingsWindow.shortcuts.decreaseFontSize"), keys: [commandKey, { label: "-", ariaLabel: t("settingsWindow.shortcuts.keys.minus") }], requiresRichTextEditor: true },
   ];
 }
 

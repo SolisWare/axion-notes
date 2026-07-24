@@ -89,6 +89,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.edit.selectNote,
           label: translate("electron.menu.selectNotes"),
+          accelerator: 'Shift+CmdOrCtrl+A',
           enabled: false,
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectNote);

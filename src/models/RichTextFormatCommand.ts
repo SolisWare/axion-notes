@@ -19,6 +19,8 @@ export enum RichTextFormatCommand {
   NUMBERED_LIST = "numberedList",
   CHECKLIST = "checklist",
   FONT_SIZE = "fontSize",
+  INCREASE_FONT_SIZE = "increaseFontSize",
+  DECREASE_FONT_SIZE = "decreaseFontSize",
   FONT_FAMILY = "fontFamily"
 }
 

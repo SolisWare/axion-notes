@@ -13,6 +13,7 @@ import { isMac } from "../utils/Platform";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose } from "./mainWindowState";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { channels } from "../ipc/channels";
+import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
@@ -44,6 +45,8 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   if (!isListLayout && mainWindowState.isMaximized) {
     mainWindow.maximize();
   }
+
+  registerRichTextShortcuts(mainWindow);
 
   let hasShownMainWindow = false;
   let fallbackShowTimeout: NodeJS.Timeout | undefined;

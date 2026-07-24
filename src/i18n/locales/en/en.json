@@ -208,6 +208,10 @@
       "newNote": "New note",
       "openSettings": "Open settings",
       "deleteAllNotes": "Delete all notes",
+      "enterNoteSelectionMode": "Select notes",
+      "selectAllNotes": "Select all notes",
+      "duplicateSelectedNotes": "Duplicate selected notes",
+      "clearOrCancelNoteSelection": "Clear or cancel note selection",
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
@@ -216,12 +220,17 @@
       "dashedList": "Dashed list",
       "numberedList": "Numbered list",
       "checklist": "Checklist",
+      "increaseFontSize": "Increase font size",
+      "decreaseFontSize": "Decrease font size",
       "keys": {
         "command": "Command",
         "control": "Control",
         "shift": "Shift",
         "backspace": "Backspace",
-        "comma": "Comma"
+        "comma": "Comma",
+        "escape": "Escape",
+        "plus": "Plus",
+        "minus": "Minus"
       }
     },
     "links": {

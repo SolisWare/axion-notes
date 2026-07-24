@@ -333,7 +333,7 @@ function MainWindow(props: MainWindowProps) {
     });
   }
 
-  function handleDuplicateSelectedNotes() {
+  const handleDuplicateSelectedNotes = useCallback(() => {
     if (selectedNoteIds.size === 0) {
       return;
     }
@@ -370,7 +370,73 @@ function MainWindow(props: MainWindowProps) {
 
     setSelectedNoteIds(new Set());
     setIsSelectionMode(false);
-  }
+  }, [selectedNoteIds]);
+
+  useEffect(() => {
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (
+        props.view !== AppView.home
+        || isDeleteAllNotesDialogOpen
+        || isDeleteSelectedNotesDialogOpen
+        || isSettingsDialogOpen
+        || webNoteWindowNoteId !== null
+      ) {
+        return;
+      }
+
+      const isModifierPressed = window.api.os.isMac ? event.metaKey : event.ctrlKey;
+      const key = event.key.toLowerCase();
+
+      if (event.key === "Escape" && isSelectionMode) {
+        event.preventDefault();
+
+        if (selectedNoteIds.size > 0) {
+          setSelectedNoteIds(new Set());
+          return;
+        }
+
+        setIsSelectionMode(false);
+        return;
+      }
+
+      if (!isModifierPressed || event.altKey || notes.length === 0) {
+        return;
+      }
+
+      if (event.shiftKey && key === "a" && !isSelectionMode) {
+        event.preventDefault();
+        setIsSelectionMode(true);
+        return;
+      }
+
+      if (event.shiftKey && key === "d" && isSelectionMode && selectedNoteIds.size > 0) {
+        event.preventDefault();
+        handleDuplicateSelectedNotes();
+        return;
+      }
+
+      if (!event.shiftKey && key === "a" && isSelectionMode) {
+        event.preventDefault();
+        setSelectedNoteIds(new Set(notes.map((note) => note.id)));
+      }
+    };
+
+    document.addEventListener("keydown", handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [
+    handleDuplicateSelectedNotes,
+    isDeleteAllNotesDialogOpen,
+    isDeleteSelectedNotesDialogOpen,
+    isSelectionMode,
+    isSettingsDialogOpen,
+    notes,
+    props.view,
+    selectedNoteIds.size,
+    webNoteWindowNoteId
+  ]);
 
   function applyNotesChange(event: NotesChangeEvent) {
     switch (event.type) {

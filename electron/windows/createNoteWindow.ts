@@ -12,6 +12,7 @@ import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { channels } from "../ipc/channels";
 import { dev } from "./routes";
+import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
 
 const noteWindows = new Map<string, BrowserWindow>();
 const NOTE_WINDOW_OFFSET = 28;
@@ -100,6 +101,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
   noteWindows.set(noteId, noteWindow);
   noteWindow.setMenu(null);
   noteWindow.setMenuBarVisibility(false);
+  registerRichTextShortcuts(noteWindow);
 
   noteWindow.once("ready-to-show", () => {
     noteWindow.show();
