@@ -10,6 +10,8 @@ import { BulletList } from "@tiptap/extension-bullet-list";
 import FontFamily from "@tiptap/extension-font-family";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
 import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -132,6 +134,7 @@ function getFormatState(editor: Editor) {
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
     isNumberedListActive: editor.isActive("orderedList"),
+    isChecklistActive: editor.isActive("taskList"),
     activeFontSize: getNoteFontSizePreference(textStyleAttributes.fontSize),
     activeFont: getNoteFontPreferenceByFontFamily(activeFontFamily)
   };
@@ -181,6 +184,9 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
       break;
     case RichTextFormatCommand.NUMBERED_LIST:
       commandChain.toggleOrderedList().run();
+      break;
+    case RichTextFormatCommand.CHECKLIST:
+      commandChain.toggleTaskList().run();
       break;
     case RichTextFormatCommand.FONT_SIZE:
       if (typeof action === "string" || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
@@ -261,6 +267,10 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         underline: false
       }),
       MarkerBulletList,
+      TaskList,
+      TaskItem.configure({
+        nested: true
+      }),
       TextStyle,
       FontSize,
       FontFamily,

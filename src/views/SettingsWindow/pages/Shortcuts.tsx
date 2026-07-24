@@ -45,6 +45,7 @@ function getShortcutKeys(t: TFunction): Shortcut[] {
     { label: t("settingsWindow.shortcuts.bulletList"), keys: [commandKey, shiftKey, { label: "7", ariaLabel: "7" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.dashedList"), keys: [commandKey, shiftKey, { label: "8", ariaLabel: "8" }], requiresRichTextEditor: true },
     { label: t("settingsWindow.shortcuts.numberedList"), keys: [commandKey, shiftKey, { label: "9", ariaLabel: "9" }], requiresRichTextEditor: true },
+    { label: t("settingsWindow.shortcuts.checklist"), keys: [commandKey, shiftKey, { label: "0", ariaLabel: "0" }], requiresRichTextEditor: true },
   ];
 }
 

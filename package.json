@@ -86,6 +86,8 @@
     "@tiptap/extension-placeholder": "^3.28.0",
     "@tiptap/extension-subscript": "^3.28.0",
     "@tiptap/extension-superscript": "^3.28.0",
+    "@tiptap/extension-task-item": "^3.28.0",
+    "@tiptap/extension-task-list": "^3.28.0",
     "@tiptap/extension-text-style": "^3.28.0",
     "@tiptap/extension-underline": "^3.28.0",
     "@tiptap/react": "^3.28.0",

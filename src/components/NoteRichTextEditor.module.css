@@ -75,6 +75,86 @@
   list-style-position: outside;
 }
 
+.wrapper :global(.ProseMirror ul[data-type="taskList"]) {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"]) {
+  display: grid !important;
+  grid-template-columns: 1.25em minmax(0, 1fr);
+  column-gap: 0.4em;
+  align-items: center;
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label) {
+  grid-column: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  min-width: 1.25em;
+  min-height: 1.25em;
+  line-height: 1;
+  user-select: none;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label span),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label span) {
+  position: relative;
+  display: block;
+  width: 1.08em;
+  height: 1.08em;
+  border: 1px solid currentColor;
+  border-radius: 0.18em;
+  background: rgba(255, 255, 255, 0.34);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input:checked + span::after),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input:checked + span::after) {
+  content: "";
+  position: absolute;
+  left: 0.27em;
+  top: 0.09em;
+  width: 0.36em;
+  height: 0.64em;
+  border: solid currentColor;
+  border-width: 0 0.13em 0.13em 0;
+  transform: rotate(45deg);
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > div),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > div) {
+  grid-column: 2;
+  min-width: 0;
+  display: block;
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"][data-checked="true"] > div),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"][data-checked="true"] > div p) {
+  opacity: 1;
+  color: inherit;
+  text-decoration: none;
+}
+
 .wrapper :global(.ProseMirror li p) {
   margin: 0;
 }

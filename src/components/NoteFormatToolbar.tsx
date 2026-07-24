@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import FormatBoldRoundedIcon from "@mui/icons-material/FormatBoldRounded";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import FormatItalicRoundedIcon from "@mui/icons-material/FormatItalicRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
@@ -51,7 +52,8 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
     || props.formatState.isStrikethroughActive;
   const isListActive = props.formatState.isBulletListActive
     || props.formatState.isDashedListActive
-    || props.formatState.isNumberedListActive;
+    || props.formatState.isNumberedListActive
+    || props.formatState.isChecklistActive;
   const selectedFontOption = NOTE_FONT_OPTIONS.find((fontOption) => fontOption.value === (props.formatState.activeFont ?? selectedFont));
   const fontPickerButtonLabel = props.compactInlineStyles
     ? "Aa"
@@ -325,6 +327,21 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               >
                 <FormatListNumberedRoundedIcon fontSize="small" />
               </IconButton>
+              <IconButton
+                aria-label={t("mainWindow.note.formatToolbar.checklist")}
+                className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.CHECKLIST);
+                  setIsListMenuOpen(false);
+                }}
+                size="small"
+                title={t("mainWindow.note.formatToolbar.checklist")}
+                type="button"
+              >
+                <CheckBoxOutlinedIcon fontSize="small" />
+              </IconButton>
             </div>
           )}
         </div>
@@ -365,6 +382,18 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             type="button"
           >
             <FormatListNumberedRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.checklist")}
+            className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.CHECKLIST)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.checklist")}
+            type="button"
+          >
+            <CheckBoxOutlinedIcon fontSize="small" />
           </IconButton>
         </>
       )}

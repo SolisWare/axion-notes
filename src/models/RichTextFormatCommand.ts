@@ -17,6 +17,7 @@ export enum RichTextFormatCommand {
   BULLET_LIST = "bulletList",
   DASHED_LIST = "dashedList",
   NUMBERED_LIST = "numberedList",
+  CHECKLIST = "checklist",
   FONT_SIZE = "fontSize",
   FONT_FAMILY = "fontFamily"
 }

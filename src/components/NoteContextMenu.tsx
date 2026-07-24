@@ -527,6 +527,13 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               >
                 {t("electron.menu.numberedList")}
               </div>
+              <div
+                className={`${styles.noteContextMenuItem} ${props.formatState?.isChecklistActive ? styles.noteContextMenuItemActive : ""}`}
+                onClick={() => props.onFormatAction?.(RichTextFormatCommand.CHECKLIST)}
+                onPointerEnter={closeChildSubmenusWithAim}
+              >
+                {t("electron.menu.checklist")}
+              </div>
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={styles.noteContextMenuItem}

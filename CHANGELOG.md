@@ -17,6 +17,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added first-launch date and time format detection from the OS or browser locale
 - Fixed duplicate rich-text underline extension registration warnings
 - Added word and character counts to full-window note footers
+- Added note selection mode with native menu, context menu, web toolbar triggers, selection checkmarks, and a floating action toolbar for batch delete, duplicate, clear, and cancel actions
+- Added checklist formatting for rich-text note content
 
 ## [v0.4.0-beta.1] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing

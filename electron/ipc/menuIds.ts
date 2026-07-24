@@ -34,6 +34,7 @@ export const menuIds = {
     bulletList: "formatBulletList",
     dashedList: "formatDashedList",
     numberedList: "formatNumberedList",
+    checklist: "formatChecklist",
     fontSize: {
       root: "formatFontSize",
       option: (fontSize: number) => `formatFontSize-${fontSize}`

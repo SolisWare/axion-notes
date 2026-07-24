@@ -18,6 +18,7 @@ export type RichTextFormatState = {
   isBulletListActive: boolean;
   isDashedListActive: boolean;
   isNumberedListActive: boolean;
+  isChecklistActive: boolean;
   activeFontSize?: NoteFontSize;
   activeFont?: NoteFontPreference;
 };
@@ -34,6 +35,7 @@ export function getInactiveRichTextFormatState(): RichTextFormatState {
     isBulletListActive: false,
     isDashedListActive: false,
     isNumberedListActive: false,
+    isChecklistActive: false,
     activeFontSize: undefined,
     activeFont: undefined
   };

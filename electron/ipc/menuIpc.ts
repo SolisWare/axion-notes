@@ -48,6 +48,7 @@ function updateNoteMenuItems(): void {
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
   const formatDashedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.dashedList);
   const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
+  const formatChecklistMenuItem = applicationMenu?.getMenuItemById(menuIds.format.checklist);
   const formatFontSizeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.root);
   const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
@@ -146,6 +147,11 @@ function updateNoteMenuItems(): void {
   if (formatNumberedListMenuItem) {
     formatNumberedListMenuItem.enabled = isRichTextFormattingEnabled;
     formatNumberedListMenuItem.checked = richTextFormatState.isNumberedListActive;
+  }
+
+  if (formatChecklistMenuItem) {
+    formatChecklistMenuItem.enabled = isRichTextFormattingEnabled;
+    formatChecklistMenuItem.checked = richTextFormatState.isChecklistActive;
   }
 
   if (formatFontSizeMenuItem) {

@@ -52,6 +52,7 @@
         "bulletList": "Bullet list",
         "dashedList": "Dashed list",
         "numberedList": "Numbered list",
+        "checklist": "Checklist",
         "superscript": "Superscript",
         "subscript": "Subscript",
         "fontSize": "Font size",
@@ -214,6 +215,7 @@
       "bulletList": "Bullet list",
       "dashedList": "Dashed list",
       "numberedList": "Numbered list",
+      "checklist": "Checklist",
       "keys": {
         "command": "Command",
         "control": "Control",
@@ -274,6 +276,7 @@
       "bulletList": "Bullet List",
       "dashedList": "Dashed List",
       "numberedList": "Numbered List",
+      "checklist": "Checklist",
       "fontSize": "Font Size",
       "font": "Font",
       "deleteAllNotes": "Delete All Notes...",

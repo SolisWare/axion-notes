@@ -217,6 +217,16 @@ export function createMenubar(): Menu {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.NUMBERED_LIST);
           }
         },
+        {
+          id: menuIds.format.checklist,
+          label: translate("electron.menu.checklist"),
+          accelerator: 'Shift+CmdOrCtrl+0',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.CHECKLIST);
+          }
+        },
         { type: 'separator' },
         {
           id: menuIds.format.fontSize.root,
