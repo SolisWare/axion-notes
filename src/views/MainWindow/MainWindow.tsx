@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import WebNoteWindowDialog from "../../components/WebNoteWindowDialog";
 import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
+import NoteSelectionToolbar from "../../components/NoteSelectionToolbar";
 import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
 import { AppView } from "../../App";
@@ -71,6 +72,7 @@ function MainWindow(props: MainWindowProps) {
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
+  const [isDeleteSelectedNotesDialogOpen, setDeleteSelectedNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -80,6 +82,8 @@ function MainWindow(props: MainWindowProps) {
   const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
     
   const isDeleteAllButtonDisabled = notes.length === 0;
+  const isSelectNotesButtonDisabled = notes.length === 0 || isSelectionMode;
+  const selectedNoteCount = selectedNoteIds.size;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
 
@@ -115,6 +119,10 @@ function MainWindow(props: MainWindowProps) {
   const handleCancelNoteSelection = useCallback(() => {
     setSelectedNoteIds(new Set());
     setIsSelectionMode(false);
+  }, []);
+
+  const handleClearNoteSelection = useCallback(() => {
+    setSelectedNoteIds(new Set());
   }, []);
 
   useEffect(() => {
@@ -323,6 +331,45 @@ function MainWindow(props: MainWindowProps) {
 
       return nextNotes;
     });
+  }
+
+  function handleDuplicateSelectedNotes() {
+    if (selectedNoteIds.size === 0) {
+      return;
+    }
+
+    const selectedNoteIdSet = new Set(selectedNoteIds);
+    const now = new Date();
+
+    setNotes((prevNotes) => {
+      const nextNotes = prevNotes.flatMap((note) => {
+        if (!selectedNoteIdSet.has(note.id)) {
+          return [note];
+        }
+
+        const duplicatedNote = {
+          ...note,
+          id: nanoid(),
+          pinnedOn: isPinnedNote(note) ? now : note.pinnedOn,
+          pinnedFromNoteIds: undefined,
+          createdOn: now,
+          lastModifiedOn: now
+        };
+
+        window.api.storage.setNote(duplicatedNote);
+
+        return [note, duplicatedNote];
+      });
+
+      if (currentNotesSortOrder.current === NoteSortOrder.CUSTOM || nextNotes.some((note) => selectedNoteIdSet.has(note.id) && isPinnedNote(note))) {
+        window.api.storage.setNoteOrder(nextNotes.map((note) => note.id));
+      }
+
+      return nextNotes;
+    });
+
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
   }
 
   function applyNotesChange(event: NotesChangeEvent) {
@@ -558,6 +605,20 @@ function MainWindow(props: MainWindowProps) {
     }, 500);
   }
 
+  function handleDeleteSelectedNotes() {
+    if (selectedNoteIds.size === 0) {
+      return;
+    }
+
+    const selectedNoteIdSet = new Set(selectedNoteIds);
+
+    setNotes((prevNotes) => prevNotes.filter((note) => !selectedNoteIdSet.has(note.id)));
+    selectedNoteIdSet.forEach((noteId) => window.api.storage.deleteNote(noteId));
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+    setDeleteSelectedNotesDialogOpen(false);
+  }
+
   function handleGetStarted() {
     navigate(AppView.home);
   }
@@ -623,6 +684,13 @@ function MainWindow(props: MainWindowProps) {
                             confirmLabel={t("mainWindow.deleteAllNotesDialog.confirmLabel")}
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
+        <ConfirmationDialog theme={props.theme}
+                            open={isDeleteSelectedNotesDialogOpen}
+                            title={t("mainWindow.noteSelectionToolbar.deleteDialogTitle")}
+                            message={t("mainWindow.noteSelectionToolbar.deleteDialogMessage")}
+                            confirmLabel={t("mainWindow.noteSelectionToolbar.deleteDialogConfirmLabel")}
+                            onConfirm={handleDeleteSelectedNotes}
+                            onCancel={() => setDeleteSelectedNotesDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}
                            appSettings={appSettings}
                            open={isSettingsDialogOpen}
@@ -645,12 +713,24 @@ function MainWindow(props: MainWindowProps) {
           {shouldShowToolbar &&
             <WebToolbar theme={props.theme} title="Axion Notes" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
+                        isSelectNotesButtonDisabled={isSelectNotesButtonDisabled}
+                        handleSelectNotesButton={() => setIsSelectionMode(true)}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
                         handleSettingsButton={() => setSettingsDialogOpen(true)} />
           }
           <main className={classes.content}>
             { page }
           </main>
+          {isSelectionMode && (
+            <NoteSelectionToolbar
+              theme={props.theme}
+              selectedCount={selectedNoteCount}
+              onDeleteSelectedNotes={() => setDeleteSelectedNotesDialogOpen(true)}
+              onDuplicateSelectedNotes={handleDuplicateSelectedNotes}
+              onClearSelection={handleClearNoteSelection}
+              onCancelSelection={handleCancelNoteSelection}
+            />
+          )}
         </div>
       </div>
     </ThemeProvider>

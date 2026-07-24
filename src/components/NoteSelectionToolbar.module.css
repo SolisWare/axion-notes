@@ -1,0 +1,72 @@
+.toolbar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  padding: 8px;
+  border: 1px solid var(--note-selection-toolbar-border);
+  border-radius: 6px;
+  background: var(--note-selection-toolbar-background);
+  box-shadow: 0 10px 26px var(--note-selection-toolbar-shadow);
+  color: var(--note-selection-toolbar-text);
+  z-index: 20;
+}
+
+.count {
+  min-width: 82px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--note-selection-toolbar-border);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.button:not(:disabled) {
+  cursor: pointer;
+}
+
+.button:not(:disabled):hover {
+  border-color: var(--note-selection-toolbar-button-hover-border);
+  background: var(--note-selection-toolbar-button-hover-background);
+  color: var(--note-selection-toolbar-button-hover-text);
+}
+
+.button:disabled {
+  color: var(--note-selection-toolbar-disabled-text);
+}
+
+.deleteButton:not(:disabled):hover {
+  border-color: var(--note-selection-toolbar-delete-hover-border);
+  background: var(--note-selection-toolbar-delete-hover-background);
+  color: var(--note-selection-toolbar-delete-hover-text);
+}
+
+.buttonIcon {
+  width: 18px !important;
+  height: 18px !important;
+  flex: 0 0 auto;
+}

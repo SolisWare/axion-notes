@@ -19,8 +19,20 @@
     },
     "toolbar": {
       "newNote": "New Note",
+      "selectNotes": "Select Notes",
       "deleteAll": "Delete All",
       "settings": "Settings"
+    },
+    "noteSelectionToolbar": {
+      "label": "Note selection actions",
+      "selectedCount": "{{count}} selected",
+      "delete": "Delete",
+      "duplicate": "Duplicate",
+      "clear": "Clear selection",
+      "cancel": "Cancel",
+      "deleteDialogTitle": "Delete Selected Notes",
+      "deleteDialogMessage": "Are you sure you want to delete the selected notes? This action cannot be undone.",
+      "deleteDialogConfirmLabel": "Delete"
     },
     "emptyNotes": {
       "title": "You don't have any notes yet!",
