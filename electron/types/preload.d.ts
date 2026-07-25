@@ -33,6 +33,7 @@ interface IElectronAPI {
   },
   menu: {
     onMenuNewNote: (callback: () => void) => () => void;
+    onMenuLockNotes: (callback: () => void) => () => void;
     onMenuShowWelcome: (callback: () => void) => () => void;
     onMenuSelectNote: (callback: () => void) => () => void;
     onMenuSelectAllNotes: (callback: () => void) => () => void;

@@ -4,6 +4,17 @@
     "close": "Close"
   },
   "mainWindow": {
+    "lockScreen": {
+      "title": "Your notes are locked",
+      "description": "Enter your password to view your notes.",
+      "passwordPlaceholder": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "passwordRequired": "Enter your password to continue.",
+      "unlock": "Unlock notes",
+      "offlineDisclosure": "Your notes are stored offline on this device only.",
+      "encryptionDisclosure": "Your notes are <strong>not</strong> encrypted."
+    },
     "welcome": {
       "title": "Welcome to Axion Notes",
       "intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
@@ -274,6 +285,7 @@
       "quit": "Quit",
       "file": "File",
       "newNote": "New Note...",
+      "lockNotes": "Lock Notes",
       "close": "Close",
       "edit": "Edit",
       "undo": "Undo",

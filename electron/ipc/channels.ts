@@ -13,6 +13,7 @@ export const channels = {
   },
   menu: {
     newNote: "menu.newNote",
+    lockNotes: "menu.lockNotes",
     showWelcome: "menu.showWelcome",
     selectNote: "menu.selectNote",
     selectAllNotes: "menu.selectAllNotes",

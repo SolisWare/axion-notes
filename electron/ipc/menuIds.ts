@@ -6,9 +6,11 @@
  */
 export const menuIds = {
   app: {
+    lockNotes: "lockNotes",
     settings: "settings"
   },
   file: {
+    lockNotes: "lockNotes",
     newNote: "newNote",
     settings: "settings"
   },

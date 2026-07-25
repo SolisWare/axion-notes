@@ -183,6 +183,7 @@ function MainWindow(props: MainWindowProps) {
 
   useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
+    const offMenuLockNotes = window.api.menu.onMenuLockNotes(() => navigate(AppView.lock));
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
     const offMenuSelectNote = window.api.menu.onMenuSelectNote(() => setIsSelectionMode(true));
     const offMenuSelectAllNotes = window.api.menu.onMenuSelectAllNotes(handleToggleSelectAllNotes);
@@ -191,6 +192,7 @@ function MainWindow(props: MainWindowProps) {
 
     return () => {
       offMenuNewNote();
+      offMenuLockNotes();
       offMenuShowWelcome();
       offMenuSelectNote();
       offMenuSelectAllNotes();

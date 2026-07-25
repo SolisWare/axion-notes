@@ -19,6 +19,12 @@ export const menuApi = {
     return () => off(channels.menu.newNote, listener);
   },
 
+  onMenuLockNotes: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.menu.lockNotes, listener);
+    return () => off(channels.menu.lockNotes, listener);
+  },
+
   onMenuShowWelcome: (callback: () => void) => {
     const listener = () => callback();
     on(channels.menu.showWelcome, listener);

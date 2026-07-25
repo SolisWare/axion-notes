@@ -23,10 +23,12 @@ import { getInactiveRichTextFormatState } from './models/RichTextFormatState';
 import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
 import { resolvePreferredDateFormat } from './utils/dt-formatter/dateFormatConfig';
 import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfig';
+import LockScreen from './views/MainWindow/pages/LockScreen';
 
 export enum AppView {
   home = "/home",
   welcome = "/welcome",
+  lock = "/lock",
   license = "/license"
 }
 
@@ -216,6 +218,9 @@ function App() {
             <Route path={AppView.welcome} element={
               <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
+            <Route path={AppView.lock} element={
+              <LockScreen theme={effectiveTheme} />
+            } />
             <Route path="/" element={
               <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
@@ -242,6 +247,9 @@ function App() {
             } />
             <WebRoute path={AppView.welcome} element={
               <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+            } />
+            <WebRoute path={AppView.lock} element={
+              <LockScreen theme={effectiveTheme} />
             } />
             <WebRoute path={AppView.license} element={
               <LicenseWindow theme={effectiveTheme} />

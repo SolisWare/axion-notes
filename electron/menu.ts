@@ -31,6 +31,15 @@ export function createMenubar(): Menu {
           }
         },
         { type: 'separator' },
+        {
+          id: menuIds.app.lockNotes,
+          label: translate("electron.menu.lockNotes"),
+          accelerator: 'Shift+CmdOrCtrl+L',
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.lockNotes);
+          }
+        },
+        { type: 'separator' },
         { role: 'services', label: translate("electron.menu.services") },
         { type: 'separator' },
         { role: 'hide', label: translate("electron.menu.hide") },
@@ -56,6 +65,17 @@ export function createMenubar(): Menu {
           }
         },
         { type: 'separator' },
+        ...(!isMac ? [
+          {
+            id: menuIds.file.lockNotes,
+            label: translate("electron.menu.lockNotes"),
+            accelerator: 'Shift+CmdOrCtrl+L',
+            click: () => {
+              BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.lockNotes);
+            }
+          },
+          { type: 'separator' as const }
+        ] : []),
         ...(isWindows ? [
           {
             id: menuIds.file.settings,

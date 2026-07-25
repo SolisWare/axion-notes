@@ -1,0 +1,259 @@
+.root {
+  --lock-background: #f0f7fa;
+  --lock-text: #1f2933;
+  --lock-muted-text: #52606d;
+  --lock-primary: #138ec7;
+  --lock-primary-hover: #127db3;
+  --lock-field-background: #ffffff;
+  --lock-field-border: #b9ddec;
+  --lock-error: #e60000;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 40px 24px;
+  overflow-y: auto;
+  background: var(--lock-background);
+  color: var(--lock-text);
+  text-align: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lockIcon {
+  margin-bottom: 20px;
+  color: var(--lock-primary);
+  font-size: 68px !important;
+  stroke-width: 1;
+}
+
+.brand {
+  position: relative;
+  transform: translateX(5px);
+  margin-bottom: 34px;
+  color: var(--lock-text);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.brandIcon {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 9px);
+  color: var(--lock-primary);
+  font-size: 21px !important;
+  transform: translateY(-50%) rotate(18deg);
+}
+
+.title {
+  margin: 0;
+  color: var(--lock-text);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.description {
+  margin: 11px 0 28px;
+  color: var(--lock-muted-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.form {
+  width: 286px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.field {
+  width: 100%;
+  text-align: left;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 40px 0 13px;
+  border: 1px solid var(--lock-field-border);
+  border-radius: 6px;
+  outline: none;
+  background: var(--lock-field-background);
+  color: var(--lock-text);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.input::placeholder {
+  color: var(--lock-muted-text);
+  opacity: 0.7;
+}
+
+.input:focus {
+  border-color: var(--lock-primary);
+  box-shadow: 0 0 0 2px rgba(19, 142, 199, 0.16);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--lock-error);
+}
+
+.visibilityButton {
+  position: absolute !important;
+  top: 0;
+  right: 2px;
+  width: 38px;
+  height: 36px;
+  color: var(--lock-muted-text) !important;
+}
+
+.visibilityButton svg {
+  font-size: 20px;
+}
+
+.message {
+  width: 100%;
+  min-height: 29px;
+  box-sizing: border-box;
+  margin: 0;
+  padding-top: 6px;
+  color: var(--lock-error);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.unlockButton {
+  width: 164px;
+  height: 36px;
+  border-radius: 6px !important;
+  background-color: var(--lock-primary) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}
+
+.unlockButton:hover {
+  background-color: var(--lock-primary-hover) !important;
+}
+
+.unlockButton:focus-visible {
+  outline: 3px solid rgba(19, 142, 199, 0.25);
+  outline-offset: 2px;
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.buttonContent svg {
+  font-size: 18px;
+}
+
+.disclosures {
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 34px 0 0;
+  padding: 0;
+  color: var(--lock-muted-text);
+  list-style: none;
+  text-align: left;
+}
+
+.disclosure {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.disclosure svg {
+  flex: 0 0 auto;
+  color: var(--lock-muted-text);
+  font-size: 19px;
+}
+
+.disclosure strong {
+  color: var(--lock-text);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .root {
+    padding: 28px 18px;
+  }
+
+  .lockIcon {
+    margin-bottom: 14px;
+    font-size: 56px !important;
+  }
+
+  .brand {
+    margin-bottom: 26px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .description {
+    margin-bottom: 27px;
+  }
+}
+
+@media (max-height: 560px) {
+  .root {
+    align-items: flex-start;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .lockIcon {
+    margin-bottom: 8px;
+    font-size: 48px !important;
+  }
+
+  .brand {
+    margin-bottom: 18px;
+  }
+
+  .description {
+    margin: 7px 0 18px;
+  }
+
+  .disclosures {
+    margin-top: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition: none;
+  }
+}
