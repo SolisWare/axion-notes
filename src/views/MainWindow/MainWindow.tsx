@@ -126,6 +126,10 @@ function MainWindow(props: MainWindowProps) {
   }, []);
 
   useEffect(() => {
+    window.api.menu.setLockScreenActive(false);
+  }, []);
+
+  useEffect(() => {
     window.api.storage.getNotes()
       .then((notes: NoteType[]) => {
         setNotes(sortNotes(notes, currentNotesSortOrder.current));

@@ -248,9 +248,6 @@ function App() {
             <WebRoute path={AppView.welcome} element={
               <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
             } />
-            <WebRoute path={AppView.lock} element={
-              <LockScreen theme={effectiveTheme} />
-            } />
             <WebRoute path={AppView.license} element={
               <LicenseWindow theme={effectiveTheme} />
             } />

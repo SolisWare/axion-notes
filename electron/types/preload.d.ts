@@ -42,6 +42,7 @@ interface IElectronAPI {
     onMenuRichTextFormat: (callback: (command: RichTextFormatAction) => void) => () => void;
     setDeleteAllNotesEnabled: (enabled: boolean) => void;
     setEditSelectionState: (state: MenuEditSelectionState) => void;
+    setLockScreenActive: (active: boolean) => void;
     setNoteSelectionState: (state: MenuNoteSelectionState) => void;
     setRichTextFormatState: (state: RichTextFormatState) => void;
     setNewNoteEnabled: (enabled: boolean) => void;

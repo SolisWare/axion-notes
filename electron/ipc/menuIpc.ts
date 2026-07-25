@@ -16,6 +16,7 @@ import { translate } from "../utils/electronI18n";
 
 let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
+let isLockScreenActive = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
@@ -31,7 +32,42 @@ export function isRichTextFormattingActive(): boolean {
   return isNewNoteEnabled && richTextFormatState.canFormat;
 }
 
+function isLockScreenMenuItemAllowed(item: Electron.MenuItem): boolean {
+  return item.role === "about"
+    || item.role === "close"
+    || item.role === "quit"
+    || item.id === menuIds.view.toggleFullScreen
+    || item.id === menuIds.help.viewLicense
+    || item.id === menuIds.help.visitWebsite
+    || item.id === menuIds.help.checkoutGitHub;
+}
+
+function updateLockScreenMenuItems(): void {
+  const applicationMenu = Menu.getApplicationMenu();
+
+  function updateMenuItem(item: Electron.MenuItem): boolean {
+    if (item.type === "separator") {
+      return false;
+    }
+
+    const hasEnabledSubmenuItem = item.submenu?.items
+      .map(updateMenuItem)
+      .some((isEnabled) => isEnabled) ?? false;
+    const isEnabled = isLockScreenMenuItemAllowed(item) || hasEnabledSubmenuItem;
+
+    item.enabled = isEnabled;
+    return isEnabled;
+  }
+
+  applicationMenu?.items.forEach(updateMenuItem);
+}
+
 function updateNoteMenuItems(): void {
+  if (isLockScreenActive) {
+    updateLockScreenMenuItems();
+    return;
+  }
+
   const applicationMenu = Menu.getApplicationMenu();
   const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);
   const editMenu = applicationMenu?.getMenuItemById(menuIds.edit.root);
@@ -219,6 +255,11 @@ export function registerMenuIpc(): void {
 
   ipcMain.on(channels.menu.setEditSelectionState, (_, state: MenuEditSelectionState) => {
     editSelectionState = state;
+    updateNoteMenuItems();
+  });
+
+  ipcMain.on(channels.menu.setLockScreenActive, (_, active: boolean) => {
+    isLockScreenActive = active;
     updateNoteMenuItems();
   });
 

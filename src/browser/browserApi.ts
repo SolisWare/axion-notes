@@ -46,6 +46,7 @@ export function installBrowserApi(): void {
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,
+      onMenuLockNotes: () => unsubscribe,
       onMenuShowWelcome: () => unsubscribe,
       onMenuSelectNote: () => unsubscribe,
       onMenuSelectAllNotes: () => unsubscribe,
@@ -54,6 +55,7 @@ export function installBrowserApi(): void {
       onMenuRichTextFormat: () => unsubscribe,
       setDeleteAllNotesEnabled: noop,
       setEditSelectionState: noop,
+      setLockScreenActive: noop,
       setNoteSelectionState: noop,
       setRichTextFormatState: noop,
       setNewNoteEnabled: noop

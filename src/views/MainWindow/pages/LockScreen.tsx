@@ -55,7 +55,12 @@ function LockScreen(props: LockScreenProps) {
   };
 
   useEffect(() => {
+    window.api.menu.setLockScreenActive(true);
     passwordInputRef.current?.focus();
+
+    return () => {
+      window.api.menu.setLockScreenActive(false);
+    };
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

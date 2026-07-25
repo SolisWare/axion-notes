@@ -50,6 +50,7 @@ export function createMenubar(): Menu {
       ]
     }] : []),
     {
+      id: menuIds.file.root,
       label: translate("electron.menu.file"),
       submenu: [
         ...(isWindows ? [
@@ -321,6 +322,7 @@ export function createMenubar(): Menu {
       ]
     },
     {
+      id: menuIds.view.root,
       label: translate("electron.menu.view"),
       submenu: [
         { role: 'reload', label: translate("electron.menu.reload") },
@@ -330,6 +332,7 @@ export function createMenubar(): Menu {
         { role: 'zoomOut', label: translate("electron.menu.zoomOut") },
         { type: 'separator' },
         {
+          id: menuIds.view.toggleFullScreen,
           label: translate("electron.menu.toggleFullScreen"),
           accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
           click: () => {
@@ -342,9 +345,11 @@ export function createMenubar(): Menu {
     { role: 'windowMenu', label: translate("electron.menu.window") },
     {
       role: 'help',
+      id: menuIds.help.root,
       label: translate("electron.menu.help"),
       submenu: [
         {
+          id: menuIds.help.welcome,
           label: translate("electron.menu.welcome"),
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.showWelcome);
@@ -352,18 +357,21 @@ export function createMenubar(): Menu {
         },
         { type: 'separator' },
         {
+          id: menuIds.help.viewLicense,
           label: translate("electron.menu.viewLicense"),
           click: () => {
             createLicenseWindow();
           }
         },
         {
+          id: menuIds.help.visitWebsite,
           label: translate("electron.menu.visitWebsite"),
           click: () => {
             shell.openExternal('https://solisware.com');
           }
         },
         {
+          id: menuIds.help.checkoutGitHub,
           label: translate("electron.menu.checkoutGitHub"),
           click: () => {
             shell.openExternal('https://github.com/SolisWare');

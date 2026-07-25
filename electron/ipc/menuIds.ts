@@ -10,6 +10,7 @@ export const menuIds = {
     settings: "settings"
   },
   file: {
+    root: "fileMenu",
     lockNotes: "lockNotes",
     newNote: "newNote",
     settings: "settings"
@@ -48,5 +49,16 @@ export const menuIds = {
       option: (noteFont: string) => `formatFontFamily-${noteFont}`
     },
     clearFormatting: "formatClearFormatting"
+  },
+  view: {
+    root: "viewMenu",
+    toggleFullScreen: "toggleFullScreen"
+  },
+  help: {
+    root: "helpMenu",
+    welcome: "welcome",
+    viewLicense: "viewLicense",
+    visitWebsite: "visitWebsite",
+    checkoutGitHub: "checkoutGitHub"
   }
 } as const;
