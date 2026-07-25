@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 40px 24px;
+  padding: 48px 24px;
   overflow-y: auto;
   background: var(--lock-background);
   color: var(--lock-text);
@@ -30,7 +30,7 @@
 }
 
 .lockIcon {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   color: var(--lock-primary);
   font-size: 68px !important;
   stroke-width: 1;
@@ -41,15 +41,15 @@
   color: var(--lock-text);
   font-size: 26px;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: 0;
+  line-height: 1.15;
 }
 
 .description {
-  margin: 11px 0 28px;
+  margin: 14px 0 28px;
   color: var(--lock-muted-text);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .form {
@@ -193,6 +193,7 @@
   bottom: 18px;
   color: var(--lock-muted-text);
   font-size: 11px;
+  font-style: italic;
   line-height: 1.4;
   opacity: 0.45;
   text-align: center;

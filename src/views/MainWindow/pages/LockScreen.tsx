@@ -4,8 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
-import { Button, IconButton } from "@mui/material";
+import { ChangeEvent, CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
+import { Button, IconButton, Typography } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
@@ -71,17 +71,22 @@ function LockScreen(props: LockScreenProps) {
     await props.onUnlock?.(password);
   }
 
+  function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
+    setPassword(event.target.value);
+    setErrorMessage("");
+  }
+
   return (
     <main className={styles.root} style={rootStyle}>
       <div className={styles.content}>
         <LockOutlinedIcon className={styles.lockIcon} aria-hidden="true" />
 
-        <h1 className={styles.title}>
+        <Typography className={styles.title} variant="h1">
           {t("mainWindow.lockScreen.title")}
-        </h1>
-        <p className={styles.description}>
+        </Typography>
+        <Typography className={styles.description} variant="body2">
           {t("mainWindow.lockScreen.description")}
-        </p>
+        </Typography>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           <div className={styles.field}>
@@ -96,10 +101,7 @@ function LockScreen(props: LockScreenProps) {
                 autoComplete="current-password"
                 aria-invalid={Boolean(errorMessage)}
                 aria-describedby={errorMessage ? "unlock-password-error" : undefined}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                  setErrorMessage("");
-                }}
+                onChange={handlePasswordChange}
               />
               <IconButton
                 className={styles.visibilityButton}
@@ -113,14 +115,16 @@ function LockScreen(props: LockScreenProps) {
                   : <VisibilityOffOutlinedIcon />}
               </IconButton>
             </div>
-            <p
+            <Typography
               id="unlock-password-error"
               className={styles.message}
+              variant="caption"
+              component="p"
               role={errorMessage ? "alert" : undefined}
               aria-live="polite"
             >
               {errorMessage}
-            </p>
+            </Typography>
           </div>
 
           <Button className={styles.unlockButton} type="submit" variant="contained">
@@ -148,8 +152,8 @@ function LockScreen(props: LockScreenProps) {
         </ul>
       </div>
       <div className={styles.footer}>
-        <p>Axion Notes {version}</p>
-        <p>Copyright © 2023-2026 SolisWare.</p>
+        <Typography variant="caption">Axion Notes {version}</Typography>
+        <Typography variant="caption">Copyright © 2023-2026 SolisWare.</Typography>
       </div>
     </main>
   );
