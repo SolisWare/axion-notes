@@ -71,7 +71,7 @@
   border-bottom: 0;
 }
 
-.settingsRowDisabled {
+.settingsRowDisabled > * {
   opacity: 0.48;
 }
 
