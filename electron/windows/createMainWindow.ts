@@ -14,6 +14,7 @@ import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnCl
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { channels } from "../ipc/channels";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
+import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
@@ -35,6 +36,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
     show: false,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     webPreferences: {
+      ...getDevToolsWebPreferences(),
       webSecurity: false,
       nodeIntegration: true,
       contextIsolation: true,
@@ -47,6 +49,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   }
 
   registerRichTextShortcuts(mainWindow);
+  blockProductionDevTools(mainWindow);
 
   let hasShownMainWindow = false;
   let fallbackShowTimeout: NodeJS.Timeout | undefined;

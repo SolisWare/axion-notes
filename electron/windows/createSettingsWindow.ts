@@ -11,6 +11,7 @@ import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
+import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
 
 let settingsWindow: BrowserWindow | null = null;
 
@@ -45,6 +46,7 @@ export function createSettingsWindow(): BrowserWindow {
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
     webPreferences: {
+      ...getDevToolsWebPreferences(),
       webSecurity: false,
       nodeIntegration: true,
       contextIsolation: true,
@@ -55,6 +57,7 @@ export function createSettingsWindow(): BrowserWindow {
 
   createdSettingsWindow.setMenu(null);
   createdSettingsWindow.setMenuBarVisibility(false);
+  blockProductionDevTools(createdSettingsWindow);
 
   createdSettingsWindow.once("ready-to-show", () => {
     createdSettingsWindow.show();

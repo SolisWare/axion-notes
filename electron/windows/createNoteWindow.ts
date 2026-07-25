@@ -13,6 +13,7 @@ import { translate } from "../utils/electronI18n";
 import { channels } from "../ipc/channels";
 import { dev } from "./routes";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
+import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
 
 const noteWindows = new Map<string, BrowserWindow>();
 const NOTE_WINDOW_OFFSET = 28;
@@ -91,6 +92,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
     webPreferences: {
+      ...getDevToolsWebPreferences(),
       webSecurity: false,
       nodeIntegration: true,
       contextIsolation: true,
@@ -102,6 +104,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
   noteWindow.setMenu(null);
   noteWindow.setMenuBarVisibility(false);
   registerRichTextShortcuts(noteWindow);
+  blockProductionDevTools(noteWindow);
 
   noteWindow.once("ready-to-show", () => {
     noteWindow.show();

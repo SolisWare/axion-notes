@@ -11,6 +11,7 @@ import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
+import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
 
 let licenseWindow: BrowserWindow | null = null;
 
@@ -47,6 +48,7 @@ export function createLicenseWindow(): BrowserWindow {
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
     webPreferences: {
+      ...getDevToolsWebPreferences(),
       webSecurity: false,
       nodeIntegration: true,
       contextIsolation: true,
@@ -57,6 +59,7 @@ export function createLicenseWindow(): BrowserWindow {
 
   createdLicenseWindow.setMenu(null);
   createdLicenseWindow.setMenuBarVisibility(false);
+  blockProductionDevTools(createdLicenseWindow);
 
   createdLicenseWindow.once("ready-to-show", () => {
     createdLicenseWindow.show();

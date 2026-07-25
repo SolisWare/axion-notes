@@ -9,6 +9,7 @@ import * as path from "path";
 import { isDev } from "../utils/isDev";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
+import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
 
 function getSplashFilePath(): string {
   return isDev
@@ -33,6 +34,7 @@ export function createSplashWindow(): BrowserWindow {
     backgroundColor: "#00000000",
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     webPreferences: {
+      ...getDevToolsWebPreferences(),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true
@@ -43,6 +45,7 @@ export function createSplashWindow(): BrowserWindow {
     splashWindow.show();
   });
 
+  blockProductionDevTools(splashWindow);
   splashWindow.loadFile(getSplashFilePath());
 
   return splashWindow;
