@@ -64,6 +64,19 @@ function updateLockScreenMenuItems(): void {
   applicationMenu?.items.forEach(updateMenuItem);
 }
 
+function restoreUnlockedMenuItems(applicationMenu: Menu | null): void {
+  function enableMenuItem(item: Electron.MenuItem): void {
+    if (item.type === "separator") {
+      return;
+    }
+
+    item.enabled = true;
+    item.submenu?.items.forEach(enableMenuItem);
+  }
+
+  applicationMenu?.items.forEach(enableMenuItem);
+}
+
 function updateNoteMenuItems(): void {
   if (isLockScreenActive) {
     updateLockScreenMenuItems();
@@ -71,6 +84,8 @@ function updateNoteMenuItems(): void {
   }
 
   const applicationMenu = Menu.getApplicationMenu();
+  restoreUnlockedMenuItems(applicationMenu);
+
   const appLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.app.lockNotes);
   const fileLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.file.lockNotes);
   const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);
