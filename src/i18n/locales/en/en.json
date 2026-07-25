@@ -226,6 +226,7 @@
     "shortcuts": {
       "newNote": "New note",
       "openSettings": "Open settings",
+      "lockNotes": "Lock notes",
       "deleteAllNotes": "Delete all notes",
       "enterNoteSelectionMode": "Select notes",
       "selectAllNotes": "Select all notes",
@@ -244,9 +245,11 @@
       "checklist": "Checklist",
       "increaseFontSize": "Increase font size",
       "decreaseFontSize": "Decrease font size",
+      "disabledLockScreenTooltip": "Available when Lock screen is on.",
       "sections": {
         "general": "General",
         "noteSelection": "Note selection",
+        "security": "Security",
         "textFormatting": "Text formatting",
         "lists": "Lists"
       },
