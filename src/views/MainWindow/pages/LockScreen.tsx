@@ -10,7 +10,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { Trans, useTranslation } from "react-i18next";
@@ -41,6 +40,7 @@ function LockScreen(props: LockScreenProps) {
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const version = window.api.version.getShortDisplayVersion();
 
   const isDark = props.theme === SystemTheme.DARK;
   const rootStyle: LockScreenCssProperties = {
@@ -75,11 +75,6 @@ function LockScreen(props: LockScreenProps) {
     <main className={styles.root} style={rootStyle}>
       <div className={styles.content}>
         <LockOutlinedIcon className={styles.lockIcon} aria-hidden="true" />
-
-        <div className={styles.brand} aria-label="Axion Notes">
-          <PushPinRoundedIcon className={styles.brandIcon} aria-hidden="true" />
-          <span>Axion Notes</span>
-        </div>
 
         <h1 className={styles.title}>
           {t("mainWindow.lockScreen.title")}
@@ -151,6 +146,10 @@ function LockScreen(props: LockScreenProps) {
             </span>
           </li>
         </ul>
+      </div>
+      <div className={styles.footer}>
+        <p>Axion Notes {version}</p>
+        <p>Copyright © 2023-2026 SolisWare.</p>
       </div>
     </main>
   );

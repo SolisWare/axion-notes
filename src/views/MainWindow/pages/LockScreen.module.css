@@ -26,32 +26,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform: translateY(-18px);
 }
 
 .lockIcon {
-  margin-bottom: 20px;
+  margin-bottom: 32px;
   color: var(--lock-primary);
   font-size: 68px !important;
   stroke-width: 1;
-}
-
-.brand {
-  position: relative;
-  transform: translateX(5px);
-  margin-bottom: 34px;
-  color: var(--lock-text);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.brandIcon {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 9px);
-  color: var(--lock-primary);
-  font-size: 21px !important;
-  transform: translateY(-50%) rotate(18deg);
 }
 
 .title {
@@ -204,18 +186,40 @@
   font-weight: 700;
 }
 
+.footer {
+  position: fixed;
+  left: 24px;
+  right: 24px;
+  bottom: 18px;
+  color: var(--lock-muted-text);
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.45;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer p + p {
+  margin-top: 3px;
+}
+
 @media (max-width: 480px) {
   .root {
     padding: 28px 18px;
   }
 
-  .lockIcon {
-    margin-bottom: 14px;
-    font-size: 56px !important;
+  .footer {
+    left: 18px;
+    right: 18px;
+    bottom: 12px;
   }
 
-  .brand {
-    margin-bottom: 26px;
+  .lockIcon {
+    margin-bottom: 24px;
+    font-size: 56px !important;
   }
 
   .title {
@@ -235,12 +239,12 @@
   }
 
   .lockIcon {
-    margin-bottom: 8px;
+    margin-bottom: 18px;
     font-size: 48px !important;
   }
 
-  .brand {
-    margin-bottom: 18px;
+  .content {
+    transform: none;
   }
 
   .description {
