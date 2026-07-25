@@ -13,6 +13,7 @@ import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver";
 import { createMainWindow } from "./windows/createMainWindow";
+import { closeSettingsWindow } from "./windows/createSettingsWindow";
 import { createSplashWindow } from "./windows/createSplashWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
@@ -79,6 +80,11 @@ app.on("ready", async () => {
   lockStateService = new LockStateService(passwordService);
 
   await lockStateService.initialize(initialSettings);
+  lockStateService.onLockStateChange((isLocked) => {
+    if (isLocked) {
+      closeSettingsWindow();
+    }
+  });
 
   if (!settings) {
     setSettings(appSettingsFilePath, initialSettings);
