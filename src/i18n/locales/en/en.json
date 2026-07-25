@@ -12,7 +12,8 @@
       "hidePassword": "Hide password",
       "passwordRequired": "Enter your password to continue.",
       "invalidPassword": "The password is incorrect.",
-      "recoveryRequired": "Lock password data is missing or damaged. Axion Notes cannot be unlocked from inside the app and needs to be repaired.",
+      "recoveryRequiredLine1": "Lock password data is missing or damaged.",
+      "recoveryRequiredLine2": "{{appName}} cannot be unlocked from inside the app and needs to be repaired.",
       "unlock": "Unlock notes",
       "offlineDisclosure": "Your notes are stored offline on this device only.",
       "encryptionDisclosure": "Your notes are not encrypted."

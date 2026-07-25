@@ -58,11 +58,12 @@ function LockScreen(props: LockScreenProps) {
   };
 
   useEffect(() => {
-    passwordInputRef.current?.focus();
-
     window.api.security.getLockState()
       .then((lockState) => {
         setRecoveryRequired(lockState.isRecoveryRequired);
+        if (!lockState.isRecoveryRequired) {
+          passwordInputRef.current?.focus();
+        }
       })
       .catch((err: Error) => {
         console.error("Failed to load lock state:", err.message);
@@ -75,11 +76,6 @@ function LockScreen(props: LockScreenProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    if (isRecoveryRequired) {
-      setErrorMessage(t("mainWindow.lockScreen.recoveryRequired"));
-      return;
-    }
 
     if (!password) {
       setErrorMessage(t("mainWindow.lockScreen.passwordRequired"));
@@ -113,58 +109,65 @@ function LockScreen(props: LockScreenProps) {
         <Typography className={styles.title} variant="h1">
           {t("mainWindow.lockScreen.title")}
         </Typography>
-        <Typography className={styles.description} variant="body2">
-          {t("mainWindow.lockScreen.description")}
-        </Typography>
+        {!isRecoveryRequired && (
+          <Typography className={styles.description} variant="body2">
+            {t("mainWindow.lockScreen.description")}
+          </Typography>
+        )}
 
-        <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <div className={styles.field}>
-            <div className={styles.inputContainer}>
-              <input
-                ref={passwordInputRef}
-                id="unlock-password"
-                className={styles.input}
-                type={isPasswordVisible ? "text" : "password"}
-                value={password}
-                placeholder={t("mainWindow.lockScreen.passwordPlaceholder")}
-                autoComplete="current-password"
-                disabled={isRecoveryRequired}
-                aria-invalid={Boolean(errorMessage)}
-                aria-describedby={errorMessage ? "unlock-password-error" : undefined}
-                onChange={handlePasswordChange}
-              />
-              <IconButton
-                className={styles.visibilityButton}
-                aria-label={t(isPasswordVisible
-                  ? "mainWindow.lockScreen.hidePassword"
-                  : "mainWindow.lockScreen.showPassword")}
-                onClick={() => setPasswordVisible((currentValue) => !currentValue)}
-                disabled={isRecoveryRequired}
+        {isRecoveryRequired ? (
+          <Typography className={styles.recoveryMessage} variant="body2" component="p" role="alert">
+            <span>{t("mainWindow.lockScreen.recoveryRequiredLine1")}</span>
+            <span>{t("mainWindow.lockScreen.recoveryRequiredLine2", { appName: "Axion Notes" })}</span>
+          </Typography>
+        ) : (
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <div className={styles.field}>
+              <div className={styles.inputContainer}>
+                <input
+                  ref={passwordInputRef}
+                  id="unlock-password"
+                  className={styles.input}
+                  type={isPasswordVisible ? "text" : "password"}
+                  value={password}
+                  placeholder={t("mainWindow.lockScreen.passwordPlaceholder")}
+                  autoComplete="current-password"
+                  aria-invalid={Boolean(errorMessage)}
+                  aria-describedby={errorMessage ? "unlock-password-error" : undefined}
+                  onChange={handlePasswordChange}
+                />
+                <IconButton
+                  className={styles.visibilityButton}
+                  aria-label={t(isPasswordVisible
+                    ? "mainWindow.lockScreen.hidePassword"
+                    : "mainWindow.lockScreen.showPassword")}
+                  onClick={() => setPasswordVisible((currentValue) => !currentValue)}
+                >
+                  {isPasswordVisible
+                    ? <VisibilityOutlinedIcon />
+                    : <VisibilityOffOutlinedIcon />}
+                </IconButton>
+              </div>
+              <Typography
+                id="unlock-password-error"
+                className={styles.message}
+                variant="caption"
+                component="p"
+                role={errorMessage ? "alert" : undefined}
+                aria-live="polite"
               >
-                {isPasswordVisible
-                  ? <VisibilityOutlinedIcon />
-                  : <VisibilityOffOutlinedIcon />}
-              </IconButton>
+                {errorMessage}
+              </Typography>
             </div>
-            <Typography
-              id="unlock-password-error"
-              className={styles.message}
-              variant="caption"
-              component="p"
-              role={errorMessage ? "alert" : undefined}
-              aria-live="polite"
-            >
-              {isRecoveryRequired ? t("mainWindow.lockScreen.recoveryRequired") : errorMessage}
-            </Typography>
-          </div>
 
-          <Button className={styles.unlockButton} disabled={isRecoveryRequired} type="submit" variant="contained">
-            <span className={styles.buttonContent}>
-              {t("mainWindow.lockScreen.unlock")}
-              <ArrowForwardIcon aria-hidden="true" />
-            </span>
-          </Button>
-        </form>
+            <Button className={styles.unlockButton} type="submit" variant="contained">
+              <span className={styles.buttonContent}>
+                {t("mainWindow.lockScreen.unlock")}
+                <ArrowForwardIcon aria-hidden="true" />
+              </span>
+            </Button>
+          </form>
+        )}
 
         <ul className={styles.disclosures}>
           <li className={styles.disclosure}>

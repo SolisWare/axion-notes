@@ -123,6 +123,20 @@
   text-align: left;
 }
 
+.recoveryMessage {
+  width: 286px;
+  max-width: 100%;
+  margin: 28px 0 0 !important;
+  color: var(--lock-error);
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  text-align: center;
+}
+
+.recoveryMessage span {
+  display: block;
+}
+
 .unlockButton {
   width: 164px;
   height: 36px;
