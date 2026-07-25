@@ -6,6 +6,8 @@
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { execFile } from "node:child_process";
+import { isWindows } from "../utils/Platform";
 
 const LOCK_MARKER_VERSION = 1;
 
@@ -51,6 +53,7 @@ export class LockMarkerService {
 
     await fs.promises.mkdir(path.dirname(this.lockMarkerPath), { recursive: true });
     await fs.promises.writeFile(this.lockMarkerPath, JSON.stringify(marker, null, 2), "utf-8");
+    await this.hideLockMarkerOnWindows();
   }
 
   /**
@@ -66,5 +69,21 @@ export class LockMarkerService {
 
       throw err;
     }
+  }
+
+  private async hideLockMarkerOnWindows(): Promise<void> {
+    if (!isWindows) {
+      return;
+    }
+
+    return new Promise((resolve) => {
+      execFile("attrib", ["+h", this.lockMarkerPath], (err) => {
+        if (err) {
+          console.error("Failed to hide lock marker on Windows:", err);
+        }
+
+        resolve();
+      });
+    });
   }
 }
