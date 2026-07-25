@@ -461,6 +461,51 @@
   border-radius: 4px;
 }
 
+.settingsButton {
+  min-width: 132px;
+  height: 32px;
+  flex: 0 0 auto;
+  align-self: center;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid var(--settings-divider);
+  border-radius: 6px;
+  color: var(--settings-nav-text);
+  background: var(--settings-content-background);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--settings-section-text) 14%, transparent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  cursor: default;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.settingsButton:hover {
+  border-color: var(--settings-nav-hover-border);
+  color: var(--settings-nav-hover-text);
+  background: var(--settings-nav-hover-background);
+}
+
+.settingsButton:disabled {
+  color: var(--settings-section-text);
+  background: color-mix(in srgb, var(--settings-content-background) 94%, var(--settings-section-text));
+  box-shadow: none;
+  opacity: 0.55;
+}
+
+.settingsButton:disabled:hover {
+  border-color: var(--settings-divider);
+  color: var(--settings-section-text);
+  background: color-mix(in srgb, var(--settings-content-background) 94%, var(--settings-section-text));
+}
+
+.settingsButton:focus-visible {
+  border-color: var(--settings-nav-selected-border);
+  outline: 2px solid var(--settings-nav-selected-border);
+  outline-offset: 2px;
+}
+
 .colorSwatchGroup {
   position: relative;
   display: inline-flex;

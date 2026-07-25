@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { ChangeEvent } from "react";
+import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import styles from "./SettingsPages.module.css";
@@ -16,6 +17,7 @@ type SecurityProps = {
 
 function Security(props: SecurityProps) {
   const { t } = useTranslation();
+  const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
 
   function handleLockScreenEnabledChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
@@ -47,6 +49,23 @@ function Security(props: SecurityProps) {
               <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
             </label>
           </div>
+          <Tooltip
+            arrow
+            disableHoverListener={!isPasswordRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isPasswordRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.security.password")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.passwordDescription")}</p>
+              </div>
+              <button className={styles.settingsButton} disabled={isPasswordRowDisabled} type="button">
+                {t("settingsWindow.security.changePassword")}
+              </button>
+            </div>
+          </Tooltip>
         </div>
       </section>
     </div>

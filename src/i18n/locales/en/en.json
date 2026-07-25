@@ -176,7 +176,11 @@
     "disabledRichTextEditorTooltip": "Available when Rich Text Editor is on.",
     "security": {
       "lockScreen": "Lock screen",
-      "lockScreenDescription": "Require a password before notes can be viewed."
+      "lockScreenDescription": "Require a password before notes can be viewed.",
+      "password": "Password",
+      "passwordDescription": "Set or change the password used to unlock your notes.",
+      "changePassword": "Change password",
+      "disabledPasswordTooltip": "Available when Lock screen is on."
     },
     "editor": {
       "richTextEditor": "Rich Text Editor",
