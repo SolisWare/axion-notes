@@ -42,6 +42,7 @@ function LockScreen(props: LockScreenProps) {
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isRecoveryRequired, setRecoveryRequired] = useState(false);
   const version = window.api.version.getShortDisplayVersion();
 
   const isDark = props.theme === SystemTheme.DARK;
@@ -58,10 +59,27 @@ function LockScreen(props: LockScreenProps) {
 
   useEffect(() => {
     passwordInputRef.current?.focus();
+
+    window.api.security.getLockState()
+      .then((lockState) => {
+        setRecoveryRequired(lockState.isRecoveryRequired);
+      })
+      .catch((err: Error) => {
+        console.error("Failed to load lock state:", err.message);
+      });
+
+    return window.api.security.onLockStateChange((lockState) => {
+      setRecoveryRequired(lockState.isRecoveryRequired);
+    });
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isRecoveryRequired) {
+      setErrorMessage(t("mainWindow.lockScreen.recoveryRequired"));
+      return;
+    }
 
     if (!password) {
       setErrorMessage(t("mainWindow.lockScreen.passwordRequired"));
@@ -110,6 +128,7 @@ function LockScreen(props: LockScreenProps) {
                 value={password}
                 placeholder={t("mainWindow.lockScreen.passwordPlaceholder")}
                 autoComplete="current-password"
+                disabled={isRecoveryRequired}
                 aria-invalid={Boolean(errorMessage)}
                 aria-describedby={errorMessage ? "unlock-password-error" : undefined}
                 onChange={handlePasswordChange}
@@ -120,6 +139,7 @@ function LockScreen(props: LockScreenProps) {
                   ? "mainWindow.lockScreen.hidePassword"
                   : "mainWindow.lockScreen.showPassword")}
                 onClick={() => setPasswordVisible((currentValue) => !currentValue)}
+                disabled={isRecoveryRequired}
               >
                 {isPasswordVisible
                   ? <VisibilityOutlinedIcon />
@@ -134,11 +154,11 @@ function LockScreen(props: LockScreenProps) {
               role={errorMessage ? "alert" : undefined}
               aria-live="polite"
             >
-              {errorMessage}
+              {isRecoveryRequired ? t("mainWindow.lockScreen.recoveryRequired") : errorMessage}
             </Typography>
           </div>
 
-          <Button className={styles.unlockButton} type="submit" variant="contained">
+          <Button className={styles.unlockButton} disabled={isRecoveryRequired} type="submit" variant="contained">
             <span className={styles.buttonContent}>
               {t("mainWindow.lockScreen.unlock")}
               <ArrowForwardIcon aria-hidden="true" />

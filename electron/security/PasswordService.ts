@@ -51,6 +51,26 @@ export class PasswordService {
   }
 
   /**
+   * Checks whether the stored password record exists and uses a supported
+   * format.
+   *
+   * @returns true when the record can be used for verification; otherwise false.
+   */
+  public async hasUsablePasswordRecord(): Promise<boolean> {
+    try {
+      await this.readPasswordRecord();
+      return true;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        return false;
+      }
+
+      console.warn("Password record is not usable:", err);
+      return false;
+    }
+  }
+
+  /**
    * Hashes and stores a new password record.
    *
    * The raw password is never written to disk. Existing password records are

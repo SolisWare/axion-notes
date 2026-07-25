@@ -14,6 +14,7 @@ import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
 import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
 import { RichTextFormatAction } from '../../src/models/RichTextFormatCommand';
 import { RichTextFormatState } from '../../src/models/RichTextFormatState';
+import { LockState } from '../../src/models/LockState';
 
 interface IElectronAPI {
   appWindow: {
@@ -58,10 +59,10 @@ interface IElectronAPI {
   security: {
     changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
     clearPassword: () => Promise<boolean>;
-    getLockState: () => Promise<boolean>;
+    getLockState: () => Promise<LockState>;
     hasPassword: () => Promise<boolean>;
     lock: () => Promise<boolean>;
-    onLockStateChange: (callback: (isLocked: boolean) => void) => () => void;
+    onLockStateChange: (callback: (lockState: LockState) => void) => () => void;
     setPassword: (password: string) => Promise<boolean>;
     unlock: (password: string) => Promise<boolean>;
     verifyPassword: (password: string) => Promise<boolean>;

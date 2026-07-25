@@ -25,6 +25,7 @@ import { defaultAppSettings } from "../src/settings/defaultSettings";
 import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfig";
 import { resolvePreferredDateFormat } from "../src/utils/dt-formatter/dateFormatConfig";
 import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormatConfig";
+import { LockMarkerService } from "./security/LockMarkerService";
 import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
 
@@ -33,6 +34,7 @@ const appDataDir = path.join(appDir, 'data');
 const appSecurityDir = path.join(appDir, 'security');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
+const lockMarkerPath = path.join(appDir, '.lock');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
 const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
@@ -76,12 +78,13 @@ app.on("ready", async () => {
 
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
+  const lockMarkerService = new LockMarkerService(lockMarkerPath);
   const passwordService = new PasswordService(passwordRecordPath);
-  lockStateService = new LockStateService(passwordService);
+  lockStateService = new LockStateService(passwordService, lockMarkerService);
 
   await lockStateService.initialize(initialSettings);
-  lockStateService.onLockStateChange((isLocked) => {
-    if (isLocked) {
+  lockStateService.onLockStateChange((lockState) => {
+    if (lockState.isLocked) {
       closeSettingsWindow();
     }
   });

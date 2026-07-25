@@ -80,7 +80,10 @@ export function installBrowserApi(): void {
     security: {
       changePassword: async () => false,
       clearPassword: async () => false,
-      getLockState: async () => false,
+      getLockState: async () => ({
+        isLocked: false,
+        isRecoveryRequired: false
+      }),
       hasPassword: async () => false,
       lock: async () => false,
       onLockStateChange: () => unsubscribe,

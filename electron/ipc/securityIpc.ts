@@ -15,10 +15,10 @@ type SecurityIpcOptions = {
 };
 
 export function registerSecurityIpc(options: SecurityIpcOptions): void {
-  options.lockStateService.onLockStateChange((isLocked) => {
+  options.lockStateService.onLockStateChange((lockState) => {
     BrowserWindow.getAllWindows().forEach((window) => {
       if (!window.webContents.isDestroyed()) {
-        window.webContents.send(channels.security.onLockStateChange, isLocked);
+        window.webContents.send(channels.security.onLockStateChange, lockState);
       }
     });
   });
@@ -28,7 +28,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.getLockState, () => {
-    return options.lockStateService.getIsLocked();
+    return options.lockStateService.getLockState();
   });
 
   ipcMain.handle(channels.security.lock, async () => {
@@ -52,6 +52,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   ipcMain.handle(channels.security.setPassword, async (_event, password: string) => {
     try {
       await options.passwordService.setPassword(password);
+      await options.lockStateService.markLockConfigured();
       return true;
     } catch (err) {
       console.warn("Failed to set password:", err);
@@ -77,6 +78,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       }
 
       await options.passwordService.setPassword(newPassword);
+      await options.lockStateService.markLockConfigured();
       return true;
     } catch (err) {
       console.warn("Failed to change password:", err);
@@ -87,6 +89,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   ipcMain.handle(channels.security.clearPassword, async () => {
     try {
       await options.passwordService.clearPassword();
+      await options.lockStateService.clearLockConfigured();
       return true;
     } catch (err) {
       console.warn("Failed to clear password:", err);

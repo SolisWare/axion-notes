@@ -6,12 +6,14 @@
  */
 import { BrowserWindow } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
+import { LockState } from "../../src/models/LockState";
+import { LockMarkerService } from "./LockMarkerService";
 import { PasswordService } from "./PasswordService";
 
 const MAIN_WINDOW_HASH_PREFIX = "#/main";
 const LOCK_ROUTE = "/lock";
 
-export type LockStateChangeListener = (isLocked: boolean) => void;
+export type LockStateChangeListener = (lockState: LockState) => void;
 
 /**
  * Owns the in-app lock state for the Electron main process.
@@ -22,11 +24,15 @@ export type LockStateChangeListener = (isLocked: boolean) => void;
  */
 export class LockStateService {
   private isLocked = false;
+  private isRecoveryRequired = false;
   private isLockScreenEnabled = false;
   private mainWindow: BrowserWindow | undefined;
   private readonly listeners = new Set<LockStateChangeListener>();
 
-  public constructor(private readonly passwordService: PasswordService) {
+  public constructor(
+    private readonly passwordService: PasswordService,
+    private readonly lockMarkerService: LockMarkerService
+  ) {
   }
 
   /**
@@ -36,7 +42,17 @@ export class LockStateService {
    */
   public async initialize(settings: AppSettings): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
-    this.isLocked = this.isLockScreenEnabled && await this.passwordService.hasPassword();
+    const hasPasswordRecord = await this.passwordService.hasPassword();
+    const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
+    const hasLockMarker = await this.lockMarkerService.hasLockMarker();
+    const shouldLock = this.isLockScreenEnabled || hasPasswordRecord || hasLockMarker;
+
+    this.isLocked = shouldLock;
+    this.isRecoveryRequired = shouldLock && !hasUsablePasswordRecord;
+
+    if (shouldLock && hasUsablePasswordRecord) {
+      await this.lockMarkerService.writeLockMarker();
+    }
   }
 
   /**
@@ -72,17 +88,23 @@ export class LockStateService {
    */
   public applySettings(settings: AppSettings): void {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
+  }
 
-    if (!this.isLockScreenEnabled && this.isLocked) {
-      this.setLocked(false);
-    }
+  /**
+   * Returns the current app lock state.
+   */
+  public getLockState(): LockState {
+    return {
+      isLocked: this.isLocked,
+      isRecoveryRequired: this.isRecoveryRequired
+    };
   }
 
   /**
    * Returns whether the app is currently locked.
    */
   public getIsLocked(): boolean {
-    return this.isLocked;
+    return this.getLockState().isLocked;
   }
 
   /**
@@ -91,11 +113,18 @@ export class LockStateService {
    * @returns true when the app entered locked state; otherwise false.
    */
   public async lock(): Promise<boolean> {
-    if (!this.isLockScreenEnabled || !await this.passwordService.hasPassword()) {
+    if (!this.isLockScreenEnabled && !await this.lockMarkerService.hasLockMarker()) {
       return false;
     }
 
-    this.setLocked(true);
+    if (!await this.passwordService.hasUsablePasswordRecord()) {
+      this.setLockState(true, true);
+      this.forceLockRouteIfNeeded();
+      return false;
+    }
+
+    await this.lockMarkerService.writeLockMarker();
+    this.setLockState(true, false);
     this.forceLockRouteIfNeeded();
     return true;
   }
@@ -107,14 +136,34 @@ export class LockStateService {
    * @returns true when the app was unlocked; otherwise false.
    */
   public async unlock(password: string): Promise<boolean> {
+    if (this.isRecoveryRequired) {
+      return false;
+    }
+
     const isPasswordValid = await this.passwordService.verifyPassword(password);
 
     if (!isPasswordValid) {
       return false;
     }
 
-    this.setLocked(false);
+    this.setLockState(false, false);
     return true;
+  }
+
+  /**
+   * Records that the lock screen has been configured.
+   */
+  public async markLockConfigured(): Promise<void> {
+    await this.lockMarkerService.writeLockMarker();
+    this.setLockState(this.isLocked, false);
+  }
+
+  /**
+   * Clears the redundant lock marker after a verified disable operation.
+   */
+  public async clearLockConfigured(): Promise<void> {
+    await this.lockMarkerService.removeLockMarker();
+    this.setLockState(false, false);
   }
 
   /**
@@ -131,13 +180,14 @@ export class LockStateService {
     };
   }
 
-  private setLocked(isLocked: boolean): void {
-    if (this.isLocked === isLocked) {
+  private setLockState(isLocked: boolean, isRecoveryRequired: boolean): void {
+    if (this.isLocked === isLocked && this.isRecoveryRequired === isRecoveryRequired) {
       return;
     }
 
     this.isLocked = isLocked;
-    this.listeners.forEach((listener) => listener(this.isLocked));
+    this.isRecoveryRequired = isRecoveryRequired;
+    this.listeners.forEach((listener) => listener(this.getLockState()));
   }
 
   private forceLockRouteIfNeeded(): void {
