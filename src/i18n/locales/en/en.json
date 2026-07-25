@@ -105,6 +105,7 @@
         "general": "General",
         "appearance": "Appearance",
         "editor": "Editor",
+        "security": "Security",
         "shortcuts": "Shortcuts",
         "dataStorage": "Data & storage",
         "license": "License",
@@ -173,6 +174,10 @@
       }
     },
     "disabledRichTextEditorTooltip": "Available when Rich Text Editor is on.",
+    "security": {
+      "lockScreen": "Lock screen",
+      "lockScreenDescription": "Require a password before notes can be viewed."
+    },
     "editor": {
       "richTextEditor": "Rich Text Editor",
       "richTextEditorDescription": "Enables formatting, lists, font styling, and editor toolbars.",

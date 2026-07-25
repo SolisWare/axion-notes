@@ -19,7 +19,8 @@
 }
 
 .appearancePage,
-.editorPage {
+.editorPage,
+.securityPage {
   min-height: 100%;
   box-sizing: border-box;
   padding: 26px 34px 34px;

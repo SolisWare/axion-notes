@@ -8,6 +8,7 @@ import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
 import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
 import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { AppSettings } from "../../src/settings/AppSettings";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { channels } from "./channels";
@@ -16,6 +17,7 @@ import { translate } from "../utils/electronI18n";
 
 let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
+let isLockScreenEnabled = false;
 let isLockScreenActive = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
@@ -69,6 +71,8 @@ function updateNoteMenuItems(): void {
   }
 
   const applicationMenu = Menu.getApplicationMenu();
+  const appLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.app.lockNotes);
+  const fileLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.file.lockNotes);
   const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);
   const editMenu = applicationMenu?.getMenuItemById(menuIds.edit.root);
   const cutMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.cut);
@@ -99,6 +103,14 @@ function updateNoteMenuItems(): void {
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
   const activeFontSize = richTextFormatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
   const activeFont = richTextFormatState.activeFont ?? NoteFontPreference.SYSTEM;
+
+  if (appLockNotesMenuItem) {
+    appLockNotesMenuItem.enabled = isLockScreenEnabled;
+  }
+
+  if (fileLockNotesMenuItem) {
+    fileLockNotesMenuItem.enabled = isLockScreenEnabled;
+  }
 
   if (newNoteMenuItem) {
     newNoteMenuItem.enabled = isNewNoteEnabled;
@@ -240,6 +252,11 @@ function updateNoteMenuItems(): void {
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
   }
+}
+
+export function applyMenuSettings(settings: AppSettings): void {
+  isLockScreenEnabled = settings.lockScreenEnabled;
+  updateNoteMenuItems();
 }
 
 export function registerMenuIpc(): void {

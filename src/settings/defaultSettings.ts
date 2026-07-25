@@ -19,6 +19,7 @@ import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
+  lockScreenEnabled: false,
   keepNotesMainWindowOnTop: false,
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,

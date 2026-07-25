@@ -9,6 +9,7 @@ import AppsOutlinedIcon from "@mui/icons-material/AppsOutlined";
 import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import KeyboardAltOutlinedIcon from "@mui/icons-material/KeyboardAltOutlined";
+import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
@@ -19,6 +20,7 @@ export enum SettingsView {
   general = "general",
   appearance = "appearance",
   editor = "editor",
+  security = "security",
   shortcuts = "shortcuts",
   dataStorage = "dataStorage",
   license = "license",
@@ -44,6 +46,9 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
       { id: SettingsView.general, labelKey: "settingsWindow.navigation.pages.general", icon: <AppsOutlinedIcon fontSize="small" /> },
       { id: SettingsView.appearance, labelKey: "settingsWindow.navigation.pages.appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
       { id: SettingsView.editor, labelKey: "settingsWindow.navigation.pages.editor", icon: <EditNoteOutlinedIcon fontSize="small" /> },
+      ...(UserAgent.isElectron ? [
+        { id: SettingsView.security, labelKey: "settingsWindow.navigation.pages.security", icon: <SecurityOutlinedIcon fontSize="small" /> }
+      ] : []),
       ...(UserAgent.isElectron ? [
         { id: SettingsView.shortcuts, labelKey: "settingsWindow.navigation.pages.shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
       ] : [])

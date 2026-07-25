@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { registerAppWindowIpc } from "./appWindowIpc";
-import { registerMenuIpc } from "./menuIpc";
+import { applyMenuSettings, registerMenuIpc } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
@@ -28,11 +28,17 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerSystemThemeIpc();
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();
+  if (options.initialSettings) {
+    applyMenuSettings(options.initialSettings);
+  }
   registerNoteSortIpc();
   registerNoteWindowIpc();
   registerSettingsIpc({
     appSettingsFilePath: options.appSettingsFilePath,
     initialSettings: options.initialSettings,
-    onSettingsChange: options.onSettingsChange
+    onSettingsChange: (settings: AppSettings) => {
+      applyMenuSettings(settings);
+      options.onSettingsChange?.(settings);
+    }
   });
 }
