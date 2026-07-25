@@ -13,7 +13,7 @@
       "passwordRequired": "Enter your password to continue.",
       "unlock": "Unlock notes",
       "offlineDisclosure": "Your notes are stored offline on this device only.",
-      "encryptionDisclosure": "Your notes are <strong>not</strong> encrypted."
+      "encryptionDisclosure": "Your notes are not encrypted."
     },
     "welcome": {
       "title": "Welcome to Axion Notes",

@@ -37,19 +37,19 @@
 }
 
 .title {
-  margin: 0;
+  margin: 0 !important;
   color: var(--lock-text);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 1.15;
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.15 !important;
 }
 
 .description {
-  margin: 14px 0 28px;
+  margin: 14px 0 28px !important;
   color: var(--lock-muted-text);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
 }
 
 .form {
@@ -115,11 +115,11 @@
   width: 100%;
   min-height: 29px;
   box-sizing: border-box;
-  margin: 0;
+  margin: 0 !important;
   padding-top: 6px;
   color: var(--lock-error);
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
   text-align: left;
 }
 
@@ -181,11 +181,6 @@
   font-size: 19px;
 }
 
-.disclosure strong {
-  color: var(--lock-text);
-  font-weight: 700;
-}
-
 .footer {
   position: fixed;
   left: 24px;
@@ -194,13 +189,15 @@
   color: var(--lock-muted-text);
   font-size: 11px;
   font-style: italic;
-  line-height: 1.4;
   opacity: 0.45;
   text-align: center;
 }
 
 .footer p {
-  margin: 0;
+  margin: 0 !important;
+  font-size: 11px !important;
+  font-style: italic;
+  line-height: 1.4 !important;
 }
 
 .footer p + p {

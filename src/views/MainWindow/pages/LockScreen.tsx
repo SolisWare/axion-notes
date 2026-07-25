@@ -8,11 +8,11 @@ import { ChangeEvent, CSSProperties, FormEvent, useEffect, useRef, useState } fr
 import { Button, IconButton, Typography } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
+import LockOpenRoundedIcon from "@mui/icons-material/LockOpenRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./LockScreen.module.css";
@@ -141,19 +141,14 @@ function LockScreen(props: LockScreenProps) {
             <span>{t("mainWindow.lockScreen.offlineDisclosure")}</span>
           </li>
           <li className={styles.disclosure}>
-            <LockOpenOutlinedIcon aria-hidden="true" />
-            <span>
-              <Trans
-                i18nKey="mainWindow.lockScreen.encryptionDisclosure"
-                components={{ strong: <strong /> }}
-              />
-            </span>
+            <LockOpenRoundedIcon aria-hidden="true" />
+            <span>{t("mainWindow.lockScreen.encryptionDisclosure")}</span>
           </li>
         </ul>
       </div>
       <div className={styles.footer}>
-        <Typography variant="caption">Axion Notes {version}</Typography>
-        <Typography variant="caption">Copyright © 2023-2026 SolisWare.</Typography>
+        <Typography variant="caption" component="p">Axion Notes {version}</Typography>
+        <Typography variant="caption" component="p">Copyright © 2023-2026 SolisWare.</Typography>
       </div>
     </main>
   );
