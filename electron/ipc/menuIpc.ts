@@ -259,6 +259,11 @@ export function applyMenuSettings(settings: AppSettings): void {
   updateNoteMenuItems();
 }
 
+export function setLockScreenActive(active: boolean): void {
+  isLockScreenActive = active;
+  updateNoteMenuItems();
+}
+
 export function registerMenuIpc(): void {
   ipcMain.on(channels.menu.setNewNoteEnabled, (_, enabled: boolean) => {
     isNewNoteEnabled = enabled;
@@ -276,8 +281,7 @@ export function registerMenuIpc(): void {
   });
 
   ipcMain.on(channels.menu.setLockScreenActive, (_, active: boolean) => {
-    isLockScreenActive = active;
-    updateNoteMenuItems();
+    setLockScreenActive(active);
   });
 
   ipcMain.on(channels.menu.setNoteSelectionState, (_, state: MenuNoteSelectionState) => {

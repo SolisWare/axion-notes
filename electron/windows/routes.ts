@@ -8,16 +8,16 @@ import { LoadFileOptions } from "electron";
 import * as path from "path";
 import { createFileRoute, createURLRoute } from "electron-router-dom";
 
-export const dev = (handle: string): string => {
+export const dev = (handle: string, routePath = ""): string => {
   return createURLRoute(
     "http://localhost:3000",
     handle
-  ).toString();
+  ).toString() + routePath;
 };
 
-export const production = (handle: string): [string, LoadFileOptions] => {
+export const production = (handle: string, routePath = ""): [string, LoadFileOptions] => {
   return createFileRoute(
     path.join(__dirname, "../../index.html"),
-    handle
+    `${handle}${routePath}`
   );
 };

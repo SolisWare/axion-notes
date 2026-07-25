@@ -126,6 +126,7 @@
 .unlockButton {
   width: 164px;
   height: 36px;
+  margin-top: 8px !important;
   border-radius: 6px !important;
   background-color: var(--lock-primary) !important;
   color: #ffffff !important;

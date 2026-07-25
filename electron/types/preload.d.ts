@@ -58,8 +58,12 @@ interface IElectronAPI {
   security: {
     changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
     clearPassword: () => Promise<boolean>;
+    getLockState: () => Promise<boolean>;
     hasPassword: () => Promise<boolean>;
+    lock: () => Promise<boolean>;
+    onLockStateChange: (callback: (isLocked: boolean) => void) => () => void;
     setPassword: (password: string) => Promise<boolean>;
+    unlock: (password: string) => Promise<boolean>;
     verifyPassword: (password: string) => Promise<boolean>;
   },
   settings: {

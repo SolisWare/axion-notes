@@ -11,6 +11,7 @@
       "showPassword": "Show password",
       "hidePassword": "Hide password",
       "passwordRequired": "Enter your password to continue.",
+      "invalidPassword": "The password is incorrect.",
       "unlock": "Unlock notes",
       "offlineDisclosure": "Your notes are stored offline on this device only.",
       "encryptionDisclosure": "Your notes are not encrypted."

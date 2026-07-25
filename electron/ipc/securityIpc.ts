@@ -4,24 +4,54 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ipcMain } from "electron";
+import { BrowserWindow, ipcMain } from "electron";
+import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { channels } from "./channels";
 
 type SecurityIpcOptions = {
-  passwordRecordPath: string;
+  lockStateService: LockStateService;
+  passwordService: PasswordService;
 };
 
 export function registerSecurityIpc(options: SecurityIpcOptions): void {
-  const passwordService = new PasswordService(options.passwordRecordPath);
+  options.lockStateService.onLockStateChange((isLocked) => {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      if (!window.webContents.isDestroyed()) {
+        window.webContents.send(channels.security.onLockStateChange, isLocked);
+      }
+    });
+  });
 
   ipcMain.handle(channels.security.hasPassword, async () => {
-    return passwordService.hasPassword();
+    return options.passwordService.hasPassword();
+  });
+
+  ipcMain.handle(channels.security.getLockState, () => {
+    return options.lockStateService.getIsLocked();
+  });
+
+  ipcMain.handle(channels.security.lock, async () => {
+    try {
+      return await options.lockStateService.lock();
+    } catch (err) {
+      console.warn("Failed to lock notes:", err);
+      return false;
+    }
+  });
+
+  ipcMain.handle(channels.security.unlock, async (_event, password: string) => {
+    try {
+      return await options.lockStateService.unlock(password);
+    } catch (err) {
+      console.warn("Failed to unlock notes:", err);
+      return false;
+    }
   });
 
   ipcMain.handle(channels.security.setPassword, async (_event, password: string) => {
     try {
-      await passwordService.setPassword(password);
+      await options.passwordService.setPassword(password);
       return true;
     } catch (err) {
       console.warn("Failed to set password:", err);
@@ -31,7 +61,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
   ipcMain.handle(channels.security.verifyPassword, async (_event, password: string) => {
     try {
-      return await passwordService.verifyPassword(password);
+      return await options.passwordService.verifyPassword(password);
     } catch (err) {
       console.warn("Failed to verify password:", err);
       return false;
@@ -40,13 +70,13 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
   ipcMain.handle(channels.security.changePassword, async (_event, currentPassword: string, newPassword: string) => {
     try {
-      const isCurrentPasswordValid = await passwordService.verifyPassword(currentPassword);
+      const isCurrentPasswordValid = await options.passwordService.verifyPassword(currentPassword);
 
       if (!isCurrentPasswordValid) {
         return false;
       }
 
-      await passwordService.setPassword(newPassword);
+      await options.passwordService.setPassword(newPassword);
       return true;
     } catch (err) {
       console.warn("Failed to change password:", err);
@@ -56,7 +86,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
   ipcMain.handle(channels.security.clearPassword, async () => {
     try {
-      await passwordService.clearPassword();
+      await options.passwordService.clearPassword();
       return true;
     } catch (err) {
       console.warn("Failed to clear password:", err);

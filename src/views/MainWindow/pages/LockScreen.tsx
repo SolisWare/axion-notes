@@ -13,13 +13,14 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { AppView } from "../../../App";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./LockScreen.module.css";
 
 type LockScreenProps = {
   theme: SystemTheme;
-  onUnlock?: (password: string) => void | Promise<void>;
 };
 
 type LockScreenCssProperties = CSSProperties & {
@@ -35,6 +36,7 @@ type LockScreenCssProperties = CSSProperties & {
 
 function LockScreen(props: LockScreenProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const appColors = getAppColors(props.theme);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
@@ -55,12 +57,7 @@ function LockScreen(props: LockScreenProps) {
   };
 
   useEffect(() => {
-    window.api.menu.setLockScreenActive(true);
     passwordInputRef.current?.focus();
-
-    return () => {
-      window.api.menu.setLockScreenActive(false);
-    };
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -73,7 +70,16 @@ function LockScreen(props: LockScreenProps) {
     }
 
     setErrorMessage("");
-    await props.onUnlock?.(password);
+    const didUnlock = await window.api.security.unlock(password);
+
+    if (didUnlock) {
+      navigate(AppView.home);
+      return;
+    }
+
+    setPassword("");
+    setErrorMessage(t("mainWindow.lockScreen.invalidPassword"));
+    passwordInputRef.current?.focus();
   }
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {

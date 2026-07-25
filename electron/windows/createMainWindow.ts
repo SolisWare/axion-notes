@@ -15,10 +15,12 @@ import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { channels } from "../ipc/channels";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
 import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { LockStateService } from "../security/LockStateService";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
   initialNoteLayout: NoteLayoutPreference;
+  lockStateService: LockStateService;
   splashWindow?: BrowserWindow;
 };
 
@@ -50,6 +52,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
 
   registerRichTextShortcuts(mainWindow);
   blockProductionDevTools(mainWindow);
+  options.lockStateService.registerMainWindow(mainWindow);
 
   let hasShownMainWindow = false;
   let fallbackShowTimeout: NodeJS.Timeout | undefined;
@@ -99,10 +102,10 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   });
 
   if (isDev) {
-    mainWindow.loadURL(dev("main"));
+    mainWindow.loadURL(dev("main", options.lockStateService.getIsLocked() ? "/lock" : ""));
     mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    mainWindow.loadFile(...production("main"));
+    mainWindow.loadFile(...production("main", options.lockStateService.getIsLocked() ? "/lock" : ""));
   }
 
   return mainWindow;

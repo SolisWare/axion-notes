@@ -7,6 +7,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support
 - Added Security settings for enabling the lock screen and setting, verifying, changing, or clearing the lock password through a main-process scrypt password service
 - Fixed disabled settings rows so dividers remain fully visible while only the row content is dimmed
+- Moved lock state management into the Electron main process with forced lock-route enforcement while notes are locked
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

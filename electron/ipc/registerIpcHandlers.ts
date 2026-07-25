@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { registerAppWindowIpc } from "./appWindowIpc";
-import { applyMenuSettings, registerMenuIpc } from "./menuIpc";
+import { applyMenuSettings, registerMenuIpc, setLockScreenActive } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
@@ -13,14 +13,17 @@ import { registerSecurityIpc } from "./securityIpc";
 import { registerStorageIpc } from "./storageIpc";
 import { registerSystemThemeIpc } from "./systemThemeIpc";
 import { AppSettings } from "../../src/settings/AppSettings";
+import { LockStateService } from "../security/LockStateService";
+import { PasswordService } from "../security/PasswordService";
 
 type IpcHandlerOptions = {
   appDataDir: string;
   appSettingsFilePath: string;
   mainWindowStateFilePath: string;
-  passwordRecordPath: string;
   initialSettings?: AppSettings;
+  lockStateService: LockStateService;
   onSettingsChange?: (settings: AppSettings) => void;
+  passwordService: PasswordService;
 };
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
@@ -28,7 +31,12 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     mainWindowStateFilePath: options.mainWindowStateFilePath
   });
   registerSystemThemeIpc();
-  registerSecurityIpc({ passwordRecordPath: options.passwordRecordPath });
+  registerSecurityIpc({
+    lockStateService: options.lockStateService,
+    passwordService: options.passwordService
+  });
+  options.lockStateService.onLockStateChange(setLockScreenActive);
+  setLockScreenActive(options.lockStateService.getIsLocked());
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();
   if (options.initialSettings) {
@@ -40,6 +48,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     appSettingsFilePath: options.appSettingsFilePath,
     initialSettings: options.initialSettings,
     onSettingsChange: (settings: AppSettings) => {
+      options.lockStateService.applySettings(settings);
       applyMenuSettings(settings);
       options.onSettingsChange?.(settings);
     }

@@ -24,6 +24,8 @@ import { defaultAppSettings } from "../src/settings/defaultSettings";
 import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfig";
 import { resolvePreferredDateFormat } from "../src/utils/dt-formatter/dateFormatConfig";
 import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormatConfig";
+import { LockStateService } from "./security/LockStateService";
+import { PasswordService } from "./security/PasswordService";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -33,6 +35,7 @@ const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
 const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
+let lockStateService: LockStateService | undefined;
 
 // Create the 'data' directory if it doesn't exist.
 if (!fs.existsSync(appDataDir)) {
@@ -72,6 +75,10 @@ app.on("ready", async () => {
 
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
+  const passwordService = new PasswordService(passwordRecordPath);
+  lockStateService = new LockStateService(passwordService);
+
+  await lockStateService.initialize(initialSettings);
 
   if (!settings) {
     setSettings(appSettingsFilePath, initialSettings);
@@ -89,16 +96,18 @@ app.on("ready", async () => {
     appDataDir,
     appSettingsFilePath,
     initialSettings,
+    lockStateService,
     mainWindowStateFilePath,
-    passwordRecordPath,
     onSettingsChange: (settings: AppSettings) => {
       currentSettings = settings;
       setElectronLanguage(settings.language);
-    }
+    },
+    passwordService
   });
   createMainWindow({
     mainWindowStateFilePath,
     initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID,
+    lockStateService,
     splashWindow
   });
 });
@@ -116,9 +125,14 @@ app.on('window-all-closed', () => {
 // when the dock icon is clicked and there are no other windows opened.
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
+    if (!lockStateService) {
+      return;
+    }
+
     createMainWindow({
       mainWindowStateFilePath,
-      initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID
+      initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID,
+      lockStateService
     });
   }
 });
