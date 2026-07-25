@@ -41,18 +41,29 @@ export class LockStateService {
    * @param settings App settings loaded during Electron startup.
    */
   public async initialize(settings: AppSettings): Promise<void> {
+    await this.refreshLockState(settings);
+  }
+
+  /**
+   * Refreshes lock state from persisted settings, password, and marker signals.
+   *
+   * This should run before reconstructing the main window so a long-running
+   * Electron process does not reuse stale lock state.
+   *
+   * @param settings Current app settings.
+   */
+  public async refreshLockState(settings: AppSettings): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     const hasPasswordRecord = await this.passwordService.hasPassword();
     const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
     const hasLockMarker = await this.lockMarkerService.hasLockMarker();
     const shouldLock = this.isLockScreenEnabled || hasPasswordRecord || hasLockMarker;
 
-    this.isLocked = shouldLock;
-    this.isRecoveryRequired = shouldLock && !hasUsablePasswordRecord;
-
     if (shouldLock && hasUsablePasswordRecord) {
       await this.lockMarkerService.writeLockMarker();
     }
+
+    this.setLockState(shouldLock, shouldLock && !hasUsablePasswordRecord);
   }
 
   /**
