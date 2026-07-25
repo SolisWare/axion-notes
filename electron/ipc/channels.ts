@@ -41,6 +41,13 @@ export const channels = {
     setSettings: "settings.setSettings",
     onSettingsChange: "settings.onSettingsChange"
   },
+  security: {
+    changePassword: "security.changePassword",
+    clearPassword: "security.clearPassword",
+    hasPassword: "security.hasPassword",
+    setPassword: "security.setPassword",
+    verifyPassword: "security.verifyPassword"
+  },
   storage: {
     setNote: "storage.setNote",
     setNoteOrder: "storage.setNoteOrder",

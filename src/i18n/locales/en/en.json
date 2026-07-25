@@ -180,7 +180,29 @@
       "password": "Password",
       "passwordDescription": "Set or change the password used to unlock your notes.",
       "changePassword": "Change password",
-      "disabledPasswordTooltip": "Available when Lock screen is on."
+      "disabledPasswordTooltip": "Available when Lock screen is on.",
+      "dialog": {
+        "setTitle": "Set lock password",
+        "setDescription": "Create the password that will be required to unlock your notes.",
+        "enableTitle": "Enable lock screen",
+        "enableDescription": "Enter your password to turn the lock screen on.",
+        "disableTitle": "Disable lock screen",
+        "disableDescription": "Enter your password to turn the lock screen off.",
+        "changeTitle": "Change password",
+        "changeDescription": "Enter your current password, then choose a new one.",
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm password",
+        "passwordRequired": "Enter your password to continue.",
+        "newPasswordRequired": "Enter a new password.",
+        "confirmPasswordRequired": "Confirm your new password.",
+        "passwordMismatch": "Passwords do not match.",
+        "invalidPassword": "The password is incorrect.",
+        "setConfirm": "Set password",
+        "enableConfirm": "Enable",
+        "disableConfirm": "Disable",
+        "changeConfirm": "Change password"
+      }
     },
     "editor": {
       "richTextEditor": "Rich Text Editor",

@@ -12,8 +12,8 @@ export const send = (channel: string, ...data: unknown[]): void => {
   ipcRenderer.send(channel, ...data);
 };
 
-export const receive = async <Response>(channel: string): Promise<Response> => {
-  return ipcRenderer.invoke(channel);
+export const receive = async <Response>(channel: string, ...data: unknown[]): Promise<Response> => {
+  return ipcRenderer.invoke(channel, ...data);
 };
 
 export const on = <Args extends unknown[]>(channel: string, callback: IpcRendererListener<Args>): void => {

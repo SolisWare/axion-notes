@@ -27,9 +27,11 @@ import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormat
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
+const appSecurityDir = path.join(appDir, 'security');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
+const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
 
 // Create the 'data' directory if it doesn't exist.
@@ -39,6 +41,10 @@ if (!fs.existsSync(appDataDir)) {
 // Create the 'settings' directory if it doesn't exist.
 if (!fs.existsSync(appSettingsDir)) {
   fs.mkdirSync(appSettingsDir, { recursive: true });
+}
+// Create the 'security' directory if it doesn't exist.
+if (!fs.existsSync(appSecurityDir)) {
+  fs.mkdirSync(appSecurityDir, { recursive: true });
 }
 
 // Load variables from ".env" file and merge with "process.env"
@@ -84,6 +90,7 @@ app.on("ready", async () => {
     appSettingsFilePath,
     initialSettings,
     mainWindowStateFilePath,
+    passwordRecordPath,
     onSettingsChange: (settings: AppSettings) => {
       currentSettings = settings;
       setElectronLanguage(settings.language);

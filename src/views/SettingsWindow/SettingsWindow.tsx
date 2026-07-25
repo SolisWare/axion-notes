@@ -66,7 +66,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       page = <Editor theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
     case SettingsView.security:
-      page = <Security appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
+      page = <Security theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
     case SettingsView.shortcuts:
       page = <Shortcuts lockScreenEnabled={props.appSettings.lockScreenEnabled} richTextEditorEnabled={props.appSettings.richTextEditorEnabled} />;

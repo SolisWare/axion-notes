@@ -55,6 +55,13 @@ interface IElectronAPI {
     open: (noteId: string, options?: OpenNoteWindowOptions) => void;
     onClosed: (callback: (noteId: string) => void) => () => void;
   },
+  security: {
+    changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+    clearPassword: () => Promise<boolean>;
+    hasPassword: () => Promise<boolean>;
+    setPassword: (password: string) => Promise<boolean>;
+    verifyPassword: (password: string) => Promise<boolean>;
+  },
   settings: {
     getSettings: () => Promise<AppSettings | undefined>;
     getSettingsFolderLocation: () => Promise<string>;

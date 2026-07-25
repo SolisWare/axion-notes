@@ -77,6 +77,13 @@ export function installBrowserApi(): void {
       open: noop,
       onClosed: () => unsubscribe
     },
+    security: {
+      changePassword: async () => false,
+      clearPassword: async () => false,
+      hasPassword: async () => false,
+      setPassword: async () => false,
+      verifyPassword: async () => false
+    },
     settings: settingsApi,
     version: {
       getShortDisplayVersion: getBrowserVersionLabel

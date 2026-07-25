@@ -4,30 +4,110 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { AppSettings } from "../../../settings/AppSettings";
+import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./SettingsPages.module.css";
 
 type SecurityProps = {
   appSettings: AppSettings;
+  theme: SystemTheme;
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
 function Security(props: SecurityProps) {
   const { t } = useTranslation();
+  const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
 
-  function handleLockScreenEnabledChange(event: ChangeEvent<HTMLInputElement>) {
-    props.onAppSettingsChange({
-      ...props.appSettings,
-      lockScreenEnabled: event.target.checked
-    });
+  async function handleLockScreenEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.checked) {
+      setPasswordDialogMode(
+        await window.api.security.hasPassword()
+          ? SecurityPasswordDialogMode.ENABLE
+          : SecurityPasswordDialogMode.SET
+      );
+      return;
+    }
+
+    setPasswordDialogMode(SecurityPasswordDialogMode.DISABLE);
+  }
+
+  async function handlePasswordDialogSubmit(values: SecurityPasswordDialogValues): Promise<boolean> {
+    switch (passwordDialogMode) {
+      case SecurityPasswordDialogMode.SET: {
+        const didSetPassword = await window.api.security.setPassword(values.newPassword);
+
+        if (didSetPassword) {
+          props.onAppSettingsChange({
+            ...props.appSettings,
+            lockScreenEnabled: true
+          });
+          setPasswordDialogMode(null);
+        }
+
+        return didSetPassword;
+      }
+      case SecurityPasswordDialogMode.ENABLE: {
+        const isPasswordValid = await window.api.security.verifyPassword(values.currentPassword);
+
+        if (isPasswordValid) {
+          props.onAppSettingsChange({
+            ...props.appSettings,
+            lockScreenEnabled: true
+          });
+          setPasswordDialogMode(null);
+        }
+
+        return isPasswordValid;
+      }
+      case SecurityPasswordDialogMode.DISABLE: {
+        const isPasswordValid = await window.api.security.verifyPassword(values.currentPassword);
+
+        if (!isPasswordValid) {
+          return false;
+        }
+
+        const didClearPassword = await window.api.security.clearPassword();
+
+        if (didClearPassword) {
+          props.onAppSettingsChange({
+            ...props.appSettings,
+            lockScreenEnabled: false
+          });
+          setPasswordDialogMode(null);
+        }
+
+        return didClearPassword;
+      }
+      case SecurityPasswordDialogMode.CHANGE: {
+        const didChangePassword = await window.api.security.changePassword(values.currentPassword, values.newPassword);
+
+        if (didChangePassword) {
+          setPasswordDialogMode(null);
+        }
+
+        return didChangePassword;
+      }
+      default:
+        return false;
+    }
   }
 
   return (
     <div className={styles.securityPage}>
+      {passwordDialogMode && (
+        <SecurityPasswordDialog
+          mode={passwordDialogMode}
+          open={true}
+          theme={props.theme}
+          onCancel={() => setPasswordDialogMode(null)}
+          onSubmit={handlePasswordDialogSubmit}
+        />
+      )}
       <section className={styles.settingsSection} aria-labelledby="lock-screen-enabled-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
@@ -61,7 +141,12 @@ function Security(props: SecurityProps) {
                 <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.security.password")}</h3>
                 <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.passwordDescription")}</p>
               </div>
-              <button className={styles.settingsButton} disabled={isPasswordRowDisabled} type="button">
+              <button
+                className={styles.settingsButton}
+                disabled={isPasswordRowDisabled}
+                type="button"
+                onClick={() => setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE)}
+              >
                 {t("settingsWindow.security.changePassword")}
               </button>
             </div>

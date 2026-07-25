@@ -9,6 +9,7 @@ import { applyMenuSettings, registerMenuIpc } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
+import { registerSecurityIpc } from "./securityIpc";
 import { registerStorageIpc } from "./storageIpc";
 import { registerSystemThemeIpc } from "./systemThemeIpc";
 import { AppSettings } from "../../src/settings/AppSettings";
@@ -17,6 +18,7 @@ type IpcHandlerOptions = {
   appDataDir: string;
   appSettingsFilePath: string;
   mainWindowStateFilePath: string;
+  passwordRecordPath: string;
   initialSettings?: AppSettings;
   onSettingsChange?: (settings: AppSettings) => void;
 };
@@ -26,6 +28,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     mainWindowStateFilePath: options.mainWindowStateFilePath
   });
   registerSystemThemeIpc();
+  registerSecurityIpc({ passwordRecordPath: options.passwordRecordPath });
   registerStorageIpc({ appDataDir: options.appDataDir });
   registerMenuIpc();
   if (options.initialSettings) {
