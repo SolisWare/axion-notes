@@ -116,6 +116,7 @@ export class LockStateService {
       }
     });
 
+    this.applyMainWindowContentProtection();
     this.forceLockRouteIfNeeded();
   }
 
@@ -270,6 +271,7 @@ export class LockStateService {
 
     this.isLocked = isLocked;
     this.isRecoveryRequired = isRecoveryRequired;
+    this.applyMainWindowContentProtection();
     this.listeners.forEach((listener) => listener(this.getLockState()));
   }
 
@@ -290,6 +292,18 @@ export class LockStateService {
       await this.mainWindow.webContents.executeJavaScript(FLUSH_ACTIVE_EDITOR_SCRIPT, true);
     } catch (err) {
       console.warn("Failed to flush active editor before locking:", err);
+    }
+  }
+
+  private applyMainWindowContentProtection(): void {
+    if (!this.mainWindow || this.mainWindow.isDestroyed()) {
+      return;
+    }
+
+    try {
+      this.mainWindow.setContentProtection(this.isLocked);
+    } catch (err) {
+      console.warn("Failed to update main window content protection:", err);
     }
   }
 
