@@ -83,6 +83,7 @@ function MainWindow(props: MainWindowProps) {
   const [isNotesAccessLocked, setNotesAccessLocked] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
+  const isNotesAccessLockedRef = useRef(false);
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousNoteLayout = useRef(appSettings.noteLayout);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
@@ -123,6 +124,19 @@ function MainWindow(props: MainWindowProps) {
     });
   }, [notes]);
 
+  const clearNotesAccessState = useCallback(() => {
+    isNotesAccessLockedRef.current = true;
+    openNoteWindowNoteIds.current.clear();
+    setNotesAccessLocked(true);
+    setNotes([]);
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+    setDeleteAllNotesDialogOpen(false);
+    setDeleteSelectedNotesDialogOpen(false);
+    setSettingsDialogOpen(false);
+    setWebNoteWindowNoteId(null);
+  }, []);
+
   const handleCancelNoteSelection = useCallback(() => {
     setSelectedNoteIds(new Set());
     setIsSelectionMode(false);
@@ -136,13 +150,11 @@ function MainWindow(props: MainWindowProps) {
     window.api.storage.getNotesWithAccessState()
       .then((state) => {
         if (state.status === NoteAccessStatus.LOCKED) {
-          setNotesAccessLocked(true);
-          setNotes([]);
-          setSelectedNoteIds(new Set());
-          setIsSelectionMode(false);
+          clearNotesAccessState();
           return;
         }
 
+        isNotesAccessLockedRef.current = false;
         setNotesAccessLocked(false);
         setNotes(sortNotes(state.notes, currentNotesSortOrder.current));
       })
@@ -153,7 +165,15 @@ function MainWindow(props: MainWindowProps) {
         setHasLoadedNotes(true);
       });
 
-  }, []);
+  }, [clearNotesAccessState]);
+
+  useEffect(() => {
+    return window.api.security.onLockStateChange((lockState) => {
+      if (lockState.isLocked) {
+        clearNotesAccessState();
+      }
+    });
+  }, [clearNotesAccessState]);
 
   useEffect(() => {
     if (view === AppView.welcome || hasLoadedNotes) {
@@ -249,12 +269,21 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     const hasNotes = notes.length > 0;
 
+    if (isNotesAccessLocked) {
+      window.api.menu.setNoteSelectionState({
+        hasNotes: false,
+        isSelectionMode: false,
+        areAllNotesSelected: false
+      });
+      return;
+    }
+
     window.api.menu.setNoteSelectionState({
       hasNotes,
       isSelectionMode,
       areAllNotesSelected: hasNotes && selectedNoteIds.size === notes.length
     });
-  }, [isSelectionMode, notes.length, selectedNoteIds]);
+  }, [isNotesAccessLocked, isSelectionMode, notes.length, selectedNoteIds]);
 
   useEffect(() => {
     window.api.menu.setNewNoteEnabled(props.view !== AppView.welcome);
@@ -467,6 +496,10 @@ function MainWindow(props: MainWindowProps) {
   ]);
 
   function applyNotesChange(event: NotesChangeEvent) {
+    if (isNotesAccessLockedRef.current) {
+      return;
+    }
+
     switch (event.type) {
       case "setNote":
         setNotes((prevNotes) => {
