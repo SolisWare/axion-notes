@@ -50,6 +50,10 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.setPassword, async (_event, password: string) => {
+    if (options.lockStateService.getIsLocked()) {
+      return false;
+    }
+
     try {
       await options.passwordService.setPassword(password);
       await options.lockStateService.markLockConfigured();
@@ -61,6 +65,10 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.verifyPassword, async (_event, password: string) => {
+    if (options.lockStateService.getIsLocked()) {
+      return false;
+    }
+
     try {
       return await options.passwordService.verifyPassword(password);
     } catch (err) {
@@ -70,6 +78,10 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.changePassword, async (_event, currentPassword: string, newPassword: string) => {
+    if (options.lockStateService.getIsLocked()) {
+      return false;
+    }
+
     try {
       const isCurrentPasswordValid = await options.passwordService.verifyPassword(currentPassword);
 
@@ -87,6 +99,10 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.clearPassword, async () => {
+    if (options.lockStateService.getIsLocked()) {
+      return false;
+    }
+
     try {
       await options.passwordService.clearPassword();
       await options.lockStateService.clearLockConfigured();

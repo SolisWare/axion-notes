@@ -69,10 +69,6 @@ export const menuApi = {
     send(channels.menu.setEditSelectionState, state);
   },
 
-  setLockScreenActive: (active: boolean) => {
-    send(channels.menu.setLockScreenActive, active);
-  },
-
   setNoteSelectionState: (state: MenuNoteSelectionState) => {
     send(channels.menu.setNoteSelectionState, state);
   },

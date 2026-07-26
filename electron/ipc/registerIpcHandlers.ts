@@ -30,6 +30,7 @@ type IpcHandlerOptions = {
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerAppWindowIpc({
+    lockStateService: options.lockStateService,
     mainWindowStateFilePath: options.mainWindowStateFilePath
   });
   registerSystemThemeIpc();
@@ -49,11 +50,14 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   if (cachedSettings) {
     applyMenuSettings(cachedSettings);
   }
-  registerNoteSortIpc();
+  registerNoteSortIpc({
+    lockStateService: options.lockStateService
+  });
   registerNoteWindowIpc({
     lockStateService: options.lockStateService
   });
   registerSettingsIpc({
+    lockStateService: options.lockStateService,
     onSettingsChange: (settings: AppSettings) => {
       options.lockStateService.applySettings(settings);
       applyMenuSettings(settings);

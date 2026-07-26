@@ -23,7 +23,6 @@ export const channels = {
     setNewNoteEnabled: "menu.setNewNoteEnabled",
     setDeleteAllNotesEnabled: "menu.setDeleteAllNotesEnabled",
     setEditSelectionState: "menu.setEditSelectionState",
-    setLockScreenActive: "menu.setLockScreenActive",
     setNoteSelectionState: "menu.setNoteSelectionState",
     setRichTextFormatState: "menu.setRichTextFormatState"
   },

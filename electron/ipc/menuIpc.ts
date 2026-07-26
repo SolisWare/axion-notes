@@ -295,10 +295,6 @@ export function registerMenuIpc(): void {
     updateNoteMenuItems();
   });
 
-  ipcMain.on(channels.menu.setLockScreenActive, (_, active: boolean) => {
-    setLockScreenActive(active);
-  });
-
   ipcMain.on(channels.menu.setNoteSelectionState, (_, state: MenuNoteSelectionState) => {
     noteSelectionState = state;
     updateNoteMenuItems();

@@ -55,7 +55,6 @@ export function installBrowserApi(): void {
       onMenuRichTextFormat: () => unsubscribe,
       setDeleteAllNotesEnabled: noop,
       setEditSelectionState: noop,
-      setLockScreenActive: noop,
       setNoteSelectionState: noop,
       setRichTextFormatState: noop,
       setNewNoteEnabled: noop

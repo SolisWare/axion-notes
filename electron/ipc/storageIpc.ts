@@ -73,6 +73,10 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
   });
 
   ipcMain.handle(channels.storage.getNotesFolderLocation, () => {
+    if (options.lockStateService.getIsLocked()) {
+      return "";
+    }
+
     return options.appDataDir;
   });
 

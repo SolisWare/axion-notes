@@ -6,10 +6,12 @@
  */
 import { BrowserWindow, ipcMain } from "electron";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
+import { LockStateService } from "../security/LockStateService";
 import { applyMainWindowLayout } from "../windows/mainWindowState";
 import { channels } from "./channels";
 
 type AppWindowIpcOptions = {
+  lockStateService: LockStateService;
   mainWindowStateFilePath: string;
 };
 
@@ -19,10 +21,18 @@ export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
   });
 
   ipcMain.on(channels.appWindow.setAlwaysOnTop, (event, enabled: boolean) => {
+    if (options.lockStateService.getIsLocked()) {
+      return;
+    }
+
     BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(enabled);
   });
 
   ipcMain.on(channels.appWindow.setLayout, (event, layout: NoteLayoutPreference) => {
+    if (options.lockStateService.getIsLocked()) {
+      return;
+    }
+
     const window = BrowserWindow.fromWebContents(event.sender);
 
     if (!window || !isNoteLayoutPreference(layout)) {
