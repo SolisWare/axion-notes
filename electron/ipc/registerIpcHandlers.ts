@@ -16,16 +16,16 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { NoteService } from "../storage/NoteService";
+import { SettingsService } from "../storage/SettingsService";
 
 type IpcHandlerOptions = {
   appDataDir: string;
-  appSettingsFilePath: string;
   mainWindowStateFilePath: string;
-  initialSettings?: AppSettings;
   lockStateService: LockStateService;
   noteService: NoteService;
   onSettingsChange?: (settings: AppSettings) => void;
   passwordService: PasswordService;
+  settingsService: SettingsService;
 };
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
@@ -44,18 +44,18 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     noteService: options.noteService
   });
   registerMenuIpc();
-  if (options.initialSettings) {
-    applyMenuSettings(options.initialSettings);
+  const cachedSettings = options.settingsService.getCachedSettings();
+  if (cachedSettings) {
+    applyMenuSettings(cachedSettings);
   }
   registerNoteSortIpc();
   registerNoteWindowIpc();
   registerSettingsIpc({
-    appSettingsFilePath: options.appSettingsFilePath,
-    initialSettings: options.initialSettings,
     onSettingsChange: (settings: AppSettings) => {
       options.lockStateService.applySettings(settings);
       applyMenuSettings(settings);
       options.onSettingsChange?.(settings);
-    }
+    },
+    settingsService: options.settingsService
   });
 }

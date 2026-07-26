@@ -17,7 +17,6 @@ import { closeSettingsWindow } from "./windows/createSettingsWindow";
 import { createSplashWindow } from "./windows/createSplashWindow";
 import { getAppIconPath } from "./utils/appIcon";
 import { registerIpcHandlers } from "./ipc/registerIpcHandlers";
-import { getSettings, setSettings } from "./storage/appSettingsStorage";
 import { setElectronLanguage } from "./utils/electronI18n";
 import { AppSettings } from "../src/settings/AppSettings";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
@@ -29,6 +28,7 @@ import { LockMarkerService } from "./security/LockMarkerService";
 import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
 import { NoteService } from "./storage/NoteService";
+import { SettingsService } from "./storage/SettingsService";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -40,9 +40,12 @@ const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.jso
 const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
 let lockStateService: LockStateService | undefined;
+let settingsService: SettingsService | undefined;
 
-async function loadAppSettings(): Promise<{ settings: AppSettings; hasSettingsFile: boolean }> {
-  const settings = await getSettings(appSettingsFilePath);
+async function loadAppSettings(settingsService: SettingsService, refreshFromDisk = false): Promise<{ settings: AppSettings; hasSettingsFile: boolean }> {
+  const settings = refreshFromDisk
+    ? await settingsService.refreshSettings()
+    : await settingsService.getSettings();
 
   return {
     settings: {
@@ -83,7 +86,8 @@ if (isDev) {
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  const { settings: initialSettings, hasSettingsFile } = await loadAppSettings();
+  settingsService = new SettingsService(appSettingsFilePath);
+  const { settings: initialSettings, hasSettingsFile } = await loadAppSettings(settingsService);
 
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
@@ -100,7 +104,7 @@ app.on("ready", async () => {
   });
 
   if (!hasSettingsFile) {
-    setSettings(appSettingsFilePath, initialSettings);
+    settingsService.setSettings(initialSettings);
   }
 
   Menu.setApplicationMenu(createMenubar());
@@ -113,8 +117,6 @@ app.on("ready", async () => {
 
   registerIpcHandlers({
     appDataDir,
-    appSettingsFilePath,
-    initialSettings,
     lockStateService,
     mainWindowStateFilePath,
     noteService,
@@ -122,7 +124,8 @@ app.on("ready", async () => {
       currentSettings = settings;
       setElectronLanguage(settings.language);
     },
-    passwordService
+    passwordService,
+    settingsService
   });
   createMainWindow({
     mainWindowStateFilePath,
@@ -145,20 +148,25 @@ app.on('window-all-closed', () => {
 // when the dock icon is clicked and there are no other windows opened.
 app.on('activate', async () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    if (!lockStateService) {
+    if (!lockStateService || !settingsService) {
       return;
     }
 
-    const { settings } = await loadAppSettings();
-    currentSettings = settings;
-    setElectronLanguage(settings.language);
+    let settings = currentSettings ?? (await loadAppSettings(settingsService)).settings;
 
-    await lockStateService.refreshLockState(settings);
+    if (settings.lockScreenEnabled || lockStateService.getIsLocked()) {
+      settings = (await loadAppSettings(settingsService, true)).settings;
+      currentSettings = settings;
+      setElectronLanguage(settings.language);
+
+      await lockStateService.refreshLockState(settings);
+    }
+
     const splashWindow = createSplashWindow();
 
     createMainWindow({
       mainWindowStateFilePath,
-      initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID,
+      initialNoteLayout: settings.noteLayout,
       lockStateService,
       splashWindow
     });

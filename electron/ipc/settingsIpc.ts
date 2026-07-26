@@ -5,31 +5,26 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, ipcMain } from "electron";
-import * as path from "path";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { channels } from "./channels";
-import { setSettings } from "../storage/appSettingsStorage";
+import { SettingsService } from "../storage/SettingsService";
 
 type SettingsIpcOptions = {
-  appSettingsFilePath: string;
-  initialSettings?: AppSettings;
   onSettingsChange?: (settings: AppSettings) => void;
+  settingsService: SettingsService;
 };
 
 export function registerSettingsIpc(options: SettingsIpcOptions): void {
-  let cachedSettings = options.initialSettings;
-
   ipcMain.handle(channels.settings.getSettings, async () => {
-    return cachedSettings;
+    return options.settingsService.getSettings();
   });
 
   ipcMain.handle(channels.settings.getSettingsFolderLocation, () => {
-    return path.dirname(options.appSettingsFilePath);
+    return options.settingsService.getSettingsFolderLocation();
   });
 
   ipcMain.on(channels.settings.setSettings, (_, settings: AppSettings) => {
-    cachedSettings = settings;
-    setSettings(options.appSettingsFilePath, settings);
+    options.settingsService.setSettings(settings);
     options.onSettingsChange?.(settings);
 
     BrowserWindow.getAllWindows().forEach((window) => {
