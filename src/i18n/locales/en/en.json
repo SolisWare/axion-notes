@@ -196,6 +196,13 @@
       "passwordDescription": "Set or change the password used to unlock your notes.",
       "changePassword": "Change password",
       "disabledPasswordTooltip": "Available when Lock screen is on.",
+      "bruteForceProtection": "Brute-force protection",
+      "bruteForceProtectionDescription": "Temporarily lock password attempts after repeated incorrect guesses.",
+      "disableBruteForceProtectionDialog": {
+        "title": "Turn Off Brute-force Protection?",
+        "message": "Repeated incorrect password attempts will no longer trigger cooldown periods. This reduces protection against password guessing.",
+        "confirmLabel": "Turn Off"
+      },
       "dialog": {
         "setTitle": "Set lock password",
         "setDescription": "Create the password that will be required to unlock your notes.",

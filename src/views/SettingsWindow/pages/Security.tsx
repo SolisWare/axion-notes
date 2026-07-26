@@ -7,6 +7,7 @@
 import { ChangeEvent, useState } from "react";
 import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { AppSettings } from "../../../settings/AppSettings";
 import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";
@@ -22,6 +23,7 @@ type SecurityProps = {
 function Security(props: SecurityProps) {
   const { t } = useTranslation();
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
+  const [isDisableBruteForceProtectionDialogOpen, setDisableBruteForceProtectionDialogOpen] = useState(false);
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
   const isRequirePasswordDelayRowDisabled = !props.appSettings.lockScreenEnabled;
   const shouldShowRequirePasswordDelay = window.api.os.isMac;
@@ -48,6 +50,28 @@ function Security(props: SecurityProps) {
     });
 
     event.currentTarget.blur();
+  }
+
+  function handleBruteForceProtectionEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    event.currentTarget.blur();
+
+    if (!event.target.checked) {
+      setDisableBruteForceProtectionDialogOpen(true);
+      return;
+    }
+
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      bruteForceProtectionEnabled: true
+    });
+  }
+
+  function handleDisableBruteForceProtectionConfirm() {
+    setDisableBruteForceProtectionDialogOpen(false);
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      bruteForceProtectionEnabled: false
+    });
   }
 
   async function handlePasswordDialogSubmit(values: SecurityPasswordDialogValues): Promise<boolean> {
@@ -124,6 +148,15 @@ function Security(props: SecurityProps) {
           onSubmit={handlePasswordDialogSubmit}
         />
       )}
+      <ConfirmationDialog
+        theme={props.theme}
+        open={isDisableBruteForceProtectionDialogOpen}
+        title={t("settingsWindow.security.disableBruteForceProtectionDialog.title")}
+        message={t("settingsWindow.security.disableBruteForceProtectionDialog.message")}
+        confirmLabel={t("settingsWindow.security.disableBruteForceProtectionDialog.confirmLabel")}
+        onConfirm={handleDisableBruteForceProtectionConfirm}
+        onCancel={() => setDisableBruteForceProtectionDialogOpen(false)}
+      />
       <section className={styles.settingsSection} aria-labelledby="lock-screen-enabled-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
@@ -206,6 +239,25 @@ function Security(props: SecurityProps) {
               </button>
             </div>
           </Tooltip>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="brute-force-protection-enabled-title">{t("settingsWindow.security.bruteForceProtection")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.bruteForceProtectionDescription")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="brute-force-protection-enabled-title"
+                checked={props.appSettings.bruteForceProtectionEnabled}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleBruteForceProtectionEnabledChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("settingsWindow.security.bruteForceProtection")}</span>
+            </label>
+          </div>
         </div>
       </section>
     </div>

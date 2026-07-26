@@ -22,6 +22,7 @@ export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
   lockScreenEnabled: false,
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay.IMMEDIATELY,
+  bruteForceProtectionEnabled: true,
   keepNotesMainWindowOnTop: false,
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,

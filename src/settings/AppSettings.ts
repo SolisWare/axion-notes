@@ -20,6 +20,7 @@ export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
   lockScreenEnabled: boolean;
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay;
+  bruteForceProtectionEnabled: boolean;
   keepNotesMainWindowOnTop: boolean;
   notesSortOrder: NoteSortOrder;
   theme: AppThemePreference;
