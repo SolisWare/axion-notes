@@ -16,6 +16,11 @@ import { PasswordService } from "./PasswordService";
 
 const MAIN_WINDOW_HASH_PREFIX = "#/main";
 const LOCK_ROUTE = "/lock";
+const FLUSH_ACTIVE_EDITOR_SCRIPT = `
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+`;
 
 export type LockStateChangeListener = (lockState: LockState) => void;
 
@@ -162,6 +167,8 @@ export class LockStateService {
       return false;
     }
 
+    await this.flushActiveEditorBeforeLock();
+
     if (!await this.passwordService.hasUsablePasswordRecord()) {
       this.setLockState(true, true);
       this.forceLockRouteIfNeeded();
@@ -272,6 +279,18 @@ export class LockStateService {
     }
 
     return Date.now() - this.lastUnlockedMainWindowClosedAt >= delay * 1000;
+  }
+
+  private async flushActiveEditorBeforeLock(): Promise<void> {
+    if (!this.mainWindow || this.mainWindow.isDestroyed() || this.mainWindow.webContents.isDestroyed()) {
+      return;
+    }
+
+    try {
+      await this.mainWindow.webContents.executeJavaScript(FLUSH_ACTIVE_EDITOR_SCRIPT, true);
+    } catch (err) {
+      console.warn("Failed to flush active editor before locking:", err);
+    }
   }
 
   private forceLockRouteIfNeeded(): void {
