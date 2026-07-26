@@ -7,6 +7,7 @@
 import { BrowserWindow } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { LockState } from "../../src/models/LockState";
+import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenRequirePasswordDelay";
 import { LockMarkerService } from "./LockMarkerService";
 import { PasswordService } from "./PasswordService";
 
@@ -26,6 +27,7 @@ export class LockStateService {
   private isLocked = false;
   private isRecoveryRequired = false;
   private isLockScreenEnabled = false;
+  private lastUnlockedMainWindowClosedAt: number | undefined;
   private mainWindow: BrowserWindow | undefined;
   private readonly listeners = new Set<LockStateChangeListener>();
 
@@ -41,7 +43,7 @@ export class LockStateService {
    * @param settings App settings loaded during Electron startup.
    */
   public async initialize(settings: AppSettings): Promise<void> {
-    await this.refreshLockState(settings);
+    await this.refreshLockState(settings, true);
   }
 
   /**
@@ -51,19 +53,24 @@ export class LockStateService {
    * Electron process does not reuse stale lock state.
    *
    * @param settings Current app settings.
+   * @param forceRequirePassword Whether to require the password without using the close-window grace period.
    */
-  public async refreshLockState(settings: AppSettings): Promise<void> {
+  public async refreshLockState(settings: AppSettings, forceRequirePassword = false): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     const hasPasswordRecord = await this.passwordService.hasPassword();
     const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
     const hasLockMarker = await this.lockMarkerService.hasLockMarker();
     const shouldLock = this.isLockScreenEnabled || hasPasswordRecord || hasLockMarker;
+    const isRecoveryRequired = shouldLock && !hasUsablePasswordRecord;
 
     if (shouldLock && hasUsablePasswordRecord) {
       await this.lockMarkerService.writeLockMarker();
     }
 
-    this.setLockState(shouldLock, shouldLock && !hasUsablePasswordRecord);
+    this.setLockState(
+      isRecoveryRequired || (shouldLock && this.shouldRequirePassword(settings.lockScreenRequirePasswordDelay, forceRequirePassword)),
+      isRecoveryRequired
+    );
   }
 
   /**
@@ -83,6 +90,10 @@ export class LockStateService {
 
     window.on("closed", () => {
       if (this.mainWindow === window) {
+        if (!this.isLocked) {
+          this.lastUnlockedMainWindowClosedAt = Date.now();
+        }
+
         this.mainWindow = undefined;
       }
     });
@@ -135,6 +146,7 @@ export class LockStateService {
     }
 
     await this.lockMarkerService.writeLockMarker();
+    this.lastUnlockedMainWindowClosedAt = undefined;
     this.setLockState(true, false);
     this.forceLockRouteIfNeeded();
     return true;
@@ -174,6 +186,7 @@ export class LockStateService {
    */
   public async clearLockConfigured(): Promise<void> {
     await this.lockMarkerService.removeLockMarker();
+    this.lastUnlockedMainWindowClosedAt = undefined;
     this.setLockState(false, false);
   }
 
@@ -199,6 +212,14 @@ export class LockStateService {
     this.isLocked = isLocked;
     this.isRecoveryRequired = isRecoveryRequired;
     this.listeners.forEach((listener) => listener(this.getLockState()));
+  }
+
+  private shouldRequirePassword(delay: LockScreenRequirePasswordDelay, forceRequirePassword: boolean): boolean {
+    if (forceRequirePassword || delay === LockScreenRequirePasswordDelay.IMMEDIATELY || this.lastUnlockedMainWindowClosedAt === undefined) {
+      return true;
+    }
+
+    return Date.now() - this.lastUnlockedMainWindowClosedAt >= delay * 1000;
   }
 
   private forceLockRouteIfNeeded(): void {

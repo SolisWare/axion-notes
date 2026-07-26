@@ -21,6 +21,7 @@ import styles from "./LockScreen.module.css";
 
 type LockScreenProps = {
   theme: SystemTheme;
+  onReady?: () => void;
 };
 
 type LockScreenCssProperties = CSSProperties & {
@@ -37,6 +38,7 @@ type LockScreenCssProperties = CSSProperties & {
 function LockScreen(props: LockScreenProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const onReady = props.onReady;
   const appColors = getAppColors(props.theme);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
@@ -67,12 +69,15 @@ function LockScreen(props: LockScreenProps) {
       })
       .catch((err: Error) => {
         console.error("Failed to load lock state:", err.message);
+      })
+      .finally(() => {
+        onReady?.();
       });
 
     return window.api.security.onLockStateChange((lockState) => {
       setRecoveryRequired(lockState.isRecoveryRequired);
     });
-  }, []);
+  }, [onReady]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

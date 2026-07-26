@@ -40,6 +40,23 @@ const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
 let lockStateService: LockStateService | undefined;
 
+async function loadAppSettings(): Promise<{ settings: AppSettings; hasSettingsFile: boolean }> {
+  const settings = await getSettings(appSettingsFilePath);
+
+  return {
+    settings: {
+      ...defaultAppSettings,
+      ...settings,
+      ...(!settings ? {
+        dateFormat: resolvePreferredDateFormat([app.getLocale()]),
+        language: resolvePreferredSupportedLanguageCode([app.getLocale()]),
+        timeFormat: resolvePreferredTimeFormat([app.getLocale()])
+      } : {})
+    },
+    hasSettingsFile: Boolean(settings)
+  };
+}
+
 // Create the 'data' directory if it doesn't exist.
 if (!fs.existsSync(appDataDir)) {
   fs.mkdirSync(appDataDir, { recursive: true });
@@ -65,16 +82,7 @@ if (isDev) {
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
-  const settings = await getSettings(appSettingsFilePath);
-  const initialSettings = {
-    ...defaultAppSettings,
-    ...settings,
-    ...(!settings ? {
-      dateFormat: resolvePreferredDateFormat([app.getLocale()]),
-      language: resolvePreferredSupportedLanguageCode([app.getLocale()]),
-      timeFormat: resolvePreferredTimeFormat([app.getLocale()])
-    } : {})
-  };
+  const { settings: initialSettings, hasSettingsFile } = await loadAppSettings();
 
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
@@ -89,7 +97,7 @@ app.on("ready", async () => {
     }
   });
 
-  if (!settings) {
+  if (!hasSettingsFile) {
     setSettings(appSettingsFilePath, initialSettings);
   }
 
@@ -138,12 +146,18 @@ app.on('activate', async () => {
       return;
     }
 
-    await lockStateService.refreshLockState(currentSettings ?? defaultAppSettings);
+    const { settings } = await loadAppSettings();
+    currentSettings = settings;
+    setElectronLanguage(settings.language);
+
+    await lockStateService.refreshLockState(settings);
+    const splashWindow = createSplashWindow();
 
     createMainWindow({
       mainWindowStateFilePath,
       initialNoteLayout: currentSettings?.noteLayout ?? NoteLayoutPreference.GRID,
-      lockStateService
+      lockStateService,
+      splashWindow
     });
   }
 });

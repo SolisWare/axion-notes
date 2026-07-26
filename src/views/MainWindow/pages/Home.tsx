@@ -18,6 +18,7 @@ import { TimeFormat } from "../../../utils/dt-formatter/TimeFormat";
 
 type HomeProps = {
   notes: NoteType[];
+  hasLoadedNotes: boolean;
   theme: SystemTheme;
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
@@ -49,6 +50,10 @@ type HomeProps = {
 
 function Home(props: HomeProps) {
   const isNoteListEmpty = props.notes.length <= 0;
+
+  if (!props.hasLoadedNotes) {
+    return <></>;
+  }
 
   return (
     <div>

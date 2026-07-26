@@ -148,7 +148,9 @@ function Security(props: SecurityProps) {
           {shouldShowRequirePasswordDelay && (
             <Tooltip
               arrow
+              disableFocusListener={!isRequirePasswordDelayRowDisabled}
               disableHoverListener={!isRequirePasswordDelayRowDisabled}
+              disableTouchListener={!isRequirePasswordDelayRowDisabled}
               enterDelay={300}
               enterNextDelay={300}
               title={t("settingsWindow.security.disabledPasswordTooltip")}
@@ -179,7 +181,9 @@ function Security(props: SecurityProps) {
           )}
           <Tooltip
             arrow
+            disableFocusListener={!isPasswordRowDisabled}
             disableHoverListener={!isPasswordRowDisabled}
+            disableTouchListener={!isPasswordRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
             title={t("settingsWindow.security.disabledPasswordTooltip")}

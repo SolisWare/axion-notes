@@ -59,6 +59,7 @@ function App() {
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
   const [startupMainWindowPage, setStartupMainWindowPage] = useState<AppView>(AppView.welcome);
+  const hasSignaledMainWindowReady = useRef(false);
   const settingsBroadcastChannel = useRef<BroadcastChannel | undefined>();
   const currentMenuEditSelectionState = useRef<MenuEditSelectionState>({
     hasSelection: false,
@@ -75,6 +76,15 @@ function App() {
     setAppSettings(settings);
     window.api.settings.setSettings(settings);
     settingsBroadcastChannel.current?.postMessage(settings);
+  }
+
+  function handleMainWindowReady() {
+    if (!UserAgent.isElectron || hasSignaledMainWindowReady.current) {
+      return;
+    }
+
+    hasSignaledMainWindowReady.current = true;
+    window.api.appWindow.readyToShow();
   }
 
   useEffect(() => {
@@ -109,12 +119,6 @@ function App() {
 
     window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
   }, [appSettings.richTextEditorEnabled]);
-
-  useEffect(() => {
-    if (UserAgent.isElectron && hasLoadedAppSettings) {
-      window.api.appWindow.readyToShow();
-    }
-  }, [hasLoadedAppSettings]);
 
   useEffect(() => {
     const channel = new BroadcastChannel("solisware.axion-notes.app-settings");
@@ -213,16 +217,16 @@ function App() {
         <Router main={
           <>
             <Route path={AppView.home} element={
-              <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+              <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <Route path={AppView.welcome} element={
-              <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+              <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
             } />
             <Route path={AppView.lock} element={
-              <LockScreen theme={effectiveTheme} />
+              <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
             } />
             <Route path="/" element={
-              <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+              <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
             } />
           </>
         } license={

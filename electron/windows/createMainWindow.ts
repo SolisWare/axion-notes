@@ -81,11 +81,6 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   ipcMain.on(channels.appWindow.readyToShow, handleMainWindowReadyToShow);
 
   mainWindow.once("ready-to-show", () => {
-    if (!options.splashWindow) {
-      showMainWindow();
-      return;
-    }
-
     fallbackShowTimeout = setTimeout(showMainWindow, 10000);
   });
 

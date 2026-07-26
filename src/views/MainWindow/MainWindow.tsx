@@ -36,6 +36,7 @@ type MainWindowProps = {
   view: AppView;
   theme: SystemTheme;
   appSettings: AppSettings;
+  onReady?: () => void;
   onAppSettingsChange: (settings: AppSettings) => void;
 }
 
@@ -69,12 +70,15 @@ function MainWindow(props: MainWindowProps) {
   const classes = useStyles();
   const navigate = useNavigate();
   const appSettings = props.appSettings;
+  const onReady = props.onReady;
+  const view = props.view;
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
   const [isDeleteSelectedNotesDialogOpen, setDeleteSelectedNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
+  const [hasLoadedNotes, setHasLoadedNotes] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
@@ -85,7 +89,7 @@ function MainWindow(props: MainWindowProps) {
   const isSelectNotesButtonDisabled = notes.length === 0 || isSelectionMode;
   const selectedNoteCount = selectedNoteIds.size;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
-  const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
+  const shouldShowToolbar = !UserAgent.isElectron && view !== AppView.welcome;
 
   const handleAddNote = useCallback(() => {
     const noteColor = appSettings.defaultNoteColor === NoteColorPreference.AUTO
@@ -132,9 +136,18 @@ function MainWindow(props: MainWindowProps) {
       })
       .catch((err: Error) => {
         console.error('Unexpected error loading notes:', err.message);
+      })
+      .finally(() => {
+        setHasLoadedNotes(true);
       });
 
   }, []);
+
+  useEffect(() => {
+    if (view === AppView.welcome || hasLoadedNotes) {
+      onReady?.();
+    }
+  }, [hasLoadedNotes, onReady, view]);
 
   useEffect(() => {
     return window.api.storage.onNotesChange((event) => {
@@ -713,7 +726,7 @@ function MainWindow(props: MainWindowProps) {
                             onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
@@ -726,7 +739,7 @@ function MainWindow(props: MainWindowProps) {
                    onToggleNoteSelection={handleToggleNoteSelection} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
