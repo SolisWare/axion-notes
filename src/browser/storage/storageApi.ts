@@ -4,8 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { NoteAccessStatus } from "../../models/NoteAccessStatus";
 import { NoteType } from "../../models/NoteType";
 import { NotesChangeEvent } from "../../models/NotesChangeEvent";
+import { NotesWithAccessState } from "../../models/NotesWithAccessState";
 import i18n from "../../i18n/i18n";
 import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "./noteStorage";
 
@@ -52,6 +54,13 @@ export const storageApi = {
       console.error("Failed to load browser notes:", err);
       return [];
     }
+  },
+
+  getNotesWithAccessState: async (): Promise<NotesWithAccessState> => {
+    return {
+      status: NoteAccessStatus.AVAILABLE,
+      notes: await storageApi.getNotes()
+    };
   },
 
   getNotesFolderLocation: async (): Promise<string> => {

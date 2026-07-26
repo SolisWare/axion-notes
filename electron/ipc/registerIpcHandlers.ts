@@ -41,6 +41,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   setLockScreenActive(options.lockStateService.getIsLocked());
   registerStorageIpc({
     appDataDir: options.appDataDir,
+    lockStateService: options.lockStateService,
     noteService: options.noteService
   });
   registerMenuIpc();

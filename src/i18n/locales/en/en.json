@@ -50,7 +50,9 @@
     },
     "emptyNotes": {
       "title": "You don't have any notes yet!",
-      "addFirstNote": "Press {{shortcut}} to add your first note"
+      "addFirstNote": "Press {{shortcut}} to add your first note",
+      "lockedTitle": "{{appName}} is password protected.",
+      "lockedMessage": "Nothing to see here. These are not the notes you are looking for."
     },
     "note": {
       "titlePlaceholder": "Title",

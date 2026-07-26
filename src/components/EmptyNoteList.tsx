@@ -13,6 +13,7 @@ import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
 
 type EmptyNoteListProps = {
+  isLocked?: boolean;
   theme: SystemTheme;
 }
 
@@ -44,12 +45,18 @@ function EmptyNoteList(props: EmptyNoteListProps) {
   const classes = useStyles({ appColors });
   const isMac = window.api.os.isMac;
   const platform = isMac ? "Cmd" : "Ctrl";
+  const title = props.isLocked
+    ? t("mainWindow.emptyNotes.lockedTitle", { appName: "Axion Notes" })
+    : t("mainWindow.emptyNotes.title");
+  const message = props.isLocked
+    ? t("mainWindow.emptyNotes.lockedMessage")
+    : t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` });
   
   return (
     <div className={classes.wrapper}>
       <div className={classes.content}>
-        <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{t("mainWindow.emptyNotes.title")}</Typography>
-        <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` })}</Typography>
+        <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{title}</Typography>
+        <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{message}</Typography>
       </div>
     </div>
   );

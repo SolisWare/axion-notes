@@ -11,6 +11,7 @@ import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState'
 import { MenuNoteSelectionState } from '../../src/models/MenuNoteSelectionState';
 import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
 import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
+import { NotesWithAccessState } from '../../src/models/NotesWithAccessState';
 import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
 import { RichTextFormatAction } from '../../src/models/RichTextFormatCommand';
 import { RichTextFormatState } from '../../src/models/RichTextFormatState';
@@ -25,6 +26,7 @@ interface IElectronAPI {
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;
+    getNotesWithAccessState: () => Promise<NotesWithAccessState>;
     getNotesFolderLocation: () => Promise<string>;
     setNote: (note: NoteType) => void;
     setNoteOrder: (noteIds: string[]) => void;

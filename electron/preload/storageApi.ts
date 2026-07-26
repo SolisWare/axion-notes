@@ -5,7 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../../src/models/NoteType";
+import { NoteAccessStatus } from "../../src/models/NoteAccessStatus";
 import { NotesChangeEvent } from "../../src/models/NotesChangeEvent";
+import { NotesWithAccessState } from "../../src/models/NotesWithAccessState";
 import { channels } from "../ipc/channels";
 import { off, on, receive, send } from "./ipcHelpers";
 
@@ -27,6 +29,20 @@ export const storageApi = {
     } catch (err) {
       console.error('Failed to load notes:', (err as Error).message);
       return [];
+    }
+  },
+
+  getNotesWithAccessState: async (): Promise<NotesWithAccessState> => {
+    try {
+      const state = await receive<NotesWithAccessState>(channels.storage.getNotesWithAccessState);
+      console.log(`Loaded ${state.notes.length} notes`);
+      return state;
+    } catch (err) {
+      console.error('Failed to load notes:', (err as Error).message);
+      return {
+        status: NoteAccessStatus.AVAILABLE,
+        notes: []
+      };
     }
   },
 

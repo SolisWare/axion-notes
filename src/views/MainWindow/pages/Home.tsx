@@ -19,6 +19,7 @@ import { TimeFormat } from "../../../utils/dt-formatter/TimeFormat";
 type HomeProps = {
   notes: NoteType[];
   hasLoadedNotes: boolean;
+  isLocked?: boolean;
   theme: SystemTheme;
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
@@ -58,7 +59,7 @@ function Home(props: HomeProps) {
   return (
     <div>
       {isNoteListEmpty ?
-        <EmptyNoteList theme={props.theme} />
+        <EmptyNoteList isLocked={props.isLocked} theme={props.theme} />
         :
         props.noteLayout === NoteLayoutPreference.LIST ?
         <NoteList

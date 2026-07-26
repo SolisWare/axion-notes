@@ -19,6 +19,7 @@ import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NoteType } from "../../models/NoteType";
+import { NoteAccessStatus } from "../../models/NoteAccessStatus";
 import { NotesChangeEvent } from "../../models/NotesChangeEvent";
 import { getRandomNoteColor } from "../../theme/NoteColors";
 import { nanoid } from "nanoid";
@@ -79,6 +80,7 @@ function MainWindow(props: MainWindowProps) {
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
   const [hasLoadedNotes, setHasLoadedNotes] = useState(false);
+  const [isNotesAccessLocked, setNotesAccessLocked] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
@@ -131,12 +133,21 @@ function MainWindow(props: MainWindowProps) {
   }, []);
 
   useEffect(() => {
-    window.api.storage.getNotes()
-      .then((notes: NoteType[]) => {
-        setNotes(sortNotes(notes, currentNotesSortOrder.current));
+    window.api.storage.getNotesWithAccessState()
+      .then((state) => {
+        if (state.status === NoteAccessStatus.LOCKED) {
+          setNotesAccessLocked(true);
+          setNotes([]);
+          setSelectedNoteIds(new Set());
+          setIsSelectionMode(false);
+          return;
+        }
+
+        setNotesAccessLocked(false);
+        setNotes(sortNotes(state.notes, currentNotesSortOrder.current));
       })
       .catch((err: Error) => {
-        console.error('Unexpected error loading notes:', err.message);
+        console.error("Unexpected error loading notes:", err.message);
       })
       .finally(() => {
         setHasLoadedNotes(true);
@@ -730,7 +741,7 @@ function MainWindow(props: MainWindowProps) {
                             onNeverShowAgainChange={handleNeverShowAgainChange} />
       break;
     case AppView.home:
-      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} isLocked={isNotesAccessLocked} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
@@ -743,7 +754,7 @@ function MainWindow(props: MainWindowProps) {
                    onToggleNoteSelection={handleToggleNoteSelection} />
       break;
     default:
-      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+      page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} isLocked={isNotesAccessLocked} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
                    noteTitleFont={appSettings.noteTitleFont}
                    noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
