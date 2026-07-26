@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { BrowserWindow } from "electron";
+import { BrowserWindow, Input } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { LockState } from "../../src/models/LockState";
 import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenRequirePasswordDelay";
@@ -80,6 +80,12 @@ export class LockStateService {
    */
   public registerMainWindow(window: BrowserWindow): void {
     this.mainWindow = window;
+    window.webContents.on("before-input-event", (event, input: Input) => {
+      if (this.isReloadShortcut(input)) {
+        event.preventDefault();
+      }
+    });
+
     window.webContents.on("did-navigate-in-page", () => {
       this.forceLockRouteIfNeeded();
     });
@@ -247,5 +253,14 @@ export class LockStateService {
     } catch {
       return false;
     }
+  }
+
+  private isReloadShortcut(input: Input): boolean {
+    if (!this.isLocked) {
+      return false;
+    }
+
+    return input.key === "F5"
+      || ((input.meta || input.control) && input.key.toLowerCase() === "r");
   }
 }
