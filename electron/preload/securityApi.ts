@@ -6,6 +6,7 @@
  */
 import { channels } from "../ipc/channels";
 import { LockState } from "../../src/models/LockState";
+import { UnlockResult } from "../../src/models/UnlockResult";
 import { off, on, receive } from "./ipcHelpers";
 
 export const securityApi = {
@@ -22,8 +23,8 @@ export const securityApi = {
     return receive<boolean>(channels.security.lock);
   },
 
-  unlock: async (password: string): Promise<boolean> => {
-    return receive<boolean>(channels.security.unlock, password);
+  unlock: async (password: string): Promise<UnlockResult> => {
+    return receive<UnlockResult>(channels.security.unlock, password);
   },
 
   onLockStateChange: (callback: (lockState: LockState) => void) => {

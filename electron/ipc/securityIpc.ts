@@ -5,6 +5,8 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, ipcMain } from "electron";
+import { UnlockResult } from "../../src/models/UnlockResult";
+import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { channels } from "./channels";
@@ -40,12 +42,14 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  ipcMain.handle(channels.security.unlock, async (_event, password: string) => {
+  ipcMain.handle(channels.security.unlock, async (_event, password: string): Promise<UnlockResult> => {
     try {
       return await options.lockStateService.unlock(password);
     } catch (err) {
       console.warn("Failed to unlock notes:", err);
-      return false;
+      return {
+        status: UnlockResultStatus.INVALID_PASSWORD
+      };
     }
   });
 

@@ -4,8 +4,4 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-export type LockState = {
-  isLocked: boolean;
-  isRecoveryRequired: boolean;
-  unlockCooldownUntil?: string;
-};
+export const MIN_LOCK_PASSWORD_LENGTH = 4;

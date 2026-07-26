@@ -7,7 +7,10 @@
 import { BrowserWindow, Input } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { LockState } from "../../src/models/LockState";
+import { UnlockResult } from "../../src/models/UnlockResult";
+import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
 import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenRequirePasswordDelay";
+import { BruteForceProtectionService } from "./BruteForceProtectionService";
 import { LockMarkerService } from "./LockMarkerService";
 import { PasswordService } from "./PasswordService";
 
@@ -26,6 +29,7 @@ export type LockStateChangeListener = (lockState: LockState) => void;
 export class LockStateService {
   private isLocked = false;
   private isRecoveryRequired = false;
+  private isBruteForceProtectionEnabled = true;
   private isLockScreenEnabled = false;
   private lastUnlockedMainWindowClosedAt: number | undefined;
   private mainWindow: BrowserWindow | undefined;
@@ -33,6 +37,7 @@ export class LockStateService {
 
   public constructor(
     private readonly passwordService: PasswordService,
+    private readonly bruteForceProtectionService: BruteForceProtectionService,
     private readonly lockMarkerService: LockMarkerService
   ) {
   }
@@ -57,6 +62,8 @@ export class LockStateService {
    */
   public async refreshLockState(settings: AppSettings, forceRequirePassword = false): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
+    this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+    await this.bruteForceProtectionService.initialize();
     const hasPasswordRecord = await this.passwordService.hasPassword();
     const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
     const hasLockMarker = await this.lockMarkerService.hasLockMarker();
@@ -116,15 +123,25 @@ export class LockStateService {
    */
   public applySettings(settings: AppSettings): void {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
+    this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+
+    if (!settings.bruteForceProtectionEnabled) {
+      void this.bruteForceProtectionService.reset();
+    }
   }
 
   /**
    * Returns the current app lock state.
    */
   public getLockState(): LockState {
+    const bruteForceProtectionStatus = this.bruteForceProtectionService.getStatus();
+
     return {
       isLocked: this.isLocked,
-      isRecoveryRequired: this.isRecoveryRequired
+      isRecoveryRequired: this.isRecoveryRequired,
+      unlockCooldownUntil: this.isBruteForceProtectionEnabled
+        ? bruteForceProtectionStatus.cooldownUntil
+        : undefined
     };
   }
 
@@ -162,21 +179,50 @@ export class LockStateService {
    * Verifies the password and unlocks the app when it is correct.
    *
    * @param password Raw password entered by the user.
-   * @returns true when the app was unlocked; otherwise false.
+   * @returns Unlock result status for the renderer.
    */
-  public async unlock(password: string): Promise<boolean> {
+  public async unlock(password: string): Promise<UnlockResult> {
     if (this.isRecoveryRequired) {
-      return false;
+      return {
+        status: UnlockResultStatus.RECOVERY_REQUIRED
+      };
+    }
+
+    if (this.isBruteForceProtectionEnabled) {
+      const bruteForceProtectionStatus = this.bruteForceProtectionService.getStatus();
+
+      if (bruteForceProtectionStatus.isCooldownActive) {
+        return {
+          status: UnlockResultStatus.COOLDOWN_ACTIVE,
+          cooldownUntil: bruteForceProtectionStatus.cooldownUntil
+        };
+      }
     }
 
     const isPasswordValid = await this.passwordService.verifyPassword(password);
 
     if (!isPasswordValid) {
-      return false;
+      if (this.isBruteForceProtectionEnabled) {
+        const bruteForceProtectionStatus = await this.bruteForceProtectionService.recordFailedAttempt();
+
+        if (bruteForceProtectionStatus.isCooldownActive) {
+          return {
+            status: UnlockResultStatus.COOLDOWN_ACTIVE,
+            cooldownUntil: bruteForceProtectionStatus.cooldownUntil
+          };
+        }
+      }
+
+      return {
+        status: UnlockResultStatus.INVALID_PASSWORD
+      };
     }
 
+    await this.bruteForceProtectionService.reset();
     this.setLockState(false, false);
-    return true;
+    return {
+      status: UnlockResultStatus.UNLOCKED
+    };
   }
 
   /**

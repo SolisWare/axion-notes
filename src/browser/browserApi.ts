@@ -8,6 +8,7 @@ import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
 import i18n from "../i18n/i18n";
 import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
+import { type UnlockResult } from "../models/UnlockResult";
 import { UserAgent } from "../utils/UserAgent";
 import { settingsApi } from "./storage/settingsApi";
 import { storageApi } from "./storage/storageApi";
@@ -86,7 +87,7 @@ export function installBrowserApi(): void {
       lock: async () => false,
       onLockStateChange: () => unsubscribe,
       setPassword: async () => false,
-      unlock: async () => false,
+      unlock: async (): Promise<UnlockResult> => ({ status: "invalidPassword" as UnlockResult["status"] }),
       verifyPassword: async () => false
     },
     settings: settingsApi,

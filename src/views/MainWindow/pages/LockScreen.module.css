@@ -98,6 +98,13 @@
   border-color: var(--lock-error);
 }
 
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.56;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--lock-muted-text);
+}
+
 .visibilityButton {
   position: absolute !important;
   top: 0;
@@ -111,6 +118,10 @@
   font-size: 20px;
 }
 
+.visibilityButton:disabled {
+  opacity: 0.45;
+}
+
 .message {
   width: 100%;
   min-height: 29px;
@@ -120,7 +131,11 @@
   color: var(--lock-error);
   font-size: 12px !important;
   line-height: 1.4 !important;
-  text-align: left;
+  text-align: center;
+}
+
+.message span {
+  display: block;
 }
 
 .recoveryMessage {
@@ -152,6 +167,13 @@
 
 .unlockButton:hover {
   background-color: var(--lock-primary-hover) !important;
+}
+
+.unlockButton:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.56;
+  background-color: var(--lock-primary) !important;
+  color: #ffffff !important;
 }
 
 .unlockButton:focus-visible {

@@ -7,6 +7,7 @@
 import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { MIN_LOCK_PASSWORD_LENGTH } from "../../src/settings/PasswordPolicy";
 
 const PASSWORD_RECORD_VERSION = 1;
 const PASSWORD_ALGORITHM = "scrypt";
@@ -79,6 +80,10 @@ export class PasswordService {
    * @param password The raw password entered by the user.
    */
   public async setPassword(password: string): Promise<void> {
+    if (password.length < MIN_LOCK_PASSWORD_LENGTH) {
+      throw new Error(`Password must be at least ${MIN_LOCK_PASSWORD_LENGTH} characters long.`);
+    }
+
     const record = await this.createPasswordRecord(password);
 
     await fs.promises.mkdir(path.dirname(this.passwordRecordPath), { recursive: true });

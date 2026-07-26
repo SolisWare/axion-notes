@@ -8,6 +8,8 @@ import { ChangeEvent, CSSProperties, FormEvent, useEffect, useRef, useState } fr
 import { Button, IconButton, Typography } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ComputerOutlinedIcon from "@mui/icons-material/ComputerOutlined";
+import GppGoodOutlinedIcon from "@mui/icons-material/GppGoodOutlined";
+import GppMaybeOutlinedIcon from "@mui/icons-material/GppMaybeOutlined";
 import LockOpenRoundedIcon from "@mui/icons-material/LockOpenRounded";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
@@ -15,6 +17,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { AppView } from "../../../App";
+import { UnlockResultStatus } from "../../../models/UnlockResultStatus";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./LockScreen.module.css";
@@ -44,6 +47,9 @@ function LockScreen(props: LockScreenProps) {
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [cooldownUntil, setCooldownUntil] = useState<string | undefined>();
+  const [cooldownTick, setCooldownTick] = useState(0);
+  const [isBruteForceProtectionEnabled, setBruteForceProtectionEnabled] = useState(true);
   const [isRecoveryRequired, setRecoveryRequired] = useState(false);
   const version = window.api.version.getShortDisplayVersion();
 
@@ -60,9 +66,17 @@ function LockScreen(props: LockScreenProps) {
   };
 
   useEffect(() => {
-    window.api.security.getLockState()
+    Promise.all([
+      window.api.security.getLockState(),
+      window.api.settings.getSettings()
+    ])
+      .then(([lockState, settings]) => {
+        setBruteForceProtectionEnabled(settings?.bruteForceProtectionEnabled ?? true);
+        return lockState;
+      })
       .then((lockState) => {
         setRecoveryRequired(lockState.isRecoveryRequired);
+        setCooldownUntil(lockState.unlockCooldownUntil);
         if (!lockState.isRecoveryRequired) {
           passwordInputRef.current?.focus();
         }
@@ -74,13 +88,55 @@ function LockScreen(props: LockScreenProps) {
         onReady?.();
       });
 
-    return window.api.security.onLockStateChange((lockState) => {
+    const offLockStateChange = window.api.security.onLockStateChange((lockState) => {
       setRecoveryRequired(lockState.isRecoveryRequired);
+      setCooldownUntil(lockState.unlockCooldownUntil);
     });
+    const offSettingsChange = window.api.settings.onSettingsChange((settings) => {
+      setBruteForceProtectionEnabled(settings.bruteForceProtectionEnabled);
+    });
+
+    return () => {
+      offLockStateChange();
+      offSettingsChange();
+    };
   }, [onReady]);
+
+  useEffect(() => {
+    if (!cooldownUntil) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setCooldownTick((currentTick) => currentTick + 1);
+    }, 1000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [cooldownUntil]);
+
+  const cooldownMessage = cooldownTick >= 0 ? getCooldownMessage(cooldownUntil) : "";
+  const isCooldownActive = Boolean(cooldownMessage);
+  const displayMessage = cooldownMessage || errorMessage;
+  const displayMessageLines = displayMessage.split("\n");
+
+  useEffect(() => {
+    if (!cooldownUntil || cooldownMessage) {
+      return;
+    }
+
+    setCooldownUntil(undefined);
+    setErrorMessage("");
+    passwordInputRef.current?.focus();
+  }, [cooldownMessage, cooldownUntil]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isCooldownActive) {
+      return;
+    }
 
     if (!password) {
       setErrorMessage(t("mainWindow.lockScreen.passwordRequired"));
@@ -89,19 +145,53 @@ function LockScreen(props: LockScreenProps) {
     }
 
     setErrorMessage("");
-    const didUnlock = await window.api.security.unlock(password);
+    const unlockResult = await window.api.security.unlock(password);
 
-    if (didUnlock) {
+    if (unlockResult.status === UnlockResultStatus.UNLOCKED) {
+      setCooldownUntil(undefined);
       navigate(AppView.home);
       return;
     }
 
     setPassword("");
+
+    if (unlockResult.status === UnlockResultStatus.COOLDOWN_ACTIVE && unlockResult.cooldownUntil) {
+      setCooldownUntil(unlockResult.cooldownUntil);
+      setErrorMessage("");
+      return;
+    }
+
     setErrorMessage(t("mainWindow.lockScreen.invalidPassword"));
     passwordInputRef.current?.focus();
   }
 
+  function getCooldownMessage(cooldownEnd: string | undefined): string {
+    if (!cooldownEnd) {
+      return "";
+    }
+
+    const remainingMs = Date.parse(cooldownEnd) - Date.now();
+
+    if (remainingMs <= 0) {
+      return "";
+    }
+
+    const totalSeconds = Math.ceil(remainingMs / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const countdown = `${totalMinutes}:${seconds.toString().padStart(2, "0")}`;
+
+    return [
+      t("mainWindow.lockScreen.cooldownMessageLine1"),
+      t("mainWindow.lockScreen.cooldownMessageLine2", { countdown })
+    ].join("\n");
+  }
+
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
+    if (isCooldownActive) {
+      return;
+    }
+
     setPassword(event.target.value);
     setErrorMessage("");
   }
@@ -137,12 +227,14 @@ function LockScreen(props: LockScreenProps) {
                   value={password}
                   placeholder={t("mainWindow.lockScreen.passwordPlaceholder")}
                   autoComplete="current-password"
-                  aria-invalid={Boolean(errorMessage)}
-                  aria-describedby={errorMessage ? "unlock-password-error" : undefined}
+                  disabled={isCooldownActive}
+                  aria-invalid={Boolean(displayMessage)}
+                  aria-describedby={displayMessage ? "unlock-password-error" : undefined}
                   onChange={handlePasswordChange}
                 />
                 <IconButton
                   className={styles.visibilityButton}
+                  disabled={isCooldownActive}
                   aria-label={t(isPasswordVisible
                     ? "mainWindow.lockScreen.hidePassword"
                     : "mainWindow.lockScreen.showPassword")}
@@ -158,14 +250,16 @@ function LockScreen(props: LockScreenProps) {
                 className={styles.message}
                 variant="caption"
                 component="p"
-                role={errorMessage ? "alert" : undefined}
+                role={displayMessage ? "alert" : undefined}
                 aria-live="polite"
               >
-                {errorMessage}
+                {displayMessageLines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
               </Typography>
             </div>
 
-            <Button className={styles.unlockButton} type="submit" variant="contained">
+            <Button className={styles.unlockButton} disabled={isCooldownActive} disableElevation={isCooldownActive} type="submit" variant="contained">
               <span className={styles.buttonContent}>
                 {t("mainWindow.lockScreen.unlock")}
                 <ArrowForwardIcon aria-hidden="true" />
@@ -178,6 +272,14 @@ function LockScreen(props: LockScreenProps) {
           <li className={styles.disclosure}>
             <ComputerOutlinedIcon aria-hidden="true" />
             <span>{t("mainWindow.lockScreen.offlineDisclosure")}</span>
+          </li>
+          <li className={styles.disclosure}>
+            {isBruteForceProtectionEnabled
+              ? <GppGoodOutlinedIcon aria-hidden="true" />
+              : <GppMaybeOutlinedIcon aria-hidden="true" />}
+            <span>{t(isBruteForceProtectionEnabled
+              ? "mainWindow.lockScreen.bruteForceProtectionEnabledDisclosure"
+              : "mainWindow.lockScreen.bruteForceProtectionDisabledDisclosure")}</span>
           </li>
           <li className={styles.disclosure}>
             <LockOpenRoundedIcon aria-hidden="true" />

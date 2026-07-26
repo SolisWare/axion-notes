@@ -4,8 +4,9 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-export type LockState = {
-  isLocked: boolean;
-  isRecoveryRequired: boolean;
-  unlockCooldownUntil?: string;
+import { UnlockResultStatus } from "./UnlockResultStatus";
+
+export type UnlockResult = {
+  status: UnlockResultStatus;
+  cooldownUntil?: string;
 };

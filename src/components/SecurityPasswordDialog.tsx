@@ -9,6 +9,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
+import { MIN_LOCK_PASSWORD_LENGTH } from "../settings/PasswordPolicy";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./SecurityPasswordDialog.module.css";
@@ -161,6 +162,11 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
     if (needsNewPassword && !newPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.newPasswordRequired"));
+      return;
+    }
+
+    if (needsNewPassword && newPassword.length < MIN_LOCK_PASSWORD_LENGTH) {
+      setErrorMessage(t("settingsWindow.security.dialog.passwordTooShort", { minLength: MIN_LOCK_PASSWORD_LENGTH }));
       return;
     }
 

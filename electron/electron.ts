@@ -25,6 +25,7 @@ import { defaultAppSettings } from "../src/settings/defaultSettings";
 import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfig";
 import { resolvePreferredDateFormat } from "../src/utils/dt-formatter/dateFormatConfig";
 import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormatConfig";
+import { BruteForceProtectionService } from "./security/BruteForceProtectionService";
 import { LockMarkerService } from "./security/LockMarkerService";
 import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
@@ -38,6 +39,7 @@ const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
 const lockMarkerPath = path.join(appDir, '.lock');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
+const bruteForceProtectionRecordPath = path.join(appSecurityDir, 'brute-force-protection.json');
 const passwordRecordPath = path.join(appSecurityDir, 'password.json');
 let currentSettings: AppSettings | undefined;
 let lockStateService: LockStateService | undefined;
@@ -92,10 +94,11 @@ app.on("ready", async () => {
 
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
+  const bruteForceProtectionService = new BruteForceProtectionService(bruteForceProtectionRecordPath);
   const lockMarkerService = new LockMarkerService(lockMarkerPath);
   const noteService = new NoteService(appDataDir);
   const passwordService = new PasswordService(passwordRecordPath);
-  lockStateService = new LockStateService(passwordService, lockMarkerService);
+  lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService);
 
   await lockStateService.initialize(initialSettings);
   lockStateService.onLockStateChange((lockState) => {

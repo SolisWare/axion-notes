@@ -14,6 +14,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Closed detached note windows when locking notes and blocked new note windows from opening while locked
 - Hardened locked-state Electron IPC access for settings, note paths, sorting, window state, password changes, and lock menu state
 - Cleared renderer note state, selections, dialogs, and delayed note-change handling when notes become locked
+- Added brute-force protection with escalating unlock cooldowns and a four-character minimum lock password length
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

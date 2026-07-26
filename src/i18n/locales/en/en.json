@@ -12,10 +12,14 @@
       "hidePassword": "Hide password",
       "passwordRequired": "Enter your password to continue.",
       "invalidPassword": "The password is incorrect.",
+      "cooldownMessageLine1": "Too many incorrect attempts.",
+      "cooldownMessageLine2": "Try again in {{countdown}}.",
       "recoveryRequiredLine1": "Lock password data is missing or damaged.",
       "recoveryRequiredLine2": "{{appName}} cannot be unlocked from inside the app and needs to be repaired.",
       "unlock": "Unlock notes",
       "offlineDisclosure": "Your notes are stored offline on this device only.",
+      "bruteForceProtectionEnabledDisclosure": "Brute-force protection is enabled.",
+      "bruteForceProtectionDisabledDisclosure": "Brute-force protection is disabled.",
       "encryptionDisclosure": "Your notes are not encrypted."
     },
     "welcome": {
@@ -217,6 +221,7 @@
         "confirmPassword": "Confirm password",
         "passwordRequired": "Enter your password to continue.",
         "newPasswordRequired": "Enter a new password.",
+        "passwordTooShort": "Password must be at least {{minLength}} characters.",
         "confirmPasswordRequired": "Confirm your new password.",
         "passwordMismatch": "Passwords do not match.",
         "invalidPassword": "The password is incorrect.",
