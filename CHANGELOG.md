@@ -11,6 +11,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a hidden lock marker and recovery state so missing or damaged lock password data fails closed instead of silently disabling the in-app lock
 - Added a macOS lock delay setting for requiring the lock password after the notes window has been closed
 - Refactored Electron note and settings access into main-process services with in-memory caching for faster window reconstruction
+- Closed detached note windows when locking notes and blocked new note windows from opening while locked
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

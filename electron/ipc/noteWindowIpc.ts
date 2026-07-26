@@ -8,12 +8,21 @@ import { BrowserWindow, ipcMain } from "electron";
 import { OpenNoteWindowOptions } from "../../src/models/OpenNoteWindowOptions";
 import { createNoteWindow } from "../windows/createNoteWindow";
 import { channels } from "./channels";
+import { LockStateService } from "../security/LockStateService";
 
-export function registerNoteWindowIpc(): void {
-  ipcMain.on(channels.noteWindow.open, (event, noteId: string, options?: OpenNoteWindowOptions) => {
+type NoteWindowIpcOptions = {
+  lockStateService: LockStateService;
+};
+
+export function registerNoteWindowIpc(options: NoteWindowIpcOptions): void {
+  ipcMain.on(channels.noteWindow.open, (event, noteId: string, openOptions?: OpenNoteWindowOptions) => {
+    if (options.lockStateService.getIsLocked()) {
+      return;
+    }
+
     createNoteWindow({
       noteId,
-      openerWindow: options?.offsetFromCurrentWindow ? BrowserWindow.fromWebContents(event.sender) ?? undefined : undefined
+      openerWindow: openOptions?.offsetFromCurrentWindow ? BrowserWindow.fromWebContents(event.sender) ?? undefined : undefined
     });
   });
 }

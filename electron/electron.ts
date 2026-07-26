@@ -13,6 +13,7 @@ import * as fs from 'node:fs';
 import appVersionConfig from "../app-version-config.json";
 import { AppVersionResolver } from "../src/utils/app-version/AppVersionResolver";
 import { createMainWindow } from "./windows/createMainWindow";
+import { closeNoteWindows } from "./windows/createNoteWindow";
 import { closeSettingsWindow } from "./windows/createSettingsWindow";
 import { createSplashWindow } from "./windows/createSplashWindow";
 import { getAppIconPath } from "./utils/appIcon";
@@ -99,6 +100,7 @@ app.on("ready", async () => {
   await lockStateService.initialize(initialSettings);
   lockStateService.onLockStateChange((lockState) => {
     if (lockState.isLocked) {
+      closeNoteWindows();
       closeSettingsWindow();
     }
   });

@@ -50,7 +50,9 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     applyMenuSettings(cachedSettings);
   }
   registerNoteSortIpc();
-  registerNoteWindowIpc();
+  registerNoteWindowIpc({
+    lockStateService: options.lockStateService
+  });
   registerSettingsIpc({
     onSettingsChange: (settings: AppSettings) => {
       options.lockStateService.applySettings(settings);

@@ -132,3 +132,11 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
 
   return noteWindow;
 }
+
+export function closeNoteWindows(): void {
+  noteWindows.forEach((window) => {
+    if (!window.isDestroyed()) {
+      window.close();
+    }
+  });
+}
