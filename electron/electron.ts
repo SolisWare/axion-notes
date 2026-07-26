@@ -109,7 +109,13 @@ app.on("ready", async () => {
     settingsService.setSettings(initialSettings);
   }
 
-  Menu.setApplicationMenu(createMenubar());
+  Menu.setApplicationMenu(createMenubar({
+    onLockNotes: () => {
+      lockStateService?.lock().catch((err) => {
+        console.warn("Failed to lock notes from menu:", err);
+      });
+    }
+  }));
 
   if (isMac) {
     app.dock?.setIcon(getAppIconPath());

@@ -15,7 +15,11 @@ import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 
-export function createMenubar(): Menu {
+type MenubarOptions = {
+  onLockNotes: () => void | Promise<void>;
+};
+
+export function createMenubar(options: MenubarOptions): Menu {
   const template: any = [
     ...(isMac ? [{
       label: app.name,
@@ -36,7 +40,7 @@ export function createMenubar(): Menu {
           label: translate("electron.menu.lockNotes"),
           accelerator: 'Shift+CmdOrCtrl+L',
           click: () => {
-            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.lockNotes);
+            options.onLockNotes();
           }
         },
         { type: 'separator' },
@@ -72,7 +76,7 @@ export function createMenubar(): Menu {
             label: translate("electron.menu.lockNotes"),
             accelerator: 'Shift+CmdOrCtrl+L',
             click: () => {
-              BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.lockNotes);
+              options.onLockNotes();
             }
           },
           { type: 'separator' as const }
