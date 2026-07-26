@@ -82,6 +82,7 @@ function MainWindow(props: MainWindowProps) {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
+  const previousNoteLayout = useRef(appSettings.noteLayout);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
   const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
     
@@ -259,9 +260,12 @@ function MainWindow(props: MainWindowProps) {
   }, [appSettings.keepNotesMainWindowOnTop]);
 
   useEffect(() => {
-    if (UserAgent.isElectron) {
-      window.api.appWindow.setLayout(appSettings.noteLayout);
+    if (!UserAgent.isElectron || previousNoteLayout.current === appSettings.noteLayout) {
+      return;
     }
+
+    previousNoteLayout.current = appSettings.noteLayout;
+    window.api.appWindow.setLayout(appSettings.noteLayout);
   }, [appSettings.noteLayout]);
   
   function handleDeleteNote(noteId: string) {
