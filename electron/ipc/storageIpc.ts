@@ -8,10 +8,11 @@ import { BrowserWindow, ipcMain } from "electron";
 import { NoteType } from "../../src/models/NoteType";
 import { NotesChangeEvent } from "../../src/models/NotesChangeEvent";
 import { channels } from "./channels";
-import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "../storage/noteStorage";
+import { NoteService } from "../storage/NoteService";
 
 type StorageIpcOptions = {
   appDataDir: string;
+  noteService: NoteService;
 };
 
 function broadcastNotesChange(event: NotesChangeEvent): void {
@@ -22,7 +23,7 @@ function broadcastNotesChange(event: NotesChangeEvent): void {
 
 export function registerStorageIpc(options: StorageIpcOptions): void {
   ipcMain.on(channels.storage.setNote, (_, note: NoteType) => {
-    setNote(options.appDataDir, note);
+    options.noteService.setNote(note);
     broadcastNotesChange({
       type: "setNote",
       note
@@ -30,7 +31,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
   });
 
   ipcMain.on(channels.storage.setNoteOrder, (_, noteIds: string[]) => {
-    setNoteOrder(options.appDataDir, noteIds);
+    options.noteService.setNoteOrder(noteIds);
     broadcastNotesChange({
       type: "setNoteOrder",
       noteIds
@@ -38,7 +39,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
   });
 
   ipcMain.handle(channels.storage.getNotes, async () => {
-    return getNotes(options.appDataDir);
+    return options.noteService.getNotes();
   });
 
   ipcMain.handle(channels.storage.getNotesFolderLocation, () => {
@@ -46,7 +47,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
   });
 
   ipcMain.on(channels.storage.deleteNote, (_, noteId: string) => {
-    deleteNote(options.appDataDir, noteId);
+    options.noteService.deleteNote(noteId);
     broadcastNotesChange({
       type: "deleteNote",
       noteId
@@ -54,7 +55,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
   });
 
   ipcMain.on(channels.storage.deleteAllNotes, () => {
-    deleteAllNotes(options.appDataDir);
+    options.noteService.deleteAllNotes();
     broadcastNotesChange({
       type: "deleteAllNotes"
     });

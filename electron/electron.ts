@@ -28,6 +28,7 @@ import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormat
 import { LockMarkerService } from "./security/LockMarkerService";
 import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
+import { NoteService } from "./storage/NoteService";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -87,6 +88,7 @@ app.on("ready", async () => {
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
   const lockMarkerService = new LockMarkerService(lockMarkerPath);
+  const noteService = new NoteService(appDataDir);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, lockMarkerService);
 
@@ -115,6 +117,7 @@ app.on("ready", async () => {
     initialSettings,
     lockStateService,
     mainWindowStateFilePath,
+    noteService,
     onSettingsChange: (settings: AppSettings) => {
       currentSettings = settings;
       setElectronLanguage(settings.language);

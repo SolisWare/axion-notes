@@ -15,6 +15,7 @@ import { registerSystemThemeIpc } from "./systemThemeIpc";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
+import { NoteService } from "../storage/NoteService";
 
 type IpcHandlerOptions = {
   appDataDir: string;
@@ -22,6 +23,7 @@ type IpcHandlerOptions = {
   mainWindowStateFilePath: string;
   initialSettings?: AppSettings;
   lockStateService: LockStateService;
+  noteService: NoteService;
   onSettingsChange?: (settings: AppSettings) => void;
   passwordService: PasswordService;
 };
@@ -37,7 +39,10 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   });
   options.lockStateService.onLockStateChange((lockState) => setLockScreenActive(lockState.isLocked));
   setLockScreenActive(options.lockStateService.getIsLocked());
-  registerStorageIpc({ appDataDir: options.appDataDir });
+  registerStorageIpc({
+    appDataDir: options.appDataDir,
+    noteService: options.noteService
+  });
   registerMenuIpc();
   if (options.initialSettings) {
     applyMenuSettings(options.initialSettings);
