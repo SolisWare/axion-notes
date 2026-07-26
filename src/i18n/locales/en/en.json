@@ -180,6 +180,16 @@
     "security": {
       "lockScreen": "Lock screen",
       "lockScreenDescription": "Require a password before notes can be viewed.",
+      "requirePasswordDelay": "Require password",
+      "requirePasswordDelayDescription": "When to require the password after the notes window is closed.",
+      "requirePasswordDelayOptions": {
+        "immediately": "Immediately",
+        "fiveSeconds": "5 seconds",
+        "tenSeconds": "10 seconds",
+        "thirtySeconds": "30 seconds",
+        "oneMinute": "1 minute",
+        "fiveMinutes": "5 minutes"
+      },
       "password": "Password",
       "passwordDescription": "Set or change the password used to unlock your notes.",
       "changePassword": "Change password",

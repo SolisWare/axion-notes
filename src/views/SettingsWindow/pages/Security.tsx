@@ -9,6 +9,7 @@ import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { AppSettings } from "../../../settings/AppSettings";
+import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./SettingsPages.module.css";
 
@@ -22,8 +23,12 @@ function Security(props: SecurityProps) {
   const { t } = useTranslation();
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isRequirePasswordDelayRowDisabled = !props.appSettings.lockScreenEnabled;
+  const shouldShowRequirePasswordDelay = window.api.os.isMac;
 
   async function handleLockScreenEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    event.currentTarget.blur();
+
     if (event.target.checked) {
       setPasswordDialogMode(
         await window.api.security.hasPassword()
@@ -34,6 +39,15 @@ function Security(props: SecurityProps) {
     }
 
     setPasswordDialogMode(SecurityPasswordDialogMode.DISABLE);
+  }
+
+  function handleRequirePasswordDelayChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      lockScreenRequirePasswordDelay: Number(event.target.value) as LockScreenRequirePasswordDelay
+    });
+
+    event.currentTarget.blur();
   }
 
   async function handlePasswordDialogSubmit(values: SecurityPasswordDialogValues): Promise<boolean> {
@@ -104,7 +118,9 @@ function Security(props: SecurityProps) {
           mode={passwordDialogMode}
           open={true}
           theme={props.theme}
-          onCancel={() => setPasswordDialogMode(null)}
+          onCancel={() => {
+            setPasswordDialogMode(null);
+          }}
           onSubmit={handlePasswordDialogSubmit}
         />
       )}
@@ -129,6 +145,38 @@ function Security(props: SecurityProps) {
               <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
             </label>
           </div>
+          {shouldShowRequirePasswordDelay && (
+            <Tooltip
+              arrow
+              disableHoverListener={!isRequirePasswordDelayRowDisabled}
+              enterDelay={300}
+              enterNextDelay={300}
+              title={t("settingsWindow.security.disabledPasswordTooltip")}
+            >
+              <div className={`${styles.settingsRow} ${isRequirePasswordDelayRowDisabled ? styles.settingsRowDisabled : ""}`}>
+                <div className={styles.settingsRowText}>
+                  <label className={styles.settingsSectionTitle} htmlFor="lock-screen-require-password-delay">
+                    {t("settingsWindow.security.requirePasswordDelay")}
+                  </label>
+                  <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.requirePasswordDelayDescription")}</p>
+                </div>
+                <select
+                  className={styles.settingsSelect}
+                  disabled={isRequirePasswordDelayRowDisabled}
+                  id="lock-screen-require-password-delay"
+                  value={props.appSettings.lockScreenRequirePasswordDelay}
+                  onChange={handleRequirePasswordDelayChange}
+                >
+                  <option value={LockScreenRequirePasswordDelay.IMMEDIATELY}>{t("settingsWindow.security.requirePasswordDelayOptions.immediately")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.fiveSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.TEN_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.tenSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.THIRTY_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.thirtySeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.ONE_MINUTE}>{t("settingsWindow.security.requirePasswordDelayOptions.oneMinute")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_MINUTES}>{t("settingsWindow.security.requirePasswordDelayOptions.fiveMinutes")}</option>
+                </select>
+              </div>
+            </Tooltip>
+          )}
           <Tooltip
             arrow
             disableHoverListener={!isPasswordRowDisabled}
@@ -145,7 +193,10 @@ function Security(props: SecurityProps) {
                 className={styles.settingsButton}
                 disabled={isPasswordRowDisabled}
                 type="button"
-                onClick={() => setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE)}
+                onClick={(event) => {
+                  event.currentTarget.blur();
+                  setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE);
+                }}
               >
                 {t("settingsWindow.security.changePassword")}
               </button>

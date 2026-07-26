@@ -11,6 +11,7 @@ import { NoteFontPreference } from "./NoteFontPreference";
 import { NoteFontSize } from "./NoteFontSize";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
+import { LockScreenRequirePasswordDelay } from "./LockScreenRequirePasswordDelay";
 import { SupportedLanguageCode } from "../i18n/languageConfig";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -18,6 +19,7 @@ import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
   lockScreenEnabled: boolean;
+  lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay;
   keepNotesMainWindowOnTop: boolean;
   notesSortOrder: NoteSortOrder;
   theme: AppThemePreference;

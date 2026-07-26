@@ -190,6 +190,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     <Dialog
       open={props.open}
       onClose={handleClose}
+      disableRestoreFocus={true}
       classes={{ paper: styles.securityPasswordDialogPaper }}
       PaperProps={{ style: dialogStyle }}
       BackdropProps={{ classes: { root: styles.securityPasswordDialogBackdrop }, style: dialogStyle }}
