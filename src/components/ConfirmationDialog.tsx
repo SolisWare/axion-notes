@@ -18,6 +18,7 @@ type ConfirmationDialogProps = {
   message: string;
   confirmLabel: string;
   cancelLabel?: string;
+  confirmColor?: "error" | "primary";
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -79,7 +80,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
         <Button className={classes.cancelButton} onClick={props.onCancel}>
           {props.cancelLabel ?? t("common.cancel")}
         </Button>
-        <Button onClick={props.onConfirm} color="error" variant="contained">
+        <Button onClick={props.onConfirm} color={props.confirmColor ?? "error"} variant="contained">
           {props.confirmLabel}
         </Button>
       </DialogActions>

@@ -9,9 +9,13 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
+import { PasswordStrengthLevel } from "../security/PasswordStrengthLevel";
+import { estimatePasswordStrength } from "../security/passwordStrength";
 import { MIN_LOCK_PASSWORD_LENGTH } from "../settings/PasswordPolicy";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
+import ConfirmationDialog from "./ConfirmationDialog";
+import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import styles from "./SecurityPasswordDialog.module.css";
 
 export enum SecurityPasswordDialogMode {
@@ -62,6 +66,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   const [isNewPasswordVisible, setNewPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setSubmitting] = useState(false);
+  const [isWeakPasswordDialogOpen, setWeakPasswordDialogOpen] = useState(false);
+  const [acceptedWeakPassword, setAcceptedWeakPassword] = useState("");
 
   const firstInputRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +99,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     setNewPasswordVisible(false);
     setErrorMessage("");
     setSubmitting(false);
+    setWeakPasswordDialogOpen(false);
+    setAcceptedWeakPassword("");
 
     window.setTimeout(() => firstInputRef.current?.focus(), 0);
   }, [props.open, props.mode]);
@@ -152,9 +160,19 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     setErrorMessage("");
   }
 
+  function handleNewPasswordChange(event: ChangeEvent<HTMLInputElement>) {
+    setNewPassword(event.target.value);
+    setErrorMessage("");
+    setAcceptedWeakPassword("");
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    await submitPassword();
+  }
+
+  async function submitPassword(allowWeakPassword = false) {
     if (needsCurrentPassword && !currentPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.passwordRequired"));
       return;
@@ -180,6 +198,11 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
       return;
     }
 
+    if (!allowWeakPassword && isWeakPassword(newPassword) && acceptedWeakPassword !== newPassword) {
+      setWeakPasswordDialogOpen(true);
+      return;
+    }
+
     setSubmitting(true);
     const didSubmit = await props.onSubmit({
       currentPassword,
@@ -192,98 +215,127 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     }
   }
 
+  function isWeakPassword(password: string): boolean {
+    if (!needsNewPassword) {
+      return false;
+    }
+
+    const passwordStrength = estimatePasswordStrength(password);
+
+    return passwordStrength.level === PasswordStrengthLevel.VERY_WEAK || passwordStrength.level === PasswordStrengthLevel.WEAK;
+  }
+
+  function handleWeakPasswordConfirm() {
+    setWeakPasswordDialogOpen(false);
+    setAcceptedWeakPassword(newPassword);
+    void submitPassword(true);
+  }
+
   return (
-    <Dialog
-      open={props.open}
-      onClose={handleClose}
-      disableRestoreFocus={true}
-      classes={{ paper: styles.securityPasswordDialogPaper }}
-      PaperProps={{ style: dialogStyle }}
-      BackdropProps={{ classes: { root: styles.securityPasswordDialogBackdrop }, style: dialogStyle }}
-    >
-      <form onSubmit={handleSubmit}>
-        <DialogTitle className={styles.securityPasswordDialogTitle}>{getTitle()}</DialogTitle>
-        <DialogContent className={styles.securityPasswordDialogContent}>
-          <DialogContentText className={styles.securityPasswordDialogMessage}>{getDescription()}</DialogContentText>
-          <div className={styles.passwordDialogFields}>
-            {needsCurrentPassword && (
-              <label className={styles.passwordDialogField}>
-                <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.currentPassword")}</span>
-                <span className={styles.passwordDialogInputWrapper}>
-                  <input
-                    ref={firstInputRef}
-                    className={styles.passwordDialogInput}
-                    type={isCurrentPasswordVisible ? "text" : "password"}
-                    value={currentPassword}
-                    onChange={(event) => handlePasswordChange(event, setCurrentPassword)}
-                  />
-                  <IconButton
-                    className={styles.passwordDialogVisibilityButton}
-                    aria-label={t(isCurrentPasswordVisible
-                      ? "mainWindow.lockScreen.hidePassword"
-                      : "mainWindow.lockScreen.showPassword")}
-                    onClick={() => setCurrentPasswordVisible((currentValue) => !currentValue)}
-                  >
-                    {isCurrentPasswordVisible
-                      ? <VisibilityOutlinedIcon />
-                      : <VisibilityOffOutlinedIcon />}
-                  </IconButton>
-                </span>
-              </label>
-            )}
-            {needsNewPassword && (
-              <>
+    <>
+      <Dialog
+        open={props.open}
+        onClose={handleClose}
+        disableRestoreFocus={true}
+        classes={{ paper: styles.securityPasswordDialogPaper }}
+        PaperProps={{ style: dialogStyle }}
+        BackdropProps={{ classes: { root: styles.securityPasswordDialogBackdrop }, style: dialogStyle }}
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogTitle className={styles.securityPasswordDialogTitle}>{getTitle()}</DialogTitle>
+          <DialogContent className={styles.securityPasswordDialogContent}>
+            <DialogContentText className={styles.securityPasswordDialogMessage}>{getDescription()}</DialogContentText>
+            <div className={styles.passwordDialogFields}>
+              {needsCurrentPassword && (
                 <label className={styles.passwordDialogField}>
-                  <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.newPassword")}</span>
+                  <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.currentPassword")}</span>
                   <span className={styles.passwordDialogInputWrapper}>
                     <input
-                      ref={needsCurrentPassword ? undefined : firstInputRef}
+                      ref={firstInputRef}
                       className={styles.passwordDialogInput}
-                      type={isNewPasswordVisible ? "text" : "password"}
-                      value={newPassword}
-                      onChange={(event) => handlePasswordChange(event, setNewPassword)}
+                      type={isCurrentPasswordVisible ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(event) => handlePasswordChange(event, setCurrentPassword)}
                     />
                     <IconButton
                       className={styles.passwordDialogVisibilityButton}
-                      aria-label={t(isNewPasswordVisible
+                      aria-label={t(isCurrentPasswordVisible
                         ? "mainWindow.lockScreen.hidePassword"
                         : "mainWindow.lockScreen.showPassword")}
-                      onClick={() => setNewPasswordVisible((currentValue) => !currentValue)}
+                      onClick={() => setCurrentPasswordVisible((currentValue) => !currentValue)}
                     >
-                      {isNewPasswordVisible
+                      {isCurrentPasswordVisible
                         ? <VisibilityOutlinedIcon />
                         : <VisibilityOffOutlinedIcon />}
                     </IconButton>
                   </span>
                 </label>
-                <label className={styles.passwordDialogField}>
-                  <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.confirmPassword")}</span>
-                  <span className={styles.passwordDialogInputWrapper}>
-                    <input
-                      className={styles.passwordDialogInput}
-                      type={isNewPasswordVisible ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(event) => handlePasswordChange(event, setConfirmPassword)}
-                    />
-                  </span>
-                </label>
-              </>
-            )}
-            <p className={styles.passwordDialogError} role={errorMessage ? "alert" : undefined} aria-live="polite">
-              {errorMessage}
-            </p>
-          </div>
-        </DialogContent>
-        <DialogActions className={styles.securityPasswordDialogActions}>
-          <Button className={styles.securityPasswordDialogCancelButton} disabled={isSubmitting} onClick={props.onCancel}>
-            {t("common.cancel")}
-          </Button>
-          <Button disabled={isSubmitting} type="submit" variant="contained">
-            {getConfirmLabel()}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+              )}
+              {needsNewPassword && (
+                <>
+                  <label className={styles.passwordDialogField}>
+                    <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.newPassword")}</span>
+                    <span className={styles.passwordDialogInputWrapper}>
+                      <input
+                        ref={needsCurrentPassword ? undefined : firstInputRef}
+                        className={styles.passwordDialogInput}
+                        type={isNewPasswordVisible ? "text" : "password"}
+                        value={newPassword}
+                        onChange={handleNewPasswordChange}
+                      />
+                      <IconButton
+                        className={styles.passwordDialogVisibilityButton}
+                        aria-label={t(isNewPasswordVisible
+                          ? "mainWindow.lockScreen.hidePassword"
+                          : "mainWindow.lockScreen.showPassword")}
+                        onClick={() => setNewPasswordVisible((currentValue) => !currentValue)}
+                      >
+                        {isNewPasswordVisible
+                          ? <VisibilityOutlinedIcon />
+                          : <VisibilityOffOutlinedIcon />}
+                      </IconButton>
+                    </span>
+                  </label>
+                  <label className={styles.passwordDialogField}>
+                    <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.confirmPassword")}</span>
+                    <span className={styles.passwordDialogInputWrapper}>
+                      <input
+                        className={styles.passwordDialogInput}
+                        type={isNewPasswordVisible ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(event) => handlePasswordChange(event, setConfirmPassword)}
+                      />
+                    </span>
+                  </label>
+                  <PasswordStrengthMeter password={newPassword} theme={props.theme} />
+                </>
+              )}
+              <p className={styles.passwordDialogError} role={errorMessage ? "alert" : undefined} aria-live="polite">
+                {errorMessage}
+              </p>
+            </div>
+          </DialogContent>
+          <DialogActions className={styles.securityPasswordDialogActions}>
+            <Button className={styles.securityPasswordDialogCancelButton} disabled={isSubmitting} onClick={props.onCancel}>
+              {t("common.cancel")}
+            </Button>
+            <Button disabled={isSubmitting} type="submit" variant="contained">
+              {getConfirmLabel()}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+      <ConfirmationDialog
+        confirmLabel={t("settingsWindow.security.dialog.weakPasswordDialog.confirmLabel")}
+        cancelLabel={t("settingsWindow.security.dialog.weakPasswordDialog.cancelLabel")}
+        message={t("settingsWindow.security.dialog.weakPasswordDialog.message")}
+        open={isWeakPasswordDialogOpen}
+        theme={props.theme}
+        title={t("settingsWindow.security.dialog.weakPasswordDialog.title")}
+        onCancel={() => setWeakPasswordDialogOpen(false)}
+        onConfirm={handleWeakPasswordConfirm}
+      />
+    </>
   );
 }
 

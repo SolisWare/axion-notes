@@ -20,6 +20,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a pre-lock transition step that clears note-rendering state before routing to the lock screen
 - Added a protected IPC helper for consistently guarding lock-sensitive Electron channels
 - Hardened production Electron windows by disabling renderer Node integration, restoring web security, blocking webviews, denying permission prompts, and guarding in-app navigation
+- Added password strength guidance with estimated resistance and an extra warning before accepting weak lock passwords
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

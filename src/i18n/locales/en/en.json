@@ -14,6 +14,30 @@
       "twentyMinutes": "20 minutes",
       "fortyFiveMinutes": "45 minutes",
       "sixtyMinutes": "60 minutes"
+    },
+    "passwordStrength": {
+      "title": "Password strength",
+      "empty": "Enter a password to estimate its strength.",
+      "estimatedResistance": "Estimated resistance: {{estimate}}",
+      "levels": {
+        "veryWeak": "Very weak",
+        "weak": "Weak",
+        "moderate": "Moderate",
+        "strong": "Strong",
+        "veryStrong": "Very strong"
+      },
+      "crackTimes": {
+        "instantly": "instantly",
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours",
+        "days": "days",
+        "months": "months",
+        "years": "years",
+        "decades": "decades",
+        "centuries": "centuries",
+        "impractical": "impractical"
+      }
     }
   },
   "mainWindow": {
@@ -237,7 +261,13 @@
         "setConfirm": "Set password",
         "enableConfirm": "Enable",
         "disableConfirm": "Disable",
-        "changeConfirm": "Change password"
+        "changeConfirm": "Change password",
+        "weakPasswordDialog": {
+          "title": "Use Weak Password?",
+          "message": "This password may be easy to guess. If note encryption is enabled, a weak password reduces its protection and may let an attacker access stored notes more easily. You can use it anyway, but a longer phrase or less predictable password would be safer.",
+          "cancelLabel": "Go Back",
+          "confirmLabel": "Use Anyway"
+        }
       }
     },
     "editor": {
