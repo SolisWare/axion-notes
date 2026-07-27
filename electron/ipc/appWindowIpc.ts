@@ -9,6 +9,7 @@ import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { LockStateService } from "../security/LockStateService";
 import { applyMainWindowLayout } from "../windows/mainWindowState";
 import { channels } from "./channels";
+import { protectedOn } from "./protectedIpc";
 
 type AppWindowIpcOptions = {
   lockStateService: LockStateService;
@@ -20,19 +21,11 @@ export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
     BrowserWindow.fromWebContents(event.sender)?.close();
   });
 
-  ipcMain.on(channels.appWindow.setAlwaysOnTop, (event, enabled: boolean) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[boolean]>(channels.appWindow.setAlwaysOnTop, options, (event, enabled) => {
     BrowserWindow.fromWebContents(event.sender)?.setAlwaysOnTop(enabled);
   });
 
-  ipcMain.on(channels.appWindow.setLayout, (event, layout: NoteLayoutPreference) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[NoteLayoutPreference]>(channels.appWindow.setLayout, options, (event, layout) => {
     const window = BrowserWindow.fromWebContents(event.sender);
 
     if (!window || !isNoteLayoutPreference(layout)) {

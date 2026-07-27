@@ -9,6 +9,7 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { LockStateService } from "../security/LockStateService";
 import { SettingsService } from "../storage/SettingsService";
 import { channels } from "./channels";
+import { protectedHandle, protectedOn } from "./protectedIpc";
 
 type SettingsIpcOptions = {
   lockStateService: LockStateService;
@@ -21,19 +22,11 @@ export function registerSettingsIpc(options: SettingsIpcOptions): void {
     return options.settingsService.getSettings();
   });
 
-  ipcMain.handle(channels.settings.getSettingsFolderLocation, () => {
-    if (options.lockStateService.getIsLocked()) {
-      return "";
-    }
-
+  protectedHandle<string, []>(channels.settings.getSettingsFolderLocation, { ...options, fallback: "" }, () => {
     return options.settingsService.getSettingsFolderLocation();
   });
 
-  ipcMain.on(channels.settings.setSettings, (_, settings: AppSettings) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[AppSettings]>(channels.settings.setSettings, options, (_, settings) => {
     options.settingsService.setSettings(settings);
     options.onSettingsChange?.(settings);
 

@@ -18,6 +18,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Enabled main window content protection while notes are locked to reduce OS preview and capture exposure
 - Added lock-on-screen-lock, lock-on-system-sleep, and idle-time locking options
 - Added a pre-lock transition step that clears note-rendering state before routing to the lock screen
+- Added a protected IPC helper for consistently guarding lock-sensitive Electron channels
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

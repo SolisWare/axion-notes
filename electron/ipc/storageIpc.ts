@@ -12,6 +12,7 @@ import { NotesWithAccessState } from "../../src/models/NotesWithAccessState";
 import { channels } from "./channels";
 import { LockStateService } from "../security/LockStateService";
 import { NoteService } from "../storage/NoteService";
+import { protectedHandle, protectedOn } from "./protectedIpc";
 
 type StorageIpcOptions = {
   appDataDir: string;
@@ -26,11 +27,7 @@ function broadcastNotesChange(event: NotesChangeEvent): void {
 }
 
 export function registerStorageIpc(options: StorageIpcOptions): void {
-  ipcMain.on(channels.storage.setNote, (_, note: NoteType) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[NoteType]>(channels.storage.setNote, options, (_, note) => {
     options.noteService.setNote(note);
     broadcastNotesChange({
       type: "setNote",
@@ -38,11 +35,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
     });
   });
 
-  ipcMain.on(channels.storage.setNoteOrder, (_, noteIds: string[]) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[string[]]>(channels.storage.setNoteOrder, options, (_, noteIds) => {
     options.noteService.setNoteOrder(noteIds);
     broadcastNotesChange({
       type: "setNoteOrder",
@@ -50,11 +43,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
     });
   });
 
-  ipcMain.handle(channels.storage.getNotes, async () => {
-    if (options.lockStateService.getIsLocked()) {
-      return [];
-    }
-
+  protectedHandle<NoteType[], []>(channels.storage.getNotes, { ...options, fallback: [] }, async () => {
     return options.noteService.getNotes();
   });
 
@@ -72,19 +61,11 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
     };
   });
 
-  ipcMain.handle(channels.storage.getNotesFolderLocation, () => {
-    if (options.lockStateService.getIsLocked()) {
-      return "";
-    }
-
+  protectedHandle<string, []>(channels.storage.getNotesFolderLocation, { ...options, fallback: "" }, () => {
     return options.appDataDir;
   });
 
-  ipcMain.on(channels.storage.deleteNote, (_, noteId: string) => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn<[string]>(channels.storage.deleteNote, options, (_, noteId) => {
     options.noteService.deleteNote(noteId);
     broadcastNotesChange({
       type: "deleteNote",
@@ -92,11 +73,7 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
     });
   });
 
-  ipcMain.on(channels.storage.deleteAllNotes, () => {
-    if (options.lockStateService.getIsLocked()) {
-      return;
-    }
-
+  protectedOn(channels.storage.deleteAllNotes, options, () => {
     options.noteService.deleteAllNotes();
     broadcastNotesChange({
       type: "deleteAllNotes"

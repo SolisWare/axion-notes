@@ -10,6 +10,7 @@ import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { channels } from "./channels";
+import { protectedHandle } from "./protectedIpc";
 
 type SecurityIpcOptions = {
   lockStateService: LockStateService;
@@ -53,11 +54,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  ipcMain.handle(channels.security.setPassword, async (_event, password: string) => {
-    if (options.lockStateService.getIsLocked()) {
-      return false;
-    }
-
+  protectedHandle<boolean, [string]>(channels.security.setPassword, { ...options, fallback: false }, async (_event, password) => {
     try {
       await options.passwordService.setPassword(password);
       await options.lockStateService.markLockConfigured();
@@ -68,11 +65,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  ipcMain.handle(channels.security.verifyPassword, async (_event, password: string) => {
-    if (options.lockStateService.getIsLocked()) {
-      return false;
-    }
-
+  protectedHandle<boolean, [string]>(channels.security.verifyPassword, { ...options, fallback: false }, async (_event, password) => {
     try {
       return await options.passwordService.verifyPassword(password);
     } catch (err) {
@@ -81,11 +74,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  ipcMain.handle(channels.security.changePassword, async (_event, currentPassword: string, newPassword: string) => {
-    if (options.lockStateService.getIsLocked()) {
-      return false;
-    }
-
+  protectedHandle<boolean, [string, string]>(channels.security.changePassword, { ...options, fallback: false }, async (_event, currentPassword, newPassword) => {
     try {
       const isCurrentPasswordValid = await options.passwordService.verifyPassword(currentPassword);
 
@@ -102,11 +91,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  ipcMain.handle(channels.security.clearPassword, async () => {
-    if (options.lockStateService.getIsLocked()) {
-      return false;
-    }
-
+  protectedHandle<boolean, []>(channels.security.clearPassword, { ...options, fallback: false }, async () => {
     try {
       await options.passwordService.clearPassword();
       await options.lockStateService.clearLockConfigured();
