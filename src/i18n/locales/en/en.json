@@ -1,7 +1,20 @@
 {
   "common": {
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "time": {
+      "never": "Never",
+      "immediately": "Immediately",
+      "fiveSeconds": "5 seconds",
+      "tenSeconds": "10 seconds",
+      "thirtySeconds": "30 seconds",
+      "oneMinute": "1 minute",
+      "fiveMinutes": "5 minutes",
+      "tenMinutes": "10 minutes",
+      "twentyMinutes": "20 minutes",
+      "fortyFiveMinutes": "45 minutes",
+      "sixtyMinutes": "60 minutes"
+    }
   },
   "mainWindow": {
     "lockScreen": {
@@ -190,27 +203,10 @@
       "lockOnSystemSleepDescription": "Lock notes when this device goes to sleep.",
       "lockAfterIdle": "Lock after idle",
       "lockAfterIdleDescription": "Lock notes after no activity for the selected time.",
-      "lockAfterIdleOptions": {
-        "never": "Never",
-        "oneMinute": "1 minute",
-        "fiveMinutes": "5 minutes",
-        "tenMinutes": "10 minutes",
-        "twentyMinutes": "20 minutes",
-        "fortyFiveMinutes": "45 minutes",
-        "sixtyMinutes": "60 minutes"
-      },
       "requirePasswordDelay": "Require password",
       "requirePasswordDelayDescription": "When to require the password after the notes window is closed.",
-      "requirePasswordDelayOptions": {
-        "immediately": "Immediately",
-        "fiveSeconds": "5 seconds",
-        "tenSeconds": "10 seconds",
-        "thirtySeconds": "30 seconds",
-        "oneMinute": "1 minute",
-        "fiveMinutes": "5 minutes"
-      },
       "password": "Password",
-      "passwordDescription": "Set or change the password used to unlock your notes.",
+      "passwordDescription": "Change the password used to unlock your notes.",
       "changePassword": "Change password",
       "disabledPasswordTooltip": "Available when Lock screen is on.",
       "bruteForceProtection": "Brute-force protection",

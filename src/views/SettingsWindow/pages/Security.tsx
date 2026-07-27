@@ -25,6 +25,7 @@ function Security(props: SecurityProps) {
   const { t } = useTranslation();
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const [isDisableBruteForceProtectionDialogOpen, setDisableBruteForceProtectionDialogOpen] = useState(false);
+  const isBruteForceProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
   const isIdleTimeoutRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
@@ -223,12 +224,12 @@ function Security(props: SecurityProps) {
                   value={props.appSettings.lockScreenRequirePasswordDelay}
                   onChange={handleRequirePasswordDelayChange}
                 >
-                  <option value={LockScreenRequirePasswordDelay.IMMEDIATELY}>{t("settingsWindow.security.requirePasswordDelayOptions.immediately")}</option>
-                  <option value={LockScreenRequirePasswordDelay.FIVE_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.fiveSeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.TEN_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.tenSeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.THIRTY_SECONDS}>{t("settingsWindow.security.requirePasswordDelayOptions.thirtySeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.ONE_MINUTE}>{t("settingsWindow.security.requirePasswordDelayOptions.oneMinute")}</option>
-                  <option value={LockScreenRequirePasswordDelay.FIVE_MINUTES}>{t("settingsWindow.security.requirePasswordDelayOptions.fiveMinutes")}</option>
+                  <option value={LockScreenRequirePasswordDelay.IMMEDIATELY}>{t("common.time.immediately")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_SECONDS}>{t("common.time.fiveSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.TEN_SECONDS}>{t("common.time.tenSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.THIRTY_SECONDS}>{t("common.time.thirtySeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.ONE_MINUTE}>{t("common.time.oneMinute")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_MINUTES}>{t("common.time.fiveMinutes")}</option>
                 </select>
               </div>
             </Tooltip>
@@ -313,35 +314,46 @@ function Security(props: SecurityProps) {
                 value={props.appSettings.lockScreenIdleTimeout}
                 onChange={handleLockScreenIdleTimeoutChange}
               >
-                <option value={LockScreenIdleTimeout.NEVER}>{t("settingsWindow.security.lockAfterIdleOptions.never")}</option>
-                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("settingsWindow.security.lockAfterIdleOptions.oneMinute")}</option>
-                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.fiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.tenMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.twentyMinutes")}</option>
-                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.fortyFiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.sixtyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.NEVER}>{t("common.time.never")}</option>
+                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("common.time.oneMinute")}</option>
+                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("common.time.fiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("common.time.tenMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("common.time.twentyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("common.time.fortyFiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("common.time.sixtyMinutes")}</option>
               </select>
             </div>
           </Tooltip>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="brute-force-protection-enabled-title">{t("settingsWindow.security.bruteForceProtection")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.bruteForceProtectionDescription")}</p>
+          <Tooltip
+            arrow
+            disableFocusListener={!isBruteForceProtectionRowDisabled}
+            disableHoverListener={!isBruteForceProtectionRowDisabled}
+            disableTouchListener={!isBruteForceProtectionRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isBruteForceProtectionRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="brute-force-protection-enabled-title">{t("settingsWindow.security.bruteForceProtection")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.bruteForceProtectionDescription")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="brute-force-protection-enabled-title"
+                  checked={props.appSettings.bruteForceProtectionEnabled}
+                  className={styles.switchInput}
+                  disabled={isBruteForceProtectionRowDisabled}
+                  type="checkbox"
+                  onChange={handleBruteForceProtectionEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.security.bruteForceProtection")}</span>
+              </label>
             </div>
-            <label className={styles.switchControl}>
-              <input
-                aria-labelledby="brute-force-protection-enabled-title"
-                checked={props.appSettings.bruteForceProtectionEnabled}
-                className={styles.switchInput}
-                type="checkbox"
-                onChange={handleBruteForceProtectionEnabledChange}
-              />
-              <span className={styles.switchTrack} aria-hidden="true">
-                <span className={styles.switchThumb} />
-              </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.security.bruteForceProtection")}</span>
-            </label>
-          </div>
+          </Tooltip>
         </div>
       </section>
     </div>
