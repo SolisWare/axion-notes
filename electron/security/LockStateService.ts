@@ -23,6 +23,9 @@ const FLUSH_ACTIVE_EDITOR_SCRIPT = `
     document.activeElement.blur();
   }
 `;
+const PREPARE_LOCK_TRANSITION_SCRIPT = `
+  window.dispatchEvent(new Event("axion-notes:prepare-lock"));
+`;
 
 export type LockStateChangeListener = (lockState: LockState) => void;
 
@@ -190,6 +193,7 @@ export class LockStateService {
 
     try {
       await this.flushActiveEditorBeforeLock();
+      await this.prepareMainWindowForLock();
 
       if (!await this.passwordService.hasUsablePasswordRecord()) {
         this.setLockState(true, true);
@@ -359,6 +363,18 @@ export class LockStateService {
       await this.mainWindow.webContents.executeJavaScript(FLUSH_ACTIVE_EDITOR_SCRIPT, true);
     } catch (err) {
       console.warn("Failed to flush active editor before locking:", err);
+    }
+  }
+
+  private async prepareMainWindowForLock(): Promise<void> {
+    if (!this.mainWindow || this.mainWindow.isDestroyed() || this.mainWindow.webContents.isDestroyed()) {
+      return;
+    }
+
+    try {
+      await this.mainWindow.webContents.executeJavaScript(PREPARE_LOCK_TRANSITION_SCRIPT, true);
+    } catch (err) {
+      console.warn("Failed to prepare main window for locking:", err);
     }
   }
 

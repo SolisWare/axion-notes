@@ -18,6 +18,7 @@ import Home from "./pages/Home";
 import WelcomeScreen from "./pages/WelcomeScreen";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { NoteType } from "../../models/NoteType";
 import { NoteAccessStatus } from "../../models/NoteAccessStatus";
 import { NotesChangeEvent } from "../../models/NotesChangeEvent";
@@ -173,6 +174,18 @@ function MainWindow(props: MainWindowProps) {
         clearNotesAccessState();
       }
     });
+  }, [clearNotesAccessState]);
+
+  useEffect(() => {
+    const handlePrepareLock = () => {
+      flushSync(clearNotesAccessState);
+    };
+
+    window.addEventListener("axion-notes:prepare-lock", handlePrepareLock);
+
+    return () => {
+      window.removeEventListener("axion-notes:prepare-lock", handlePrepareLock);
+    };
   }, [clearNotesAccessState]);
 
   useEffect(() => {
