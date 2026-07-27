@@ -11,7 +11,8 @@ import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
-import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { blockProductionDevTools } from "../utils/devTools";
+import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
 
 let licenseWindow: BrowserWindow | null = null;
 
@@ -47,19 +48,14 @@ export function createLicenseWindow(): BrowserWindow {
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
-    webPreferences: {
-      ...getDevToolsWebPreferences(),
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, "../preload/preload.js")
-    }
+    webPreferences: getAppWindowWebPreferences(path.join(__dirname, "../preload/preload.js"))
   });
   licenseWindow = createdLicenseWindow;
 
   createdLicenseWindow.setMenu(null);
   createdLicenseWindow.setMenuBarVisibility(false);
   blockProductionDevTools(createdLicenseWindow);
+  registerWindowNavigationGuards(createdLicenseWindow, { allowedFilePaths: [getAppIndexFilePath()] });
 
   createdLicenseWindow.once("ready-to-show", () => {
     createdLicenseWindow.show();

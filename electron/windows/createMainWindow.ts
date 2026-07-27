@@ -14,8 +14,9 @@ import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnCl
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { channels } from "../ipc/channels";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
-import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { blockProductionDevTools } from "../utils/devTools";
 import { LockStateService } from "../security/LockStateService";
+import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
@@ -37,13 +38,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
     maximizable: !isListLayout,
     show: false,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
-    webPreferences: {
-      ...getDevToolsWebPreferences(),
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, "../preload/preload.js")
-    }
+    webPreferences: getAppWindowWebPreferences(path.join(__dirname, "../preload/preload.js"))
   });
 
   if (!isListLayout && mainWindowState.isMaximized) {
@@ -52,6 +47,7 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
 
   registerRichTextShortcuts(mainWindow);
   blockProductionDevTools(mainWindow);
+  registerWindowNavigationGuards(mainWindow, { allowedFilePaths: [getAppIndexFilePath()] });
   options.lockStateService.registerMainWindow(mainWindow);
 
   let hasShownMainWindow = false;

@@ -11,7 +11,8 @@ import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
-import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { blockProductionDevTools } from "../utils/devTools";
+import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
 
 let settingsWindow: BrowserWindow | null = null;
 
@@ -45,19 +46,14 @@ export function createSettingsWindow(): BrowserWindow {
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
-    webPreferences: {
-      ...getDevToolsWebPreferences(),
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, "../preload/preload.js")
-    }
+    webPreferences: getAppWindowWebPreferences(path.join(__dirname, "../preload/preload.js"))
   });
   settingsWindow = createdSettingsWindow;
 
   createdSettingsWindow.setMenu(null);
   createdSettingsWindow.setMenuBarVisibility(false);
   blockProductionDevTools(createdSettingsWindow);
+  registerWindowNavigationGuards(createdSettingsWindow, { allowedFilePaths: [getAppIndexFilePath()] });
 
   createdSettingsWindow.once("ready-to-show", () => {
     createdSettingsWindow.show();

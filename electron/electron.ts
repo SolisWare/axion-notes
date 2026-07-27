@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { app, BrowserWindow, Menu } from "electron";
+import { app, BrowserWindow, Menu, session } from "electron";
 import * as path from "path";
 import { createMenubar } from "./menu";
 import { isDev } from "./utils/isDev";
@@ -85,10 +85,25 @@ if (isDev) {
   require("dotenv").config();
 }
 
+app.on("web-contents-created", (_event, contents) => {
+  contents.on("will-attach-webview", (event) => {
+    event.preventDefault();
+  });
+});
+
+function registerSessionSecurityHandlers(): void {
+  session.defaultSession.setPermissionCheckHandler(() => false);
+  session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
+    callback(false);
+  });
+}
+
 // This method is called when Electron has finished the initialization
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", async () => {
+  registerSessionSecurityHandlers();
+
   settingsService = new SettingsService(appSettingsFilePath);
   const { settings: initialSettings, hasSettingsFile } = await loadAppSettings(settingsService);
 

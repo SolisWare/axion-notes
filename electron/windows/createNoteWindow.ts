@@ -13,7 +13,8 @@ import { translate } from "../utils/electronI18n";
 import { channels } from "../ipc/channels";
 import { dev } from "./routes";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
-import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { blockProductionDevTools } from "../utils/devTools";
+import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
 
 const noteWindows = new Map<string, BrowserWindow>();
 const NOTE_WINDOW_OFFSET = 28;
@@ -91,13 +92,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
     autoHideMenuBar: true,
     icon: isMac ? getAppIconPath() : getWindowIconPath(),
     title: windowTitle,
-    webPreferences: {
-      ...getDevToolsWebPreferences(),
-      webSecurity: false,
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, "../preload/preload.js")
-    }
+    webPreferences: getAppWindowWebPreferences(path.join(__dirname, "../preload/preload.js"))
   });
 
   noteWindows.set(noteId, noteWindow);
@@ -105,6 +100,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
   noteWindow.setMenuBarVisibility(false);
   registerRichTextShortcuts(noteWindow);
   blockProductionDevTools(noteWindow);
+  registerWindowNavigationGuards(noteWindow, { allowedFilePaths: [getAppIndexFilePath()] });
 
   noteWindow.once("ready-to-show", () => {
     noteWindow.show();

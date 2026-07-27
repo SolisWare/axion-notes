@@ -10,6 +10,7 @@ import { isDev } from "../utils/isDev";
 import { getAppIconPath, getWindowIconPath } from "../utils/appIcon";
 import { isMac } from "../utils/Platform";
 import { blockProductionDevTools, getDevToolsWebPreferences } from "../utils/devTools";
+import { registerWindowNavigationGuards } from "./windowSecurity";
 
 function getSplashFilePath(): string {
   return isDev
@@ -46,6 +47,7 @@ export function createSplashWindow(): BrowserWindow {
   });
 
   blockProductionDevTools(splashWindow);
+  registerWindowNavigationGuards(splashWindow, { allowedFilePaths: [getSplashFilePath()] });
   splashWindow.loadFile(getSplashFilePath());
 
   return splashWindow;
