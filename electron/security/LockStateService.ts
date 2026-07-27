@@ -4,11 +4,12 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { BrowserWindow, Input } from "electron";
+import { BrowserWindow, Input, powerMonitor } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { LockState } from "../../src/models/LockState";
 import { UnlockResult } from "../../src/models/UnlockResult";
 import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
+import { LockScreenIdleTimeout } from "../../src/settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenRequirePasswordDelay";
 import { BruteForceProtectionService } from "./BruteForceProtectionService";
 import { LockMarkerService } from "./LockMarkerService";
@@ -16,6 +17,7 @@ import { PasswordService } from "./PasswordService";
 
 const MAIN_WINDOW_HASH_PREFIX = "#/main";
 const LOCK_ROUTE = "/lock";
+const IDLE_LOCK_CHECK_INTERVAL_MS = 10 * 1000;
 const FLUSH_ACTIVE_EDITOR_SCRIPT = `
   if (document.activeElement instanceof HTMLElement) {
     document.activeElement.blur();
@@ -36,6 +38,10 @@ export class LockStateService {
   private isRecoveryRequired = false;
   private isBruteForceProtectionEnabled = true;
   private isLockScreenEnabled = false;
+  private isLocking = false;
+  private isLockOnSystemSleepEnabled = true;
+  private lockScreenIdleTimeout = LockScreenIdleTimeout.TEN_MINUTES;
+  private idleLockInterval: NodeJS.Timeout | undefined;
   private lastUnlockedMainWindowClosedAt: number | undefined;
   private mainWindow: BrowserWindow | undefined;
   private readonly listeners = new Set<LockStateChangeListener>();
@@ -53,6 +59,7 @@ export class LockStateService {
    * @param settings App settings loaded during Electron startup.
    */
   public async initialize(settings: AppSettings): Promise<void> {
+    this.registerPowerMonitorHandlers();
     await this.refreshLockState(settings, true);
   }
 
@@ -68,6 +75,8 @@ export class LockStateService {
   public async refreshLockState(settings: AppSettings, forceRequirePassword = false): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+    this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
+    this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
     await this.bruteForceProtectionService.initialize();
     const hasPasswordRecord = await this.passwordService.hasPassword();
     const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
@@ -83,6 +92,7 @@ export class LockStateService {
       isRecoveryRequired || (shouldLock && this.shouldRequirePassword(settings.lockScreenRequirePasswordDelay, forceRequirePassword)),
       isRecoveryRequired
     );
+    this.updateIdleLockTimer();
   }
 
   /**
@@ -130,10 +140,14 @@ export class LockStateService {
   public applySettings(settings: AppSettings): void {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+    this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
+    this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
 
     if (!settings.bruteForceProtectionEnabled) {
       void this.bruteForceProtectionService.reset();
     }
+
+    this.updateIdleLockTimer();
   }
 
   /**
@@ -164,23 +178,33 @@ export class LockStateService {
    * @returns true when the app entered locked state; otherwise false.
    */
   public async lock(): Promise<boolean> {
+    if (this.isLocking) {
+      return false;
+    }
+
     if (!this.isLockScreenEnabled && !await this.lockMarkerService.hasLockMarker()) {
       return false;
     }
 
-    await this.flushActiveEditorBeforeLock();
+    this.isLocking = true;
 
-    if (!await this.passwordService.hasUsablePasswordRecord()) {
-      this.setLockState(true, true);
+    try {
+      await this.flushActiveEditorBeforeLock();
+
+      if (!await this.passwordService.hasUsablePasswordRecord()) {
+        this.setLockState(true, true);
+        this.forceLockRouteIfNeeded();
+        return false;
+      }
+
+      await this.lockMarkerService.writeLockMarker();
+      this.lastUnlockedMainWindowClosedAt = undefined;
+      this.setLockState(true, false);
       this.forceLockRouteIfNeeded();
-      return false;
+      return true;
+    } finally {
+      this.isLocking = false;
     }
-
-    await this.lockMarkerService.writeLockMarker();
-    this.lastUnlockedMainWindowClosedAt = undefined;
-    this.setLockState(true, false);
-    this.forceLockRouteIfNeeded();
-    return true;
   }
 
   /**
@@ -281,6 +305,49 @@ export class LockStateService {
     }
 
     return Date.now() - this.lastUnlockedMainWindowClosedAt >= delay * 1000;
+  }
+
+  private registerPowerMonitorHandlers(): void {
+    const lockOnPowerEvent = () => {
+      if (!this.isLockOnSystemSleepEnabled || !this.isLockScreenEnabled || this.isLocked) {
+        return;
+      }
+
+      void this.lock();
+    };
+
+    powerMonitor.on("lock-screen", lockOnPowerEvent);
+    powerMonitor.on("suspend", lockOnPowerEvent);
+  }
+
+  private updateIdleLockTimer(): void {
+    if (this.idleLockInterval) {
+      clearInterval(this.idleLockInterval);
+      this.idleLockInterval = undefined;
+    }
+
+    if (!this.isLockScreenEnabled || this.lockScreenIdleTimeout === LockScreenIdleTimeout.NEVER) {
+      return;
+    }
+
+    this.idleLockInterval = setInterval(() => {
+      this.lockIfIdle();
+    }, IDLE_LOCK_CHECK_INTERVAL_MS);
+  }
+
+  private lockIfIdle(): void {
+    if (!this.isLockScreenEnabled || this.isLocked || this.isLocking) {
+      return;
+    }
+
+    const idleTimeSeconds = powerMonitor.getSystemIdleTime();
+    const idleTimeoutSeconds = this.lockScreenIdleTimeout * 60;
+
+    if (idleTimeSeconds < idleTimeoutSeconds) {
+      return;
+    }
+
+    void this.lock();
   }
 
   private async flushActiveEditorBeforeLock(): Promise<void> {

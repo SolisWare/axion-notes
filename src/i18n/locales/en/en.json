@@ -186,6 +186,19 @@
     "security": {
       "lockScreen": "Lock screen",
       "lockScreenDescription": "Require a password before notes can be viewed.",
+      "lockOnSystemSleep": "Lock on system sleep",
+      "lockOnSystemSleepDescription": "Lock notes when this device goes to sleep.",
+      "lockAfterIdle": "Lock after idle",
+      "lockAfterIdleDescription": "Lock notes after no activity for the selected time.",
+      "lockAfterIdleOptions": {
+        "never": "Never",
+        "oneMinute": "1 minute",
+        "fiveMinutes": "5 minutes",
+        "tenMinutes": "10 minutes",
+        "twentyMinutes": "20 minutes",
+        "fortyFiveMinutes": "45 minutes",
+        "sixtyMinutes": "60 minutes"
+      },
       "requirePasswordDelay": "Require password",
       "requirePasswordDelayDescription": "When to require the password after the notes window is closed.",
       "requirePasswordDelayOptions": {

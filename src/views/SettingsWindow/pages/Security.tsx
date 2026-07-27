@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { AppSettings } from "../../../settings/AppSettings";
+import { LockScreenIdleTimeout } from "../../../settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./SettingsPages.module.css";
@@ -25,6 +26,8 @@ function Security(props: SecurityProps) {
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const [isDisableBruteForceProtectionDialogOpen, setDisableBruteForceProtectionDialogOpen] = useState(false);
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isIdleTimeoutRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
   const isRequirePasswordDelayRowDisabled = !props.appSettings.lockScreenEnabled;
   const shouldShowRequirePasswordDelay = window.api.os.isMac;
 
@@ -47,6 +50,24 @@ function Security(props: SecurityProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       lockScreenRequirePasswordDelay: Number(event.target.value) as LockScreenRequirePasswordDelay
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleLockScreenIdleTimeoutChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      lockScreenIdleTimeout: Number(event.target.value) as LockScreenIdleTimeout
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleLockOnSystemSleepEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      lockScreenOnSystemSleepEnabled: event.target.checked
     });
 
     event.currentTarget.blur();
@@ -237,6 +258,69 @@ function Security(props: SecurityProps) {
               >
                 {t("settingsWindow.security.changePassword")}
               </button>
+            </div>
+          </Tooltip>
+          <Tooltip
+            arrow
+            disableFocusListener={!isLockOnSystemSleepRowDisabled}
+            disableHoverListener={!isLockOnSystemSleepRowDisabled}
+            disableTouchListener={!isLockOnSystemSleepRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isLockOnSystemSleepRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-on-system-sleep-enabled-title">{t("settingsWindow.security.lockOnSystemSleep")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockOnSystemSleepDescription")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="lock-screen-on-system-sleep-enabled-title"
+                  checked={props.appSettings.lockScreenOnSystemSleepEnabled}
+                  className={styles.switchInput}
+                  disabled={isLockOnSystemSleepRowDisabled}
+                  type="checkbox"
+                  onChange={handleLockOnSystemSleepEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockOnSystemSleep")}</span>
+              </label>
+            </div>
+          </Tooltip>
+          <Tooltip
+            arrow
+            disableFocusListener={!isIdleTimeoutRowDisabled}
+            disableHoverListener={!isIdleTimeoutRowDisabled}
+            disableTouchListener={!isIdleTimeoutRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isIdleTimeoutRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <label className={styles.settingsSectionTitle} htmlFor="lock-screen-idle-timeout">
+                  {t("settingsWindow.security.lockAfterIdle")}
+                </label>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockAfterIdleDescription")}</p>
+              </div>
+              <select
+                className={styles.settingsSelect}
+                disabled={isIdleTimeoutRowDisabled}
+                id="lock-screen-idle-timeout"
+                value={props.appSettings.lockScreenIdleTimeout}
+                onChange={handleLockScreenIdleTimeoutChange}
+              >
+                <option value={LockScreenIdleTimeout.NEVER}>{t("settingsWindow.security.lockAfterIdleOptions.never")}</option>
+                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("settingsWindow.security.lockAfterIdleOptions.oneMinute")}</option>
+                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.fiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.tenMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.twentyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.fortyFiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("settingsWindow.security.lockAfterIdleOptions.sixtyMinutes")}</option>
+              </select>
             </div>
           </Tooltip>
           <div className={styles.settingsRow}>
