@@ -67,6 +67,9 @@ function App() {
   });
 
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
+  const startupMainWindowElement = startupMainWindowPage === AppView.lock
+    ? <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
+    : <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />;
 
   function handleAppSettingsChange(settings: AppSettings) {
     if (!UserAgent.isElectron && settings.language !== appSettings.language) {
@@ -88,8 +91,13 @@ function App() {
   }
 
   useEffect(() => {
-    window.api.settings.getSettings()
-      .then((settings) => {
+    Promise.all([
+      window.api.settings.getSettings(),
+      UserAgent.isElectron
+        ? window.api.security.getLockState()
+        : Promise.resolve(undefined)
+    ])
+      .then(([settings, lockState]) => {
         const loadedSettings = getInitialAppSettings(settings);
 
         i18n.changeLanguage(loadedSettings.language);
@@ -97,7 +105,7 @@ function App() {
         if (!settings) {
           window.api.settings.setSettings(loadedSettings);
         }
-        setStartupMainWindowPage(loadedSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home);
+        setStartupMainWindowPage(lockState?.isLocked ? AppView.lock : loadedSettings.showWelcomeScreenOnLaunch ? AppView.welcome : AppView.home);
         setHasLoadedAppSettings(true);
       })
       .catch((err: Error) => {
@@ -226,7 +234,7 @@ function App() {
               <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
             } />
             <Route path="/" element={
-              <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
+              startupMainWindowElement
             } />
           </>
         } license={

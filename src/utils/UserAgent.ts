@@ -8,7 +8,7 @@ export class UserAgent {
   
   private static userAgent = window.navigator.userAgent.toLowerCase();
   
-  public static isElectron = UserAgent.userAgent.includes("electron");
+  public static isElectron = Boolean(window.api) || UserAgent.userAgent.includes("electron");
   
   public static isMac = (UserAgent.userAgent.includes("mac") || UserAgent.userAgent.includes("macintosh"));
 
