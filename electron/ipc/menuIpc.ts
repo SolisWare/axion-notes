@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { clipboard, ipcMain, Menu } from "electron";
+import { BrowserWindow, clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
 import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
 import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
@@ -290,7 +290,13 @@ export function registerMenuIpc(): void {
     updateNoteMenuItems();
   });
 
-  ipcMain.on(channels.menu.setEditSelectionState, (_, state: MenuEditSelectionState) => {
+  ipcMain.on(channels.menu.setEditSelectionState, (event, state: MenuEditSelectionState) => {
+    const senderWindow = BrowserWindow.fromWebContents(event.sender);
+
+    if (!senderWindow?.isFocused()) {
+      return;
+    }
+
     editSelectionState = state;
     updateNoteMenuItems();
   });
