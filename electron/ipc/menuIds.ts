@@ -7,11 +7,13 @@
 export const menuIds = {
   app: {
     lockNotes: "lockNotes",
+    secureLock: "secureLock",
     settings: "settings"
   },
   file: {
     root: "fileMenu",
     lockNotes: "lockNotes",
+    secureLock: "secureLock",
     newNote: "newNote",
     settings: "settings"
   },

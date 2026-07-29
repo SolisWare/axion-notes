@@ -19,6 +19,8 @@ let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
 let isLockScreenEnabled = false;
 let isLockScreenActive = false;
+let isNotesEncryptionEnabled = false;
+let isSecureLockAvailable = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
@@ -34,6 +36,10 @@ export function isRichTextFormattingActive(): boolean {
   return isNewNoteEnabled && richTextFormatState.canFormat;
 }
 
+function isSecureLockMenuItemEnabled(): boolean {
+  return isNotesEncryptionEnabled && isSecureLockAvailable;
+}
+
 function isLockScreenMenuItemAllowed(item: Electron.MenuItem): boolean {
   return item.role === "about"
     || item.role === "close"
@@ -41,7 +47,11 @@ function isLockScreenMenuItemAllowed(item: Electron.MenuItem): boolean {
     || item.id === menuIds.view.toggleFullScreen
     || item.id === menuIds.help.viewLicense
     || item.id === menuIds.help.visitWebsite
-    || item.id === menuIds.help.checkoutGitHub;
+    || item.id === menuIds.help.checkoutGitHub
+    || (isSecureLockMenuItemEnabled() && (
+      item.id === menuIds.app.secureLock
+      || item.id === menuIds.file.secureLock
+    ));
 }
 
 function updateLockScreenMenuItems(): void {
@@ -87,7 +97,9 @@ function updateNoteMenuItems(): void {
   restoreUnlockedMenuItems(applicationMenu);
 
   const appLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.app.lockNotes);
+  const appSecureLockMenuItem = applicationMenu?.getMenuItemById(menuIds.app.secureLock);
   const fileLockNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.file.lockNotes);
+  const fileSecureLockMenuItem = applicationMenu?.getMenuItemById(menuIds.file.secureLock);
   const newNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.file.newNote);
   const editMenu = applicationMenu?.getMenuItemById(menuIds.edit.root);
   const cutMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.cut);
@@ -123,8 +135,16 @@ function updateNoteMenuItems(): void {
     appLockNotesMenuItem.enabled = isLockScreenEnabled;
   }
 
+  if (appSecureLockMenuItem) {
+    appSecureLockMenuItem.enabled = isSecureLockMenuItemEnabled();
+  }
+
   if (fileLockNotesMenuItem) {
     fileLockNotesMenuItem.enabled = isLockScreenEnabled;
+  }
+
+  if (fileSecureLockMenuItem) {
+    fileSecureLockMenuItem.enabled = isSecureLockMenuItemEnabled();
   }
 
   if (newNoteMenuItem) {
@@ -271,11 +291,17 @@ function updateNoteMenuItems(): void {
 
 export function applyMenuSettings(settings: AppSettings): void {
   isLockScreenEnabled = settings.lockScreenEnabled;
+  isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
   updateNoteMenuItems();
 }
 
 export function setLockScreenActive(active: boolean): void {
   isLockScreenActive = active;
+  updateNoteMenuItems();
+}
+
+export function setSecureLockAvailable(available: boolean): void {
+  isSecureLockAvailable = available;
   updateNoteMenuItems();
 }
 

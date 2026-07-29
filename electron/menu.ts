@@ -17,6 +17,7 @@ import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 
 type MenubarOptions = {
   onLockNotes: () => void | Promise<void>;
+  onSecureLock: () => void | Promise<void>;
 };
 
 export function createMenubar(options: MenubarOptions): Menu {
@@ -41,6 +42,14 @@ export function createMenubar(options: MenubarOptions): Menu {
           accelerator: 'Shift+CmdOrCtrl+L',
           click: () => {
             options.onLockNotes();
+          }
+        },
+        {
+          id: menuIds.app.secureLock,
+          label: translate("electron.menu.secureLock"),
+          accelerator: 'Alt+Shift+CmdOrCtrl+L',
+          click: () => {
+            options.onSecureLock();
           }
         },
         { type: 'separator' },
@@ -77,6 +86,14 @@ export function createMenubar(options: MenubarOptions): Menu {
             accelerator: 'Shift+CmdOrCtrl+L',
             click: () => {
               options.onLockNotes();
+            }
+          },
+          {
+            id: menuIds.file.secureLock,
+            label: translate("electron.menu.secureLock"),
+            accelerator: 'Alt+Shift+CmdOrCtrl+L',
+            click: () => {
+              options.onSecureLock();
             }
           },
           { type: 'separator' as const }

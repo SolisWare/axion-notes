@@ -18,6 +18,7 @@ type Shortcut = {
   label: string;
   keys: ShortcutKey[];
   disabledTooltip?: string;
+  requiresEncryption?: boolean;
   requiresRichTextEditor?: boolean;
   requiresLockScreen?: boolean;
 };
@@ -29,14 +30,18 @@ type ShortcutSection = {
 
 type ShortcutsProps = {
   lockScreenEnabled: boolean;
+  notesEncryptionEnabled: boolean;
   richTextEditorEnabled: boolean;
 };
 
-function getShortcutSections(t: TFunction, lockScreenDisabledTooltip: string): ShortcutSection[] {
+function getShortcutSections(t: TFunction, encryptionDisabledTooltip: string, lockScreenDisabledTooltip: string): ShortcutSection[] {
   const isMac = window.api.os.isMac;
   const commandKey = isMac
     ? { label: "⌘", ariaLabel: t("settingsWindow.shortcuts.keys.command") }
     : { label: "⌃", ariaLabel: t("settingsWindow.shortcuts.keys.control") };
+  const optionKey = isMac
+    ? { label: "⌥", ariaLabel: t("settingsWindow.shortcuts.keys.option") }
+    : { label: "Alt", ariaLabel: t("settingsWindow.shortcuts.keys.alt") };
   const shiftKey = { label: "⇧", ariaLabel: t("settingsWindow.shortcuts.keys.shift") };
   const backspaceKey = { label: "⌫", ariaLabel: t("settingsWindow.shortcuts.keys.backspace") };
   const escapeKey = { label: "Esc", ariaLabel: t("settingsWindow.shortcuts.keys.escape") };
@@ -69,6 +74,12 @@ function getShortcutSections(t: TFunction, lockScreenDisabledTooltip: string): S
           keys: [commandKey, shiftKey, { label: "L", ariaLabel: "L" }],
           disabledTooltip: lockScreenDisabledTooltip,
           requiresLockScreen: true
+        },
+        {
+          label: t("settingsWindow.shortcuts.secureLock"),
+          keys: [commandKey, shiftKey, optionKey, { label: "L", ariaLabel: "L" }],
+          disabledTooltip: encryptionDisabledTooltip,
+          requiresEncryption: true
         }
       ]
     },
@@ -101,12 +112,13 @@ function getShortcutSections(t: TFunction, lockScreenDisabledTooltip: string): S
 function Shortcuts(props: ShortcutsProps) {
   const { t } = useTranslation();
   const disabledFormattingTooltip = t("settingsWindow.disabledRichTextEditorTooltip");
+  const disabledEncryptionTooltip = t("settingsWindow.shortcuts.disabledEncryptionTooltip");
   const disabledLockScreenTooltip = t("settingsWindow.shortcuts.disabledLockScreenTooltip");
 
   return (
     <div className={styles.shortcutsPage}>
       <div className={styles.shortcutsSection}>
-        {getShortcutSections(t, disabledLockScreenTooltip).map((section, sectionIndex) => (
+        {getShortcutSections(t, disabledEncryptionTooltip, disabledLockScreenTooltip).map((section, sectionIndex) => (
           <section className={styles.shortcutGroup} key={section.title}>
             <div className={`${styles.shortcutSectionHeader} ${sectionIndex === 0 ? styles.shortcutSectionHeaderFirst : ""}`}>
               {section.title}
@@ -114,6 +126,7 @@ function Shortcuts(props: ShortcutsProps) {
             <div className={styles.shortcutsList}>
             {section.shortcuts.map((shortcut) => {
               const isDisabled = (shortcut.requiresRichTextEditor === true && !props.richTextEditorEnabled)
+                || (shortcut.requiresEncryption === true && !props.notesEncryptionEnabled)
                 || (shortcut.requiresLockScreen === true && !props.lockScreenEnabled);
               const disabledTooltip = shortcut.disabledTooltip ?? disabledFormattingTooltip;
 

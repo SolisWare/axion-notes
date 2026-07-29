@@ -33,6 +33,12 @@ export const securityApi = {
     return () => off(channels.security.onLockStateChange, listener);
   },
 
+  onSecureLockComplete: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.security.onSecureLockComplete, listener);
+    return () => off(channels.security.onSecureLockComplete, listener);
+  },
+
   setPassword: async (password: string): Promise<boolean> => {
     return receive<boolean>(channels.security.setPassword, password);
   },

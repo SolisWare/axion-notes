@@ -17,6 +17,8 @@ const NOTE_ORDER_FILE_NAME = "note-order.json";
 const ENCRYPTED_NOTE_RECORD_VERSION = 1;
 const NOTE_AAD_PREFIX = "Axion Notes note";
 
+type PlaintextCacheStateListener = (hasPlaintextCache: boolean) => void;
+
 /**
  * Provides cached note access for the Electron main process.
  *
@@ -29,6 +31,7 @@ export class NoteService {
   private notesEncryptionEnabled = false;
   private encryptionRecord: EncryptionRecord | undefined;
   private masterKey: Uint8Array | undefined;
+  private readonly plaintextCacheStateListeners = new Set<PlaintextCacheStateListener>();
 
   public constructor(
     private readonly appDataDir: string,
@@ -43,6 +46,7 @@ export class NoteService {
    */
   public applyEncryptionSetting(enabled: boolean): void {
     this.notesEncryptionEnabled = enabled;
+    this.emitPlaintextCacheStateChange();
   }
 
   /**
@@ -50,6 +54,36 @@ export class NoteService {
    */
   public isEncryptionUnlocked(): boolean {
     return !this.notesEncryptionEnabled || Boolean(this.masterKey);
+  }
+
+  /**
+   * Returns whether encrypted plaintext note/key material is currently cached.
+   */
+  public hasPlaintextCache(): boolean {
+    return this.notesEncryptionEnabled && (this.notes !== undefined || this.masterKey !== undefined);
+  }
+
+  /**
+   * Subscribes to changes in decrypted note/key material availability.
+   *
+   * @param listener Listener called with the latest plaintext cache state.
+   * @returns Unsubscribe function.
+   */
+  public onPlaintextCacheStateChange(listener: PlaintextCacheStateListener): () => void {
+    this.plaintextCacheStateListeners.add(listener);
+
+    return () => {
+      this.plaintextCacheStateListeners.delete(listener);
+    };
+  }
+
+  /**
+   * Clears plaintext notes and unlocked key material from memory.
+   */
+  public clearPlaintextCache(): void {
+    this.notes = undefined;
+    this.masterKey = undefined;
+    this.emitPlaintextCacheStateChange();
   }
 
   /**
@@ -79,6 +113,7 @@ export class NoteService {
     this.encryptionRecord = record;
     this.masterKey = masterKey;
     this.notes = notes;
+    this.emitPlaintextCacheStateChange();
 
     await this.writeEncryptionRecord(record);
     await this.writeAllNotes(notes);
@@ -96,10 +131,12 @@ export class NoteService {
     this.masterKey = masterKey;
 
     if (this.notes) {
+      this.emitPlaintextCacheStateChange();
       return;
     }
 
     this.notes = await this.readEncryptedNotes(masterKey);
+    this.emitPlaintextCacheStateChange();
   }
 
   /**
@@ -135,6 +172,7 @@ export class NoteService {
     this.encryptionRecord = undefined;
     this.masterKey = undefined;
     this.notes = notes;
+    this.emitPlaintextCacheStateChange();
 
     await this.removeEncryptionRecord();
     await this.writeAllNotes(notes);
@@ -164,6 +202,7 @@ export class NoteService {
         }
 
         this.notes = await this.readEncryptedNotes(this.masterKey);
+        this.emitPlaintextCacheStateChange();
       } else {
         this.notes = await this.readPlaintextNotes();
       }
@@ -233,6 +272,13 @@ export class NoteService {
       .then((files) => Promise.all(files.map((file) => fs.promises.unlink(path.join(this.appDataDir, file)))))
       .catch((err) => console.error(err));
     this.notes = [];
+    this.emitPlaintextCacheStateChange();
+  }
+
+  private emitPlaintextCacheStateChange(): void {
+    const hasPlaintextCache = this.hasPlaintextCache();
+
+    this.plaintextCacheStateListeners.forEach((listener) => listener(hasPlaintextCache));
   }
 
   private async readPlaintextNotes(): Promise<NoteType[]> {

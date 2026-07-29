@@ -69,7 +69,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       page = <Security theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
     case SettingsView.shortcuts:
-      page = <Shortcuts lockScreenEnabled={props.appSettings.lockScreenEnabled} richTextEditorEnabled={props.appSettings.richTextEditorEnabled} />;
+      page = <Shortcuts lockScreenEnabled={props.appSettings.lockScreenEnabled} notesEncryptionEnabled={props.appSettings.notesEncryptionEnabled} richTextEditorEnabled={props.appSettings.richTextEditorEnabled} />;
       break;
     case SettingsView.dataStorage:
       page = <DataStorage />;

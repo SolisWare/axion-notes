@@ -23,6 +23,7 @@ import { getInactiveRichTextFormatState } from './models/RichTextFormatState';
 import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
 import { resolvePreferredDateFormat } from './utils/dt-formatter/dateFormatConfig';
 import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfig';
+import AppToast from './components/AppToast';
 import LockScreen from './views/MainWindow/pages/LockScreen';
 
 export enum AppView {
@@ -59,6 +60,7 @@ function App() {
   const [appSettings, setAppSettings] = useState<AppSettings>(defaultAppSettings);
   const [hasLoadedAppSettings, setHasLoadedAppSettings] = useState(false);
   const [startupMainWindowPage, setStartupMainWindowPage] = useState<AppView>(AppView.welcome);
+  const [toastMessage, setToastMessage] = useState("");
   const hasSignaledMainWindowReady = useRef(false);
   const settingsBroadcastChannel = useRef<BroadcastChannel | undefined>();
   const currentMenuEditSelectionState = useRef<MenuEditSelectionState>({
@@ -127,6 +129,16 @@ function App() {
 
     window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
   }, [appSettings.richTextEditorEnabled]);
+
+  useEffect(() => {
+    if (!UserAgent.isElectron) {
+      return;
+    }
+
+    return window.api.security.onSecureLockComplete(() => {
+      setToastMessage(i18n.t("mainWindow.secureLockCompleteToast"));
+    });
+  }, []);
 
   useEffect(() => {
     const channel = new BroadcastChannel("solisware.axion-notes.app-settings");
@@ -220,6 +232,7 @@ function App() {
 
   return (
     <div className="App"> 
+      <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={effectiveTheme} onClose={() => setToastMessage("")} />
       { UserAgent.isElectron ?
         /* Router for an Electron "native" app */
         <Router main={

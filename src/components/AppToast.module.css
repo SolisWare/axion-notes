@@ -1,0 +1,26 @@
+/**
+ * Copyright (c) 2026 SolisWare.
+ *
+ * All rights reserved. Licensed under the MIT license.
+ * See the LICENSE.txt file in the project root directory for details.
+ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3000;
+  max-width: min(420px, calc(100vw - 36px));
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--toast-background);
+  color: var(--toast-text);
+  box-shadow:
+    0 12px 28px rgba(31, 41, 51, 0.22),
+    0 2px 8px rgba(31, 41, 51, 0.14);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
+  transform: translateX(-50%);
+}

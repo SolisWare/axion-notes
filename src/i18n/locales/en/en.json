@@ -78,6 +78,7 @@
       "deleteAll": "Delete All",
       "settings": "Settings"
     },
+    "secureLockCompleteToast": "Decrypted notes cleared from memory.",
     "noteSelectionToolbar": {
       "label": "Note selection actions",
       "selectedCount": "{{count}} selected",
@@ -334,6 +335,7 @@
       "newNote": "New note",
       "openSettings": "Open settings",
       "lockNotes": "Lock notes",
+      "secureLock": "Secure Lock",
       "deleteAllNotes": "Delete all notes",
       "enterNoteSelectionMode": "Select notes",
       "selectAllNotes": "Select all notes",
@@ -352,6 +354,7 @@
       "checklist": "Checklist",
       "increaseFontSize": "Increase font size",
       "decreaseFontSize": "Decrease font size",
+      "disabledEncryptionTooltip": "Available when note encryption is on.",
       "disabledLockScreenTooltip": "Available when Lock screen is on.",
       "sections": {
         "general": "General",
@@ -363,6 +366,8 @@
       "keys": {
         "command": "Command",
         "control": "Control",
+        "option": "Option",
+        "alt": "Alt",
         "shift": "Shift",
         "backspace": "Backspace",
         "comma": "Comma",
@@ -401,6 +406,7 @@
       "file": "File",
       "newNote": "New Note...",
       "lockNotes": "Lock Notes",
+      "secureLock": "Secure Lock",
       "close": "Close",
       "edit": "Edit",
       "undo": "Undo",

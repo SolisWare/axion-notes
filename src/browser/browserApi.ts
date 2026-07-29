@@ -88,6 +88,7 @@ export function installBrowserApi(): void {
       hasPassword: async () => false,
       lock: async () => false,
       onLockStateChange: () => unsubscribe,
+      onSecureLockComplete: () => unsubscribe,
       setPassword: async () => false,
       unlock: async (): Promise<UnlockResult> => ({ status: "invalidPassword" as UnlockResult["status"] }),
       verifyPassword: async () => false

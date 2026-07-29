@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { registerAppWindowIpc } from "./appWindowIpc";
-import { applyMenuSettings, registerMenuIpc, setLockScreenActive } from "./menuIpc";
+import { applyMenuSettings, registerMenuIpc, setLockScreenActive, setSecureLockAvailable } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
@@ -40,8 +40,13 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     passwordService: options.passwordService,
     settingsService: options.settingsService
   });
-  options.lockStateService.onLockStateChange((lockState) => setLockScreenActive(lockState.isLocked));
+  options.lockStateService.onLockStateChange((lockState) => {
+    setLockScreenActive(lockState.isLocked);
+    setSecureLockAvailable(options.noteService.hasPlaintextCache());
+  });
   setLockScreenActive(options.lockStateService.getIsLocked());
+  setSecureLockAvailable(options.noteService.hasPlaintextCache());
+  options.noteService.onPlaintextCacheStateChange(setSecureLockAvailable);
   registerStorageIpc({
     appDataDir: options.appDataDir,
     lockStateService: options.lockStateService,

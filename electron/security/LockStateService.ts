@@ -226,6 +226,32 @@ export class LockStateService {
   }
 
   /**
+   * Locks the app and clears decrypted note/key material from memory.
+   */
+  public async secureLock(): Promise<boolean> {
+    if (!this.isNotesEncryptionEnabled) {
+      return false;
+    }
+
+    if (!this.noteService.hasPlaintextCache()) {
+      return false;
+    }
+
+    if (this.isLocked) {
+      this.noteService.clearPlaintextCache();
+      return true;
+    }
+
+    const didLock = await this.lock();
+
+    if (didLock) {
+      this.noteService.clearPlaintextCache();
+    }
+
+    return didLock;
+  }
+
+  /**
    * Verifies the password and unlocks the app when it is correct.
    *
    * @param password Raw password entered by the user.

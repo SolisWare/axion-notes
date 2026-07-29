@@ -48,6 +48,7 @@ export const channels = {
     hasPassword: "security.hasPassword",
     lock: "security.lock",
     onLockStateChange: "security.onLockStateChange",
+    onSecureLockComplete: "security.onSecureLockComplete",
     setPassword: "security.setPassword",
     unlock: "security.unlock",
     verifyPassword: "security.verifyPassword"

@@ -7,6 +7,7 @@
 import { app, BrowserWindow, Menu, session } from "electron";
 import * as path from "path";
 import { createMenubar } from "./menu";
+import { channels } from "./ipc/channels";
 import { isDev } from "./utils/isDev";
 import { isMac } from './utils/Platform';
 import * as fs from 'node:fs';
@@ -136,6 +137,21 @@ app.on("ready", async () => {
     onLockNotes: () => {
       lockStateService?.lock().catch((err) => {
         console.warn("Failed to lock notes from menu:", err);
+      });
+    },
+    onSecureLock: () => {
+      lockStateService?.secureLock().then((didSecureLock) => {
+        if (!didSecureLock) {
+          return;
+        }
+
+        BrowserWindow.getAllWindows().forEach((window) => {
+          if (!window.webContents.isDestroyed()) {
+            window.webContents.send(channels.security.onSecureLockComplete);
+          }
+        });
+      }).catch((err) => {
+        console.warn("Failed to securely lock notes from menu:", err);
       });
     }
   }));
