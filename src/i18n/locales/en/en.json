@@ -223,6 +223,14 @@
     "security": {
       "lockScreen": "Lock screen",
       "lockScreenDescription": "Require a password before notes can be viewed.",
+      "notesEncryption": "Encrypt notes on disk",
+      "notesEncryptionDescription": "Encrypt stored note files so they cannot be read without your password.",
+      "enableEncryptionDialog": {
+        "title": "Enable Note Encryption?",
+        "message": "Remember this password. If you forget the password for encrypted notes, your data cannot be recovered. No one, including SolisWare, will be able to access your notes.",
+        "cancelLabel": "Cancel",
+        "confirmLabel": "Enable"
+      },
       "lockOnSystemSleep": "Lock on system sleep",
       "lockOnSystemSleepDescription": "Lock notes when this device goes to sleep.",
       "lockAfterIdle": "Lock after idle",

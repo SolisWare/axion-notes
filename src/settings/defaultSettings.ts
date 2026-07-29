@@ -22,6 +22,7 @@ import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
   lockScreenEnabled: false,
+  notesEncryptionEnabled: false,
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay.IMMEDIATELY,
   lockScreenIdleTimeout: LockScreenIdleTimeout.TEN_MINUTES,
   lockScreenOnSystemSleepEnabled: true,

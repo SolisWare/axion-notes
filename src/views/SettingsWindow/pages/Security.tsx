@@ -25,7 +25,9 @@ function Security(props: SecurityProps) {
   const { t } = useTranslation();
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const [isDisableBruteForceProtectionDialogOpen, setDisableBruteForceProtectionDialogOpen] = useState(false);
+  const [isEnableEncryptionDialogOpen, setEnableEncryptionDialogOpen] = useState(false);
   const isBruteForceProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isEncryptionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
   const isIdleTimeoutRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
@@ -54,6 +56,28 @@ function Security(props: SecurityProps) {
     });
 
     event.currentTarget.blur();
+  }
+
+  function handleNotesEncryptionEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    event.currentTarget.blur();
+
+    if (event.target.checked) {
+      setEnableEncryptionDialogOpen(true);
+      return;
+    }
+
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      notesEncryptionEnabled: false
+    });
+  }
+
+  function handleEnableEncryptionConfirm() {
+    setEnableEncryptionDialogOpen(false);
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      notesEncryptionEnabled: true
+    });
   }
 
   function handleLockScreenIdleTimeoutChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -179,6 +203,16 @@ function Security(props: SecurityProps) {
         onConfirm={handleDisableBruteForceProtectionConfirm}
         onCancel={() => setDisableBruteForceProtectionDialogOpen(false)}
       />
+      <ConfirmationDialog
+        theme={props.theme}
+        open={isEnableEncryptionDialogOpen}
+        title={t("settingsWindow.security.enableEncryptionDialog.title")}
+        message={t("settingsWindow.security.enableEncryptionDialog.message")}
+        confirmLabel={t("settingsWindow.security.enableEncryptionDialog.confirmLabel")}
+        cancelLabel={t("settingsWindow.security.enableEncryptionDialog.cancelLabel")}
+        onConfirm={handleEnableEncryptionConfirm}
+        onCancel={() => setEnableEncryptionDialogOpen(false)}
+      />
       <section className={styles.settingsSection} aria-labelledby="lock-screen-enabled-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
@@ -200,6 +234,63 @@ function Security(props: SecurityProps) {
               <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
             </label>
           </div>
+          <Tooltip
+            arrow
+            disableFocusListener={!isEncryptionRowDisabled}
+            disableHoverListener={!isEncryptionRowDisabled}
+            disableTouchListener={!isEncryptionRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isEncryptionRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="notes-encryption-enabled-title">{t("settingsWindow.security.notesEncryption")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.notesEncryptionDescription")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="notes-encryption-enabled-title"
+                  checked={props.appSettings.notesEncryptionEnabled}
+                  className={styles.switchInput}
+                  disabled={isEncryptionRowDisabled}
+                  type="checkbox"
+                  onChange={handleNotesEncryptionEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.security.notesEncryption")}</span>
+              </label>
+            </div>
+          </Tooltip>
+          <Tooltip
+            arrow
+            disableFocusListener={!isPasswordRowDisabled}
+            disableHoverListener={!isPasswordRowDisabled}
+            disableTouchListener={!isPasswordRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledPasswordTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isPasswordRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.security.password")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.passwordDescription")}</p>
+              </div>
+              <button
+                className={styles.settingsButton}
+                disabled={isPasswordRowDisabled}
+                type="button"
+                onClick={(event) => {
+                  event.currentTarget.blur();
+                  setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE);
+                }}
+              >
+                {t("settingsWindow.security.changePassword")}
+              </button>
+            </div>
+          </Tooltip>
           {shouldShowRequirePasswordDelay && (
             <Tooltip
               arrow
@@ -234,33 +325,6 @@ function Security(props: SecurityProps) {
               </div>
             </Tooltip>
           )}
-          <Tooltip
-            arrow
-            disableFocusListener={!isPasswordRowDisabled}
-            disableHoverListener={!isPasswordRowDisabled}
-            disableTouchListener={!isPasswordRowDisabled}
-            enterDelay={300}
-            enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
-          >
-            <div className={`${styles.settingsRow} ${isPasswordRowDisabled ? styles.settingsRowDisabled : ""}`}>
-              <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.security.password")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.passwordDescription")}</p>
-              </div>
-              <button
-                className={styles.settingsButton}
-                disabled={isPasswordRowDisabled}
-                type="button"
-                onClick={(event) => {
-                  event.currentTarget.blur();
-                  setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE);
-                }}
-              >
-                {t("settingsWindow.security.changePassword")}
-              </button>
-            </div>
-          </Tooltip>
           <Tooltip
             arrow
             disableFocusListener={!isLockOnSystemSleepRowDisabled}

@@ -20,6 +20,7 @@ import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
 export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
   lockScreenEnabled: boolean;
+  notesEncryptionEnabled: boolean;
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay;
   lockScreenIdleTimeout: LockScreenIdleTimeout;
   lockScreenOnSystemSleepEnabled: boolean;
