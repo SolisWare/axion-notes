@@ -55,6 +55,13 @@ enum DialogCloseReason {
   BACKDROP_CLICK = "backdropClick"
 }
 
+enum PasswordDialogFieldError {
+  CURRENT_PASSWORD = "currentPassword",
+  NEW_PASSWORD = "newPassword",
+  CONFIRM_PASSWORD = "confirmPassword",
+  PASSWORD_MISMATCH = "passwordMismatch"
+}
+
 function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
@@ -65,6 +72,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   const [isCurrentPasswordVisible, setCurrentPasswordVisible] = useState(false);
   const [isNewPasswordVisible, setNewPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [fieldError, setFieldError] = useState<PasswordDialogFieldError | null>(null);
   const [isSubmitting, setSubmitting] = useState(false);
   const [isWeakPasswordDialogOpen, setWeakPasswordDialogOpen] = useState(false);
   const [acceptedWeakPassword, setAcceptedWeakPassword] = useState("");
@@ -86,6 +94,9 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
   const needsCurrentPassword = props.mode !== SecurityPasswordDialogMode.SET;
   const needsNewPassword = props.mode === SecurityPasswordDialogMode.SET || props.mode === SecurityPasswordDialogMode.CHANGE;
+  const canSubmit = (!needsCurrentPassword || Boolean(currentPassword))
+    && (!needsNewPassword || Boolean(newPassword))
+    && (!needsNewPassword || Boolean(confirmPassword));
 
   useEffect(() => {
     if (!props.open) {
@@ -98,6 +109,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     setCurrentPasswordVisible(false);
     setNewPasswordVisible(false);
     setErrorMessage("");
+    setFieldError(null);
     setSubmitting(false);
     setWeakPasswordDialogOpen(false);
     setAcceptedWeakPassword("");
@@ -158,11 +170,13 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>, setter: (value: string) => void) {
     setter(event.target.value);
     setErrorMessage("");
+    setFieldError(null);
   }
 
   function handleNewPasswordChange(event: ChangeEvent<HTMLInputElement>) {
     setNewPassword(event.target.value);
     setErrorMessage("");
+    setFieldError(null);
     setAcceptedWeakPassword("");
   }
 
@@ -175,26 +189,31 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   async function submitPassword(allowWeakPassword = false) {
     if (needsCurrentPassword && !currentPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.passwordRequired"));
+      setFieldError(PasswordDialogFieldError.CURRENT_PASSWORD);
       return;
     }
 
     if (needsNewPassword && !newPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.newPasswordRequired"));
+      setFieldError(PasswordDialogFieldError.NEW_PASSWORD);
       return;
     }
 
     if (needsNewPassword && newPassword.length < MIN_LOCK_PASSWORD_LENGTH) {
       setErrorMessage(t("settingsWindow.security.dialog.passwordTooShort", { minLength: MIN_LOCK_PASSWORD_LENGTH }));
+      setFieldError(PasswordDialogFieldError.NEW_PASSWORD);
       return;
     }
 
     if (needsNewPassword && !confirmPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.confirmPasswordRequired"));
+      setFieldError(PasswordDialogFieldError.CONFIRM_PASSWORD);
       return;
     }
 
     if (needsNewPassword && newPassword !== confirmPassword) {
       setErrorMessage(t("settingsWindow.security.dialog.passwordMismatch"));
+      setFieldError(PasswordDialogFieldError.PASSWORD_MISMATCH);
       return;
     }
 
@@ -212,6 +231,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
     if (!didSubmit) {
       setErrorMessage(t("settingsWindow.security.dialog.invalidPassword"));
+      setFieldError(needsCurrentPassword ? PasswordDialogFieldError.CURRENT_PASSWORD : PasswordDialogFieldError.NEW_PASSWORD);
     }
   }
 
@@ -252,7 +272,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                   <span className={styles.passwordDialogInputWrapper}>
                     <input
                       ref={firstInputRef}
-                      className={styles.passwordDialogInput}
+                      className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.CURRENT_PASSWORD ? styles.passwordDialogInputError : ""}`}
                       type={isCurrentPasswordVisible ? "text" : "password"}
                       value={currentPassword}
                       onChange={(event) => handlePasswordChange(event, setCurrentPassword)}
@@ -278,7 +298,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                     <span className={styles.passwordDialogInputWrapper}>
                       <input
                         ref={needsCurrentPassword ? undefined : firstInputRef}
-                        className={styles.passwordDialogInput}
+                        className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.NEW_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH ? styles.passwordDialogInputError : ""}`}
                         type={isNewPasswordVisible ? "text" : "password"}
                         value={newPassword}
                         onChange={handleNewPasswordChange}
@@ -300,7 +320,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                     <span className={styles.passwordDialogLabel}>{t("settingsWindow.security.dialog.confirmPassword")}</span>
                     <span className={styles.passwordDialogInputWrapper}>
                       <input
-                        className={styles.passwordDialogInput}
+                        className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.CONFIRM_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH ? styles.passwordDialogInputError : ""}`}
                         type={isNewPasswordVisible ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(event) => handlePasswordChange(event, setConfirmPassword)}
@@ -319,7 +339,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
             <Button className={styles.securityPasswordDialogCancelButton} disabled={isSubmitting} onClick={props.onCancel}>
               {t("common.cancel")}
             </Button>
-            <Button disabled={isSubmitting} type="submit" variant="contained">
+            <Button disabled={isSubmitting || !canSubmit} type="submit" variant="contained">
               {getConfirmLabel()}
             </Button>
           </DialogActions>

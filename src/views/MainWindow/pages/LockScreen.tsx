@@ -118,6 +118,7 @@ function LockScreen(props: LockScreenProps) {
 
   const cooldownMessage = cooldownTick >= 0 ? getCooldownMessage(cooldownUntil) : "";
   const isCooldownActive = Boolean(cooldownMessage);
+  const canSubmit = Boolean(password) && !isCooldownActive;
   const displayMessage = cooldownMessage || errorMessage;
   const displayMessageLines = displayMessage.split("\n");
 
@@ -259,7 +260,7 @@ function LockScreen(props: LockScreenProps) {
               </Typography>
             </div>
 
-            <Button className={styles.unlockButton} disabled={isCooldownActive} disableElevation={isCooldownActive} type="submit" variant="contained">
+            <Button className={styles.unlockButton} disabled={!canSubmit} disableElevation={!canSubmit} type="submit" variant="contained">
               <span className={styles.buttonContent}>
                 {t("mainWindow.lockScreen.unlock")}
                 <ArrowForwardIcon aria-hidden="true" />
