@@ -50,6 +50,7 @@ function LockScreen(props: LockScreenProps) {
   const [cooldownUntil, setCooldownUntil] = useState<string | undefined>();
   const [cooldownTick, setCooldownTick] = useState(0);
   const [isBruteForceProtectionEnabled, setBruteForceProtectionEnabled] = useState(true);
+  const [isNotesEncryptionEnabled, setNotesEncryptionEnabled] = useState(false);
   const [isRecoveryRequired, setRecoveryRequired] = useState(false);
   const version = window.api.version.getShortDisplayVersion();
 
@@ -72,6 +73,7 @@ function LockScreen(props: LockScreenProps) {
     ])
       .then(([lockState, settings]) => {
         setBruteForceProtectionEnabled(settings?.bruteForceProtectionEnabled ?? true);
+        setNotesEncryptionEnabled(settings?.notesEncryptionEnabled ?? false);
         return lockState;
       })
       .then((lockState) => {
@@ -94,6 +96,7 @@ function LockScreen(props: LockScreenProps) {
     });
     const offSettingsChange = window.api.settings.onSettingsChange((settings) => {
       setBruteForceProtectionEnabled(settings.bruteForceProtectionEnabled);
+      setNotesEncryptionEnabled(settings.notesEncryptionEnabled);
     });
 
     return () => {
@@ -283,8 +286,12 @@ function LockScreen(props: LockScreenProps) {
               : "mainWindow.lockScreen.bruteForceProtectionDisabledDisclosure")}</span>
           </li>
           <li className={styles.disclosure}>
-            <LockOpenRoundedIcon aria-hidden="true" />
-            <span>{t("mainWindow.lockScreen.encryptionDisclosure")}</span>
+            {isNotesEncryptionEnabled
+              ? <LockOutlinedIcon aria-hidden="true" />
+              : <LockOpenRoundedIcon aria-hidden="true" />}
+            <span>{t(isNotesEncryptionEnabled
+              ? "mainWindow.lockScreen.encryptionEnabledDisclosure"
+              : "mainWindow.lockScreen.encryptionDisabledDisclosure")}</span>
           </li>
         </ul>
       </div>

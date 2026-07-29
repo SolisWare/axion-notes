@@ -57,7 +57,8 @@
       "offlineDisclosure": "Your notes are stored offline on this device only.",
       "bruteForceProtectionEnabledDisclosure": "Brute-force protection is enabled.",
       "bruteForceProtectionDisabledDisclosure": "Brute-force protection is disabled.",
-      "encryptionDisclosure": "Your notes are not encrypted."
+      "encryptionEnabledDisclosure": "Your notes are encrypted.",
+      "encryptionDisabledDisclosure": "Your notes are not encrypted."
     },
     "welcome": {
       "title": "Welcome to Axion Notes",

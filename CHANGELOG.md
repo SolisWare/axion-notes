@@ -22,6 +22,8 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Hardened production Electron windows by disabling renderer Node integration, restoring web security, blocking webviews, denying permission prompts, and guarding in-app navigation
 - Added password strength guidance with estimated resistance and an extra warning before accepting weak lock passwords
 - Fixed Electron Copy menu availability so selected non-editable text in the focused window can still be copied
+- Added note encryption for Electron with AES-256-GCM encrypted note files, password-derived master key wrapping, and unlock-time decryption into the main-process note cache
+- Added Secure Lock for encrypted notes to lock the app and clear decrypted notes from memory
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
