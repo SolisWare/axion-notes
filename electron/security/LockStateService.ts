@@ -14,6 +14,7 @@ import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenReq
 import { BruteForceProtectionService } from "./BruteForceProtectionService";
 import { LockMarkerService } from "./LockMarkerService";
 import { PasswordService } from "./PasswordService";
+import { NoteService } from "../storage/NoteService";
 
 const MAIN_WINDOW_HASH_PREFIX = "#/main";
 const LOCK_ROUTE = "/lock";
@@ -40,6 +41,7 @@ export class LockStateService {
   private isLocked = false;
   private isRecoveryRequired = false;
   private isBruteForceProtectionEnabled = true;
+  private isNotesEncryptionEnabled = false;
   private isLockScreenEnabled = false;
   private isLocking = false;
   private isLockOnSystemSleepEnabled = true;
@@ -52,7 +54,8 @@ export class LockStateService {
   public constructor(
     private readonly passwordService: PasswordService,
     private readonly bruteForceProtectionService: BruteForceProtectionService,
-    private readonly lockMarkerService: LockMarkerService
+    private readonly lockMarkerService: LockMarkerService,
+    private readonly noteService: NoteService
   ) {
   }
 
@@ -77,14 +80,20 @@ export class LockStateService {
    */
   public async refreshLockState(settings: AppSettings, forceRequirePassword = false): Promise<void> {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
+    this.isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
     this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
     this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
+    this.noteService.applyEncryptionSetting(settings.notesEncryptionEnabled);
     await this.bruteForceProtectionService.initialize();
+    this.noteService.applyEncryptionSetting(settings.notesEncryptionEnabled);
     const hasPasswordRecord = await this.passwordService.hasPassword();
-    const hasUsablePasswordRecord = await this.passwordService.hasUsablePasswordRecord();
+    const hasEncryptionRecord = await this.noteService.hasEncryptionRecord();
+    const hasUsablePasswordRecord = this.isNotesEncryptionEnabled
+      ? hasEncryptionRecord
+      : await this.passwordService.hasUsablePasswordRecord();
     const hasLockMarker = await this.lockMarkerService.hasLockMarker();
-    const shouldLock = this.isLockScreenEnabled || hasPasswordRecord || hasLockMarker;
+    const shouldLock = this.isLockScreenEnabled || this.isNotesEncryptionEnabled || hasPasswordRecord || hasLockMarker;
     const isRecoveryRequired = shouldLock && !hasUsablePasswordRecord;
 
     if (shouldLock && hasUsablePasswordRecord) {
@@ -142,6 +151,7 @@ export class LockStateService {
    */
   public applySettings(settings: AppSettings): void {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
+    this.isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
     this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
     this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
@@ -185,7 +195,7 @@ export class LockStateService {
       return false;
     }
 
-    if (!this.isLockScreenEnabled && !await this.lockMarkerService.hasLockMarker()) {
+    if (!this.isLockScreenEnabled && !this.isNotesEncryptionEnabled && !await this.lockMarkerService.hasLockMarker()) {
       return false;
     }
 
@@ -195,7 +205,11 @@ export class LockStateService {
       await this.flushActiveEditorBeforeLock();
       await this.prepareMainWindowForLock();
 
-      if (!await this.passwordService.hasUsablePasswordRecord()) {
+      const hasUsablePasswordRecord = this.isNotesEncryptionEnabled
+        ? await this.noteService.hasEncryptionRecord()
+        : await this.passwordService.hasUsablePasswordRecord();
+
+      if (!hasUsablePasswordRecord) {
         this.setLockState(true, true);
         this.forceLockRouteIfNeeded();
         return false;
@@ -235,7 +249,7 @@ export class LockStateService {
       }
     }
 
-    const isPasswordValid = await this.passwordService.verifyPassword(password);
+    const isPasswordValid = await this.verifyUnlockPassword(password);
 
     if (!isPasswordValid) {
       if (this.isBruteForceProtectionEnabled) {
@@ -259,6 +273,20 @@ export class LockStateService {
     return {
       status: UnlockResultStatus.UNLOCKED
     };
+  }
+
+  private async verifyUnlockPassword(password: string): Promise<boolean> {
+    if (!this.isNotesEncryptionEnabled) {
+      return this.passwordService.verifyPassword(password);
+    }
+
+    try {
+      await this.noteService.unlockEncryption(password);
+      return true;
+    } catch (err) {
+      console.warn("Failed to unlock encrypted notes:", err);
+      return false;
+    }
   }
 
   /**

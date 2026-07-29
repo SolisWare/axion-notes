@@ -9,12 +9,16 @@ import { UnlockResult } from "../../src/models/UnlockResult";
 import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
+import { NoteService } from "../storage/NoteService";
+import { SettingsService } from "../storage/SettingsService";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
 type SecurityIpcOptions = {
   lockStateService: LockStateService;
+  noteService: NoteService;
   passwordService: PasswordService;
+  settingsService: SettingsService;
 };
 
 export function registerSecurityIpc(options: SecurityIpcOptions): void {
@@ -27,7 +31,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   });
 
   ipcMain.handle(channels.security.hasPassword, async () => {
-    return options.passwordService.hasPassword();
+    return await options.passwordService.hasPassword() || await options.noteService.hasEncryptionRecord();
   });
 
   ipcMain.handle(channels.security.getLockState, () => {
@@ -76,13 +80,22 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
   protectedHandle<boolean, [string, string]>(channels.security.changePassword, { ...options, fallback: false }, async (_event, currentPassword, newPassword) => {
     try {
-      const isCurrentPasswordValid = await options.passwordService.verifyPassword(currentPassword);
+      const settings = await options.settingsService.getSettings();
+      const isEncryptionEnabled = settings?.notesEncryptionEnabled === true;
+      const isCurrentPasswordValid = isEncryptionEnabled
+        ? await options.noteService.verifyEncryptionPassword(currentPassword)
+        : await options.passwordService.verifyPassword(currentPassword);
 
       if (!isCurrentPasswordValid) {
         return false;
       }
 
-      await options.passwordService.setPassword(newPassword);
+      if (isEncryptionEnabled) {
+        await options.noteService.changeEncryptionPassword(currentPassword, newPassword);
+      } else {
+        await options.passwordService.setPassword(newPassword);
+      }
+
       await options.lockStateService.markLockConfigured();
       return true;
     } catch (err) {
@@ -98,6 +111,36 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       return true;
     } catch (err) {
       console.warn("Failed to clear password:", err);
+      return false;
+    }
+  });
+
+  protectedHandle<boolean, [string]>(channels.security.enableEncryption, { ...options, fallback: false }, async (_event, password) => {
+    try {
+      const isPasswordValid = await options.passwordService.verifyPassword(password);
+
+      if (!isPasswordValid) {
+        return false;
+      }
+
+      await options.noteService.enableEncryption(password);
+      await options.passwordService.clearPassword();
+      await options.lockStateService.markLockConfigured();
+      return true;
+    } catch (err) {
+      console.warn("Failed to enable note encryption:", err);
+      return false;
+    }
+  });
+
+  protectedHandle<boolean, [string]>(channels.security.disableEncryption, { ...options, fallback: false }, async (_event, password) => {
+    try {
+      await options.noteService.disableEncryption(password);
+      await options.passwordService.setPassword(password);
+      await options.lockStateService.markLockConfigured();
+      return true;
+    } catch (err) {
+      console.warn("Failed to disable note encryption:", err);
       return false;
     }
   });

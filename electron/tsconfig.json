@@ -16,6 +16,7 @@
   "include": [
     "**/*",
     "../src/models/**/*",
+    "../src/security/**/*",
     "../src/settings/**/*",
     "../src/theme/**/*",
     "../src/types/**/*",

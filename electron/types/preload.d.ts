@@ -60,6 +60,8 @@ interface IElectronAPI {
   security: {
     changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
     clearPassword: () => Promise<boolean>;
+    disableEncryption: (password: string) => Promise<boolean>;
+    enableEncryption: (password: string) => Promise<boolean>;
     getLockState: () => Promise<LockState>;
     hasPassword: () => Promise<boolean>;
     lock: () => Promise<boolean>;

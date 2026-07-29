@@ -22,6 +22,8 @@ export enum SecurityPasswordDialogMode {
   SET = "set",
   ENABLE = "enable",
   DISABLE = "disable",
+  ENABLE_ENCRYPTION = "enableEncryption",
+  DISABLE_ENCRYPTION = "disableEncryption",
   CHANGE = "change"
 }
 
@@ -123,6 +125,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
         return t("settingsWindow.security.dialog.enableTitle");
       case SecurityPasswordDialogMode.DISABLE:
         return t("settingsWindow.security.dialog.disableTitle");
+      case SecurityPasswordDialogMode.ENABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.enableEncryptionTitle");
+      case SecurityPasswordDialogMode.DISABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.disableEncryptionTitle");
       case SecurityPasswordDialogMode.CHANGE:
         return t("settingsWindow.security.dialog.changeTitle");
       case SecurityPasswordDialogMode.SET:
@@ -137,6 +143,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
         return t("settingsWindow.security.dialog.enableDescription");
       case SecurityPasswordDialogMode.DISABLE:
         return t("settingsWindow.security.dialog.disableDescription");
+      case SecurityPasswordDialogMode.ENABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.enableEncryptionDescription");
+      case SecurityPasswordDialogMode.DISABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.disableEncryptionDescription");
       case SecurityPasswordDialogMode.CHANGE:
         return t("settingsWindow.security.dialog.changeDescription");
       case SecurityPasswordDialogMode.SET:
@@ -151,6 +161,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
         return t("settingsWindow.security.dialog.enableConfirm");
       case SecurityPasswordDialogMode.DISABLE:
         return t("settingsWindow.security.dialog.disableConfirm");
+      case SecurityPasswordDialogMode.ENABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.enableEncryptionConfirm");
+      case SecurityPasswordDialogMode.DISABLE_ENCRYPTION:
+        return t("settingsWindow.security.dialog.disableEncryptionConfirm");
       case SecurityPasswordDialogMode.CHANGE:
         return t("settingsWindow.security.dialog.changeConfirm");
       case SecurityPasswordDialogMode.SET:

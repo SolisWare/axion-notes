@@ -47,5 +47,13 @@ export const securityApi = {
 
   clearPassword: async (): Promise<boolean> => {
     return receive<boolean>(channels.security.clearPassword);
+  },
+
+  enableEncryption: async (password: string): Promise<boolean> => {
+    return receive<boolean>(channels.security.enableEncryption, password);
+  },
+
+  disableEncryption: async (password: string): Promise<boolean> => {
+    return receive<boolean>(channels.security.disableEncryption, password);
   }
 };

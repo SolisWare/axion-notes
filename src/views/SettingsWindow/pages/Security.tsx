@@ -28,6 +28,7 @@ function Security(props: SecurityProps) {
   const [isEnableEncryptionDialogOpen, setEnableEncryptionDialogOpen] = useState(false);
   const isBruteForceProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isEncryptionRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isLockScreenRowDisabled = props.appSettings.notesEncryptionEnabled;
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
   const isIdleTimeoutRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
@@ -66,18 +67,12 @@ function Security(props: SecurityProps) {
       return;
     }
 
-    props.onAppSettingsChange({
-      ...props.appSettings,
-      notesEncryptionEnabled: false
-    });
+    setPasswordDialogMode(SecurityPasswordDialogMode.DISABLE_ENCRYPTION);
   }
 
   function handleEnableEncryptionConfirm() {
     setEnableEncryptionDialogOpen(false);
-    props.onAppSettingsChange({
-      ...props.appSettings,
-      notesEncryptionEnabled: true
-    });
+    setPasswordDialogMode(SecurityPasswordDialogMode.ENABLE_ENCRYPTION);
   }
 
   function handleLockScreenIdleTimeoutChange(event: ChangeEvent<HTMLSelectElement>) {
@@ -176,6 +171,32 @@ function Security(props: SecurityProps) {
 
         return didChangePassword;
       }
+      case SecurityPasswordDialogMode.ENABLE_ENCRYPTION: {
+        const didEnableEncryption = await window.api.security.enableEncryption(values.currentPassword);
+
+        if (didEnableEncryption) {
+          props.onAppSettingsChange({
+            ...props.appSettings,
+            notesEncryptionEnabled: true
+          });
+          setPasswordDialogMode(null);
+        }
+
+        return didEnableEncryption;
+      }
+      case SecurityPasswordDialogMode.DISABLE_ENCRYPTION: {
+        const didDisableEncryption = await window.api.security.disableEncryption(values.currentPassword);
+
+        if (didDisableEncryption) {
+          props.onAppSettingsChange({
+            ...props.appSettings,
+            notesEncryptionEnabled: false
+          });
+          setPasswordDialogMode(null);
+        }
+
+        return didDisableEncryption;
+      }
       default:
         return false;
     }
@@ -215,25 +236,36 @@ function Security(props: SecurityProps) {
       />
       <section className={styles.settingsSection} aria-labelledby="lock-screen-enabled-title">
         <div className={styles.settingsRows}>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="lock-screen-enabled-title">{t("settingsWindow.security.lockScreen")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockScreenDescription")}</p>
+          <Tooltip
+            arrow
+            disableFocusListener={!isLockScreenRowDisabled}
+            disableHoverListener={!isLockScreenRowDisabled}
+            disableTouchListener={!isLockScreenRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("settingsWindow.security.disabledLockScreenTooltip")}
+          >
+            <div className={`${styles.settingsRow} ${isLockScreenRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-enabled-title">{t("settingsWindow.security.lockScreen")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockScreenDescription")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="lock-screen-enabled-title"
+                  checked={props.appSettings.lockScreenEnabled}
+                  className={styles.switchInput}
+                  disabled={isLockScreenRowDisabled}
+                  type="checkbox"
+                  onChange={handleLockScreenEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
+              </label>
             </div>
-            <label className={styles.switchControl}>
-              <input
-                aria-labelledby="lock-screen-enabled-title"
-                checked={props.appSettings.lockScreenEnabled}
-                className={styles.switchInput}
-                type="checkbox"
-                onChange={handleLockScreenEnabledChange}
-              />
-              <span className={styles.switchTrack} aria-hidden="true">
-                <span className={styles.switchThumb} />
-              </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
-            </label>
-          </div>
+          </Tooltip>
           <Tooltip
             arrow
             disableFocusListener={!isEncryptionRowDisabled}

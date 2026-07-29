@@ -26,6 +26,8 @@ import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfi
 import { resolvePreferredDateFormat } from "../src/utils/dt-formatter/dateFormatConfig";
 import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormatConfig";
 import { BruteForceProtectionService } from "./security/BruteForceProtectionService";
+import { EncryptionKeyService } from "./security/EncryptionKeyService";
+import { EncryptionService } from "./security/EncryptionService";
 import { LockMarkerService } from "./security/LockMarkerService";
 import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
@@ -38,6 +40,7 @@ const appSecurityDir = path.join(appDir, 'security');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
 const lockMarkerPath = path.join(appDir, '.lock');
+const encryptionRecordPath = path.join(appSecurityDir, 'encryption.json');
 const mainWindowStateFilePath = path.join(appSettingsDir, 'main-window-state.json');
 const bruteForceProtectionRecordPath = path.join(appSecurityDir, 'brute-force-protection.json');
 const passwordRecordPath = path.join(appSecurityDir, 'password.json');
@@ -110,10 +113,12 @@ app.on("ready", async () => {
   currentSettings = initialSettings;
   setElectronLanguage(initialSettings.language);
   const bruteForceProtectionService = new BruteForceProtectionService(bruteForceProtectionRecordPath);
+  const encryptionService = new EncryptionService();
+  const encryptionKeyService = new EncryptionKeyService(encryptionService);
   const lockMarkerService = new LockMarkerService(lockMarkerPath);
-  const noteService = new NoteService(appDataDir);
+  const noteService = new NoteService(appDataDir, encryptionRecordPath, encryptionService, encryptionKeyService);
   const passwordService = new PasswordService(passwordRecordPath);
-  lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService);
+  lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);
 
   await lockStateService.initialize(initialSettings);
   lockStateService.onLockStateChange((lockState) => {

@@ -36,7 +36,9 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerSystemThemeIpc();
   registerSecurityIpc({
     lockStateService: options.lockStateService,
-    passwordService: options.passwordService
+    noteService: options.noteService,
+    passwordService: options.passwordService,
+    settingsService: options.settingsService
   });
   options.lockStateService.onLockStateChange((lockState) => setLockScreenActive(lockState.isLocked));
   setLockScreenActive(options.lockStateService.getIsLocked());
