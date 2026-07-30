@@ -44,6 +44,7 @@ export const channels = {
     clearPassword: "security.clearPassword",
     disableEncryption: "security.disableEncryption",
     enableEncryption: "security.enableEncryption",
+    getSecurityFolderLocation: "security.getSecurityFolderLocation",
     getLockState: "security.getLockState",
     hasPassword: "security.hasPassword",
     lock: "security.lock",

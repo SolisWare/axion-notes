@@ -166,6 +166,7 @@ app.on("ready", async () => {
 
   registerIpcHandlers({
     appDataDir,
+    appSecurityDir,
     lockStateService,
     mainWindowStateFilePath,
     noteService,

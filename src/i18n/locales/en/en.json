@@ -339,6 +339,7 @@
     },
     "dataStorage": {
       "notesFolderLocation": "Notes folder location",
+      "securityFolderLocation": "Password and encryption data location",
       "settingsFolderLocation": "Settings folder location",
       "browserLocalStorage": "Browser local storage"
     },

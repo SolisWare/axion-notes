@@ -16,6 +16,7 @@ import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
 type SecurityIpcOptions = {
+  appSecurityDir: string;
   lockStateService: LockStateService;
   noteService: NoteService;
   passwordService: PasswordService;
@@ -43,6 +44,10 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
   ipcMain.handle(channels.security.getLockState, () => {
     return options.lockStateService.getLockState();
+  });
+
+  protectedHandle<string, []>(channels.security.getSecurityFolderLocation, { ...options, fallback: "" }, () => {
+    return options.appSecurityDir;
   });
 
   ipcMain.handle(channels.security.lock, async () => {

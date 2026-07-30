@@ -64,6 +64,7 @@ interface IElectronAPI {
     disableEncryption: (password: string) => Promise<boolean>;
     enableEncryption: (password: string) => Promise<boolean>;
     getLockState: () => Promise<LockState>;
+    getSecurityFolderLocation: () => Promise<string>;
     hasPassword: () => Promise<boolean>;
     lock: () => Promise<boolean>;
     onEncryptionProgress: (callback: (progress: EncryptionProgressEvent) => void) => () => void;

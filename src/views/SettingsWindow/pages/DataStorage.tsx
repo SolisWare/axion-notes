@@ -11,6 +11,7 @@ import styles from "./SettingsPages.module.css";
 function DataStorage() {
   const { t } = useTranslation();
   const [notesFolderLocation, setNotesFolderLocation] = useState("");
+  const [securityFolderLocation, setSecurityFolderLocation] = useState("");
   const [settingsFolderLocation, setSettingsFolderLocation] = useState("");
 
   useEffect(() => {
@@ -24,6 +25,12 @@ function DataStorage() {
       .then(setSettingsFolderLocation)
       .catch((err: Error) => {
         console.error("Failed to load settings folder location:", err.message);
+      });
+
+    window.api.security.getSecurityFolderLocation()
+      .then(setSecurityFolderLocation)
+      .catch((err: Error) => {
+        console.error("Failed to load security folder location:", err.message);
       });
   }, []);
 
@@ -41,6 +48,12 @@ function DataStorage() {
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.dataStorage.settingsFolderLocation")}</h3>
               <p className={styles.settingsSectionDescription}>{settingsFolderLocation}</p>
+            </div>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.dataStorage.securityFolderLocation")}</h3>
+              <p className={styles.settingsSectionDescription}>{securityFolderLocation}</p>
             </div>
           </div>
         </div>

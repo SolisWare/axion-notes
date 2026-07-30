@@ -20,6 +20,7 @@ import { SettingsService } from "../storage/SettingsService";
 
 type IpcHandlerOptions = {
   appDataDir: string;
+  appSecurityDir: string;
   mainWindowStateFilePath: string;
   lockStateService: LockStateService;
   noteService: NoteService;
@@ -35,6 +36,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   });
   registerSystemThemeIpc();
   registerSecurityIpc({
+    appSecurityDir: options.appSecurityDir,
     lockStateService: options.lockStateService,
     noteService: options.noteService,
     passwordService: options.passwordService,

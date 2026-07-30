@@ -85,6 +85,7 @@ export function installBrowserApi(): void {
         isLocked: false,
         isRecoveryRequired: false
       }),
+      getSecurityFolderLocation: async () => "",
       hasPassword: async () => false,
       lock: async () => false,
       onEncryptionProgress: () => unsubscribe,

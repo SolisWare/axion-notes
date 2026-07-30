@@ -20,6 +20,10 @@ export const securityApi = {
     return receive<LockState>(channels.security.getLockState);
   },
 
+  getSecurityFolderLocation: async (): Promise<string> => {
+    return receive<string>(channels.security.getSecurityFolderLocation);
+  },
+
   lock: async (): Promise<boolean> => {
     return receive<boolean>(channels.security.lock);
   },
