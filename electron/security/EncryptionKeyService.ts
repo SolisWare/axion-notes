@@ -41,17 +41,22 @@ export class EncryptionKeyService {
       keyLength: PASSWORD_KEY_LENGTH
     };
     const passwordKey = await this.derivePasswordKey(password, this.hexToBytes(keyDerivation.salt), keyDerivation.keyLength);
-    const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
 
-    return {
-      record: {
-        version: ENCRYPTION_RECORD_VERSION,
-        algorithm: wrappedMasterKey.algorithm,
-        keyDerivation,
-        wrappedMasterKey
-      },
-      masterKey
-    };
+    try {
+      const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
+
+      return {
+        record: {
+          version: ENCRYPTION_RECORD_VERSION,
+          algorithm: wrappedMasterKey.algorithm,
+          keyDerivation,
+          wrappedMasterKey
+        },
+        masterKey
+      };
+    } finally {
+      this.zeroBytes(passwordKey);
+    }
   }
 
   /**
@@ -70,7 +75,11 @@ export class EncryptionKeyService {
       record.keyDerivation.keyLength
     );
 
-    return this.encryptionService.decrypt(record.wrappedMasterKey, passwordKey, MASTER_KEY_AAD);
+    try {
+      return this.encryptionService.decrypt(record.wrappedMasterKey, passwordKey, MASTER_KEY_AAD);
+    } finally {
+      this.zeroBytes(passwordKey);
+    }
   }
 
   /**
@@ -86,9 +95,12 @@ export class EncryptionKeyService {
    */
   public async changePassword(currentPassword: string, newPassword: string, record: EncryptionRecord): Promise<EncryptionRecord> {
     const masterKey = await this.unlock(currentPassword, record);
-    const nextRecord = await this.wrapMasterKey(newPassword, masterKey);
 
-    return nextRecord;
+    try {
+      return await this.wrapMasterKey(newPassword, masterKey);
+    } finally {
+      this.zeroBytes(masterKey);
+    }
   }
 
   private async wrapMasterKey(password: string, masterKey: Uint8Array): Promise<EncryptionRecord> {
@@ -98,14 +110,19 @@ export class EncryptionKeyService {
       keyLength: PASSWORD_KEY_LENGTH
     };
     const passwordKey = await this.derivePasswordKey(password, this.hexToBytes(keyDerivation.salt), keyDerivation.keyLength);
-    const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
 
-    return {
-      version: ENCRYPTION_RECORD_VERSION,
-      algorithm: wrappedMasterKey.algorithm,
-      keyDerivation,
-      wrappedMasterKey
-    };
+    try {
+      const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
+
+      return {
+        version: ENCRYPTION_RECORD_VERSION,
+        algorithm: wrappedMasterKey.algorithm,
+        keyDerivation,
+        wrappedMasterKey
+      };
+    } finally {
+      this.zeroBytes(passwordKey);
+    }
   }
 
   private derivePasswordKey(password: string, salt: Uint8Array, keyLength: number): Promise<Uint8Array> {
@@ -162,5 +179,9 @@ export class EncryptionKeyService {
     }
 
     return bytes;
+  }
+
+  private zeroBytes(value: Uint8Array): void {
+    value.fill(0);
   }
 }

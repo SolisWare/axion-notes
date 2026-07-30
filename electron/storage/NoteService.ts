@@ -124,7 +124,7 @@ export class NoteService {
    */
   public clearPlaintextCache(): void {
     this.notes = undefined;
-    this.masterKey = undefined;
+    this.clearMasterKey();
     this.encryptedManifest = undefined;
     this.emitPlaintextCacheStateChange();
   }
@@ -246,7 +246,7 @@ export class NoteService {
       this.notesEncryptionEnabled = false;
       this.encryptionRecord = undefined;
       this.encryptedManifest = undefined;
-      this.masterKey = undefined;
+      this.clearMasterKey();
       this.notes = notes;
       this.emitPlaintextCacheStateChange();
 
@@ -372,6 +372,11 @@ export class NoteService {
     const hasPlaintextCache = this.hasPlaintextCache();
 
     this.plaintextCacheStateListeners.forEach((listener) => listener(hasPlaintextCache));
+  }
+
+  private clearMasterKey(): void {
+    this.masterKey?.fill(0);
+    this.masterKey = undefined;
   }
 
   private setStorageMigrationInProgress(inProgress: boolean): void {
