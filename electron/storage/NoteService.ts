@@ -706,7 +706,7 @@ export class NoteService {
 
   private async installPlaintextStaging(): Promise<void> {
     const stagingDir = this.getDecryptionStagingDirPath();
-    const files = await fs.promises.readdir(stagingDir);
+    const files = await this.readDirectoryFiles(stagingDir);
 
     await this.removePlaintextLayout();
 
@@ -815,7 +815,7 @@ export class NoteService {
   }
 
   private async getPlaintextNoteFiles(baseDir: string): Promise<string[]> {
-    const files = await fs.promises.readdir(baseDir);
+    const files = await this.readDirectoryFiles(baseDir);
 
     return files.filter((file) => file !== NOTE_ORDER_FILE_NAME && file.endsWith(".json"));
   }
@@ -902,6 +902,18 @@ export class NoteService {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
         throw err;
       }
+    }
+  }
+
+  private async readDirectoryFiles(directory: string): Promise<string[]> {
+    try {
+      return await fs.promises.readdir(directory);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        return [];
+      }
+
+      throw err;
     }
   }
 
