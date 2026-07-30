@@ -469,7 +469,7 @@ export class NoteService {
   private async readLegacyEncryptedNote(baseDir: string, file: string, masterKey: Uint8Array): Promise<NoteType | null> {
     try {
       const content = await fs.promises.readFile(path.join(baseDir, file), "utf-8");
-      const record = JSON.parse(content) as EncryptedNoteRecord;
+      const record = this.migrateEncryptedNoteRecord(JSON.parse(content));
       const noteId = path.basename(file, ".json");
       const plaintext = this.encryptionService.decrypt(record, masterKey, this.getNoteAad(noteId));
       const serializedNote = new TextDecoder().decode(plaintext);
@@ -489,7 +489,7 @@ export class NoteService {
   ): Promise<NoteType | null> {
     try {
       const content = await fs.promises.readFile(path.join(this.getEncryptedNotesDirPath(baseDir), fileName), "utf-8");
-      const record = JSON.parse(content) as EncryptedNoteRecord;
+      const record = this.migrateEncryptedNoteRecord(JSON.parse(content));
       const plaintext = this.encryptionService.decrypt(record, masterKey, this.getNoteAad(noteId));
       const serializedNote = new TextDecoder().decode(plaintext);
 
@@ -773,15 +773,11 @@ export class NoteService {
 
   private async readEncryptedManifest(masterKey: Uint8Array, baseDir = this.appDataDir): Promise<EncryptedNoteManifest> {
     const content = await fs.promises.readFile(this.getEncryptedNotesManifestPath(baseDir), "utf-8");
-    const record = JSON.parse(content) as EncryptedNoteRecord;
+    const record = this.migrateEncryptedNoteRecord(JSON.parse(content));
     const plaintext = this.encryptionService.decrypt(record, masterKey, new TextEncoder().encode(MANIFEST_AAD));
-    const manifest = JSON.parse(new TextDecoder().decode(plaintext)) as EncryptedNoteManifest;
+    const manifest = this.migrateEncryptedManifest(JSON.parse(new TextDecoder().decode(plaintext)));
 
-    return {
-      version: manifest.version,
-      noteOrder: Array.isArray(manifest.noteOrder) ? manifest.noteOrder.filter((noteId): noteId is string => typeof noteId === "string") : [],
-      files: manifest.files && typeof manifest.files === "object" ? manifest.files : {}
-    };
+    return manifest;
   }
 
   private async writeEncryptedManifest(manifest: EncryptedNoteManifest, masterKey: Uint8Array, baseDir = this.appDataDir): Promise<void> {
@@ -799,6 +795,62 @@ export class NoteService {
         ...payload
       })
     );
+  }
+
+  private migrateEncryptedNoteRecord(value: unknown): EncryptedNoteRecord {
+    this.assertEncryptedNoteRecordShape(value);
+
+    if (value.version === ENCRYPTED_NOTE_RECORD_VERSION) {
+      return value;
+    }
+
+    throw new Error(`Unsupported encrypted note record version: ${value.version}.`);
+  }
+
+  private migrateEncryptedManifest(value: unknown): EncryptedNoteManifest {
+    this.assertEncryptedManifestShape(value);
+
+    if (value.version === ENCRYPTED_NOTE_MANIFEST_VERSION) {
+      return {
+        version: value.version,
+        noteOrder: value.noteOrder,
+        files: value.files
+      };
+    }
+
+    throw new Error(`Unsupported encrypted note manifest version: ${value.version}.`);
+  }
+
+  private assertEncryptedNoteRecordShape(value: unknown): asserts value is EncryptedNoteRecord {
+    if (!this.isObjectRecord(value)
+      || typeof value.version !== "number"
+      || typeof value.algorithm !== "string"
+      || typeof value.iv !== "string"
+      || typeof value.authTag !== "string"
+      || typeof value.ciphertext !== "string"
+    ) {
+      throw new Error("Invalid encrypted note record.");
+    }
+  }
+
+  private assertEncryptedManifestShape(value: unknown): asserts value is EncryptedNoteManifest {
+    if (!this.isObjectRecord(value)
+      || typeof value.version !== "number"
+      || !Array.isArray(value.noteOrder)
+      || !value.noteOrder.every((noteId): noteId is string => typeof noteId === "string")
+      || !this.isEncryptedManifestFilesRecord(value.files)
+    ) {
+      throw new Error("Invalid encrypted note manifest.");
+    }
+  }
+
+  private isEncryptedManifestFilesRecord(value: unknown): value is Record<string, string> {
+    return this.isObjectRecord(value)
+      && Object.entries(value).every(([noteId, fileName]) => typeof noteId === "string" && typeof fileName === "string");
+  }
+
+  private isObjectRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
   }
 
   private async hasEncryptedManifest(baseDir = this.appDataDir): Promise<boolean> {

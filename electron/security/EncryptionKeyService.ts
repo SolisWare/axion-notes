@@ -67,16 +67,16 @@ export class EncryptionKeyService {
    * @returns Unwrapped master key.
    */
   public async unlock(password: string, record: EncryptionRecord): Promise<Uint8Array> {
-    this.assertSupportedRecord(record);
+    const supportedRecord = this.migrateRecord(record);
 
     const passwordKey = await this.derivePasswordKey(
       password,
-      this.hexToBytes(record.keyDerivation.salt),
-      record.keyDerivation.keyLength
+      this.hexToBytes(supportedRecord.keyDerivation.salt),
+      supportedRecord.keyDerivation.keyLength
     );
 
     try {
-      return this.encryptionService.decrypt(record.wrappedMasterKey, passwordKey, MASTER_KEY_AAD);
+      return this.encryptionService.decrypt(supportedRecord.wrappedMasterKey, passwordKey, MASTER_KEY_AAD);
     } finally {
       this.zeroBytes(passwordKey);
     }
@@ -138,15 +138,46 @@ export class EncryptionKeyService {
     });
   }
 
+  private migrateRecord(record: unknown): EncryptionRecord {
+    this.assertRecordShape(record);
+
+    if (record.version === ENCRYPTION_RECORD_VERSION) {
+      this.assertSupportedRecord(record);
+      return record;
+    }
+
+    throw new Error(`Unsupported encryption record version: ${record.version}.`);
+  }
+
   private assertSupportedRecord(record: EncryptionRecord): void {
     if (
-      record.version !== ENCRYPTION_RECORD_VERSION
-      || record.keyDerivation.algorithm !== KeyDerivationAlgorithm.SCRYPT
+      record.keyDerivation.algorithm !== KeyDerivationAlgorithm.SCRYPT
       || record.keyDerivation.keyLength !== PASSWORD_KEY_LENGTH
       || record.algorithm !== record.wrappedMasterKey.algorithm
     ) {
       throw new Error("Unsupported encryption record.");
     }
+  }
+
+  private assertRecordShape(record: unknown): asserts record is EncryptionRecord {
+    if (!this.isObjectRecord(record)
+      || typeof record.version !== "number"
+      || !this.isObjectRecord(record.keyDerivation)
+      || !this.isObjectRecord(record.wrappedMasterKey)
+      || typeof record.keyDerivation.algorithm !== "string"
+      || typeof record.keyDerivation.salt !== "string"
+      || typeof record.keyDerivation.keyLength !== "number"
+      || typeof record.wrappedMasterKey.algorithm !== "string"
+      || typeof record.wrappedMasterKey.iv !== "string"
+      || typeof record.wrappedMasterKey.authTag !== "string"
+      || typeof record.wrappedMasterKey.ciphertext !== "string"
+    ) {
+      throw new Error("Invalid encryption record.");
+    }
+  }
+
+  private isObjectRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
   }
 
   private getRandomBytes(length: number): Uint8Array {
