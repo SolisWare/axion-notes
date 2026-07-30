@@ -233,6 +233,16 @@
         "cancelLabel": "Cancel",
         "confirmLabel": "Enable"
       },
+      "encryptionProgress": {
+        "encryptTitle": "Encrypting notes",
+        "decryptTitle": "Decrypting notes",
+        "preparing": "Preparing...",
+        "encryptingNotes": "Encrypting {{current}} of {{total}} notes...",
+        "decryptingNotes": "Decrypting {{current}} of {{total}} notes...",
+        "verifyingEncryption": "Verifying encrypted notes...",
+        "verifyingDecryption": "Verifying decrypted notes...",
+        "cleaningUp": "Cleaning up..."
+      },
       "lockOnSystemSleep": "Lock on system sleep",
       "lockOnSystemSleepDescription": "Lock notes when this device goes to sleep.",
       "lockAfterIdle": "Lock after idle",

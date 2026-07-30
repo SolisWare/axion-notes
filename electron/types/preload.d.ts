@@ -17,6 +17,7 @@ import { RichTextFormatAction } from '../../src/models/RichTextFormatCommand';
 import { RichTextFormatState } from '../../src/models/RichTextFormatState';
 import { LockState } from '../../src/models/LockState';
 import { UnlockResult } from '../../src/models/UnlockResult';
+import { EncryptionProgressEvent } from '../../src/models/EncryptionProgressEvent';
 
 interface IElectronAPI {
   appWindow: {
@@ -65,6 +66,7 @@ interface IElectronAPI {
     getLockState: () => Promise<LockState>;
     hasPassword: () => Promise<boolean>;
     lock: () => Promise<boolean>;
+    onEncryptionProgress: (callback: (progress: EncryptionProgressEvent) => void) => () => void;
     onLockStateChange: (callback: (lockState: LockState) => void) => () => void;
     onSecureLockComplete: (callback: () => void) => () => void;
     setPassword: (password: string) => Promise<boolean>;

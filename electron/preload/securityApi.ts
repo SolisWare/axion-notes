@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { channels } from "../ipc/channels";
+import { EncryptionProgressEvent } from "../../src/models/EncryptionProgressEvent";
 import { LockState } from "../../src/models/LockState";
 import { UnlockResult } from "../../src/models/UnlockResult";
 import { off, on, receive } from "./ipcHelpers";
@@ -37,6 +38,12 @@ export const securityApi = {
     const listener = () => callback();
     on(channels.security.onSecureLockComplete, listener);
     return () => off(channels.security.onSecureLockComplete, listener);
+  },
+
+  onEncryptionProgress: (callback: (progress: EncryptionProgressEvent) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, progress: EncryptionProgressEvent) => callback(progress);
+    on(channels.security.onEncryptionProgress, listener);
+    return () => off(channels.security.onEncryptionProgress, listener);
   },
 
   setPassword: async (password: string): Promise<boolean> => {

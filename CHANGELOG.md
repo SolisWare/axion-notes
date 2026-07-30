@@ -24,6 +24,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed Electron Copy menu availability so selected non-editable text in the focused window can still be copied
 - Added note encryption for Electron with AES-256-GCM encrypted note files, password-derived master key wrapping, and unlock-time decryption into the main-process note cache
 - Added Secure Lock for encrypted notes to lock the app and clear decrypted notes from memory
+- Moved encrypted note storage to an encrypted manifest with opaque `.note` files and added a blocking progress dialog for encryption and decryption migrations
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

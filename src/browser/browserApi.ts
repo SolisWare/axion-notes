@@ -87,6 +87,7 @@ export function installBrowserApi(): void {
       }),
       hasPassword: async () => false,
       lock: async () => false,
+      onEncryptionProgress: () => unsubscribe,
       onLockStateChange: () => unsubscribe,
       onSecureLockComplete: () => unsubscribe,
       setPassword: async () => false,

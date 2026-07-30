@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, ipcMain } from "electron";
+import { EncryptionProgressEvent } from "../../src/models/EncryptionProgressEvent";
 import { UnlockResult } from "../../src/models/UnlockResult";
 import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
 import { LockStateService } from "../security/LockStateService";
@@ -22,6 +23,12 @@ type SecurityIpcOptions = {
 };
 
 export function registerSecurityIpc(options: SecurityIpcOptions): void {
+  function sendEncryptionProgress(event: Electron.IpcMainInvokeEvent, progress: EncryptionProgressEvent): void {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send(channels.security.onEncryptionProgress, progress);
+    }
+  }
+
   options.lockStateService.onLockStateChange((lockState) => {
     BrowserWindow.getAllWindows().forEach((window) => {
       if (!window.webContents.isDestroyed()) {
@@ -115,7 +122,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  protectedHandle<boolean, [string]>(channels.security.enableEncryption, { ...options, fallback: false }, async (_event, password) => {
+  protectedHandle<boolean, [string]>(channels.security.enableEncryption, { ...options, fallback: false }, async (event, password) => {
     try {
       const isPasswordValid = await options.passwordService.verifyPassword(password);
 
@@ -123,7 +130,7 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
         return false;
       }
 
-      await options.noteService.enableEncryption(password);
+      await options.noteService.enableEncryption(password, (progress) => sendEncryptionProgress(event, progress));
       await options.passwordService.clearPassword();
       await options.lockStateService.markLockConfigured();
       return true;
@@ -133,9 +140,9 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
     }
   });
 
-  protectedHandle<boolean, [string]>(channels.security.disableEncryption, { ...options, fallback: false }, async (_event, password) => {
+  protectedHandle<boolean, [string]>(channels.security.disableEncryption, { ...options, fallback: false }, async (event, password) => {
     try {
-      await options.noteService.disableEncryption(password);
+      await options.noteService.disableEncryption(password, (progress) => sendEncryptionProgress(event, progress));
       await options.passwordService.setPassword(password);
       await options.lockStateService.markLockConfigured();
       return true;

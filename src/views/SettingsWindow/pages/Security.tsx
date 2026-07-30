@@ -4,11 +4,13 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
+import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../../models/EncryptionProgressEvent";
 import { AppSettings } from "../../../settings/AppSettings";
 import { LockScreenIdleTimeout } from "../../../settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";
@@ -26,6 +28,7 @@ function Security(props: SecurityProps) {
   const [passwordDialogMode, setPasswordDialogMode] = useState<SecurityPasswordDialogMode | null>(null);
   const [isDisableBruteForceProtectionDialogOpen, setDisableBruteForceProtectionDialogOpen] = useState(false);
   const [isEnableEncryptionDialogOpen, setEnableEncryptionDialogOpen] = useState(false);
+  const [encryptionProgress, setEncryptionProgress] = useState<EncryptionProgressEvent | null>(null);
   const isBruteForceProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isEncryptionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockScreenRowDisabled = props.appSettings.notesEncryptionEnabled;
@@ -34,6 +37,10 @@ function Security(props: SecurityProps) {
   const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
   const isRequirePasswordDelayRowDisabled = !props.appSettings.lockScreenEnabled;
   const shouldShowRequirePasswordDelay = window.api.os.isMac;
+
+  useEffect(() => {
+    return window.api.security.onEncryptionProgress(setEncryptionProgress);
+  }, []);
 
   async function handleLockScreenEnabledChange(event: ChangeEvent<HTMLInputElement>) {
     event.currentTarget.blur();
@@ -172,38 +179,84 @@ function Security(props: SecurityProps) {
         return didChangePassword;
       }
       case SecurityPasswordDialogMode.ENABLE_ENCRYPTION: {
-        const didEnableEncryption = await window.api.security.enableEncryption(values.currentPassword);
+        try {
+          const didEnableEncryption = await window.api.security.enableEncryption(values.currentPassword);
 
-        if (didEnableEncryption) {
-          props.onAppSettingsChange({
-            ...props.appSettings,
-            notesEncryptionEnabled: true
-          });
-          setPasswordDialogMode(null);
+          if (didEnableEncryption) {
+            props.onAppSettingsChange({
+              ...props.appSettings,
+              notesEncryptionEnabled: true
+            });
+            setPasswordDialogMode(null);
+          }
+
+          return didEnableEncryption;
+        } finally {
+          setEncryptionProgress(null);
         }
-
-        return didEnableEncryption;
       }
       case SecurityPasswordDialogMode.DISABLE_ENCRYPTION: {
-        const didDisableEncryption = await window.api.security.disableEncryption(values.currentPassword);
+        try {
+          const didDisableEncryption = await window.api.security.disableEncryption(values.currentPassword);
 
-        if (didDisableEncryption) {
-          props.onAppSettingsChange({
-            ...props.appSettings,
-            notesEncryptionEnabled: false
-          });
-          setPasswordDialogMode(null);
+          if (didDisableEncryption) {
+            props.onAppSettingsChange({
+              ...props.appSettings,
+              notesEncryptionEnabled: false
+            });
+            setPasswordDialogMode(null);
+          }
+
+          return didDisableEncryption;
+        } finally {
+          setEncryptionProgress(null);
         }
-
-        return didDisableEncryption;
       }
       default:
         return false;
     }
   }
 
+  function getEncryptionProgressTitle(progress: EncryptionProgressEvent): string {
+    return t(progress.operation === EncryptionProgressOperation.ENCRYPT
+      ? "settingsWindow.security.encryptionProgress.encryptTitle"
+      : "settingsWindow.security.encryptionProgress.decryptTitle");
+  }
+
+  function getEncryptionProgressStatus(progress: EncryptionProgressEvent): string {
+    if (progress.phase === EncryptionProgressPhase.PROCESSING_NOTES) {
+      return t(progress.operation === EncryptionProgressOperation.ENCRYPT
+        ? "settingsWindow.security.encryptionProgress.encryptingNotes"
+        : "settingsWindow.security.encryptionProgress.decryptingNotes", {
+        current: progress.current ?? 0,
+        total: progress.total ?? 0
+      });
+    }
+
+    if (progress.phase === EncryptionProgressPhase.VERIFYING) {
+      return t(progress.operation === EncryptionProgressOperation.ENCRYPT
+        ? "settingsWindow.security.encryptionProgress.verifyingEncryption"
+        : "settingsWindow.security.encryptionProgress.verifyingDecryption");
+    }
+
+    if (progress.phase === EncryptionProgressPhase.CLEANING_UP) {
+      return t("settingsWindow.security.encryptionProgress.cleaningUp");
+    }
+
+    return t("settingsWindow.security.encryptionProgress.preparing");
+  }
+
   return (
     <div className={styles.securityPage}>
+      {encryptionProgress && (
+        <BlockingProgressDialog
+          open={true}
+          status={getEncryptionProgressStatus(encryptionProgress)}
+          theme={props.theme}
+          title={getEncryptionProgressTitle(encryptionProgress)}
+          value={encryptionProgress.progress}
+        />
+      )}
       {passwordDialogMode && (
         <SecurityPasswordDialog
           mode={passwordDialogMode}

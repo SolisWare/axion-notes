@@ -1,0 +1,53 @@
+.backdrop {
+  background-color: var(--progress-dialog-backdrop) !important;
+}
+
+.paper {
+  width: 420px;
+  max-width: calc(100vw - 48px);
+  background: var(--progress-dialog-background) !important;
+  color: var(--progress-dialog-text) !important;
+}
+
+.title {
+  padding: 22px 24px 8px !important;
+  color: var(--progress-dialog-title) !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+}
+
+.content {
+  padding: 12px 24px 24px !important;
+}
+
+.statusRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.status {
+  color: var(--progress-dialog-text) !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.percentage {
+  flex: 0 0 auto;
+  color: var(--progress-dialog-muted-text) !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+.progressBar {
+  height: 6px !important;
+  border-radius: 999px;
+  background-color: var(--progress-dialog-track) !important;
+}
+
+.progressBar span {
+  border-radius: 999px;
+  background-color: var(--progress-dialog-primary) !important;
+}
