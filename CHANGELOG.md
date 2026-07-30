@@ -26,6 +26,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added Secure Lock for encrypted notes to lock the app and clear decrypted notes from memory
 - Moved encrypted note storage to an encrypted manifest with opaque `.note` files and added a blocking progress dialog for encryption and decryption migrations
 - Added atomic writes for encrypted notes, manifests, records, and plaintext note files to reduce corruption risk during crashes or interrupted writes
+- Added migration guards that warn before closing windows or quitting during encryption/decryption storage updates and block lock shortcuts while migration is active
 
 ## [v0.4.0-beta.2] - Unreleased - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting

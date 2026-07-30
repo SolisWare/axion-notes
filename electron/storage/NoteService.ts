@@ -34,6 +34,7 @@ const CLEANING_UP_PROGRESS = 100;
 
 type PlaintextCacheStateListener = (hasPlaintextCache: boolean) => void;
 type EncryptionProgressListener = (progress: EncryptionProgressEvent) => void;
+type StorageMigrationStateListener = (isMigrationInProgress: boolean) => void;
 
 /**
  * Provides cached note access for the Electron main process.
@@ -49,7 +50,9 @@ export class NoteService {
   private encryptionRecord: EncryptionRecord | undefined;
   private encryptedManifest: EncryptedNoteManifest | undefined;
   private masterKey: Uint8Array | undefined;
+  private storageMigrationInProgress = false;
   private readonly plaintextCacheStateListeners = new Set<PlaintextCacheStateListener>();
+  private readonly storageMigrationStateListeners = new Set<StorageMigrationStateListener>();
 
   public constructor(
     private readonly appDataDir: string,
@@ -96,6 +99,27 @@ export class NoteService {
   }
 
   /**
+   * Returns whether an encryption/decryption storage migration is active.
+   */
+  public getIsStorageMigrationInProgress(): boolean {
+    return this.storageMigrationInProgress;
+  }
+
+  /**
+   * Subscribes to encryption/decryption storage migration state changes.
+   *
+   * @param listener Listener called when migration starts or finishes.
+   * @returns Unsubscribe function.
+   */
+  public onStorageMigrationStateChange(listener: StorageMigrationStateListener): () => void {
+    this.storageMigrationStateListeners.add(listener);
+
+    return () => {
+      this.storageMigrationStateListeners.delete(listener);
+    };
+  }
+
+  /**
    * Clears plaintext notes and unlocked key material from memory.
    */
   public clearPlaintextCache(): void {
@@ -125,25 +149,33 @@ export class NoteService {
    * Encrypts existing plaintext notes on disk and stores encryption metadata.
    */
   public async enableEncryption(password: string, onProgress?: EncryptionProgressListener): Promise<void> {
-    const notes = await this.getNotes();
-    const { record, masterKey } = await this.encryptionKeyService.createRecord(password);
-    const operation = EncryptionProgressOperation.ENCRYPT;
+    this.setStorageMigrationInProgress(true);
 
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.PREPARING, PREPARING_PROGRESS);
-    await this.writeEncryptedLayoutToStaging(notes, masterKey, operation, onProgress);
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.VERIFYING, VERIFYING_PROGRESS);
-    await this.verifyEncryptedStaging(notes, masterKey);
-    await this.writeEncryptionRecord(record);
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.CLEANING_UP, CLEANING_UP_PROGRESS);
-    await this.installEncryptedStaging();
-    await this.removePlaintextLayout();
+    try {
+      const notes = await this.getNotes();
+      const { record, masterKey } = await this.encryptionKeyService.createRecord(password);
+      const operation = EncryptionProgressOperation.ENCRYPT;
 
-    this.notesEncryptionEnabled = true;
-    this.encryptionRecord = record;
-    this.masterKey = masterKey;
-    this.encryptedManifest = await this.readEncryptedManifest(masterKey);
-    this.notes = notes;
-    this.emitPlaintextCacheStateChange();
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.PREPARING, PREPARING_PROGRESS);
+      await this.writeEncryptedLayoutToStaging(notes, masterKey, operation, onProgress);
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.VERIFYING, VERIFYING_PROGRESS);
+      await this.verifyEncryptedStaging(notes, masterKey);
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.CLEANING_UP, CLEANING_UP_PROGRESS);
+      await this.installEncryptedStaging();
+      await this.verifyFinalEncryptedLayout(notes, masterKey);
+      await this.writeEncryptionRecord(record);
+      await this.removePlaintextLayout();
+      await this.verifyFinalEncryptedLayout(notes, masterKey);
+
+      this.notesEncryptionEnabled = true;
+      this.encryptionRecord = record;
+      this.masterKey = masterKey;
+      this.encryptedManifest = await this.readEncryptedManifest(masterKey);
+      this.notes = notes;
+      this.emitPlaintextCacheStateChange();
+    } finally {
+      this.setStorageMigrationInProgress(false);
+    }
   }
 
   /**
@@ -197,23 +229,31 @@ export class NoteService {
 
     const notes = await this.getNotes();
 
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.PREPARING, PREPARING_PROGRESS);
-    await this.writePlaintextLayoutToStaging(notes, operation, onProgress);
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.VERIFYING, VERIFYING_PROGRESS);
-    await this.verifyPlaintextStaging(notes);
-    this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.CLEANING_UP, CLEANING_UP_PROGRESS);
-    await this.installPlaintextStaging();
-    await this.removeEncryptedLayout();
-    await this.removeEncryptionRecord();
+    this.setStorageMigrationInProgress(true);
 
-    this.notesEncryptionEnabled = false;
-    this.encryptionRecord = undefined;
-    this.encryptedManifest = undefined;
-    this.masterKey = undefined;
-    this.notes = notes;
-    this.emitPlaintextCacheStateChange();
+    try {
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.PREPARING, PREPARING_PROGRESS);
+      await this.writePlaintextLayoutToStaging(notes, operation, onProgress);
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.VERIFYING, VERIFYING_PROGRESS);
+      await this.verifyPlaintextStaging(notes);
+      this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.CLEANING_UP, CLEANING_UP_PROGRESS);
+      await this.installPlaintextStaging();
+      await this.verifyFinalPlaintextLayout(notes);
+      await this.removeEncryptedLayout();
+      await this.removeEncryptionRecord();
+      await this.verifyFinalPlaintextLayout(notes);
 
-    return notes;
+      this.notesEncryptionEnabled = false;
+      this.encryptionRecord = undefined;
+      this.encryptedManifest = undefined;
+      this.masterKey = undefined;
+      this.notes = notes;
+      this.emitPlaintextCacheStateChange();
+
+      return notes;
+    } finally {
+      this.setStorageMigrationInProgress(false);
+    }
   }
 
   /**
@@ -332,6 +372,15 @@ export class NoteService {
     const hasPlaintextCache = this.hasPlaintextCache();
 
     this.plaintextCacheStateListeners.forEach((listener) => listener(hasPlaintextCache));
+  }
+
+  private setStorageMigrationInProgress(inProgress: boolean): void {
+    if (this.storageMigrationInProgress === inProgress) {
+      return;
+    }
+
+    this.storageMigrationInProgress = inProgress;
+    this.storageMigrationStateListeners.forEach((listener) => listener(inProgress));
   }
 
   private emitEncryptionProgress(
@@ -611,6 +660,14 @@ export class NoteService {
     }
   }
 
+  private async verifyFinalEncryptedLayout(notes: NoteType[], masterKey: Uint8Array): Promise<void> {
+    const finalNotes = await this.readEncryptedNotes(masterKey);
+
+    if (!this.areNoteListsEqual(notes, finalNotes)) {
+      throw new Error("Final encrypted note verification failed.");
+    }
+  }
+
   private async verifyPlaintextStaging(notes: NoteType[]): Promise<void> {
     const stagedNotes = await this.readPlaintextNotes(this.getDecryptionStagingDirPath());
 
@@ -619,13 +676,27 @@ export class NoteService {
     }
   }
 
+  private async verifyFinalPlaintextLayout(notes: NoteType[]): Promise<void> {
+    const finalNotes = await this.readPlaintextNotes();
+
+    if (!this.areNoteListsEqual(notes, finalNotes)) {
+      throw new Error("Final decrypted note verification failed.");
+    }
+  }
+
   private async installEncryptedStaging(): Promise<void> {
     const stagingDir = this.getEncryptionStagingDirPath();
 
     await this.removeEncryptedLayout();
-    await fs.promises.rename(this.getEncryptedNotesManifestPath(stagingDir), this.getEncryptedNotesManifestPath());
-    await fs.promises.rename(this.getEncryptedNotesDirPath(stagingDir), this.getEncryptedNotesDirPath());
-    await this.removePathIfExists(stagingDir);
+
+    try {
+      await fs.promises.rename(this.getEncryptedNotesManifestPath(stagingDir), this.getEncryptedNotesManifestPath());
+      await fs.promises.rename(this.getEncryptedNotesDirPath(stagingDir), this.getEncryptedNotesDirPath());
+      await this.removePathIfExists(stagingDir);
+    } catch (err) {
+      await this.removeEncryptedLayout();
+      throw err;
+    }
   }
 
   private async installPlaintextStaging(): Promise<void> {
@@ -634,11 +705,16 @@ export class NoteService {
 
     await this.removePlaintextLayout();
 
-    for (const file of files) {
-      await fs.promises.rename(path.join(stagingDir, file), path.join(this.appDataDir, file));
-    }
+    try {
+      for (const file of files) {
+        await fs.promises.rename(path.join(stagingDir, file), path.join(this.appDataDir, file));
+      }
 
-    await this.removePathIfExists(stagingDir);
+      await this.removePathIfExists(stagingDir);
+    } catch (err) {
+      await this.removePlaintextLayout();
+      throw err;
+    }
   }
 
   private encryptNote(note: NoteType): EncryptedNoteRecord {

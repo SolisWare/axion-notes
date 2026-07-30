@@ -21,6 +21,7 @@ let isLockScreenEnabled = false;
 let isLockScreenActive = false;
 let isNotesEncryptionEnabled = false;
 let isSecureLockAvailable = false;
+let isStorageMigrationInProgress = false;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
@@ -37,7 +38,11 @@ export function isRichTextFormattingActive(): boolean {
 }
 
 function isSecureLockMenuItemEnabled(): boolean {
-  return isNotesEncryptionEnabled && isSecureLockAvailable;
+  return isNotesEncryptionEnabled && isSecureLockAvailable && !isStorageMigrationInProgress;
+}
+
+function isLockNotesMenuItemEnabled(): boolean {
+  return isLockScreenEnabled && !isStorageMigrationInProgress;
 }
 
 function isLockScreenMenuItemAllowed(item: Electron.MenuItem): boolean {
@@ -132,7 +137,7 @@ function updateNoteMenuItems(): void {
   const activeFont = richTextFormatState.activeFont ?? NoteFontPreference.SYSTEM;
 
   if (appLockNotesMenuItem) {
-    appLockNotesMenuItem.enabled = isLockScreenEnabled;
+    appLockNotesMenuItem.enabled = isLockNotesMenuItemEnabled();
   }
 
   if (appSecureLockMenuItem) {
@@ -140,7 +145,7 @@ function updateNoteMenuItems(): void {
   }
 
   if (fileLockNotesMenuItem) {
-    fileLockNotesMenuItem.enabled = isLockScreenEnabled;
+    fileLockNotesMenuItem.enabled = isLockNotesMenuItemEnabled();
   }
 
   if (fileSecureLockMenuItem) {
@@ -302,6 +307,11 @@ export function setLockScreenActive(active: boolean): void {
 
 export function setSecureLockAvailable(available: boolean): void {
   isSecureLockAvailable = available;
+  updateNoteMenuItems();
+}
+
+export function setStorageMigrationActive(active: boolean): void {
+  isStorageMigrationInProgress = active;
   updateNoteMenuItems();
 }
 

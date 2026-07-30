@@ -195,6 +195,10 @@ export class LockStateService {
       return false;
     }
 
+    if (this.noteService.getIsStorageMigrationInProgress()) {
+      return false;
+    }
+
     if (!this.isLockScreenEnabled && !this.isNotesEncryptionEnabled && !await this.lockMarkerService.hasLockMarker()) {
       return false;
     }
@@ -229,6 +233,10 @@ export class LockStateService {
    * Locks the app and clears decrypted note/key material from memory.
    */
   public async secureLock(): Promise<boolean> {
+    if (this.noteService.getIsStorageMigrationInProgress()) {
+      return false;
+    }
+
     if (!this.isNotesEncryptionEnabled) {
       return false;
     }

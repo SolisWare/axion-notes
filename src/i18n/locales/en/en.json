@@ -466,6 +466,15 @@
       "settings": "Settings",
       "license": "License",
       "note": "Note"
+    },
+    "storageMigration": {
+      "windowCloseTitle": "Storage migration is still running",
+      "windowCloseMessage": "Axion Notes is updating encrypted note storage. Closing this window now may hide migration progress and can make recovery harder if the app is interrupted.",
+      "quitTitle": "Quit while storage migration is running?",
+      "quitMessage": "Axion Notes is updating encrypted note storage. Quitting now may corrupt encrypted note files and make notes unrecoverable.",
+      "keepWaiting": "Keep Waiting",
+      "closeAnyway": "Close Anyway",
+      "quitAnyway": "Quit Anyway"
     }
   }
 }
