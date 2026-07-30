@@ -462,7 +462,7 @@ export class NoteService {
       void this.writeNoteOrder([...noteOrder, note.id]);
     }
 
-    fs.promises.writeFile(this.getPlaintextNoteFilePath(note.id), JSON.stringify(note), "utf-8").catch((err) => console.error(err));
+    this.writeFileAtomic(this.getPlaintextNoteFilePath(note.id), JSON.stringify(note)).catch((err) => console.error(err));
   }
 
   private async writeEncryptedNote(note: NoteType): Promise<void> {
@@ -483,10 +483,9 @@ export class NoteService {
     };
 
     await fs.promises.mkdir(this.getEncryptedNotesDirPath(), { recursive: true });
-    await fs.promises.writeFile(
+    await this.writeFileAtomic(
       path.join(this.getEncryptedNotesDirPath(), nextManifest.files[note.id]),
-      JSON.stringify(this.encryptNote(note)),
-      "utf-8"
+      JSON.stringify(this.encryptNote(note))
     );
     await this.writeEncryptedManifest(nextManifest, this.masterKey);
     this.encryptedManifest = nextManifest;
@@ -559,7 +558,7 @@ export class NoteService {
       const fileName = manifest.files[note.id];
       const record = this.encryptNoteWithKey(note, masterKey);
 
-      await fs.promises.writeFile(path.join(stagingNotesDir, fileName), JSON.stringify(record), "utf-8");
+      await this.writeFileAtomic(path.join(stagingNotesDir, fileName), JSON.stringify(record));
       this.emitProcessingProgress(progressOperation, onProgress, index + 1, notes.length);
     }
 
@@ -579,7 +578,7 @@ export class NoteService {
     this.emitProcessingProgress(progressOperation, onProgress, 0, notes.length);
 
     for (const [index, note] of notes.entries()) {
-      await fs.promises.writeFile(path.join(stagingDir, `${note.id}.json`), JSON.stringify(note), "utf-8");
+      await this.writeFileAtomic(path.join(stagingDir, `${note.id}.json`), JSON.stringify(note));
       this.emitProcessingProgress(progressOperation, onProgress, index + 1, notes.length);
     }
   }
@@ -712,13 +711,12 @@ export class NoteService {
       new TextEncoder().encode(MANIFEST_AAD)
     );
 
-    await fs.promises.writeFile(
+    await this.writeFileAtomic(
       this.getEncryptedNotesManifestPath(baseDir),
       JSON.stringify({
         version: ENCRYPTED_NOTE_RECORD_VERSION,
         ...payload
-      }),
-      "utf-8"
+      })
     );
   }
 
@@ -762,7 +760,7 @@ export class NoteService {
 
   private async writeNoteOrder(noteIds: string[], baseDir = this.appDataDir): Promise<void> {
     await fs.promises.mkdir(baseDir, { recursive: true });
-    await fs.promises.writeFile(this.getNoteOrderFilePath(baseDir), JSON.stringify(noteIds), "utf-8");
+    await this.writeFileAtomic(this.getNoteOrderFilePath(baseDir), JSON.stringify(noteIds));
   }
 
   private sortNotes(notes: NoteType[], noteOrderIndexes: Map<string, number>): NoteType[] {
@@ -793,7 +791,7 @@ export class NoteService {
 
   private async writeEncryptionRecord(record: EncryptionRecord): Promise<void> {
     await fs.promises.mkdir(path.dirname(this.encryptionRecordPath), { recursive: true });
-    await fs.promises.writeFile(this.encryptionRecordPath, JSON.stringify(record, null, 2), "utf-8");
+    await this.writeFileAtomic(this.encryptionRecordPath, JSON.stringify(record, null, 2));
   }
 
   private async removeEncryptionRecord(): Promise<void> {
@@ -823,6 +821,45 @@ export class NoteService {
       if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
         throw err;
       }
+    }
+  }
+
+  private async writeFileAtomic(filePath: string, content: string): Promise<void> {
+    const directory = path.dirname(filePath);
+    const temporaryFilePath = path.join(directory, `.${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`);
+    let fileHandle: fs.promises.FileHandle | undefined;
+
+    await fs.promises.mkdir(directory, { recursive: true });
+
+    try {
+      fileHandle = await fs.promises.open(temporaryFilePath, "w");
+      await fileHandle.writeFile(content, "utf-8");
+      await fileHandle.sync();
+      await fileHandle.close();
+      fileHandle = undefined;
+      await fs.promises.rename(temporaryFilePath, filePath);
+      await this.syncDirectory(directory);
+    } catch (err) {
+      if (fileHandle) {
+        await fileHandle.close().catch(() => undefined);
+      }
+
+      await this.removePathIfExists(temporaryFilePath);
+      throw err;
+    }
+  }
+
+  private async syncDirectory(directory: string): Promise<void> {
+    let directoryHandle: fs.promises.FileHandle | undefined;
+
+    try {
+      directoryHandle = await fs.promises.open(directory, "r");
+      await directoryHandle.sync();
+    } catch {
+      // Some filesystems do not allow syncing directories. The atomic rename
+      // still protects against torn file contents in that case.
+    } finally {
+      await directoryHandle?.close().catch(() => undefined);
     }
   }
 
