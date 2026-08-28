@@ -19,7 +19,7 @@
     },
     "toolbar": {
       "newNote": "Nowa notatka",
-      "deleteAll": "Usuń wszyskie",
+      "deleteAll": "Usuń wszystkie notatki",
       "settings": "Ustawienia"
     },
     "emptyNotes": {
@@ -32,7 +32,17 @@
       "lastModified": "Ostatnio zmodyfikowano:",
       "lastModifiedCompact": "Zmodyfikowano:",
       "at": "o",
+      "formatToolbar": {
+        "bulletList": "Lista punktowana",
+        "dashedList": "Lista kreskowana",
+        "numberedList": "Lista numerowana",
+        "superscript": "Indeks górny",
+        "subscript": "Indeks dolny"
+      },
       "contextMenu": {
+        "openInNewWindow": "Otwórz w nowym oknie",
+        "pin": "Przypnij notatkę",
+        "unpin": "Odepnij notatkę",
         "moveToTop": "Przenieś na początek",
         "moveToBottom": "Przenieś na koniec",
         "duplicate": "Duplikuj",
@@ -41,7 +51,9 @@
         "delete": "Usuń notatkę",
         "noteColorAriaLabel": "Kolor notatki",
         "noteColor": "Kolor notatki..."
-      }
+      },
+      "unfold": "Rozłóż notatkę",
+      "fold": "Złóż notatkę"
     },
     "deleteAllNotesDialog": {
       "title": "Usuń wszystkie notatki",
@@ -77,6 +89,12 @@
         "lastModified": "Data modyfikacji",
         "titleAsc": "Tytuł A-Z",
         "titleDesc": "Tytuł Z-A"
+      },
+      "noteLayout": "Układ notatek",
+      "noteLayoutDescription": "Zmienia sposób układania notatek",
+      "noteLayoutOptions": {
+        "grid": "Siatka",
+        "list": "Lista"
       },
       "resortNotes": "Sortuj ponownie",
       "keepNotesOnTop": "Zachowaj okno aplikacji na górze",
@@ -135,6 +153,13 @@
       "newNote": "Nowa notatka",
       "openSettings": "Otwórz ustawienia",
       "deleteAllNotes": "Usuń wszystkie notatki",
+      "bold": "Pogrubienie",
+      "italic": "Kursywa",
+      "underline": "Podkreślenie",
+      "strikethrough": "Przekreślenie",
+      "bulletList": "Lista punktowana",
+      "dashedList": "Lista kreskowana",
+      "numberedList": "Lista numerowana",
       "keys": {
         "command": "Komenda",
         "control": "Ctrl",
@@ -162,22 +187,52 @@
   },
   "electron": {
     "menu": {
+      "about": "O {{appName}}",
       "settings": "Ustawienia...",
+      "services": "Usługi",
+      "hide": "Ukryj",
+      "hideOthers": "Ukryj inne",
+      "unhide": "Pokaż wszystkie",
+      "quit": "Wyjdź",
       "file": "Plik",
       "newNote": "Nowa notatka...",
+      "close": "Zamknij",
       "edit": "Edycja",
-      "deleteAllNotes": "Usuń wszystkie notatki...",
+      "undo": "Cofnij",
+      "redo": "Ponów",
+      "cut": "Wytnij",
+      "copy": "Kopiuj",
+      "paste": "Wklej",
+      "selectAll": "Zaznacz wszystko",
+      "delete": "Usuń",
+      "format": "Format",
+      "bold": "Pogrubienie",
+      "italic": "Kursywa",
+      "underline": "Podkreślenie",
+      "strikethrough": "Przekreślenie",
+      "superscript": "Indeks górny",
+      "subscript": "Indeks dolny",
+      "bulletList": "Lista punktowana",
+      "dashedList": "Lista kreskowana",
+      "numberedList": "Lista numerowana",
+      "deleteAllNotes": "Usuń wszystkie notatki",
       "view": "Widok",
+      "reload": "Przeładuj",
+      "resetZoom": "Rzeczywisty rozmiar",
+      "zoomIn": "Powiększ",
+      "zoomOut": "Pomniejsz",
       "toggleFullScreen": "Przełącz widok pełnego ekranu",
+      "window": "Okno",
+      "help": "Pomoc",
       "welcome": "Ekran powitalny",
-      "viewLicense": "Przeczytaj licencję",
-      "visitWebsite": "Odwiedź witrynę SolisWare",
-      "checkoutGitHub": "Sprawdź GitHub",
-      "about": "O {{appName}}"
+      "viewLicense": "Zobacz licencję",
+      "visitWebsite": "Odwiedź stronę internetową",
+      "checkoutGitHub": "Sprawdź GitHub"
     },
     "windows": {
       "settings": "Ustawienia",
-      "license": "Licencja"
+      "license": "Licencja",
+      "note": "Notatka"
     }
   }
 }
