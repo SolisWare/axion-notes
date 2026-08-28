@@ -5,7 +5,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 
 ## [v0.4.0] - Unreleased - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
-- Reduced reported dependency vulnerabilities from 5 to 4 through targeted package updates as part of ongoing security maintenance
+- Reduced reported dependency vulnerabilities from 26 to 9 through targeted package updates as part of ongoing security maintenance
 - Added dedicated note windows with live note synchronization, focused note-window context actions, and offset placement for multiple open note windows
 - Added pinned notes with pin/unpin actions, pinned-first ordering, drag-aware pinned sections, and live synchronization across note windows
 - Fixed note context menus opening off screen by flipping their placement near window edges
