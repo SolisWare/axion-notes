@@ -1,6 +1,7 @@
 {
   "majorVersion": 0,
-  "minorVersion": 3,
+  "minorVersion": 4,
   "patchVersion": 0,
-  "releaseCodename": "Gateway"
+  "preReleaseVersion": "beta.1",
+  "releaseCodename": "Viewport"
 }
