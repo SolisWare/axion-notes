@@ -2,7 +2,7 @@
   "name": "axion-notes",
   "productName": "Axion Notes",
   "description": "Cross-platform Axion Notes desktop client and web app built with ReactJS + Electron by SolisWare",
-  "version": "0.3.0",
+  "version": "0.4.0-beta.2",
   "private": true,
   "author": {
     "name": "SolisWare",

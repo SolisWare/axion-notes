@@ -3,7 +3,7 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
-## [v0.4.0-beta.2] - Unreleased - Viewport
+## [v0.4.0-beta.2] - September 4, 2026 - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
 - Split note font settings into separate title and content font pickers
 - Added inline font selection to the note formatting toolbar
