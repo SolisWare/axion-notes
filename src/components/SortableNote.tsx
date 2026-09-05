@@ -9,6 +9,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import Note from "./Note";
 import { NoteType } from "../models/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { NoteSizePreference } from "../settings/noteSizePreference";
 import { SystemTheme } from "../theme/SystemTheme";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
@@ -20,6 +21,10 @@ type SortableNoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -31,6 +36,12 @@ type SortableNoteProps = {
   handleMoveNoteToTop: (noteId: string) => void;
   handleNoteSave: (note: NoteType) => void;
   handleToggleNotePin: (note: NoteType) => void;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onEnterSelectionMode?: () => void;
+  onSelectSelection?: (noteId: string) => void;
+  onDeselectSelection?: (noteId: string) => void;
+  onToggleSelection?: (noteId: string) => void;
 };
 
 function SortableNote(props: SortableNoteProps) {
@@ -61,6 +72,10 @@ function SortableNote(props: SortableNoteProps) {
         dateFormat={props.dateFormat}
         timeFormat={props.timeFormat}
         noteFont={props.noteFont}
+        noteTitleFont={props.noteTitleFont}
+        noteContentFontSize={props.noteContentFontSize}
+        noteTitleFontSize={props.noteTitleFontSize}
+        richTextEditorEnabled={props.richTextEditorEnabled}
         noteSize={props.noteSize}
         showNoteTitles={props.showNoteTitles}
         showNoteFooters={props.showNoteFooters}
@@ -72,6 +87,12 @@ function SortableNote(props: SortableNoteProps) {
         handleMoveNoteToBottom={props.handleMoveNoteToBottom}
         handleMoveNoteToTop={props.handleMoveNoteToTop}
         handleToggleNotePin={props.handleToggleNotePin}
+        isSelectionMode={props.isSelectionMode}
+        isSelected={props.isSelected}
+        onEnterSelectionMode={props.onEnterSelectionMode}
+        onSelectSelection={props.onSelectSelection}
+        onDeselectSelection={props.onDeselectSelection}
+        onToggleSelection={props.onToggleSelection}
       />
     </div>
   );

@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import WebNoteWindowDialog from "../../components/WebNoteWindowDialog";
 import WebSettingsDialog from "../../components/WebSettingsDialog";
 import WebToolbar from "../../components/WebToolbar";
+import NoteSelectionToolbar from "../../components/NoteSelectionToolbar";
 import { AppTheme } from "../../theme/AppTheme";
 import { makeStyles } from "@mui/styles";
 import { AppView } from "../../App";
@@ -71,13 +72,18 @@ function MainWindow(props: MainWindowProps) {
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [isDeleteAllNotesDialogOpen, setDeleteAllNotesDialogOpen] = useState(false);
+  const [isDeleteSelectedNotesDialogOpen, setDeleteSelectedNotesDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [webNoteWindowNoteId, setWebNoteWindowNoteId] = useState<string | null>(null);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
   const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
     
   const isDeleteAllButtonDisabled = notes.length === 0;
+  const isSelectNotesButtonDisabled = notes.length === 0 || isSelectionMode;
+  const selectedNoteCount = selectedNoteIds.size;
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const shouldShowToolbar = !UserAgent.isElectron && props.view !== AppView.welcome;
 
@@ -98,6 +104,26 @@ function MainWindow(props: MainWindowProps) {
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
   }, [appSettings.defaultNoteColor, appSettings.showNoteTitles]);
+
+  const handleToggleSelectAllNotes = useCallback(() => {
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      if (notes.length > 0 && currentSelectedNoteIds.size === notes.length) {
+        return new Set();
+      }
+
+      setIsSelectionMode(true);
+      return new Set(notes.map((note) => note.id));
+    });
+  }, [notes]);
+
+  const handleCancelNoteSelection = useCallback(() => {
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+  }, []);
+
+  const handleClearNoteSelection = useCallback(() => {
+    setSelectedNoteIds(new Set());
+  }, []);
 
   useEffect(() => {
     window.api.storage.getNotes()
@@ -158,18 +184,52 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
+    const offMenuSelectNote = window.api.menu.onMenuSelectNote(() => setIsSelectionMode(true));
+    const offMenuSelectAllNotes = window.api.menu.onMenuSelectAllNotes(handleToggleSelectAllNotes);
+    const offMenuCancelNoteSelection = window.api.menu.onMenuCancelNoteSelection(handleCancelNoteSelection);
     const offMenuDeleteAllNotes = window.api.menu.onMenuDeleteAllNotes(() => setDeleteAllNotesDialogOpen(true));
 
     return () => {
       offMenuNewNote();
       offMenuShowWelcome();
+      offMenuSelectNote();
+      offMenuSelectAllNotes();
+      offMenuCancelNoteSelection();
       offMenuDeleteAllNotes();
     };
-  }, [handleAddNote, navigate]);
+  }, [handleAddNote, handleCancelNoteSelection, handleToggleSelectAllNotes, navigate]);
 
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);
   }, [notes.length]);
+
+  useEffect(() => {
+    const availableNoteIds = new Set(notes.map((note) => note.id));
+
+    if (notes.length === 0) {
+      setIsSelectionMode(false);
+    }
+
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(
+        [...currentSelectedNoteIds].filter((noteId) => availableNoteIds.has(noteId))
+      );
+
+      return nextSelectedNoteIds.size === currentSelectedNoteIds.size
+        ? currentSelectedNoteIds
+        : nextSelectedNoteIds;
+    });
+  }, [notes]);
+
+  useEffect(() => {
+    const hasNotes = notes.length > 0;
+
+    window.api.menu.setNoteSelectionState({
+      hasNotes,
+      isSelectionMode,
+      areAllNotesSelected: hasNotes && selectedNoteIds.size === notes.length
+    });
+  }, [isSelectionMode, notes.length, selectedNoteIds]);
 
   useEffect(() => {
     window.api.menu.setNewNoteEnabled(props.view !== AppView.welcome);
@@ -192,6 +252,48 @@ function MainWindow(props: MainWindowProps) {
     setNotes(
       notes.filter(({ id }) => id !== noteId)
     );
+  }
+
+  function handleEnterSelectionMode() {
+    setIsSelectionMode(true);
+  }
+
+  function handleSelectNoteSelection(noteId: string) {
+    setIsSelectionMode(true);
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+      nextSelectedNoteIds.add(noteId);
+
+      return nextSelectedNoteIds;
+    });
+  }
+
+  function handleDeselectNoteSelection(noteId: string) {
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+      nextSelectedNoteIds.delete(noteId);
+
+      if (nextSelectedNoteIds.size === 0) {
+        setIsSelectionMode(false);
+      }
+
+      return nextSelectedNoteIds;
+    });
+  }
+
+  function handleToggleNoteSelection(noteId: string) {
+    setIsSelectionMode(true);
+    setSelectedNoteIds((currentSelectedNoteIds) => {
+      const nextSelectedNoteIds = new Set(currentSelectedNoteIds);
+
+      if (nextSelectedNoteIds.has(noteId)) {
+        nextSelectedNoteIds.delete(noteId);
+      } else {
+        nextSelectedNoteIds.add(noteId);
+      }
+
+      return nextSelectedNoteIds;
+    });
   }
 
   function handleSaveNote(note: NoteType) {
@@ -230,6 +332,111 @@ function MainWindow(props: MainWindowProps) {
       return nextNotes;
     });
   }
+
+  const handleDuplicateSelectedNotes = useCallback(() => {
+    if (selectedNoteIds.size === 0) {
+      return;
+    }
+
+    const selectedNoteIdSet = new Set(selectedNoteIds);
+    const now = new Date();
+
+    setNotes((prevNotes) => {
+      const nextNotes = prevNotes.flatMap((note) => {
+        if (!selectedNoteIdSet.has(note.id)) {
+          return [note];
+        }
+
+        const duplicatedNote = {
+          ...note,
+          id: nanoid(),
+          pinnedOn: isPinnedNote(note) ? now : note.pinnedOn,
+          pinnedFromNoteIds: undefined,
+          createdOn: now,
+          lastModifiedOn: now
+        };
+
+        window.api.storage.setNote(duplicatedNote);
+
+        return [note, duplicatedNote];
+      });
+
+      if (currentNotesSortOrder.current === NoteSortOrder.CUSTOM || nextNotes.some((note) => selectedNoteIdSet.has(note.id) && isPinnedNote(note))) {
+        window.api.storage.setNoteOrder(nextNotes.map((note) => note.id));
+      }
+
+      return nextNotes;
+    });
+
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+  }, [selectedNoteIds]);
+
+  useEffect(() => {
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (
+        props.view !== AppView.home
+        || isDeleteAllNotesDialogOpen
+        || isDeleteSelectedNotesDialogOpen
+        || isSettingsDialogOpen
+        || webNoteWindowNoteId !== null
+      ) {
+        return;
+      }
+
+      const isModifierPressed = window.api.os.isMac ? event.metaKey : event.ctrlKey;
+      const key = event.key.toLowerCase();
+
+      if (event.key === "Escape" && isSelectionMode) {
+        event.preventDefault();
+
+        if (selectedNoteIds.size > 0) {
+          setSelectedNoteIds(new Set());
+          return;
+        }
+
+        setIsSelectionMode(false);
+        return;
+      }
+
+      if (!isModifierPressed || event.altKey || notes.length === 0) {
+        return;
+      }
+
+      if (event.shiftKey && key === "a" && !isSelectionMode) {
+        event.preventDefault();
+        setIsSelectionMode(true);
+        return;
+      }
+
+      if (event.shiftKey && key === "d" && isSelectionMode && selectedNoteIds.size > 0) {
+        event.preventDefault();
+        handleDuplicateSelectedNotes();
+        return;
+      }
+
+      if (!event.shiftKey && key === "a" && isSelectionMode) {
+        event.preventDefault();
+        setSelectedNoteIds(new Set(notes.map((note) => note.id)));
+      }
+    };
+
+    document.addEventListener("keydown", handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [
+    handleDuplicateSelectedNotes,
+    isDeleteAllNotesDialogOpen,
+    isDeleteSelectedNotesDialogOpen,
+    isSelectionMode,
+    isSettingsDialogOpen,
+    notes,
+    props.view,
+    selectedNoteIds.size,
+    webNoteWindowNoteId
+  ]);
 
   function applyNotesChange(event: NotesChangeEvent) {
     switch (event.type) {
@@ -464,6 +671,20 @@ function MainWindow(props: MainWindowProps) {
     }, 500);
   }
 
+  function handleDeleteSelectedNotes() {
+    if (selectedNoteIds.size === 0) {
+      return;
+    }
+
+    const selectedNoteIdSet = new Set(selectedNoteIds);
+
+    setNotes((prevNotes) => prevNotes.filter((note) => !selectedNoteIdSet.has(note.id)));
+    selectedNoteIdSet.forEach((noteId) => window.api.storage.deleteNote(noteId));
+    setSelectedNoteIds(new Set());
+    setIsSelectionMode(false);
+    setDeleteSelectedNotesDialogOpen(false);
+  }
+
   function handleGetStarted() {
     navigate(AppView.home);
   }
@@ -489,17 +710,29 @@ function MainWindow(props: MainWindowProps) {
       break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+                   noteTitleFont={appSettings.noteTitleFont}
+                   noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
+                   isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}
+                   onSelectNoteSelection={handleSelectNoteSelection} onDeselectNoteSelection={handleDeselectNoteSelection}
+                   onToggleNoteSelection={handleToggleNoteSelection} />
       break;
     default:
       page = <Home theme={props.theme} notes={notes} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
+                   noteTitleFont={appSettings.noteTitleFont}
+                   noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
-                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin} />
+                   handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
+                   isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}
+                   onSelectNoteSelection={handleSelectNoteSelection} onDeselectNoteSelection={handleDeselectNoteSelection}
+                   onToggleNoteSelection={handleToggleNoteSelection} />
   }
   
   return (
@@ -517,6 +750,13 @@ function MainWindow(props: MainWindowProps) {
                             confirmLabel={t("mainWindow.deleteAllNotesDialog.confirmLabel")}
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
+        <ConfirmationDialog theme={props.theme}
+                            open={isDeleteSelectedNotesDialogOpen}
+                            title={t("mainWindow.noteSelectionToolbar.deleteDialogTitle")}
+                            message={t("mainWindow.noteSelectionToolbar.deleteDialogMessage")}
+                            confirmLabel={t("mainWindow.noteSelectionToolbar.deleteDialogConfirmLabel")}
+                            onConfirm={handleDeleteSelectedNotes}
+                            onCancel={() => setDeleteSelectedNotesDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}
                            appSettings={appSettings}
                            open={isSettingsDialogOpen}
@@ -539,12 +779,24 @@ function MainWindow(props: MainWindowProps) {
           {shouldShowToolbar &&
             <WebToolbar theme={props.theme} title="Axion Notes" handleAddNoteButton={handleAddNote}
                         isDeleteAllButtonDisabled={isDeleteAllButtonDisabled}
+                        isSelectNotesButtonDisabled={isSelectNotesButtonDisabled}
+                        handleSelectNotesButton={() => setIsSelectionMode(true)}
                         handleDeleteAllNotesButton={() => setDeleteAllNotesDialogOpen(true)}
                         handleSettingsButton={() => setSettingsDialogOpen(true)} />
           }
           <main className={classes.content}>
             { page }
           </main>
+          {isSelectionMode && (
+            <NoteSelectionToolbar
+              theme={props.theme}
+              selectedCount={selectedNoteCount}
+              onDeleteSelectedNotes={() => setDeleteSelectedNotesDialogOpen(true)}
+              onDuplicateSelectedNotes={handleDuplicateSelectedNotes}
+              onClearSelection={handleClearNoteSelection}
+              onCancelSelection={handleCancelNoteSelection}
+            />
+          )}
         </div>
       </div>
     </ThemeProvider>

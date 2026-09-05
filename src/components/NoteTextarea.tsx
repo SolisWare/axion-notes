@@ -10,10 +10,12 @@ import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useRef } from 
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import { AppColorStyleProps } from "../types/appColorTypes";
+import { NoteFontSize } from "../settings/NoteFontSize";
  
 type NoteTextareaProps = {
   theme?: SystemTheme;
   fontFamily?: string;
+  fontSize?: NoteFontSize;
   placeholder: string;
   content: string;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
@@ -83,7 +85,7 @@ function NoteTextarea(props: NoteTextareaProps) {
     <div className={classes.wrapper}>
       <textarea ref={textareaRef}
                 className={classes.noteTextarea}
-                style={{ fontFamily: props.fontFamily }}
+                style={{ fontFamily: props.fontFamily, fontSize: props.fontSize }}
                 placeholder={props.placeholder}
                 value={props.content}
                 onChange={handleChange} />

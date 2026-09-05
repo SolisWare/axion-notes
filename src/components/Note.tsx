@@ -12,16 +12,18 @@ import { Formatter } from "../utils/dt-formatter/Formatter";
 import FloatingNoteFormatToolbar from "./FloatingNoteFormatToolbar";
 import NoteFormatToolbar from "./NoteFormatToolbar";
 import NoteRichTextEditor from "./NoteRichTextEditor";
+import NoteTextarea from "./NoteTextarea";
 import NoteContextMenu, { NoteContextMenuPosition } from "./NoteContextMenu";
 import { getAppColors } from "../theme/AppColors";
 import { NoteType } from "../models/NoteType";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { RichTextFormatAction } from "../models/RichTextFormatCommand";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../models/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import { ChangeEvent, CSSProperties, MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AppColorStyleProps } from "../types/appColorTypes";
 import { getNoteColor, NoteColorKey } from "../theme/NoteColors";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { NoteFontSize } from "../settings/NoteFontSize";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -32,6 +34,10 @@ type NoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
   showNoteFooters: boolean;
@@ -43,12 +49,19 @@ type NoteProps = {
   handleNoteSave: (note: NoteType) => void;
   handleToggleNoteFold?: (note: NoteType) => void;
   handleToggleNotePin?: (note: NoteType) => void;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onEnterSelectionMode?: () => void;
+  onSelectSelection?: (noteId: string) => void;
+  onDeselectSelection?: (noteId: string) => void;
+  onToggleSelection?: (noteId: string) => void;
   showDragIndicator?: boolean;
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
   showFormatToolbar?: boolean;
   showFloatingFormatToolbar?: boolean;
+  showWordCharacterCount?: boolean;
   initiallyShowDragIndicator?: boolean;
   reserveCloseButtonSpace?: boolean;
   style?: CSSProperties;
@@ -61,7 +74,7 @@ type NoteDateLabelProps = {
 
 type FormatActionRequest = {
   id: number;
-  command: RichTextFormatCommand;
+  command: RichTextFormatAction;
 };
 
 const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
@@ -90,6 +103,45 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
       opacity: 0.72,
       transform: "rotate(18deg)"
     }
+  },
+  noteSelectionButton: {
+    position: "absolute",
+    top: -8,
+    left: -8,
+    width: 22,
+    height: 22,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxSizing: "border-box",
+    padding: 0,
+    WebkitAppearance: "none",
+    appearance: "none",
+    border: "2px solid currentColor",
+    borderRadius: "50%",
+    background: "rgba(255, 255, 255, 0.72) !important",
+    color: ({ appColors }) => appColors.NOTE_SELECTION,
+    outline: "none",
+    zIndex: 3,
+    transition: "background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease",
+    "&:hover": {
+      transform: "scale(1.08)",
+      boxShadow: "0 1px 4px rgba(31, 41, 51, 0.22)"
+    },
+    "&:focus-visible": {
+      boxShadow: ({ appColors }) => `0 0 0 2px ${appColors.NOTE_SELECTION}66`
+    }
+  },
+  noteSelectionButtonSelected: {
+    background: "rgba(255, 255, 255, 0.72) !important"
+  },
+  noteSelectionCheck: {
+    width: 9,
+    height: 5,
+    marginTop: -1,
+    borderLeft: "2px solid currentColor",
+    borderBottom: "2px solid currentColor",
+    transform: "rotate(-45deg)"
   },
   noteInnerContainer: {
     width: "100%",
@@ -194,8 +246,21 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     overflow: "hidden",
     textAlign: "left",
     whiteSpace: "nowrap"
+  },
+  noteFooterTextStats: {
+    flex: "0 0 auto",
+    paddingTop: "5px",
+    paddingLeft: 10,
+    color: ({ appColors }) => appColors.NOTE_FOOTER_TEXT,
+    fontStyle: "italic",
+    textAlign: "right",
+    whiteSpace: "nowrap"
   }
 }));
+
+function getWordCount(content: string): number {
+  return content.trim().length === 0 ? 0 : content.trim().split(/\s+/).length;
+}
 
 function Note(props: NoteProps) {
   const { t } = useTranslation();
@@ -205,18 +270,7 @@ function Note(props: NoteProps) {
   const [note, setNote] = useState<NoteType>(props.note);
   const [noteContextMenuPosition, setNoteContextMenuPosition] = useState<NoteContextMenuPosition | null>(null);
   const [isNoteHovered, setIsNoteHovered] = useState(props.initiallyShowDragIndicator === true);
-  const [formatState, setFormatState] = useState<RichTextFormatState>({
-    canFormat: false,
-    isBoldActive: false,
-    isItalicActive: false,
-    isUnderlineActive: false,
-    isStrikethroughActive: false,
-    isSuperscriptActive: false,
-    isSubscriptActive: false,
-    isBulletListActive: false,
-    isDashedListActive: false,
-    isNumberedListActive: false
-  });
+  const [formatState, setFormatState] = useState<RichTextFormatState>(getInactiveRichTextFormatState);
   const [formatActionRequest, setFormatActionRequest] = useState<FormatActionRequest | null>(null);
 
   const isDeleting = useRef(false);
@@ -226,6 +280,7 @@ function Note(props: NoteProps) {
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
+  const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
   const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
   const isPinned = note.isPinned === true;
@@ -234,6 +289,10 @@ function Note(props: NoteProps) {
     : undefined;
   const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
   const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
+  const noteFooterTextStats = t("mainWindow.note.textStats", {
+    characterCount: note.content.length,
+    wordCount: getWordCount(note.content)
+  });
 
   const updateNote = (updatedNote: NoteType) => {
     latestNote.current = updatedNote;
@@ -258,6 +317,15 @@ function Note(props: NoteProps) {
       ...note,
       content,
       richContent,
+      lastModifiedOn: new Date()
+    });
+  };
+
+  const handlePlainTextNoteChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    updateNote({
+      ...note,
+      content: event.target.value,
+      richContent: undefined,
       lastModifiedOn: new Date()
     });
   };
@@ -329,6 +397,19 @@ function Note(props: NoteProps) {
     }
     : undefined;
 
+  const handleContextMenuSelectNote = props.onSelectSelection
+    ? () => {
+      handleCloseNoteContextMenu();
+
+      if (props.isSelectionMode && props.isSelected) {
+        props.onDeselectSelection?.(note.id);
+        return;
+      }
+
+      props.onSelectSelection?.(note.id);
+    }
+    : undefined;
+
   const handleContextMenuToggleFold = props.handleToggleNoteFold
     ? () => {
       handleCloseNoteContextMenu();
@@ -342,7 +423,11 @@ function Note(props: NoteProps) {
     props.handleToggleNotePin?.(latestNote.current);
   };
 
-  const handleNoteDragIndicatorRowClick = () => {
+  const handleNoteDragIndicatorRowClick = (event: MouseEvent<HTMLElement>) => {
+    if (event.metaKey || event.ctrlKey) {
+      return;
+    }
+
     props.handleToggleNoteFold?.(latestNote.current);
   };
 
@@ -357,14 +442,14 @@ function Note(props: NoteProps) {
     props.handleToggleNoteFold?.(latestNote.current);
   };
 
-  const handleFormatAction = (command: RichTextFormatCommand) => {
+  const handleFormatAction = (command: RichTextFormatAction) => {
     setFormatActionRequest({
       id: Date.now(),
       command
     });
   };
 
-  const handleContextMenuFormatAction = (command: RichTextFormatCommand) => {
+  const handleContextMenuFormatAction = (command: RichTextFormatAction) => {
     handleFormatAction(command);
     handleCloseNoteContextMenu();
   };
@@ -427,6 +512,16 @@ function Note(props: NoteProps) {
       document.removeEventListener("keydown", handleDocumentKeyDown);
     };
   }, [noteContextMenuPosition]);
+
+  useEffect(() => {
+    if (props.richTextEditorEnabled) {
+      return;
+    }
+
+    const inactiveFormatState = getInactiveRichTextFormatState();
+    setFormatState(inactiveFormatState);
+    window.api.menu.setRichTextFormatState(inactiveFormatState);
+  }, [props.richTextEditorEnabled]);
   
   return (
     <Paper
@@ -448,6 +543,23 @@ function Note(props: NoteProps) {
         ...props.style
       }}
     >
+      {props.isSelectionMode && (
+        <button
+          aria-label={props.isSelected ? t("mainWindow.note.deselect") : t("mainWindow.note.select")}
+          aria-pressed={props.isSelected === true}
+          className={`${classes.noteSelectionButton} ${props.isSelected ? classes.noteSelectionButtonSelected : ""}`}
+          style={{ color: appColors.NOTE_SELECTION }}
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            props.onToggleSelection?.(note.id);
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+        >
+          {props.isSelected && <span className={classes.noteSelectionCheck} aria-hidden="true" />}
+        </button>
+      )}
       {isPinned && props.handleToggleNotePin && (
         <button
           aria-label={t("mainWindow.note.contextMenu.unpin")}
@@ -499,7 +611,9 @@ function Note(props: NoteProps) {
                   key={props.theme}
                   className={classes.noteTitleInput}
                   style={{
-                    fontFamily: noteFontFamily,
+                    fontFamily: noteTitleFontFamily,
+                    fontSize: props.noteTitleFontSize,
+                    lineHeight: `${props.noteTitleFontSize + 5}px`,
                     color: appColors.NOTE_TEXT,
                     caretColor: appColors.NOTE_TEXT,
                     WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
@@ -514,16 +628,17 @@ function Note(props: NoteProps) {
                 />
               </div>
             )}
-            {props.showFormatToolbar && (
+            {props.showFormatToolbar && props.richTextEditorEnabled && (
               <NoteFormatToolbar
                 theme={props.theme}
                 formatState={formatState}
                 surfaceColor={color}
                 onFormatAction={handleFormatAction}
+                selectedFont={props.noteFont}
               />
             )}
             <div className={classes.noteContent}>
-              {!props.showFormatToolbar && props.showFloatingFormatToolbar !== false && (
+              {!props.showFormatToolbar && props.richTextEditorEnabled && props.showFloatingFormatToolbar !== false && (
                 <FloatingNoteFormatToolbar
                   theme={props.theme}
                   formatState={formatState}
@@ -531,21 +646,33 @@ function Note(props: NoteProps) {
                   onFormatAction={handleFormatAction}
                 />
               )}
-              <NoteRichTextEditor
-                theme={props.theme}
-                fontFamily={noteFontFamily}
-                placeholder={t("mainWindow.note.contentPlaceholder")}
-                content={note.content}
-                richContent={note.richContent}
-                formatActionRequest={formatActionRequest}
-                onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
-                onFormatStateChange={setFormatState}
-                onFormatActionRequestHandled={(requestId) => {
-                  setFormatActionRequest((currentRequest) => (
-                    currentRequest?.id === requestId ? null : currentRequest
-                  ));
-                }}
-              />
+              {props.richTextEditorEnabled ? (
+                <NoteRichTextEditor
+                  theme={props.theme}
+                  fontFamily={noteFontFamily}
+                  fontSize={props.noteContentFontSize}
+                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  content={note.content}
+                  richContent={note.richContent}
+                  formatActionRequest={formatActionRequest}
+                  onChange={({ content, richContent }) => handleNoteChange(content, richContent)}
+                  onFormatStateChange={setFormatState}
+                  onFormatActionRequestHandled={(requestId) => {
+                    setFormatActionRequest((currentRequest) => (
+                      currentRequest?.id === requestId ? null : currentRequest
+                    ));
+                  }}
+                />
+              ) : (
+                <NoteTextarea
+                  theme={props.theme}
+                  fontFamily={noteFontFamily}
+                  fontSize={props.noteContentFontSize}
+                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  content={note.content}
+                  onChange={handlePlainTextNoteChange}
+                />
+              )}
             </div>
           </div>
           {props.showNoteFooters && (
@@ -553,6 +680,11 @@ function Note(props: NoteProps) {
               <Divider />
               <div className={classes.noteFooterUtilBar}>
                 <NoteDateLabel className={classes.noteFooterUtilBarDate} text={noteFooterDateText} />
+                {props.showWordCharacterCount && (
+                  <Typography className={classes.noteFooterTextStats} variant="body2">
+                    {noteFooterTextStats}
+                  </Typography>
+                )}
               </div>
             </div>
           )}
@@ -565,14 +697,18 @@ function Note(props: NoteProps) {
           selectedColor={note.bgcolor}
           isTitleHidden={isTitleHidden}
           isPinned={isPinned}
+          isSelectionMode={props.isSelectionMode}
+          isSelected={props.isSelected}
           isFolded={note.isFolded}
           onDeleteNote={handleContextMenuDeleteNote}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}
+          onSelectNote={handleContextMenuSelectNote}
           onToggleFold={handleContextMenuToggleFold}
           onFormatAction={handleContextMenuFormatAction}
           formatState={formatState}
+          showFormatActions={props.richTextEditorEnabled}
           onMoveNoteToBottom={handleContextMenuMoveNoteToBottom}
           onMoveNoteToTop={handleContextMenuMoveNoteToTop}
           onNoteColorChange={handleContextMenuNoteColorChange}

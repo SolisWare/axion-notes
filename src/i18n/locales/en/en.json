@@ -19,8 +19,20 @@
     },
     "toolbar": {
       "newNote": "New Note",
+      "selectNotes": "Select Notes",
       "deleteAll": "Delete All",
       "settings": "Settings"
+    },
+    "noteSelectionToolbar": {
+      "label": "Note selection actions",
+      "selectedCount": "{{count}} selected",
+      "delete": "Delete",
+      "duplicate": "Duplicate",
+      "clear": "Clear selection",
+      "cancel": "Cancel",
+      "deleteDialogTitle": "Delete Selected Notes",
+      "deleteDialogMessage": "Are you sure you want to delete the selected notes? This action cannot be undone.",
+      "deleteDialogConfirmLabel": "Delete"
     },
     "emptyNotes": {
       "title": "You don't have any notes yet!",
@@ -32,12 +44,22 @@
       "lastModified": "Last modified:",
       "lastModifiedCompact": "Modified:",
       "at": "at",
+      "select": "Select note",
+      "deselect": "Deselect note",
+      "textStats": "{{wordCount}} words · {{characterCount}} characters",
       "formatToolbar": {
+        "lists": "Lists",
         "bulletList": "Bullet list",
         "dashedList": "Dashed list",
         "numberedList": "Numbered list",
+        "checklist": "Checklist",
         "superscript": "Superscript",
-        "subscript": "Subscript"
+        "subscript": "Subscript",
+        "inlineCode": "Inline code",
+        "highlight": "Highlight",
+        "clearFormatting": "Clear formatting",
+        "fontSize": "Font size",
+        "font": "Font"
       },
       "contextMenu": {
         "openInNewWindow": "Open in new window",
@@ -71,6 +93,7 @@
       "pages": {
         "general": "General",
         "appearance": "Appearance",
+        "editor": "Editor",
         "shortcuts": "Shortcuts",
         "dataStorage": "Data & storage",
         "license": "License",
@@ -136,13 +159,46 @@
         "red": "Red",
         "teal": "Teal",
         "lilac": "Lilac"
+      }
+    },
+    "disabledRichTextEditorTooltip": "Available when Rich Text Editor is on.",
+    "editor": {
+      "richTextEditor": "Rich Text Editor",
+      "richTextEditorDescription": "Enables formatting, lists, font styling, and editor toolbars.",
+      "disableRichTextEditorDialog": {
+        "title": "Turn Off Rich Text Editor?",
+        "message": "Existing formatted notes will keep their formatting unless edited in the Plain Text Editor. If you edit a formatted note while Rich Text Editor is off, that note will be converted to plain text and its formatting will be permanently discarded.",
+        "confirmLabel": "Turn Off"
       },
-      "noteFont": "Note font",
+      "titleSection": "Title",
+      "contentSection": "Content",
+      "noteFont": "Content font",
+      "noteFontDescription": "Applies to note body text.",
+      "noteContentFontSize": "Content font size",
+      "noteContentFontSizeDescription": "Default size for note body text.",
+      "noteTitleFont": "Title font",
+      "noteTitleFontDescription": "Applies to note title fields.",
+      "noteTitleFontSize": "Title font size",
+      "noteTitleFontSizeDescription": "Default size for note title fields.",
+      "noteFontCategories": {
+        "generic": "Generic",
+        "standard": "Standard",
+        "typewriter": "Typewriter",
+        "handwriting": "Handwriting",
+        "calligraphic": "Calligraphic"
+      },
       "noteFontOptions": {
         "system": "System default",
         "serif": "Serif",
         "sansSerif": "Sans-serif",
-        "monospace": "Monospace"
+        "monospace": "Monospace",
+        "inter": "Inter",
+        "lora": "Lora",
+        "sourceSans3": "Source Sans 3",
+        "sourceSerif4": "Source Serif 4",
+        "spaceMono": "Space Mono",
+        "caveat": "Caveat",
+        "dancingScript": "Dancing Script"
       },
       "noteFontPreview": "The quick brown fox jumps over the lazy dog."
     },
@@ -155,19 +211,39 @@
       "newNote": "New note",
       "openSettings": "Open settings",
       "deleteAllNotes": "Delete all notes",
+      "enterNoteSelectionMode": "Select notes",
+      "selectAllNotes": "Select all notes",
+      "duplicateSelectedNotes": "Duplicate selected notes",
+      "clearOrCancelNoteSelection": "Clear or cancel note selection",
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "inlineCode": "Inline code",
+      "highlight": "Highlight",
+      "clearFormatting": "Clear formatting",
       "bulletList": "Bullet list",
       "dashedList": "Dashed list",
       "numberedList": "Numbered list",
+      "checklist": "Checklist",
+      "increaseFontSize": "Increase font size",
+      "decreaseFontSize": "Decrease font size",
+      "sections": {
+        "general": "General",
+        "noteSelection": "Note selection",
+        "textFormatting": "Text formatting",
+        "lists": "Lists"
+      },
       "keys": {
         "command": "Command",
         "control": "Control",
         "shift": "Shift",
         "backspace": "Backspace",
-        "comma": "Comma"
+        "comma": "Comma",
+        "escape": "Escape",
+        "plus": "Plus",
+        "minus": "Minus",
+        "backslash": "Backslash"
       }
     },
     "links": {
@@ -207,16 +283,27 @@
       "paste": "Paste",
       "selectAll": "Select All",
       "delete": "Delete",
+      "selectNote": "Select Note",
+      "selectNotes": "Select Notes...",
+      "selectAllNotes": "Select All Notes",
+      "deselectAllNotes": "Deselect All Notes",
+      "cancelNoteSelection": "Cancel Note Selection",
       "format": "Format",
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline",
       "strikethrough": "Strikethrough",
+      "inlineCode": "Inline Code",
+      "highlight": "Highlight",
       "superscript": "Superscript",
       "subscript": "Subscript",
       "bulletList": "Bullet List",
       "dashedList": "Dashed List",
       "numberedList": "Numbered List",
+      "checklist": "Checklist",
+      "fontSize": "Font Size",
+      "font": "Font",
+      "clearFormatting": "Clear Formatting",
       "deleteAllNotes": "Delete All Notes...",
       "view": "View",
       "reload": "Reload",

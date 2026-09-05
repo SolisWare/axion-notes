@@ -7,15 +7,22 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
+import FontFamily from "@tiptap/extension-font-family";
+import { Mark as ProseMirrorMark } from "@tiptap/pm/model";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
+import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Editor, JSONContent } from "@tiptap/core";
-import { CSSProperties, MouseEvent, useEffect, useMemo, useRef } from "react";
+import { Editor, JSONContent, Mark, mergeAttributes } from "@tiptap/core";
+import { CSSProperties, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TiptapDocument } from "../models/NoteType";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../models/RichTextFormatState";
+import { getNoteFontFamily, getNoteFontPreferenceByFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteRichTextEditor.module.css";
@@ -24,6 +31,7 @@ const NOTE_TEXTAREA_DEFAULT_FONT_FAMILY = "monospace";
 const BULLET_LIST_MARKER_TYPE_ATTRIBUTE = "listMarkerType";
 const BULLET_LIST_MARKER_TYPE_BULLET = "bullet";
 const BULLET_LIST_MARKER_TYPE_DASH = "dash";
+const FONT_SIZE_FEEDBACK_TIMEOUT_MS = 900;
 let focusedEditorId: string | null = null;
 
 const MarkerBulletList = BulletList.extend({
@@ -47,6 +55,54 @@ const MarkerBulletList = BulletList.extend({
   }
 });
 
+const InlineCode = Mark.create({
+  name: "inlineCode",
+
+  code: true,
+
+  excludes: "_",
+
+  parseHTML() {
+    return [
+      {
+        tag: "code"
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ["code", mergeAttributes(HTMLAttributes), 0];
+  }
+});
+
+const Highlight = Mark.create({
+  name: "highlight",
+
+  parseHTML() {
+    return [
+      {
+        tag: "mark"
+      },
+      {
+        style: "background-color",
+        getAttrs: (value) => (
+          typeof value === "string" && value.length > 0
+            ? {}
+            : false
+        )
+      }
+    ];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return [
+      "mark",
+      mergeAttributes(HTMLAttributes),
+      0
+    ];
+  }
+});
+
 type NoteRichTextEditorChange = {
   content: string;
   richContent?: TiptapDocument;
@@ -55,6 +111,7 @@ type NoteRichTextEditorChange = {
 type NoteRichTextEditorProps = {
   theme?: SystemTheme;
   fontFamily?: string;
+  fontSize?: NoteFontSize;
   placeholder: string;
   content: string;
   richContent?: TiptapDocument;
@@ -66,7 +123,7 @@ type NoteRichTextEditorProps = {
 
 export type RichTextFormatActionRequest = {
   id: number;
-  command: RichTextFormatCommand;
+  command: RichTextFormatAction;
 };
 
 function getPlainTextDocument(content: string): TiptapDocument {
@@ -96,19 +153,53 @@ function hasRichFormatting(content: JSONContent): boolean {
   return content.content?.some(hasRichFormatting) ?? false;
 }
 
-function getInactiveFormatState() {
-  return {
-    canFormat: false,
-    isBoldActive: false,
-    isItalicActive: false,
-    isUnderlineActive: false,
-    isStrikethroughActive: false,
-    isSuperscriptActive: false,
-    isSubscriptActive: false,
-    isBulletListActive: false,
-    isDashedListActive: false,
-    isNumberedListActive: false
-  };
+function getNoteFontSizePreference(fontSize: string | undefined): NoteFontSize | undefined {
+  if (!fontSize) {
+    return undefined;
+  }
+
+  const parsedFontSize = Number.parseFloat(fontSize);
+
+  return NOTE_CONTENT_FONT_SIZE_OPTIONS.find((fontSizeOption) => fontSizeOption === parsedFontSize);
+}
+
+function getClosestFontSizeOption(fontSize: number): NoteFontSize {
+  return NOTE_CONTENT_FONT_SIZE_OPTIONS.reduce((closestFontSize, fontSizeOption) => (
+    Math.abs(fontSizeOption - fontSize) < Math.abs(closestFontSize - fontSize)
+      ? fontSizeOption
+      : closestFontSize
+  ), NOTE_CONTENT_FONT_SIZE_OPTIONS[0]);
+}
+
+function getSteppedFontSize(fontSize: number, direction: 1 | -1): NoteFontSize {
+  const closestFontSize = getClosestFontSizeOption(fontSize);
+  const closestFontSizeIndex = NOTE_CONTENT_FONT_SIZE_OPTIONS.indexOf(closestFontSize);
+  const nextFontSizeIndex = Math.max(
+    0,
+    Math.min(NOTE_CONTENT_FONT_SIZE_OPTIONS.length - 1, closestFontSizeIndex + direction)
+  );
+
+  return NOTE_CONTENT_FONT_SIZE_OPTIONS[nextFontSizeIndex];
+}
+
+function getFontSizeFromTextStyleMark(textStyleMark: ProseMirrorMark | undefined, fallbackFontSize: NoteFontSize): NoteFontSize {
+  const fontSize = getNoteFontSizePreference(textStyleMark?.attrs.fontSize);
+
+  return fontSize ?? fallbackFontSize;
+}
+
+function getFontSizeFeedbackLabel(fontSizes: NoteFontSize[]): string {
+  const uniqueFontSizes = [...new Set(fontSizes)].sort((firstFontSize, secondFontSize) => firstFontSize - secondFontSize);
+
+  if (uniqueFontSizes.length === 0) {
+    return "";
+  }
+
+  if (uniqueFontSizes.length === 1) {
+    return `${uniqueFontSizes[0]} px`;
+  }
+
+  return `${uniqueFontSizes[0]}-${uniqueFontSizes[uniqueFontSizes.length - 1]} px`;
 }
 
 function getFormatState(editor: Editor) {
@@ -118,6 +209,8 @@ function getFormatState(editor: Editor) {
   const dashedListAttributes = {
     [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
   };
+  const textStyleAttributes = editor.getAttributes("textStyle");
+  const activeFontFamily = textStyleAttributes.fontFamily;
 
   return {
     canFormat: true,
@@ -125,11 +218,16 @@ function getFormatState(editor: Editor) {
     isItalicActive: editor.isActive("italic"),
     isUnderlineActive: editor.isActive("underline"),
     isStrikethroughActive: editor.isActive("strike"),
+    isInlineCodeActive: editor.isActive("inlineCode"),
+    isHighlightActive: editor.isActive("highlight"),
     isSuperscriptActive: editor.isActive("superscript"),
     isSubscriptActive: editor.isActive("subscript"),
     isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
-    isNumberedListActive: editor.isActive("orderedList")
+    isNumberedListActive: editor.isActive("orderedList"),
+    isChecklistActive: editor.isActive("taskList"),
+    activeFontSize: getNoteFontSizePreference(textStyleAttributes.fontSize),
+    activeFont: getNoteFontPreferenceByFontFamily(activeFontFamily)
   };
 }
 
@@ -139,10 +237,70 @@ function clearFocusedFormatState(editorId: string) {
   }
 
   focusedEditorId = null;
-  window.api.menu.setRichTextFormatState(getInactiveFormatState());
+  window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
 }
 
-function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatCommand) {
+function getRichTextFormatCommand(action: RichTextFormatAction): RichTextFormatCommand {
+  return typeof action === "string" ? action : action.command;
+}
+
+function applyFontSizeStep(editor: Editor, direction: 1 | -1, fallbackFontSize: NoteFontSize): string | undefined {
+  const { state, view } = editor;
+  const { from, to, empty } = state.selection;
+  const textStyleType = state.schema.marks.textStyle;
+
+  if (!textStyleType) {
+    return undefined;
+  }
+
+  if (empty) {
+    const activeFontSize = getNoteFontSizePreference(editor.getAttributes("textStyle").fontSize) ?? fallbackFontSize;
+    const nextFontSize = getSteppedFontSize(activeFontSize, direction);
+
+    editor.chain().focus().setFontSize(`${nextFontSize}px`).run();
+
+    return `${nextFontSize} px`;
+  }
+
+  const nextFontSizes: NoteFontSize[] = [];
+  const transaction = state.tr;
+
+  state.doc.nodesBetween(from, to, (node, position) => {
+    if (!node.isText) {
+      return;
+    }
+
+    const textStyleMark = node.marks.find((mark) => mark.type === textStyleType);
+    const currentFontSize = getFontSizeFromTextStyleMark(textStyleMark, fallbackFontSize);
+    const nextFontSize = getSteppedFontSize(currentFontSize, direction);
+    const nextTextStyleAttributes = {
+      ...(textStyleMark?.attrs ?? {}),
+      fontSize: `${nextFontSize}px`
+    };
+    const markStart = Math.max(position, from);
+    const markEnd = Math.min(position + node.nodeSize, to);
+
+    if (markStart >= markEnd) {
+      return;
+    }
+
+    transaction.removeMark(markStart, markEnd, textStyleType);
+    transaction.addMark(markStart, markEnd, textStyleType.create(nextTextStyleAttributes));
+    nextFontSizes.push(nextFontSize);
+  });
+
+  if (nextFontSizes.length === 0) {
+    return undefined;
+  }
+
+  view.dispatch(transaction.scrollIntoView());
+  editor.commands.focus();
+
+  return getFontSizeFeedbackLabel(nextFontSizes);
+}
+
+function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction, fallbackFontSize: NoteFontSize = DEFAULT_NOTE_CONTENT_FONT_SIZE): string | undefined {
+  const command = getRichTextFormatCommand(action);
   const commandChain = editor.chain().focus();
 
   switch (command) {
@@ -158,6 +316,12 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
     case RichTextFormatCommand.STRIKETHROUGH:
       commandChain.toggleStrike().run();
       break;
+    case RichTextFormatCommand.HIGHLIGHT:
+      commandChain.toggleMark("highlight").run();
+      break;
+    case RichTextFormatCommand.INLINE_CODE:
+      commandChain.toggleMark("inlineCode").run();
+      break;
     case RichTextFormatCommand.SUPERSCRIPT:
       editor.chain().focus().unsetSubscript().toggleSuperscript().run();
       break;
@@ -172,6 +336,41 @@ function applyRichTextFormatCommand(editor: Editor, command: RichTextFormatComma
       break;
     case RichTextFormatCommand.NUMBERED_LIST:
       commandChain.toggleOrderedList().run();
+      break;
+    case RichTextFormatCommand.CHECKLIST:
+      commandChain.toggleTaskList().run();
+      break;
+    case RichTextFormatCommand.FONT_SIZE:
+      if (typeof action === "string" || action.command !== RichTextFormatCommand.FONT_SIZE || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
+        commandChain.unsetFontSize().run();
+        break;
+      }
+
+      commandChain.setFontSize(`${action.fontSize}px`).run();
+      break;
+    case RichTextFormatCommand.INCREASE_FONT_SIZE:
+      return applyFontSizeStep(editor, 1, fallbackFontSize);
+    case RichTextFormatCommand.DECREASE_FONT_SIZE:
+      return applyFontSizeStep(editor, -1, fallbackFontSize);
+    case RichTextFormatCommand.FONT_FAMILY:
+      if (typeof action === "string" || action.command !== RichTextFormatCommand.FONT_FAMILY || action.noteFont === NoteFontPreference.SYSTEM) {
+        commandChain.unsetFontFamily().run();
+        break;
+      }
+
+      commandChain.setFontFamily(getNoteFontFamily(action.noteFont) ?? "").run();
+      break;
+    case RichTextFormatCommand.CLEAR_FORMATTING:
+      commandChain
+        .unsetBold()
+        .unsetItalic()
+        .unsetUnderline()
+        .unsetStrike()
+        .unsetMark("highlight")
+        .unsetMark("inlineCode")
+        .unsetSuperscript()
+        .unsetSubscript()
+        .run();
       break;
   }
 }
@@ -208,6 +407,9 @@ function publishFormatState(editor: Editor, onFormatStateChange?: (state: RichTe
 function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   const editorId = useMemo(() => crypto.randomUUID(), []);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const fontSizeFeedbackTimer = useRef<number | undefined>(undefined);
+  const fallbackFontSizeRef = useRef<NoteFontSize>(props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
+  const [fontSizeFeedbackLabel, setFontSizeFeedbackLabel] = useState<string | null>(null);
   const {
     formatActionRequest,
     onChange,
@@ -218,10 +420,36 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   const editorStyle = {
     "--note-rich-text-color": appColors.NOTE_TEXT,
     "--note-rich-text-font-family": props.fontFamily ?? NOTE_TEXTAREA_DEFAULT_FONT_FAMILY,
+    "--note-rich-text-font-size": `${props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE}px`,
+    "--note-rich-text-highlight-background": appColors.NOTE_HIGHLIGHT_BACKGROUND,
+    "--note-rich-text-highlight-color": appColors.NOTE_HIGHLIGHT_TEXT,
+    "--note-rich-text-inline-code-background": appColors.NOTE_INLINE_CODE_BACKGROUND,
+    "--note-rich-text-inline-code-color": appColors.NOTE_INLINE_CODE_TEXT,
     "--note-rich-text-placeholder-color": appColors.NOTE_PLACEHOLDER_TEXT
   } as CSSProperties;
   
   const editorContent = useMemo(() => props.richContent ?? getPlainTextDocument(props.content), [props.content, props.richContent]);
+
+  useEffect(() => {
+    fallbackFontSizeRef.current = props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
+  }, [props.fontSize]);
+
+  const showFontSizeFeedback = useCallback((feedbackLabel: string | undefined) => {
+    if (!feedbackLabel) {
+      return;
+    }
+
+    setFontSizeFeedbackLabel(feedbackLabel);
+
+    if (fontSizeFeedbackTimer.current !== undefined) {
+      window.clearTimeout(fontSizeFeedbackTimer.current);
+    }
+
+    fontSizeFeedbackTimer.current = window.setTimeout(() => {
+      setFontSizeFeedbackLabel(null);
+      fontSizeFeedbackTimer.current = undefined;
+    }, FONT_SIZE_FEEDBACK_TIMEOUT_MS);
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -231,9 +459,19 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         code: false,
         codeBlock: false,
         heading: false,
-        horizontalRule: false
+        horizontalRule: false,
+        underline: false
       }),
       MarkerBulletList,
+      TaskList,
+      TaskItem.configure({
+        nested: true
+      }),
+      TextStyle,
+      FontSize,
+      FontFamily,
+      InlineCode,
+      Highlight,
       Superscript,
       Subscript,
       Underline,
@@ -245,6 +483,40 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     editorProps: {
       attributes: {
         class: styles.editorSurface
+      },
+      handleKeyDown: (_view, event) => {
+        const isModifierPressed = window.api.os.isMac ? event.metaKey : event.ctrlKey;
+
+        if (!isModifierPressed || event.altKey) {
+          return false;
+        }
+
+        const isIncreaseShortcut = event.key === "+" || event.key === "=";
+        const isDecreaseShortcut = event.key === "-";
+        const isHighlightShortcut = event.shiftKey && event.key.toLowerCase() === "h";
+        const isInlineCodeShortcut = !event.shiftKey && event.key.toLowerCase() === "m";
+        const isClearFormattingShortcut = !event.shiftKey && event.key === "\\";
+
+        if (!isIncreaseShortcut && !isDecreaseShortcut && !isHighlightShortcut && !isInlineCodeShortcut && !isClearFormattingShortcut) {
+          return false;
+        }
+
+        event.preventDefault();
+        focusedEditorId = editorId;
+
+        if (isIncreaseShortcut || isDecreaseShortcut) {
+          showFontSizeFeedback(applyFontSizeStep(editor, isIncreaseShortcut ? 1 : -1, fallbackFontSizeRef.current));
+        } else if (isHighlightShortcut) {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.HIGHLIGHT, fallbackFontSizeRef.current);
+        } else if (isInlineCodeShortcut) {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.INLINE_CODE, fallbackFontSizeRef.current);
+        } else {
+          applyRichTextFormatCommand(editor, RichTextFormatCommand.CLEAR_FORMATTING, fallbackFontSizeRef.current);
+        }
+
+        publishFormatState(editor, onFormatStateChange);
+
+        return true;
       }
     },
     onFocus: ({ editor }) => {
@@ -300,7 +572,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
       }
 
       clearFocusedFormatState(editorId);
-      onFormatStateChange?.(getInactiveFormatState());
+      onFormatStateChange?.(getInactiveRichTextFormatState());
     }
 
     document.addEventListener("focusin", handleDocumentFocusOrMouseDown, true);
@@ -317,14 +589,25 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
       return;
     }
 
-    editor.setOptions({
-      editorProps: {
-        attributes: {
-          class: styles.editorSurface
-        }
+    function handleWindowFocus() {
+      if (editor?.isFocused && focusedEditorId === editorId) {
+        publishFormatState(editor, onFormatStateChange);
       }
-    });
-  }, [editor]);
+    }
+
+    function handleWindowBlur() {
+      clearFocusedFormatState(editorId);
+      onFormatStateChange?.(getInactiveRichTextFormatState());
+    }
+
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("blur", handleWindowBlur);
+
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [editor, editorId, onFormatStateChange]);
 
   useEffect(() => {
     return window.api.menu.onMenuRichTextFormat((command) => {
@@ -332,10 +615,10 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         return;
       }
 
-      applyRichTextFormatCommand(editor, command);
+      showFontSizeFeedback(applyRichTextFormatCommand(editor, command, props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE));
       publishFormatState(editor, onFormatStateChange);
     });
-  }, [editor, editorId, onFormatStateChange]);
+  }, [editor, editorId, onFormatStateChange, props.fontSize, showFontSizeFeedback]);
 
   useEffect(() => {
     if (!editor || !formatActionRequest) {
@@ -343,15 +626,19 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     }
 
     focusedEditorId = editorId;
-    applyRichTextFormatCommand(editor, formatActionRequest.command);
+    showFontSizeFeedback(applyRichTextFormatCommand(editor, formatActionRequest.command, props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE));
     publishFormatState(editor, onFormatStateChange);
     onFormatActionRequestHandled?.(formatActionRequest.id);
-  }, [editor, editorId, formatActionRequest, onFormatActionRequestHandled, onFormatStateChange]);
+  }, [editor, editorId, formatActionRequest, onFormatActionRequestHandled, onFormatStateChange, props.fontSize, showFontSizeFeedback]);
 
   useEffect(() => {
     return () => {
+      if (fontSizeFeedbackTimer.current !== undefined) {
+        window.clearTimeout(fontSizeFeedbackTimer.current);
+      }
+
       clearFocusedFormatState(editorId);
-      onFormatStateChange?.(getInactiveFormatState());
+      onFormatStateChange?.(getInactiveRichTextFormatState());
     };
   }, [editorId, onFormatStateChange]);
 
@@ -368,6 +655,11 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
   return (
     <div className={styles.wrapper} onMouseDown={handleWrapperMouseDown} ref={wrapperRef} style={editorStyle}>
       <EditorContent className={styles.editor} editor={editor} />
+      {fontSizeFeedbackLabel && (
+        <div className={styles.fontSizeFeedback} aria-live="polite">
+          {fontSizeFeedbackLabel}
+        </div>
+      )}
     </div>
   );
 }

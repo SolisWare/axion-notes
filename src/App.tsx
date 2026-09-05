@@ -19,7 +19,10 @@ import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
 import { resolveAppThemePreference } from './settings/AppThemePreference';
 import { MenuEditSelectionState } from './models/MenuEditSelectionState';
+import { getInactiveRichTextFormatState } from './models/RichTextFormatState';
 import { resolvePreferredSupportedLanguageCode } from './i18n/languageConfig';
+import { resolvePreferredDateFormat } from './utils/dt-formatter/dateFormatConfig';
+import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfig';
 
 export enum AppView {
   home = "/home",
@@ -39,9 +42,13 @@ function getInitialAppSettings(settings: AppSettings | undefined): AppSettings {
     };
   }
 
+  const preferredBrowserLanguages = getPreferredBrowserLanguage();
+
   return {
     ...defaultAppSettings,
-    language: resolvePreferredSupportedLanguageCode(getPreferredBrowserLanguage())
+    dateFormat: resolvePreferredDateFormat(preferredBrowserLanguages),
+    language: resolvePreferredSupportedLanguageCode(preferredBrowserLanguages),
+    timeFormat: resolvePreferredTimeFormat(preferredBrowserLanguages)
   };
 }
 
@@ -92,6 +99,14 @@ function App() {
   useEffect(() => {
     return window.api.settings.onSettingsChange(setAppSettings);
   }, []);
+
+  useEffect(() => {
+    if (!UserAgent.isElectron || appSettings.richTextEditorEnabled) {
+      return;
+    }
+
+    window.api.menu.setRichTextFormatState(getInactiveRichTextFormatState());
+  }, [appSettings.richTextEditorEnabled]);
 
   useEffect(() => {
     if (UserAgent.isElectron && hasLoadedAppSettings) {

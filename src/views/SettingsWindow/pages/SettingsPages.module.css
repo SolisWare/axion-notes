@@ -18,7 +18,8 @@
   max-width: 320px;
 }
 
-.appearancePage {
+.appearancePage,
+.editorPage {
   min-height: 100%;
   box-sizing: border-box;
   padding: 26px 34px 34px;
@@ -41,7 +42,7 @@
 
 .settingsSection {
   width: 100%;
-  max-width: 470px;
+  max-width: 510px;
 }
 
 .settingsRows {
@@ -69,8 +70,36 @@
   border-bottom: 0;
 }
 
+.settingsRowDisabled {
+  opacity: 0.48;
+}
+
+.settingsSubsectionHeader {
+  margin: 10px 0 7px;
+  padding: 0 2px;
+  color: var(--settings-section-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.settingsSubsectionHeaderFirst {
+  margin-top: 22px;
+}
+
+.settingsSubsectionHeaderSpaced {
+  margin-top: 22px;
+}
+
 .settingsRowText {
   min-width: 0;
+  flex: 1 1 auto;
+}
+
+.settingsRow:has(.switchControl) .settingsRowText {
+  min-width: 300px;
 }
 
 .settingsSectionTitle {
@@ -188,6 +217,7 @@
   justify-content: center;
   flex: 0 0 38px;
   align-self: center;
+  margin-left: auto;
   position: relative;
   cursor: default;
 }
@@ -343,9 +373,28 @@
   gap: 8px;
 }
 
+.noteFontRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  column-gap: 24px;
+  row-gap: 8px;
+}
+
+.noteFontRow .noteFontControls {
+  width: auto;
+  flex: 0 0 auto;
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .noteFontControls .settingsSelect {
   width: 230px;
   align-self: flex-end;
+}
+
+.noteFontRow .noteFontControls .settingsSelect {
+  justify-self: end;
+  align-self: start;
 }
 
 .noteFontPreview {
@@ -359,6 +408,16 @@
   line-height: 16px;
   text-align: right;
   white-space: nowrap;
+}
+
+.noteFontRow .noteFontPreview {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  padding-left: 0;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: right;
 }
 
 .linkButton {
@@ -406,10 +465,12 @@
   display: inline-flex;
   align-items: flex-start;
   justify-content: flex-end;
-  flex: 0 0 auto;
+  flex: 0 0 225px;
   gap: 7px;
   box-sizing: border-box;
-  margin: 0;
+  margin-left: auto;
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 0 0 14px;
   border: 0;
 }
@@ -614,15 +675,39 @@
   color: var(--settings-nav-text);
 }
 
-.shortcutsList {
+.shortcutsSection {
   width: 100%;
-  max-width: 460px;
-  display: flex;
-  flex-direction: column;
+  max-width: 510px;
+}
+
+.shortcutGroup {
+  margin-top: 22px;
+}
+
+.shortcutGroup:first-child {
+  margin-top: 0;
+}
+
+.shortcutsList {
   overflow: hidden;
   border: 1px solid var(--settings-divider);
   border-radius: 8px;
   background: var(--settings-content-background);
+}
+
+.shortcutSectionHeader {
+  margin: 0 0 7px;
+  padding: 0 2px;
+  color: var(--settings-section-text);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.shortcutSectionHeaderFirst {
+  margin-top: 0;
 }
 
 .shortcutRow {
@@ -636,8 +721,12 @@
   border-bottom: 1px solid var(--settings-divider);
 }
 
-.shortcutRow:last-child {
+.shortcutsList .shortcutRow:last-child {
   border-bottom: 0;
+}
+
+.shortcutRowDisabled {
+  opacity: 0.48;
 }
 
 .shortcutLabel {

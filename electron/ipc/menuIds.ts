@@ -18,6 +18,9 @@ export const menuIds = {
     copy: "copy",
     paste: "paste",
     delete: "delete",
+    selectNote: "selectNote",
+    selectAllNotes: "selectAllNotes",
+    cancelNoteSelection: "cancelNoteSelection",
     deleteAllNotes: "deleteAllNotes"
   },
   format: {
@@ -26,10 +29,22 @@ export const menuIds = {
     italic: "formatItalic",
     underline: "formatUnderline",
     strikethrough: "formatStrikethrough",
+    inlineCode: "formatInlineCode",
+    highlight: "formatHighlight",
     superscript: "formatSuperscript",
     subscript: "formatSubscript",
     bulletList: "formatBulletList",
     dashedList: "formatDashedList",
-    numberedList: "formatNumberedList"
+    numberedList: "formatNumberedList",
+    checklist: "formatChecklist",
+    fontSize: {
+      root: "formatFontSize",
+      option: (fontSize: number) => `formatFontSize-${fontSize}`
+    },
+    fontFamily: {
+      root: "formatFontFamily",
+      option: (noteFont: string) => `formatFontFamily-${noteFont}`
+    },
+    clearFormatting: "formatClearFormatting"
   }
 } as const;

@@ -12,6 +12,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { Box, Button, Theme } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -23,7 +24,9 @@ type WebToolbarProps = {
   theme: SystemTheme;
   title: string;
   isDeleteAllButtonDisabled: boolean;
+  isSelectNotesButtonDisabled: boolean;
   handleAddNoteButton: (event: React.MouseEvent<HTMLElement>) => void;
+  handleSelectNotesButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleDeleteAllNotesButton: (event: React.MouseEvent<HTMLElement>) => void;
   handleSettingsButton: (event: React.MouseEvent<HTMLElement>) => void;
 };
@@ -133,6 +136,7 @@ function WebToolbar(props: WebToolbarProps) {
   const isWindows = window.api.os.isWindows;
   const toolbarTextClassName = clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText);
   const newNoteLabel = t("mainWindow.toolbar.newNote");
+  const selectNotesLabel = t("mainWindow.toolbar.selectNotes");
   const deleteAllLabel = t("mainWindow.toolbar.deleteAll");
   const settingsLabel = t("mainWindow.toolbar.settings");
 
@@ -163,6 +167,22 @@ function WebToolbar(props: WebToolbarProps) {
             <div className={classes.toolbarIconBtnInnerContainer}>
               <AddCircleOutlineIcon fontSize="small" />
               <WebToolbarLabel className={toolbarTextClassName} label={newNoteLabel} />
+            </div>
+          </Button>
+          <span className={classes.toolbarBtnSpacer}/>
+          <Button
+            className={clsx(
+              classes.toolbarBtn,
+              isWindows && classes.windowsToolbarBtn
+            )}
+            variant="toolbar"
+            color="primary"
+            disabled={props.isSelectNotesButtonDisabled}
+            onClick={props.handleSelectNotesButton}
+          >
+            <div className={classes.toolbarIconBtnInnerContainer}>
+              <CheckCircleOutlineRoundedIcon fontSize="small" />
+              <WebToolbarLabel className={toolbarTextClassName} label={selectNotesLabel} />
             </div>
           </Button>
           <span className={classes.toolbarBtnSpacer}/>

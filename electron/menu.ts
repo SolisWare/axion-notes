@@ -12,6 +12,8 @@ import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
 import { translate } from "./utils/electronI18n";
 import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
+import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
+import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 
 export function createMenubar(): Menu {
   const template: any = [
@@ -85,6 +87,32 @@ export function createMenubar(): Menu {
         ] : []),
         { type: 'separator' },
         {
+          id: menuIds.edit.selectNote,
+          label: translate("electron.menu.selectNotes"),
+          accelerator: 'Shift+CmdOrCtrl+A',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectNote);
+          }
+        },
+        {
+          id: menuIds.edit.selectAllNotes,
+          label: translate("electron.menu.selectAllNotes"),
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectAllNotes);
+          }
+        },
+        {
+          id: menuIds.edit.cancelNoteSelection,
+          label: translate("electron.menu.cancelNoteSelection"),
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.cancelNoteSelection);
+          }
+        },
+        { type: 'separator' },
+        {
           id: menuIds.edit.deleteAllNotes,
           label: translate("electron.menu.deleteAllNotes"),
           accelerator: 'Shift+CmdOrCtrl+Backspace',
@@ -140,6 +168,26 @@ export function createMenubar(): Menu {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.STRIKETHROUGH);
           }
         },
+        {
+          id: menuIds.format.highlight,
+          label: translate("electron.menu.highlight"),
+          accelerator: 'Shift+CmdOrCtrl+H',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.HIGHLIGHT);
+          }
+        },
+        {
+          id: menuIds.format.inlineCode,
+          label: translate("electron.menu.inlineCode"),
+          accelerator: 'CmdOrCtrl+M',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.INLINE_CODE);
+          }
+        },
         { type: 'separator' },
         {
           id: menuIds.format.superscript,
@@ -163,7 +211,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.bulletList,
           label: translate("electron.menu.bulletList"),
-          accelerator: 'Shift+CmdOrCtrl+7',
+          accelerator: 'Shift+CmdOrCtrl+6',
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -173,7 +221,7 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.dashedList,
           label: translate("electron.menu.dashedList"),
-          accelerator: 'Shift+CmdOrCtrl+8',
+          accelerator: 'Shift+CmdOrCtrl+7',
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -183,11 +231,71 @@ export function createMenubar(): Menu {
         {
           id: menuIds.format.numberedList,
           label: translate("electron.menu.numberedList"),
-          accelerator: 'Shift+CmdOrCtrl+9',
+          accelerator: 'Shift+CmdOrCtrl+8',
           type: 'checkbox',
           enabled: false,
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.NUMBERED_LIST);
+          }
+        },
+        {
+          id: menuIds.format.checklist,
+          label: translate("electron.menu.checklist"),
+          accelerator: 'Shift+CmdOrCtrl+9',
+          type: 'checkbox',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.CHECKLIST);
+          }
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.format.fontSize.root,
+          label: translate("electron.menu.fontSize"),
+          enabled: false,
+          submenu: NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => ({
+            id: menuIds.format.fontSize.option(fontSize),
+            label: `${fontSize}`,
+            type: 'checkbox',
+            enabled: false,
+            click: () => {
+              BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, {
+                command: RichTextFormatCommand.FONT_SIZE,
+                fontSize
+              });
+            }
+          }))
+        },
+        {
+          id: menuIds.format.fontFamily.root,
+          label: translate("electron.menu.font"),
+          enabled: false,
+          submenu: NOTE_FONT_CATEGORIES.map((fontCategory) => ({
+            label: translate(`settingsWindow.editor.noteFontCategories.${fontCategory}`),
+            submenu: NOTE_FONT_OPTIONS
+              .filter((fontOption) => fontOption.category === fontCategory)
+              .map((fontOption) => ({
+                id: menuIds.format.fontFamily.option(fontOption.value),
+                label: translate(fontOption.labelKey),
+                type: 'checkbox',
+                enabled: false,
+                click: () => {
+                  BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, {
+                    command: RichTextFormatCommand.FONT_FAMILY,
+                    noteFont: fontOption.value
+                  });
+                }
+              }))
+          }))
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.format.clearFormatting,
+          label: translate("electron.menu.clearFormatting"),
+          accelerator: 'CmdOrCtrl+\\',
+          enabled: false,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.formatRichText, RichTextFormatCommand.CLEAR_FORMATTING);
           }
         }
       ]

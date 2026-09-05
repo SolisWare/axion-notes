@@ -34,8 +34,35 @@ type FittedSelectProps = {
 function General(props: GeneralProps) {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
+  const dateFormatSampleDate = new Date(currentYear, 5, 20);
   const dateTimeFormatPreview = new Date();
   const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
+  const dateFormatGroups = [
+    {
+      label: "MM-DD-YYYY",
+      options: [
+        DateFormat.MonthDayYearShortSlash,
+        DateFormat.MonthDayYearSlash
+      ]
+    },
+    {
+      label: "DD-MM-YYYY",
+      options: [
+        DateFormat.DayMonthYearShortSlash,
+        DateFormat.DayMonthYearSlash,
+        DateFormat.DayMonthYearDot,
+        DateFormat.DayMonthYearDash
+      ]
+    },
+    {
+      label: "YYYY-MM-DD",
+      options: [
+        DateFormat.YearMonthDaySlash,
+        DateFormat.YearMonthDayDot,
+        DateFormat.YearMonthDayDash
+      ]
+    }
+  ];
   const noteSortOptions = [
     { value: NoteSortOrder.DATE_CREATED_ASC, label: t("settingsWindow.general.sortOptions.dateCreatedAsc") },
     { value: NoteSortOrder.DATE_CREATED_DESC, label: t("settingsWindow.general.sortOptions.dateCreatedDesc") },
@@ -174,10 +201,15 @@ function General(props: GeneralProps) {
                 value={props.appSettings.dateFormat}
                 onChange={handleDateFormatChange}
               >
-                <option value={DateFormat.MonthDayYearSlash}>{`6/20/${currentYear}`}</option>
-                <option value={DateFormat.DayMonthYearSlash}>{`20/6/${currentYear}`}</option>
-                <option value={DateFormat.DayMonthYearDot}>{`20.6.${currentYear}`}</option>
-                <option value={DateFormat.YearMonthDayDash}>{`${currentYear}-6-20`}</option>
+                {dateFormatGroups.map((dateFormatGroup) => (
+                  <optgroup key={dateFormatGroup.label} label={dateFormatGroup.label}>
+                    {dateFormatGroup.options.map((dateFormat) => (
+                      <option key={dateFormat} value={dateFormat}>
+                        {Formatter.getFormattedDate(dateFormatSampleDate, dateFormat)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
               <fieldset className={styles.timeFormatRadioGroup} aria-label={t("settingsWindow.general.timeFormat")}>
                 <label className={styles.timeFormatRadioOption}>

@@ -5,19 +5,26 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import FormatBoldRoundedIcon from "@mui/icons-material/FormatBoldRounded";
+import BorderColorRoundedIcon from "@mui/icons-material/BorderColorRounded";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
+import CodeRoundedIcon from "@mui/icons-material/CodeRounded";
+import FormatClearRoundedIcon from "@mui/icons-material/FormatClearRounded";
 import FormatItalicRoundedIcon from "@mui/icons-material/FormatItalicRounded";
 import FormatListBulletedRoundedIcon from "@mui/icons-material/FormatListBulletedRounded";
 import FormatListNumberedRoundedIcon from "@mui/icons-material/FormatListNumberedRounded";
 import FormatUnderlinedRoundedIcon from "@mui/icons-material/FormatUnderlinedRounded";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import StrikethroughSRoundedIcon from "@mui/icons-material/StrikethroughSRounded";
 import SubscriptRoundedIcon from "@mui/icons-material/SubscriptRounded";
 import SuperscriptRoundedIcon from "@mui/icons-material/SuperscriptRounded";
 import { IconButton } from "@mui/material";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DashedListIcon from "./DashedListIcon";
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
+import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../settings/NoteFontPreference";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS, NoteFontSize } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
 import styles from "./NoteFormatToolbar.module.css";
@@ -25,20 +32,37 @@ import styles from "./NoteFormatToolbar.module.css";
 type NoteFormatToolbarProps = {
   theme: SystemTheme;
   formatState: RichTextFormatState;
-  onFormatAction: (command: RichTextFormatCommand) => void;
+  onFormatAction: (command: RichTextFormatAction) => void;
   className?: string;
   surfaceColor?: string;
   compactInlineStyles?: boolean;
+  selectedFont?: NoteFontPreference;
 };
 
 function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const { t } = useTranslation();
   const [isInlineStyleMenuOpen, setIsInlineStyleMenuOpen] = useState(false);
+  const [isListMenuOpen, setIsListMenuOpen] = useState(false);
+  const [isFontSizeMenuOpen, setIsFontSizeMenuOpen] = useState(false);
+  const [isFontMenuOpen, setIsFontMenuOpen] = useState(false);
+  const [selectedFontSize, setSelectedFontSize] = useState<NoteFontSize>(props.formatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
+  const [selectedFont, setSelectedFont] = useState(props.formatState.activeFont ?? props.selectedFont);
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
   const appColors = getAppColors(props.theme);
   const isInlineStyleActive = props.formatState.isBoldActive
     || props.formatState.isItalicActive
     || props.formatState.isUnderlineActive
-    || props.formatState.isStrikethroughActive;
+    || props.formatState.isStrikethroughActive
+    || props.formatState.isInlineCodeActive
+    || props.formatState.isHighlightActive;
+  const isListActive = props.formatState.isBulletListActive
+    || props.formatState.isDashedListActive
+    || props.formatState.isNumberedListActive
+    || props.formatState.isChecklistActive;
+  const selectedFontOption = NOTE_FONT_OPTIONS.find((fontOption) => fontOption.value === (props.formatState.activeFont ?? selectedFont));
+  const fontPickerButtonLabel = props.compactInlineStyles
+    ? "Aa"
+    : t(selectedFontOption?.labelKey ?? "mainWindow.note.formatToolbar.font");
   const toolbarStyle = {
     "--note-format-toolbar-button-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
@@ -47,9 +71,52 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
       : undefined
   } as CSSProperties;
 
+  useEffect(() => {
+    setSelectedFont(props.formatState.activeFont ?? props.selectedFont);
+  }, [props.formatState.activeFont, props.selectedFont]);
+
+  useEffect(() => {
+    setSelectedFontSize(props.formatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
+  }, [props.formatState.activeFontSize]);
+
+  useEffect(() => {
+    if (!isInlineStyleMenuOpen && !isListMenuOpen && !isFontSizeMenuOpen && !isFontMenuOpen) {
+      return;
+    }
+
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && toolbarRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsInlineStyleMenuOpen(false);
+      setIsListMenuOpen(false);
+      setIsFontSizeMenuOpen(false);
+      setIsFontMenuOpen(false);
+    };
+
+    const handleDocumentKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsInlineStyleMenuOpen(false);
+        setIsListMenuOpen(false);
+        setIsFontSizeMenuOpen(false);
+        setIsFontMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleDocumentPointerDown);
+    document.addEventListener("keydown", handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleDocumentPointerDown);
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    };
+  }, [isInlineStyleMenuOpen, isListMenuOpen, isFontSizeMenuOpen, isFontMenuOpen]);
+
   return (
     <div
       className={`${styles.toolbar} ${props.className ?? ""}`}
+      ref={toolbarRef}
       role="toolbar"
       aria-label={t("electron.menu.format")}
       data-note-format-toolbar="true"
@@ -65,7 +132,12 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             className={`${styles.toolbarButton} ${styles.inlineStyleMenuButton} ${isInlineStyleActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
-            onClick={() => setIsInlineStyleMenuOpen((isOpen) => !isOpen)}
+            onClick={() => {
+              setIsListMenuOpen(false);
+              setIsFontSizeMenuOpen(false);
+              setIsFontMenuOpen(false);
+              setIsInlineStyleMenuOpen((isOpen) => !isOpen);
+            }}
             size="small"
             title={t("electron.menu.format")}
             type="button"
@@ -135,6 +207,36 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               >
                 <StrikethroughSRoundedIcon fontSize="small" />
               </IconButton>
+              <IconButton
+                aria-label={t("electron.menu.highlight")}
+                className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.HIGHLIGHT);
+                  setIsInlineStyleMenuOpen(false);
+                }}
+                size="small"
+                title={t("electron.menu.highlight")}
+                type="button"
+              >
+                <BorderColorRoundedIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={t("electron.menu.inlineCode")}
+                className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.INLINE_CODE);
+                  setIsInlineStyleMenuOpen(false);
+                }}
+                size="small"
+                title={t("electron.menu.inlineCode")}
+                type="button"
+              >
+                <CodeRoundedIcon fontSize="small" />
+              </IconButton>
             </div>
           )}
         </div>
@@ -188,69 +290,314 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           >
             <StrikethroughSRoundedIcon fontSize="small" />
           </IconButton>
+          <IconButton
+            aria-label={t("electron.menu.highlight")}
+            className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.HIGHLIGHT)}
+            size="small"
+            title={t("electron.menu.highlight")}
+            type="button"
+          >
+            <BorderColorRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("electron.menu.inlineCode")}
+            className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.INLINE_CODE)}
+            size="small"
+            title={t("electron.menu.inlineCode")}
+            type="button"
+          >
+            <CodeRoundedIcon fontSize="small" />
+          </IconButton>
         </>
       )}
       <span className={styles.toolbarDivider} aria-hidden="true" />
-      <IconButton
-        aria-label={t("mainWindow.note.formatToolbar.bulletList")}
-        className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
-        disableRipple
-        disabled={!props.formatState.canFormat}
-        onClick={() => props.onFormatAction(RichTextFormatCommand.BULLET_LIST)}
-        size="small"
-        title={t("mainWindow.note.formatToolbar.bulletList")}
-        type="button"
-      >
-        <FormatListBulletedRoundedIcon fontSize="small" />
-      </IconButton>
-      <IconButton
-        aria-label={t("mainWindow.note.formatToolbar.dashedList")}
-        className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
-        disableRipple
-        disabled={!props.formatState.canFormat}
-        onClick={() => props.onFormatAction(RichTextFormatCommand.DASHED_LIST)}
-        size="small"
-        title={t("mainWindow.note.formatToolbar.dashedList")}
-        type="button"
-      >
-        <DashedListIcon />
-      </IconButton>
-      <IconButton
-        aria-label={t("mainWindow.note.formatToolbar.numberedList")}
-        className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
-        disableRipple
-        disabled={!props.formatState.canFormat}
-        onClick={() => props.onFormatAction(RichTextFormatCommand.NUMBERED_LIST)}
-        size="small"
-        title={t("mainWindow.note.formatToolbar.numberedList")}
-        type="button"
-      >
-        <FormatListNumberedRoundedIcon fontSize="small" />
-      </IconButton>
+      {props.compactInlineStyles ? (
+        <div className={styles.compactGroup}>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.lists")}
+            aria-expanded={isListMenuOpen}
+            aria-haspopup="true"
+            className={`${styles.toolbarButton} ${styles.listMenuButton} ${isListActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => {
+              setIsInlineStyleMenuOpen(false);
+              setIsFontSizeMenuOpen(false);
+              setIsFontMenuOpen(false);
+              setIsListMenuOpen((isOpen) => !isOpen);
+            }}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.lists")}
+            type="button"
+          >
+            <FormatListBulletedRoundedIcon fontSize="small" />
+            <KeyboardArrowDownRoundedIcon className={styles.listMenuButtonIcon} fontSize="small" />
+          </IconButton>
+          {isListMenuOpen && (
+            <div className={styles.listSubtoolbar} role="toolbar" aria-label={t("mainWindow.note.formatToolbar.lists")}>
+              <IconButton
+                aria-label={t("mainWindow.note.formatToolbar.bulletList")}
+                className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.BULLET_LIST);
+                  setIsListMenuOpen(false);
+                }}
+                size="small"
+                title={t("mainWindow.note.formatToolbar.bulletList")}
+                type="button"
+              >
+                <FormatListBulletedRoundedIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={t("mainWindow.note.formatToolbar.dashedList")}
+                className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.DASHED_LIST);
+                  setIsListMenuOpen(false);
+                }}
+                size="small"
+                title={t("mainWindow.note.formatToolbar.dashedList")}
+                type="button"
+              >
+                <DashedListIcon />
+              </IconButton>
+              <IconButton
+                aria-label={t("mainWindow.note.formatToolbar.numberedList")}
+                className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.NUMBERED_LIST);
+                  setIsListMenuOpen(false);
+                }}
+                size="small"
+                title={t("mainWindow.note.formatToolbar.numberedList")}
+                type="button"
+              >
+                <FormatListNumberedRoundedIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                aria-label={t("mainWindow.note.formatToolbar.checklist")}
+                className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
+                disableRipple
+                disabled={!props.formatState.canFormat}
+                onClick={() => {
+                  props.onFormatAction(RichTextFormatCommand.CHECKLIST);
+                  setIsListMenuOpen(false);
+                }}
+                size="small"
+                title={t("mainWindow.note.formatToolbar.checklist")}
+                type="button"
+              >
+                <CheckBoxOutlinedIcon fontSize="small" />
+              </IconButton>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.bulletList")}
+            className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.BULLET_LIST)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.bulletList")}
+            type="button"
+          >
+            <FormatListBulletedRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.dashedList")}
+            className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.DASHED_LIST)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.dashedList")}
+            type="button"
+          >
+            <DashedListIcon />
+          </IconButton>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.numberedList")}
+            className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.NUMBERED_LIST)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.numberedList")}
+            type="button"
+          >
+            <FormatListNumberedRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.checklist")}
+            className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.CHECKLIST)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.checklist")}
+            type="button"
+          >
+            <CheckBoxOutlinedIcon fontSize="small" />
+          </IconButton>
+        </>
+      )}
+      {!props.compactInlineStyles && (
+        <>
+          <span className={styles.toolbarDivider} aria-hidden="true" />
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.superscript")}
+            className={`${styles.toolbarButton} ${props.formatState.isSuperscriptActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.SUPERSCRIPT)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.superscript")}
+            type="button"
+          >
+            <SuperscriptRoundedIcon className={styles.superscriptIcon} fontSize="small" />
+          </IconButton>
+          <IconButton
+            aria-label={t("mainWindow.note.formatToolbar.subscript")}
+            className={`${styles.toolbarButton} ${props.formatState.isSubscriptActive ? styles.toolbarButtonActive : ""}`}
+            disableRipple
+            disabled={!props.formatState.canFormat}
+            onClick={() => props.onFormatAction(RichTextFormatCommand.SUBSCRIPT)}
+            size="small"
+            title={t("mainWindow.note.formatToolbar.subscript")}
+            type="button"
+          >
+            <SubscriptRoundedIcon className={styles.subscriptIcon} fontSize="small" />
+          </IconButton>
+        </>
+      )}
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <div className={styles.fontSizePicker}>
+        <button
+          aria-label={t("mainWindow.note.formatToolbar.fontSize")}
+          aria-expanded={isFontSizeMenuOpen}
+          aria-haspopup="true"
+          className={`${styles.fontSizePickerButton} ${props.compactInlineStyles ? styles.compactFontSizePickerButton : styles.expandedFontSizePickerButton}`}
+          disabled={!props.formatState.canFormat}
+          onClick={() => {
+            setIsInlineStyleMenuOpen(false);
+            setIsListMenuOpen(false);
+            setIsFontMenuOpen(false);
+            setIsFontSizeMenuOpen((isOpen) => !isOpen);
+          }}
+          title={t("mainWindow.note.formatToolbar.fontSize")}
+          type="button"
+        >
+          <span className={styles.fontSizePickerButtonLabel}>{selectedFontSize}</span>
+          <KeyboardArrowDownRoundedIcon className={styles.fontSizePickerButtonIcon} fontSize="small" />
+        </button>
+        {isFontSizeMenuOpen && (
+          <div className={styles.fontSizePickerMenu} role="menu" aria-label={t("mainWindow.note.formatToolbar.fontSize")}>
+            {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
+              <button
+                className={`${styles.fontSizePickerOption} ${selectedFontSize === fontSize ? styles.fontSizePickerOptionActive : ""}`}
+                key={fontSize}
+                onClick={() => {
+                  setSelectedFontSize(fontSize);
+                  props.onFormatAction({
+                    command: RichTextFormatCommand.FONT_SIZE,
+                    fontSize
+                  });
+                  setIsFontSizeMenuOpen(false);
+                }}
+                role="menuitem"
+                type="button"
+              >
+                {fontSize}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <span className={styles.toolbarDivider} aria-hidden="true" />
+      <div className={styles.fontPicker}>
+        <button
+          aria-label={t("mainWindow.note.formatToolbar.font")}
+          aria-expanded={isFontMenuOpen}
+          aria-haspopup="true"
+          className={`${styles.fontPickerButton} ${props.compactInlineStyles ? styles.compactFontPickerButton : styles.expandedFontPickerButton}`}
+          disabled={!props.formatState.canFormat}
+          onClick={() => {
+            setIsInlineStyleMenuOpen(false);
+            setIsListMenuOpen(false);
+            setIsFontSizeMenuOpen(false);
+            setIsFontMenuOpen((isOpen) => !isOpen);
+          }}
+          title={t("mainWindow.note.formatToolbar.font")}
+          type="button"
+        >
+          <span
+            className={styles.fontPickerButtonLabel}
+            style={{ fontFamily: !props.compactInlineStyles ? selectedFontOption?.fontFamily : undefined }}
+          >
+            {fontPickerButtonLabel}
+          </span>
+          <KeyboardArrowDownRoundedIcon className={styles.fontPickerButtonIcon} fontSize="small" />
+        </button>
+        {isFontMenuOpen && (
+          <div className={styles.fontPickerMenu} role="menu" aria-label={t("mainWindow.note.formatToolbar.font")}>
+            {NOTE_FONT_CATEGORIES.map((fontCategory) => (
+              <div className={styles.fontPickerCategory} key={fontCategory}>
+                <div className={styles.fontPickerCategoryLabel}>
+                  {t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
+                </div>
+                {NOTE_FONT_OPTIONS
+                  .filter((fontOption) => fontOption.category === fontCategory)
+                  .map((fontOption) => (
+                    <button
+                      className={`${styles.fontPickerOption} ${selectedFontOption?.value === fontOption.value ? styles.fontPickerOptionActive : ""}`}
+                      key={fontOption.value}
+                      onClick={() => {
+                        setSelectedFont(fontOption.value);
+                        props.onFormatAction({
+                          command: RichTextFormatCommand.FONT_FAMILY,
+                          noteFont: fontOption.value
+                        });
+                        setIsFontMenuOpen(false);
+                      }}
+                      role="menuitem"
+                      style={{ fontFamily: fontOption.fontFamily }}
+                      type="button"
+                    >
+                      {t(fontOption.labelKey)}
+                    </button>
+                  ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       <span className={styles.toolbarDivider} aria-hidden="true" />
       <IconButton
-        aria-label={t("mainWindow.note.formatToolbar.superscript")}
-        className={`${styles.toolbarButton} ${props.formatState.isSuperscriptActive ? styles.toolbarButtonActive : ""}`}
+        aria-label={t("electron.menu.clearFormatting")}
+        className={styles.toolbarButton}
         disableRipple
         disabled={!props.formatState.canFormat}
-        onClick={() => props.onFormatAction(RichTextFormatCommand.SUPERSCRIPT)}
+        onClick={() => props.onFormatAction(RichTextFormatCommand.CLEAR_FORMATTING)}
         size="small"
-        title={t("mainWindow.note.formatToolbar.superscript")}
+        title={t("electron.menu.clearFormatting")}
         type="button"
       >
-        <SuperscriptRoundedIcon className={styles.superscriptIcon} fontSize="small" />
-      </IconButton>
-      <IconButton
-        aria-label={t("mainWindow.note.formatToolbar.subscript")}
-        className={`${styles.toolbarButton} ${props.formatState.isSubscriptActive ? styles.toolbarButtonActive : ""}`}
-        disableRipple
-        disabled={!props.formatState.canFormat}
-        onClick={() => props.onFormatAction(RichTextFormatCommand.SUBSCRIPT)}
-        size="small"
-        title={t("mainWindow.note.formatToolbar.subscript")}
-        type="button"
-      >
-        <SubscriptRoundedIcon className={styles.subscriptIcon} fontSize="small" />
+        <FormatClearRoundedIcon fontSize="small" />
       </IconButton>
     </div>
   );

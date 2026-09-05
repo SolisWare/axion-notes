@@ -3,6 +3,26 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.4.0-beta.2] - September 5, 2026 - Viewport
+- Added bundled custom note fonts with grouped font categories in the Note font setting
+- Split note font settings into separate title and content font pickers
+- Added inline font selection to the note formatting toolbar
+- Compact list formatting actions into a dropdown in the floating note toolbar
+- Removed superscript and subscript actions from the floating note toolbar
+- Added inline font size selection to the note formatting toolbar
+- Added an Editor settings tab with separate default font size controls for note titles and content
+- Added a setting for choosing between the Rich Text Editor and Plain Text Editor
+- Fixed note context menu submenus so they open more reliably and stay within the viewport
+- Added more date format options grouped by month-day-year, day-month-year, and year-month-day order
+- Added first-launch date and time format detection from the OS or browser locale
+- Fixed duplicate rich-text underline extension registration warnings
+- Added word and character counts to full-window note footers
+- Added note selection mode with native menu, context menu, web toolbar triggers, selection checkmarks, and a floating action toolbar for batch delete, duplicate, clear, and cancel actions
+- Added checklist formatting for rich-text note content
+- Added shortcuts for note selection mode and rich-text font size adjustments
+- Grouped the Shortcuts settings page into clearer sections
+- Hid redundant system-equivalent font choices from the global title and content font settings
+
 ## [v0.4.0-beta.1] - August 28, 2026 - Viewport
 - Added a list view with folded notes, expandable note cards, drag-and-drop reordering, persisted fold state, and layout-specific window sizing
 - Reduced reported dependency vulnerabilities from 26 to 9 through targeted package updates as part of ongoing security maintenance

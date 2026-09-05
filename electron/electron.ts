@@ -22,6 +22,8 @@ import { AppSettings } from "../src/settings/AppSettings";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
 import { defaultAppSettings } from "../src/settings/defaultSettings";
 import { resolvePreferredSupportedLanguageCode } from "../src/i18n/languageConfig";
+import { resolvePreferredDateFormat } from "../src/utils/dt-formatter/dateFormatConfig";
+import { resolvePreferredTimeFormat } from "../src/utils/dt-formatter/timeFormatConfig";
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
@@ -55,7 +57,11 @@ app.on("ready", async () => {
   const initialSettings = {
     ...defaultAppSettings,
     ...settings,
-    ...(!settings ? { language: resolvePreferredSupportedLanguageCode([app.getLocale()]) } : {})
+    ...(!settings ? {
+      dateFormat: resolvePreferredDateFormat([app.getLocale()]),
+      language: resolvePreferredSupportedLanguageCode([app.getLocale()]),
+      timeFormat: resolvePreferredTimeFormat([app.getLocale()])
+    } : {})
   };
 
   currentSettings = initialSettings;

@@ -9,6 +9,7 @@ import NoteGrid from "../../../components/NoteGrid";
 import NoteList from "../../../components/NoteList";
 import { NoteType } from "../../../models/NoteType";
 import { NoteFontPreference } from "../../../settings/NoteFontPreference";
+import { NoteFontSize } from "../../../settings/NoteFontSize";
 import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";
 import { NoteSizePreference } from "../../../settings/noteSizePreference";
 import { SystemTheme } from "../../../theme/SystemTheme";
@@ -21,6 +22,10 @@ type HomeProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
+  noteTitleFont: NoteFontPreference;
+  noteContentFontSize: NoteFontSize;
+  noteTitleFontSize: NoteFontSize;
+  richTextEditorEnabled: boolean;
   noteLayout: NoteLayoutPreference;
   noteSize: NoteSizePreference;
   showNoteTitles: boolean;
@@ -34,6 +39,12 @@ type HomeProps = {
   handleNoteSave: (note: NoteType) => void;
   handleNoteReorder: (activeNoteId: string, overNoteId: string) => void;
   handleToggleNotePin: (note: NoteType) => void;
+  isSelectionMode: boolean;
+  selectedNoteIds: Set<string>;
+  onEnterSelectionMode: () => void;
+  onSelectNoteSelection: (noteId: string) => void;
+  onDeselectNoteSelection: (noteId: string) => void;
+  onToggleNoteSelection: (noteId: string) => void;
 }
 
 function Home(props: HomeProps) {
@@ -51,6 +62,10 @@ function Home(props: HomeProps) {
           dateFormat={props.dateFormat}
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
+          noteTitleFont={props.noteTitleFont}
+          noteContentFontSize={props.noteContentFontSize}
+          noteTitleFontSize={props.noteTitleFontSize}
+          richTextEditorEnabled={props.richTextEditorEnabled}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
@@ -63,6 +78,12 @@ function Home(props: HomeProps) {
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
           handleToggleNotePin={props.handleToggleNotePin}
+          isSelectionMode={props.isSelectionMode}
+          selectedNoteIds={props.selectedNoteIds}
+          onEnterSelectionMode={props.onEnterSelectionMode}
+          onSelectNoteSelection={props.onSelectNoteSelection}
+          onDeselectNoteSelection={props.onDeselectNoteSelection}
+          onToggleNoteSelection={props.onToggleNoteSelection}
         />
           :
         <NoteGrid
@@ -71,6 +92,10 @@ function Home(props: HomeProps) {
           dateFormat={props.dateFormat}
           timeFormat={props.timeFormat}
           noteFont={props.noteFont}
+          noteTitleFont={props.noteTitleFont}
+          noteContentFontSize={props.noteContentFontSize}
+          noteTitleFontSize={props.noteTitleFontSize}
+          richTextEditorEnabled={props.richTextEditorEnabled}
           noteSize={props.noteSize}
           showNoteTitles={props.showNoteTitles}
           showNoteFooters={props.showNoteFooters}
@@ -83,6 +108,12 @@ function Home(props: HomeProps) {
           handleNoteSave={props.handleNoteSave}
           handleNoteReorder={props.handleNoteReorder}
           handleToggleNotePin={props.handleToggleNotePin}
+          isSelectionMode={props.isSelectionMode}
+          selectedNoteIds={props.selectedNoteIds}
+          onEnterSelectionMode={props.onEnterSelectionMode}
+          onSelectNoteSelection={props.onSelectNoteSelection}
+          onDeselectNoteSelection={props.onDeselectNoteSelection}
+          onToggleNoteSelection={props.onToggleNoteSelection}
         />
       }
     </div>

@@ -6,9 +6,13 @@
  */
 import { clipboard, ipcMain, Menu } from "electron";
 import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
-import { RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
+import { translate } from "../utils/electronI18n";
 
 let isNewNoteEnabled = true;
 let isDeleteAllNotesEnabled = false;
@@ -16,18 +20,16 @@ let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
 };
-let richTextFormatState: RichTextFormatState = {
-  canFormat: false,
-  isBoldActive: false,
-  isItalicActive: false,
-  isUnderlineActive: false,
-  isStrikethroughActive: false,
-  isSuperscriptActive: false,
-  isSubscriptActive: false,
-  isBulletListActive: false,
-  isDashedListActive: false,
-  isNumberedListActive: false
+let noteSelectionState: MenuNoteSelectionState = {
+  hasNotes: false,
+  isSelectionMode: false,
+  areAllNotesSelected: false
 };
+let richTextFormatState: RichTextFormatState = getInactiveRichTextFormatState();
+
+export function isRichTextFormattingActive(): boolean {
+  return isNewNoteEnabled && richTextFormatState.canFormat;
+}
 
 function updateNoteMenuItems(): void {
   const applicationMenu = Menu.getApplicationMenu();
@@ -37,19 +39,30 @@ function updateNoteMenuItems(): void {
   const copyMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.copy);
   const pasteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.paste);
   const deleteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.delete);
+  const selectNoteMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.selectNote);
+  const selectAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.selectAllNotes);
+  const cancelNoteSelectionMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.cancelNoteSelection);
   const formatMenuItem = applicationMenu?.getMenuItemById(menuIds.format.root);
   const formatBoldMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bold);
   const formatItalicMenuItem = applicationMenu?.getMenuItemById(menuIds.format.italic);
   const formatUnderlineMenuItem = applicationMenu?.getMenuItemById(menuIds.format.underline);
   const formatStrikethroughMenuItem = applicationMenu?.getMenuItemById(menuIds.format.strikethrough);
+  const formatInlineCodeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.inlineCode);
+  const formatHighlightMenuItem = applicationMenu?.getMenuItemById(menuIds.format.highlight);
   const formatSuperscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.superscript);
   const formatSubscriptMenuItem = applicationMenu?.getMenuItemById(menuIds.format.subscript);
   const formatBulletListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.bulletList);
   const formatDashedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.dashedList);
   const formatNumberedListMenuItem = applicationMenu?.getMenuItemById(menuIds.format.numberedList);
+  const formatChecklistMenuItem = applicationMenu?.getMenuItemById(menuIds.format.checklist);
+  const formatFontSizeMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.root);
+  const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
+  const formatClearFormattingMenuItem = applicationMenu?.getMenuItemById(menuIds.format.clearFormatting);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
+  const activeFontSize = richTextFormatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
+  const activeFont = richTextFormatState.activeFont ?? NoteFontPreference.SYSTEM;
 
   if (newNoteMenuItem) {
     newNoteMenuItem.enabled = isNewNoteEnabled;
@@ -77,6 +90,23 @@ function updateNoteMenuItems(): void {
     deleteMenuItem.enabled = isNewNoteEnabled && editSelectionState.hasEditableSelection;
   }
 
+  if (selectNoteMenuItem) {
+    selectNoteMenuItem.enabled = isNewNoteEnabled && noteSelectionState.hasNotes && !noteSelectionState.isSelectionMode;
+  }
+
+  if (selectAllNotesMenuItem) {
+    selectAllNotesMenuItem.enabled = isNewNoteEnabled && noteSelectionState.hasNotes;
+    selectAllNotesMenuItem.label = translate(
+      noteSelectionState.areAllNotesSelected
+        ? "electron.menu.deselectAllNotes"
+        : "electron.menu.selectAllNotes"
+    );
+  }
+
+  if (cancelNoteSelectionMenuItem) {
+    cancelNoteSelectionMenuItem.enabled = isNewNoteEnabled && noteSelectionState.isSelectionMode;
+  }
+
   if (formatMenuItem) {
     formatMenuItem.enabled = isRichTextFormattingEnabled;
   }
@@ -99,6 +129,16 @@ function updateNoteMenuItems(): void {
   if (formatStrikethroughMenuItem) {
     formatStrikethroughMenuItem.enabled = isRichTextFormattingEnabled;
     formatStrikethroughMenuItem.checked = richTextFormatState.isStrikethroughActive;
+  }
+
+  if (formatInlineCodeMenuItem) {
+    formatInlineCodeMenuItem.enabled = isRichTextFormattingEnabled;
+    formatInlineCodeMenuItem.checked = richTextFormatState.isInlineCodeActive;
+  }
+
+  if (formatHighlightMenuItem) {
+    formatHighlightMenuItem.enabled = isRichTextFormattingEnabled;
+    formatHighlightMenuItem.checked = richTextFormatState.isHighlightActive;
   }
 
   if (formatSuperscriptMenuItem) {
@@ -126,6 +166,41 @@ function updateNoteMenuItems(): void {
     formatNumberedListMenuItem.checked = richTextFormatState.isNumberedListActive;
   }
 
+  if (formatChecklistMenuItem) {
+    formatChecklistMenuItem.enabled = isRichTextFormattingEnabled;
+    formatChecklistMenuItem.checked = richTextFormatState.isChecklistActive;
+  }
+
+  if (formatFontSizeMenuItem) {
+    formatFontSizeMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  NOTE_CONTENT_FONT_SIZE_OPTIONS.forEach((fontSize) => {
+    const formatFontSizeOptionMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontSize.option(fontSize));
+
+    if (formatFontSizeOptionMenuItem) {
+      formatFontSizeOptionMenuItem.enabled = isRichTextFormattingEnabled;
+      formatFontSizeOptionMenuItem.checked = activeFontSize === fontSize;
+    }
+  });
+
+  if (formatFontFamilyMenuItem) {
+    formatFontFamilyMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
+  NOTE_FONT_OPTIONS.forEach((fontOption) => {
+    const formatFontFamilyOptionMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.option(fontOption.value));
+
+    if (formatFontFamilyOptionMenuItem) {
+      formatFontFamilyOptionMenuItem.enabled = isRichTextFormattingEnabled;
+      formatFontFamilyOptionMenuItem.checked = activeFont === fontOption.value;
+    }
+  });
+
+  if (formatClearFormattingMenuItem) {
+    formatClearFormattingMenuItem.enabled = isRichTextFormattingEnabled;
+  }
+
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
   }
@@ -144,6 +219,11 @@ export function registerMenuIpc(): void {
 
   ipcMain.on(channels.menu.setEditSelectionState, (_, state: MenuEditSelectionState) => {
     editSelectionState = state;
+    updateNoteMenuItems();
+  });
+
+  ipcMain.on(channels.menu.setNoteSelectionState, (_, state: MenuNoteSelectionState) => {
+    noteSelectionState = state;
     updateNoteMenuItems();
   });
 

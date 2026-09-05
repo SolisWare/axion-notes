@@ -14,6 +14,7 @@ import { SystemTheme } from "../../theme/SystemTheme";
 import { AppSettings } from "../../settings/AppSettings";
 import General from "./pages/General";
 import Appearance from "./pages/Appearance";
+import Editor from "./pages/Editor";
 import Shortcuts from "./pages/Shortcuts";
 import DataStorage from "./pages/DataStorage";
 import License from "./pages/License";
@@ -60,8 +61,11 @@ function SettingsWindow(props: SettingsWindowProps) {
     case SettingsView.appearance:
       page = <Appearance theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
       break;
+    case SettingsView.editor:
+      page = <Editor theme={props.theme} appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
+      break;
     case SettingsView.shortcuts:
-      page = <Shortcuts />;
+      page = <Shortcuts richTextEditorEnabled={props.appSettings.richTextEditorEnabled} />;
       break;
     case SettingsView.dataStorage:
       page = <DataStorage />;

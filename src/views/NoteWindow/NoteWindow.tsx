@@ -148,6 +148,10 @@ function NoteWindow(props: NoteWindowProps) {
               dateFormat={props.appSettings.dateFormat}
               timeFormat={props.appSettings.timeFormat}
               noteFont={props.appSettings.noteFont}
+              noteTitleFont={props.appSettings.noteTitleFont}
+              noteContentFontSize={props.appSettings.noteContentFontSize}
+              noteTitleFontSize={props.appSettings.noteTitleFontSize}
+              richTextEditorEnabled={props.appSettings.richTextEditorEnabled}
               noteSize={NoteSizePreference.DEFAULT}
               showNoteTitles={props.appSettings.showNoteTitles}
               showNoteFooters={props.appSettings.showNoteFooters}
@@ -161,7 +165,8 @@ function NoteWindow(props: NoteWindowProps) {
               showMoveContextActions={false}
               showOpenNoteWindowContextAction={false}
               showTitleVisibilityContextAction={false}
-              showFormatToolbar
+              showFormatToolbar={props.appSettings.richTextEditorEnabled}
+              showWordCharacterCount
               reserveCloseButtonSpace={props.embedded}
               style={{
                 width: "100%",

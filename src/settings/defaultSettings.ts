@@ -10,6 +10,7 @@ import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
 import { NoteSortOrder } from "./NoteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
+import { DEFAULT_NOTE_CONTENT_FONT_SIZE, DEFAULT_NOTE_TITLE_FONT_SIZE } from "./NoteFontSize";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
 import { DEFAULT_LANGUAGE } from "../i18n/languageConfig";
@@ -25,7 +26,11 @@ export const defaultAppSettings: AppSettings = {
   language: DEFAULT_LANGUAGE,
   dateFormat: DateFormat.MonthDayYearSlash,
   timeFormat: TimeFormat.Regular,
+  richTextEditorEnabled: true,
   noteFont: NoteFontPreference.SYSTEM,
+  noteTitleFont: NoteFontPreference.SYSTEM,
+  noteContentFontSize: DEFAULT_NOTE_CONTENT_FONT_SIZE,
+  noteTitleFontSize: DEFAULT_NOTE_TITLE_FONT_SIZE,
   noteSize: NoteSizePreference.DEFAULT,
   showNoteTitles: true,
   showNoteFooters: true,

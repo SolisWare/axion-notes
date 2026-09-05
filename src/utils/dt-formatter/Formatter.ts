@@ -21,16 +21,29 @@ export class Formatter {
     let month = date.getMonth() + 1; //January is 0; February is 1, etc
     let day = date.getDate();
     let year = date.getFullYear();
+    let shortYear = `${year}`.slice(-2);
+    let paddedMonth = Formatter.leftpad(month);
+    let paddedDay = Formatter.leftpad(day);
 
     switch (format) {
+      case DateFormat.MonthDayYearShortSlash:
+        return `${month}/${day}/${shortYear}`;
       case DateFormat.MonthDayYearSlash:
         return `${month}/${day}/${year}`;
+      case DateFormat.DayMonthYearShortSlash:
+        return `${day}/${month}/${shortYear}`;
       case DateFormat.DayMonthYearSlash:
         return `${day}/${month}/${year}`;
       case DateFormat.DayMonthYearDot:
-        return `${day}.${month}.${year}`;
+        return `${paddedDay}.${paddedMonth}.${year}`;
+      case DateFormat.DayMonthYearDash:
+        return `${paddedDay}-${paddedMonth}-${year}`;
+      case DateFormat.YearMonthDaySlash:
+        return `${year}/${month}/${day}`;
+      case DateFormat.YearMonthDayDot:
+        return `${year}.${paddedMonth}.${paddedDay}`;
       case DateFormat.YearMonthDayDash:
-        return `${year}-${month}-${day}`;
+        return `${year}-${paddedMonth}-${paddedDay}`;
     }
   }
   

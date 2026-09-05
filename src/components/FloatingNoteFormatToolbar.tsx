@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { RichTextFormatCommand } from "../models/RichTextFormatCommand";
+import { RichTextFormatAction } from "../models/RichTextFormatCommand";
 import { RichTextFormatState } from "../models/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import NoteFormatToolbar from "./NoteFormatToolbar";
@@ -14,7 +14,7 @@ type FloatingNoteFormatToolbarProps = {
   theme: SystemTheme;
   formatState: RichTextFormatState;
   surfaceColor: string;
-  onFormatAction: (command: RichTextFormatCommand) => void;
+  onFormatAction: (command: RichTextFormatAction) => void;
 };
 
 function FloatingNoteFormatToolbar(props: FloatingNoteFormatToolbarProps) {
