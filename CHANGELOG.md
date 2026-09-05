@@ -29,7 +29,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added migration guards that warn before closing windows or quitting during encryption/decryption storage updates and block lock shortcuts while migration is active
 - Added encrypted storage format validators and version migration hooks for note records, manifests, and encryption metadata
 
-## [v0.4.0-beta.2] - Unreleased - Viewport
+## [v0.4.0-beta.2] - September 5, 2026 - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
 - Split note font settings into separate title and content font pickers
 - Added inline font selection to the note formatting toolbar
