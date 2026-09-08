@@ -6,6 +6,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -68,6 +69,43 @@ describe("WelcomeScreen", () => {
       renderWelcomeScreen({ neverShowAgain: true });
 
       expect(screen.getByLabelText("Do not show this welcome screen again")).toBeChecked();
+    });
+  });
+
+  describe("get started action", () => {
+    it("calls the get-started handler when the primary button is clicked", async () => {
+      const user = userEvent.setup();
+      const onGetStarted = vi.fn();
+
+      renderWelcomeScreen({ onGetStarted });
+
+      await user.click(screen.getByRole("button", { name: /get started/i }));
+
+      expect(onGetStarted).toHaveBeenCalledOnce();
+    });
+
+    it("calls the get-started handler when the focused primary button is activated with Enter", async () => {
+      const user = userEvent.setup();
+      const onGetStarted = vi.fn();
+
+      renderWelcomeScreen({ onGetStarted });
+
+      screen.getByRole("button", { name: /get started/i }).focus();
+      await user.keyboard("{Enter}");
+
+      expect(onGetStarted).toHaveBeenCalledOnce();
+    });
+
+    it("calls the get-started handler when the focused primary button is activated with Space", async () => {
+      const user = userEvent.setup();
+      const onGetStarted = vi.fn();
+
+      renderWelcomeScreen({ onGetStarted });
+
+      screen.getByRole("button", { name: /get started/i }).focus();
+      await user.keyboard(" ");
+
+      expect(onGetStarted).toHaveBeenCalledOnce();
     });
   });
 });
