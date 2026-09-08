@@ -7,6 +7,7 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { ThemeProvider } from "@mui/material/styles";
+import { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import WelcomeScreen from "../../../../src/views/MainWindow/pages/WelcomeScreen";
 import { AppTheme } from "../../../../src/theme/AppTheme";
@@ -33,33 +34,52 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("WelcomeScreen", () => {
-  it("renders the welcome content", () => {
-    renderWelcomeScreen();
+  
+  describe("basic rendering", () => {
+    it("renders the welcome content", () => {
+      renderWelcomeScreen();
 
-    expect(screen.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeInTheDocument();
-    expect(screen.getByText("Keep quick thoughts close, tidy, and ready whenever you need them.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /get started/i })).toBeInTheDocument();
-    expect(screen.getByLabelText("Do not show this welcome screen again")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeInTheDocument();
+      expect(screen.getByText("Keep quick thoughts close, tidy, and ready whenever you need them.")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /get started/i })).toBeInTheDocument();
+      expect(screen.getByLabelText("Do not show this welcome screen again")).toBeInTheDocument();
+    });
+
+    it("renders the note preview content", () => {
+      renderWelcomeScreen();
+
+      expect(screen.getByText("Today")).toBeInTheDocument();
+      expect(screen.getByText("Fresh workspace")).toBeInTheDocument();
+      expect(screen.getByText("Ideas")).toBeInTheDocument();
+      expect(screen.getByText("Colorful notes")).toBeInTheDocument();
+      expect(screen.getByText("Next")).toBeInTheDocument();
+    });
   });
 
-  it("renders the note preview content", () => {
-    renderWelcomeScreen();
+  describe("initial state", () => {
+    it("renders the initial interactive state", () => {
+      renderWelcomeScreen();
 
-    expect(screen.getByText("Today")).toBeInTheDocument();
-    expect(screen.getByText("Fresh workspace")).toBeInTheDocument();
-    expect(screen.getByText("Ideas")).toBeInTheDocument();
-    expect(screen.getByText("Colorful notes")).toBeInTheDocument();
-    expect(screen.getByText("Next")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /get started/i })).toBeEnabled();
+      expect(screen.getByLabelText("Do not show this welcome screen again")).not.toBeChecked();
+    });
+
+    it("reflects an enabled never-show-again preference", () => {
+      renderWelcomeScreen({ neverShowAgain: true });
+
+      expect(screen.getByLabelText("Do not show this welcome screen again")).toBeChecked();
+    });
   });
 });
 
-function renderWelcomeScreen() {
+function renderWelcomeScreen(props?: Partial<ComponentProps<typeof WelcomeScreen>>) {
   render(
     <ThemeProvider theme={AppTheme.LightTheme}>
       <WelcomeScreen
         theme={SystemTheme.LIGHT}
         neverShowAgain={false}
         onGetStarted={vi.fn()}
+        {...props}
       />
     </ThemeProvider>
   );
