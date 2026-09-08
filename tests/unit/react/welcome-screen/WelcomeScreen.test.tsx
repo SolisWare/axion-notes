@@ -35,7 +35,6 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("WelcomeScreen", () => {
-  
   describe("basic rendering", () => {
     it("renders the welcome content", () => {
       renderWelcomeScreen();
@@ -108,6 +107,49 @@ describe("WelcomeScreen", () => {
       expect(onGetStarted).toHaveBeenCalledOnce();
     });
   });
+
+  describe("API integration boundary", () => {
+    it("does not require the desktop API to render", () => {
+      expectWithoutDesktopApiAccess(() => {
+        renderWelcomeScreen();
+      });
+
+      expect(screen.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeInTheDocument();
+    });
+
+    it("delegates onboarding through props instead of calling the desktop API directly", async () => {
+      const user = userEvent.setup();
+      const onGetStarted = vi.fn();
+
+      await expectWithoutDesktopApiAccess(async () => {
+        renderWelcomeScreen({ onGetStarted });
+
+        await user.click(screen.getByRole("button", { name: /get started/i }));
+      });
+
+      expect(onGetStarted).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("browser and Electron behavior", () => {
+    it("renders the core welcome content in browser mode", () => {
+      withoutDesktopApi(() => {
+        renderWelcomeScreen();
+      });
+
+      expect(screen.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /get started/i })).toBeInTheDocument();
+    });
+
+    it("renders the core welcome content when the Electron API is available", () => {
+      withDesktopApi(() => {
+        renderWelcomeScreen();
+      });
+
+      expect(screen.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /get started/i })).toBeInTheDocument();
+    });
+  });
 });
 
 function renderWelcomeScreen(props?: Partial<ComponentProps<typeof WelcomeScreen>>) {
@@ -121,4 +163,58 @@ function renderWelcomeScreen(props?: Partial<ComponentProps<typeof WelcomeScreen
       />
     </ThemeProvider>
   );
+}
+
+async function expectWithoutDesktopApiAccess(action: () => void | Promise<void>) {
+  const originalDesktopApiDescriptor = Object.getOwnPropertyDescriptor(window, "api");
+
+  Object.defineProperty(window, "api", {
+    configurable: true,
+    get: () => {
+      throw new Error("WelcomeScreen should not access window.api directly.");
+    }
+  });
+
+  try {
+    await action();
+  } finally {
+    if (originalDesktopApiDescriptor) {
+      Object.defineProperty(window, "api", originalDesktopApiDescriptor);
+    } else {
+      delete (window as Window & { api?: unknown }).api;
+    }
+  }
+}
+
+function withoutDesktopApi(action: () => void) {
+  const originalDesktopApiDescriptor = Object.getOwnPropertyDescriptor(window, "api");
+
+  delete (window as Window & { api?: unknown }).api;
+
+  try {
+    action();
+  } finally {
+    if (originalDesktopApiDescriptor) {
+      Object.defineProperty(window, "api", originalDesktopApiDescriptor);
+    }
+  }
+}
+
+function withDesktopApi(action: () => void) {
+  const originalDesktopApiDescriptor = Object.getOwnPropertyDescriptor(window, "api");
+
+  Object.defineProperty(window, "api", {
+    configurable: true,
+    value: {}
+  });
+
+  try {
+    action();
+  } finally {
+    if (originalDesktopApiDescriptor) {
+      Object.defineProperty(window, "api", originalDesktopApiDescriptor);
+    } else {
+      delete (window as Window & { api?: unknown }).api;
+    }
+  }
 }
