@@ -216,6 +216,48 @@ describe("WelcomeScreen integration", () => {
       expect(unsubscribeShowWelcome).toHaveBeenCalledOnce();
     });
   });
+
+  describe("settings persistence boundary", () => {
+    it("preserves the rest of app settings when changing the welcome launch preference", async () => {
+      const user = userEvent.setup();
+      const onAppSettingsChange = vi.fn();
+      const appSettings = {
+        ...defaultAppSettings,
+        keepNotesMainWindowOnTop: true,
+        showNoteTitles: false,
+        showWelcomeScreenOnLaunch: true
+      };
+
+      renderMainWindow({
+        appSettings,
+        onAppSettingsChange
+      });
+
+      await user.click(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" }));
+
+      expect(onAppSettingsChange).toHaveBeenCalledOnce();
+      expect(onAppSettingsChange).toHaveBeenCalledWith({
+        ...appSettings,
+        showWelcomeScreenOnLaunch: false
+      });
+    });
+
+    it("does not persist settings directly when changing the welcome launch preference", async () => {
+      const user = userEvent.setup();
+      const setSettings = vi.fn();
+
+      installDesktopApiMock({
+        settings: {
+          setSettings
+        }
+      });
+      renderMainWindow();
+
+      await user.click(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" }));
+
+      expect(setSettings).not.toHaveBeenCalled();
+    });
+  });
 });
 
 function renderMainWindow(props?: Partial<ComponentProps<typeof MainWindow>>) {
