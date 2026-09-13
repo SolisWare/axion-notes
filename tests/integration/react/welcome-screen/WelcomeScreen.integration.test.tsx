@@ -6,14 +6,16 @@
  */
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import MainWindow from "../../../../src/views/MainWindow/MainWindow";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
-const { translate } = vi.hoisted(() => {
+const { navigate, translate } = vi.hoisted(() => {
   const translations: Record<string, string> = {
     "mainWindow.welcome.title": "Welcome to Axion Notes",
     "mainWindow.welcome.intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
@@ -29,7 +31,17 @@ const { translate } = vi.hoisted(() => {
   };
 
   return {
+    navigate: vi.fn(),
     translate: vi.fn((key: string) => translations[key] ?? key)
+  };
+});
+
+vi.mock("react-router-dom", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react-router-dom")>();
+
+  return {
+    ...actual,
+    useNavigate: () => navigate
   };
 });
 
@@ -50,6 +62,7 @@ vi.mock("../../../../src/App", () => ({
 
 describe("WelcomeScreen integration", () => {
   beforeEach(() => {
+    navigate.mockClear();
     translate.mockClear();
     installDesktopApiMock();
   });
@@ -75,9 +88,33 @@ describe("WelcomeScreen integration", () => {
       expect(screen.queryByText("You don't have any notes yet!")).not.toBeInTheDocument();
     });
   });
+
+  describe("get started app flow", () => {
+    it("navigates to the home view when Get Started is clicked", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow();
+
+      await user.click(screen.getByRole("button", { name: /get started/i }));
+
+      expect(navigate).toHaveBeenCalledOnce();
+      expect(navigate).toHaveBeenCalledWith("/home");
+    });
+
+    it("does not change app settings when Get Started is clicked by itself", async () => {
+      const user = userEvent.setup();
+      const onAppSettingsChange = vi.fn();
+
+      renderMainWindow({ onAppSettingsChange });
+
+      await user.click(screen.getByRole("button", { name: /get started/i }));
+
+      expect(onAppSettingsChange).not.toHaveBeenCalled();
+    });
+  });
 });
 
-function renderMainWindow() {
+function renderMainWindow(props?: Partial<ComponentProps<typeof MainWindow>>) {
   return render(
     <MemoryRouter initialEntries={["/welcome"]}>
       <MainWindow
@@ -85,6 +122,7 @@ function renderMainWindow() {
         onAppSettingsChange={vi.fn()}
         theme={SystemTheme.LIGHT}
         view={"/welcome" as never}
+        {...props}
       />
     </MemoryRouter>
   );
