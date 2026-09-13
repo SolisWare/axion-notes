@@ -179,6 +179,43 @@ describe("WelcomeScreen integration", () => {
       });
     });
   });
+
+  describe("menu-triggered welcome screen", () => {
+    it("navigates to the welcome view when the menu callback fires", () => {
+      let showWelcomeCallback: (() => void) | undefined;
+
+      installDesktopApiMock({
+        menu: {
+          onMenuShowWelcome: vi.fn((callback) => {
+            showWelcomeCallback = callback;
+
+            return vi.fn();
+          })
+        }
+      });
+      renderMainWindow();
+
+      showWelcomeCallback?.();
+
+      expect(navigate).toHaveBeenCalledOnce();
+      expect(navigate).toHaveBeenCalledWith("/welcome");
+    });
+
+    it("unsubscribes from the menu welcome callback on unmount", () => {
+      const unsubscribeShowWelcome = vi.fn();
+
+      installDesktopApiMock({
+        menu: {
+          onMenuShowWelcome: vi.fn(() => unsubscribeShowWelcome)
+        }
+      });
+
+      const { unmount } = renderMainWindow();
+      unmount();
+
+      expect(unsubscribeShowWelcome).toHaveBeenCalledOnce();
+    });
+  });
 });
 
 function renderMainWindow(props?: Partial<ComponentProps<typeof MainWindow>>) {
