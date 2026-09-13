@@ -112,6 +112,73 @@ describe("WelcomeScreen integration", () => {
       expect(onAppSettingsChange).not.toHaveBeenCalled();
     });
   });
+
+  describe("never show again behavior", () => {
+    it("shows the checkbox as unchecked when the welcome screen is enabled on launch", () => {
+      renderMainWindow({
+        appSettings: {
+          ...defaultAppSettings,
+          showWelcomeScreenOnLaunch: true
+        }
+      });
+
+      expect(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" })).not.toBeChecked();
+    });
+
+    it("shows the checkbox as checked when the welcome screen is disabled on launch", () => {
+      renderMainWindow({
+        appSettings: {
+          ...defaultAppSettings,
+          showWelcomeScreenOnLaunch: false
+        }
+      });
+
+      expect(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" })).toBeChecked();
+    });
+
+    it("updates app settings when the checkbox is checked", async () => {
+      const user = userEvent.setup();
+      const onAppSettingsChange = vi.fn();
+
+      renderMainWindow({
+        appSettings: {
+          ...defaultAppSettings,
+          showWelcomeScreenOnLaunch: true
+        },
+        onAppSettingsChange
+      });
+
+      await user.click(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" }));
+
+      expect(onAppSettingsChange).toHaveBeenCalledOnce();
+      expect(onAppSettingsChange).toHaveBeenCalledWith({
+        ...defaultAppSettings,
+        showWelcomeScreenOnLaunch: false
+      });
+    });
+
+    it("updates app settings when the checkbox is unchecked", async () => {
+      const user = userEvent.setup();
+      const onAppSettingsChange = vi.fn();
+      const appSettings = {
+        ...defaultAppSettings,
+        showWelcomeScreenOnLaunch: false
+      };
+
+      renderMainWindow({
+        appSettings,
+        onAppSettingsChange
+      });
+
+      await user.click(screen.getByRole("checkbox", { name: "Do not show this welcome screen again" }));
+
+      expect(onAppSettingsChange).toHaveBeenCalledOnce();
+      expect(onAppSettingsChange).toHaveBeenCalledWith({
+        ...appSettings,
+        showWelcomeScreenOnLaunch: true
+      });
+    });
+  });
 });
 
 function renderMainWindow(props?: Partial<ComponentProps<typeof MainWindow>>) {
