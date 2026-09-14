@@ -36,6 +36,10 @@ import { NoteService } from "./storage/NoteService";
 import { registerStorageMigrationGuard } from "./storage/StorageMigrationGuard";
 import { SettingsService } from "./storage/SettingsService";
 
+if (process.env.AXION_NOTES_E2E_USER_DATA_DIR) {
+  app.setPath("userData", process.env.AXION_NOTES_E2E_USER_DATA_DIR);
+}
+
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
 const appSecurityDir = path.join(appDir, 'security');

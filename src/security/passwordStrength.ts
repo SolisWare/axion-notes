@@ -4,14 +4,14 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ZxcvbnFactory } from "@zxcvbn-ts/core";
+import * as zxcvbnCore from "@zxcvbn-ts/core";
 import { adjacencyGraphs, dictionary as commonDictionary } from "@zxcvbn-ts/language-common";
 import { dictionary as englishDictionary, translations } from "@zxcvbn-ts/language-en";
 import { PasswordCrackTimeEstimate } from "./PasswordCrackTimeEstimate";
 import { PasswordStrengthLevel } from "./PasswordStrengthLevel";
 import { PasswordStrengthResult } from "./PasswordStrengthResult";
 
-const zxcvbn = new ZxcvbnFactory({
+const zxcvbn = new zxcvbnCore.ZxcvbnFactory({
   dictionary: {
     ...commonDictionary,
     ...englishDictionary
