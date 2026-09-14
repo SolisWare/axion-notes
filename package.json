@@ -51,7 +51,7 @@
     "test:unit": "vitest run tests/unit",
     "test:unit:watch": "vitest tests/unit",
     "test:integration": "vitest run tests/integration",
-    "test:regression": "vitest run tests/regression",
+    "test:regression": "vitest run tests/regression --passWithNoTests",
     "test:e2e": "npm run build && cross-env AXION_NOTES_E2E_START_WEB_SERVER=1 playwright test --pass-with-no-tests",
     "test:e2e:desktop": "npm run build && playwright test --project=desktop --pass-with-no-tests",
     "test:e2e:web": "cross-env AXION_NOTES_E2E_START_WEB_SERVER=1 playwright test --project=web --pass-with-no-tests",

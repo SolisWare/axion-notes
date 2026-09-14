@@ -8,13 +8,9 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - develop
-  workflow_dispatch:
+  push: {}
+  pull_request: {}
+  workflow_dispatch: {}
 
 jobs:
   metadata:
@@ -72,8 +68,8 @@ jobs:
           path: build/
           retention-days: 1
 
-  dist-web:
-    needs: metadata
+  test-unit:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -88,16 +84,111 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Stamp CI build version
-        run: |
-          node -e "const fs=require('fs'); const file='app-version-config.json'; const config=JSON.parse(fs.readFileSync(file,'utf8')); config.buildVersion=Number(process.env.BUILD_VERSION); fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');"
-          npm run version-numbers
+      - name: Run unit tests
+        run: npm run test:unit
+
+  test-integration:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+  test-regression:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run regression tests
+        run: npm run test:regression
+
+  test-e2e-web:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run web E2E tests
+        run: npm run test:e2e:web
         env:
-          BUILD_VERSION: ${{ needs.metadata.outputs.build_version }}
+          CI: false
+
+  test-e2e-desktop:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build/
+
+      - name: Run desktop E2E tests
+        run: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests
+
+  dist-web:
+    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build/
 
       - name: Distribute web
         run: |
-          npm run dist-web
           mkdir -p dist
           cd build
           zip -r "../dist/${ARTIFACT_NAME}.zip" .
@@ -112,7 +203,7 @@ jobs:
           retention-days: 30
 
   dist-mac-arm64:
-    needs: [metadata, build]
+    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -151,7 +242,7 @@ jobs:
           retention-days: 30
 
   dist-mac-x64:
-    needs: [metadata, build]
+    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
     runs-on: macos-15-intel
     steps:
       - name: Checkout
@@ -190,7 +281,7 @@ jobs:
           retention-days: 30
 
   dist-windows-x64:
-    needs: [metadata, build]
+    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -229,7 +320,7 @@ jobs:
           retention-days: 30
 
   dist-windows-x86:
-    needs: [metadata, build]
+    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
     runs-on: windows-latest
     steps:
       - name: Checkout
