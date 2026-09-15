@@ -221,6 +221,46 @@
         "lilac": "Lilac"
       }
     },
+    "editor": {
+      "richTextEditor": "Rich Text Editor",
+      "richTextEditorDescription": "Enables formatting, lists, font styling, and editor toolbars.",
+      "disableRichTextEditorDialog": {
+        "title": "Turn Off Rich Text Editor?",
+        "message": "Existing formatted notes will keep their formatting unless edited in the Plain Text Editor. If you edit a formatted note while Rich Text Editor is off, that note will be converted to plain text and its formatting will be permanently discarded.",
+        "confirmLabel": "Turn Off"
+      },
+      "titleSection": "Title",
+      "contentSection": "Content",
+      "noteFont": "Content font",
+      "noteFontDescription": "Applies to note body text.",
+      "noteContentFontSize": "Content font size",
+      "noteContentFontSizeDescription": "Default size for note body text.",
+      "noteTitleFont": "Title font",
+      "noteTitleFontDescription": "Applies to note title fields.",
+      "noteTitleFontSize": "Title font size",
+      "noteTitleFontSizeDescription": "Default size for note title fields.",
+      "noteFontCategories": {
+        "generic": "Generic",
+        "standard": "Standard",
+        "typewriter": "Typewriter",
+        "handwriting": "Handwriting",
+        "calligraphic": "Calligraphic"
+      },
+      "noteFontOptions": {
+        "system": "System default",
+        "serif": "Serif",
+        "sansSerif": "Sans-serif",
+        "monospace": "Monospace",
+        "inter": "Inter",
+        "lora": "Lora",
+        "sourceSans3": "Source Sans 3",
+        "sourceSerif4": "Source Serif 4",
+        "spaceMono": "Space Mono",
+        "caveat": "Caveat",
+        "dancingScript": "Dancing Script"
+      },
+      "noteFontPreview": "The quick brown fox jumps over the lazy dog."
+    },
     "disabledRichTextEditorTooltip": "Available when Rich Text Editor is on.",
     "security": {
       "lockScreen": "Lock screen",
@@ -296,46 +336,6 @@
           "confirmLabel": "Use Anyway"
         }
       }
-    },
-    "editor": {
-      "richTextEditor": "Rich Text Editor",
-      "richTextEditorDescription": "Enables formatting, lists, font styling, and editor toolbars.",
-      "disableRichTextEditorDialog": {
-        "title": "Turn Off Rich Text Editor?",
-        "message": "Existing formatted notes will keep their formatting unless edited in the Plain Text Editor. If you edit a formatted note while Rich Text Editor is off, that note will be converted to plain text and its formatting will be permanently discarded.",
-        "confirmLabel": "Turn Off"
-      },
-      "titleSection": "Title",
-      "contentSection": "Content",
-      "noteFont": "Content font",
-      "noteFontDescription": "Applies to note body text.",
-      "noteContentFontSize": "Content font size",
-      "noteContentFontSizeDescription": "Default size for note body text.",
-      "noteTitleFont": "Title font",
-      "noteTitleFontDescription": "Applies to note title fields.",
-      "noteTitleFontSize": "Title font size",
-      "noteTitleFontSizeDescription": "Default size for note title fields.",
-      "noteFontCategories": {
-        "generic": "Generic",
-        "standard": "Standard",
-        "typewriter": "Typewriter",
-        "handwriting": "Handwriting",
-        "calligraphic": "Calligraphic"
-      },
-      "noteFontOptions": {
-        "system": "System default",
-        "serif": "Serif",
-        "sansSerif": "Sans-serif",
-        "monospace": "Monospace",
-        "inter": "Inter",
-        "lora": "Lora",
-        "sourceSans3": "Source Sans 3",
-        "sourceSerif4": "Source Serif 4",
-        "spaceMono": "Space Mono",
-        "caveat": "Caveat",
-        "dancingScript": "Dancing Script"
-      },
-      "noteFontPreview": "The quick brown fox jumps over the lazy dog."
     },
     "dataStorage": {
       "notesFolderLocation": "Notes folder location",

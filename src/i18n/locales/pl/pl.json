@@ -1,9 +1,65 @@
 {
   "common": {
     "cancel": "Anuluj",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "time": {
+      "never": "Nigdy",
+      "immediately": "Natychmiast",
+      "fiveSeconds": "5 sekund",
+      "tenSeconds": "10 sekund",
+      "thirtySeconds": "30 sekund",
+      "oneMinute": "1 minuta",
+      "fiveMinutes": "5 minut",
+      "tenMinutes": "10 minut",
+      "twentyMinutes": "20 minut",
+      "fortyFiveMinutes": "45 minut",
+      "sixtyMinutes": "60 minut"
+    },
+    "passwordStrength": {
+      "title": "Siła hasła",
+      "empty": "Wprowadź hasło, aby oszacować jego siłę.",
+      "estimatedResistance": "Szacowana odporność: {{estimate}}",
+      "levels": {
+        "veryWeak": "Bardzo słabe",
+        "weak": "Słabe",
+        "moderate": "Umiarkowanie silne",
+        "strong": "Silne",
+        "veryStrong": "Bardzo silne"
+      },
+      "crackTimes": {
+        "instantly": "natychmiast",
+        "seconds": "sekundy",
+        "minutes": "minuty",
+        "hours": "godziny",
+        "days": "dni",
+        "months": "miesiące",
+        "years": "lata",
+        "decades": "dekady",
+        "centuries": "wiek",
+        "impractical": "nierealistyczne"
+      }
+    }
   },
   "mainWindow": {
+    "lockScreen": {
+      "title": "Twoje notatki są zablokowane",
+      "description": "Wprowadź swoje hasło, aby zobaczyć swoje notatki.",
+      "passwordPlaceholder": "Wprowadź swoje hasło",
+      "showPassword": "Pokaż hasło",
+      "hidePassword": "Ukryj hasło",
+      "passwordRequired": "Wprowadź swoje hasło, aby kontynuować.",
+      "invalidPassword": "Hasło jest niepoprawne.",
+      "cooldownMessageLine1": "Zbyt wiele niepoprawnych prób.",
+      "cooldownMessageLine2": "Spróbuj ponownie za {{countdown}}.",
+      "recoveryRequiredLine1": "Dane hasła blokady są brakujące lub uszkodzone.",
+      "recoveryRequiredLine2": "{{appName}} nie może być odblokowany z wnętrza aplikacji i wymaga naprawy.",
+      "unlock": "Odblokuj notatki",
+      "offlineDisclosure": "Twoje notatki są przechowywane offline wyłącznie na tym urządzeniu.",
+      "bruteForceProtectionEnabledDisclosure": "Ochrona przed atakami brute-force jest włączona.",
+      "bruteForceProtectionDisabledDisclosure": "Ochrona przed atakami brute-force jest wyłączona.",
+      "encryptionEnabledDisclosure": "Twoje notatki są zaszyfrowane.",
+      "encryptionDisabledDisclosure": "Twoje notatki nie są zaszyfrowane."
+    },
     "welcome": {
       "title": "Witamy w aplikacji Axion Notes!",
       "intro": "Twoje przemyślenia - zawsze blisko i bez chaosu!",
@@ -11,7 +67,7 @@
       "doNotShowAgain": "Nie pokazuj więcej ekranu powitalnego",
       "preview": {
         "today": "Dziś",
-        "freshWorkspace": "Nowa przestrzeń robocza",
+        "freshWorkspace": "Nowy projekt",
         "ideas": "Pomysły",
         "colorfulNotes": "Kolorowe notatki",
         "next": "Następny"
@@ -19,12 +75,27 @@
     },
     "toolbar": {
       "newNote": "Nowa notatka",
+      "selectNotes": "Wybierz notatki",
       "deleteAll": "Usuń wszystkie notatki",
       "settings": "Ustawienia"
     },
+    "secureLockCompleteToast": "Odszyfrowane notatki usunięto z pamięci.",
+    "noteSelectionToolbar": {
+      "label": "Działania na zaznaczonych notatkach",
+      "selectedCount": "{{count}} zaznaczono",
+      "delete": "Usuń",
+      "duplicate": "Duplikuj",
+      "clear": "Odznacz wszystkie",
+      "cancel": "Anuluj",
+      "deleteDialogTitle": "Usuń zaznaczone notatki",
+      "deleteDialogMessage": "Czy na pewno chcesz usunąć zaznaczone notatki? Tej akcji nie można cofnąć.",
+      "deleteDialogConfirmLabel": "Usuń"
+    },
     "emptyNotes": {
       "title": "Nie masz jeszcze żadnych notatek!",
-      "addFirstNote": "Naciśnij {{shortcut}} aby dodać swoją pierwszą notatkę"
+      "addFirstNote": "Naciśnij {{shortcut}} aby dodać swoją pierwszą notatkę",
+      "lockedTitle": "Aplikacja {{appName}} jest chroniona hasłem.",
+      "lockedMessage": "Nic tu nie ma. To nie są notatki, których szukacie."
     },
     "note": {
       "titlePlaceholder": "Tytuł",
@@ -32,12 +103,22 @@
       "lastModified": "Ostatnio zmodyfikowano:",
       "lastModifiedCompact": "Zmodyfikowano:",
       "at": "o",
+      "select": "Wybierz notatkę",
+      "deselect": "Odznacz notatkę",
+      "textStats": "{{wordCount}} słów · {{characterCount}} znaków",
       "formatToolbar": {
+        "lists": "Listy",
         "bulletList": "Lista punktowana",
         "dashedList": "Lista kreskowana",
         "numberedList": "Lista numerowana",
+        "checklist": "Lista zadań",
         "superscript": "Indeks górny",
-        "subscript": "Indeks dolny"
+        "subscript": "Indeks dolny",
+        "inlineCode": "Kod",
+        "highlight": "Wyróżnienie",
+        "clearFormatting": "Wyczyść formatowanie",
+        "fontSize": "Rozmiar czcionki",
+        "font": "Czcionka"
       },
       "contextMenu": {
         "openInNewWindow": "Otwórz w nowym oknie",
@@ -71,6 +152,8 @@
       "pages": {
         "general": "Ogólne",
         "appearance": "Wygląd",
+        "editor": "Edytor",
+        "security": "Bezpieczeństwo",
         "shortcuts": "Skróty klawiszowe",
         "dataStorage": "Przechowywanie danych",
         "license": "Licencja",
@@ -97,7 +180,7 @@
         "list": "Lista"
       },
       "resortNotes": "Sortuj ponownie",
-      "keepNotesOnTop": "Zachowaj okno aplikacji na górze",
+      "keepNotesOnTop": "Okno aplikacji zawsze na wierzchu",
       "keepNotesOnTopDescription": "Okno z notatkami pozostaje ponad wszystkimi innymi okienkami",
       "dateTimeFormat": "Format daty i godziny",
       "timeFormat": "Format godzinny",
@@ -118,6 +201,8 @@
       "showNoteTitlesDescription": "Pokazuje lub ukrywa pole tytułu. To ustawienie może być nadpisane dla pojedynczej notatki.",
       "showNoteFooters": "Pokaż stopki notatek",
       "showNoteFootersDescription": "Pokazuje lub ukrywa sekcję stopki.",
+      "showFloatingFormatToolbar": "Pokaż pasek narzędzi formatowania",
+      "showFloatingFormatToolbarDescription": "Pokazuje przyciski formatowania podczas edycji treści notatki.",
       "noteSize": "Rozmiar notatki",
       "noteSizeOptions": {
         "compact": "Kompaktowy",
@@ -134,38 +219,174 @@
         "red": "Czerwony",
         "teal": "Turkusowy",
         "lilac": "Jasny fiolet"
+      }
+    },
+    "editor": {
+      "richTextEditor": "Zaawansowany edytor tekstu",
+      "richTextEditorDescription": "Umożliwia formatowanie, tworzenie list, stylizację tekstu i dostęp do pasków narzędzi edytora.",
+      "disableRichTextEditorDialog": {
+        "title": "Wyłączyć zaawansowany edytor tekstu?",
+        "message": "Istniejące sformatowane notatki zachowają swoje formatowanie, chyba że zostaną edytowane w edytorze tekstu zwykłego. Jeśli edytujesz sformatowaną notatkę, gdy zaawansowany edytor tekstu jest wyłączony, notatka zostanie przekonwertowana do tekstu zwykłego, a jej formatowanie zostanie trwale usunięte.",
+        "confirmLabel": "Wyłącz"
       },
+      "titleSection": "Tytuł",
+      "contentSection": "Treść",
       "noteFont": "Czcionka",
+      "noteFontDescription": "Dotyczy tekstu w treści notatki.",
+      "noteContentFontSize": "Rozmiar czcionki w treści notatki",
+      "noteContentFontSizeDescription": "Domyślny rozmiar dla tekstu w treści notatki.",
+      "noteTitleFont": "Czcionka tytułu",
+      "noteTitleFontDescription": "Dotyczy tekstu w tytułach notatek.",
+      "noteTitleFontSize": "Rozmiar czcionki tytułu",
+      "noteTitleFontSizeDescription": "Domyślny rozmiar dla pól tytułów notatek.",
+      "noteFontCategories": {
+        "generic": "Zwykłe",
+        "standard": "Standardowe",
+        "typewriter": "Maszyna do pisania",
+        "handwriting": "Pismo odręczne",
+        "calligraphic": "Kaligraficzne"
+      },
       "noteFontOptions": {
         "system": "Domyślna (systemowa)",
         "serif": "Serif",
         "sansSerif": "Sans-serif",
-        "monospace": "Monospace"
+        "monospace": "Monospace",
+        "inter": "Inter",
+        "lora": "Lora",
+        "sourceSans3": "Source Sans 3",
+        "sourceSerif4": "Source Serif 4",
+        "spaceMono": "Space Mono",
+        "caveat": "Caveat",
+        "dancingScript": "Dancing Script"
       },
       "noteFontPreview": "Zażółć gęślą jaźń."
     },
+    "disabledRichTextEditorTooltip": "Dostępne, gdy zaawansowany edytor tekstu jest włączony.",
+    "security": {
+      "lockScreen": "Ekran blokady",
+      "lockScreenDescription": "Wymaga podania hasła przed wyświetleniem notatek.",
+      "notesEncryption": "Szyfruj notatki na dysku",
+      "notesEncryptionDescription": "Szyfruj przechowywane pliki notatek, aby nie można było ich odczytać bez hasła.",
+      "enableEncryptionDialog": {
+        "title": "Włączyć szyfrowanie notatek?",
+        "message": "Zapamiętaj to hasło. Jeśli zapomnisz hasła do zaszyfrowanych notatek, Twoje dane nie będą mogły zostać odzyskane. Nikt, w tym SolisWare, nie będzie w stanie uzyskać dostępu do Twoich notatek.",
+        "cancelLabel": "Anuluj",
+        "confirmLabel": "Włącz"
+      },
+      "encryptionProgress": {
+        "encryptTitle": "Szyfrowanie notatek",
+        "decryptTitle": "Odszyfrowywanie notatek",
+        "preparing": "Przygotowywanie...",
+        "encryptingNotes": "Szyfrowanie {{current}} z {{total}} notatek...",
+        "decryptingNotes": "Odszyfrowywanie {{current}} z {{total}} notatek...",
+        "verifyingEncryption": "Weryfikowanie zaszyfrowanych notatek...",
+        "verifyingDecryption": "Weryfikowanie odszyfrowanych notatek...",
+        "cleaningUp": "Czyszczenie..."
+      },
+      "lockOnSystemSleep": "Zablokuj notatki wraz z uśpieniem systemu",
+      "lockOnSystemSleepDescription": "Blokuj notatki, gdy urządzenie przechodzi w tryb uśpienia.",
+      "lockAfterIdle": "Zablokuj notatki po okresie bezczynności",
+      "lockAfterIdleDescription": "Blokuj notatki po upływie wybranego czasu bezczynności.",
+      "requirePasswordDelay": "Wymagaj hasła",
+      "requirePasswordDelayDescription": "Określ, kiedy wymagać hasła po zamknięciu okna notatek.",
+      "password": "Hasło",
+      "passwordDescription": "Zmień hasło używane do odblokowania notatek.",
+      "changePassword": "Zmień hasło",
+      "disabledLockScreenTooltip": "Wyłącz szyfrowanie notatek, aby zmienić to ustawienie.",
+      "disabledPasswordTooltip": "Dostępne po włączeniu ekranu blokady.",
+      "bruteForceProtection": "Ochrona przed atakami brute-force",
+      "bruteForceProtectionDescription": "Tymczasowo blokuj próby wprowadzenia hasła po wielokrotnym niepoprawnym wpisaniu.",
+      "disableBruteForceProtectionDialog": {
+        "title": "Wyłączyć ochronę przed atakami brute-force?",
+        "message": "Powtarzające się niepoprawne próby wprowadzenia hasła nie będą już wywoływać okresów oczekiwania. Zmniejsza to ochronę przed atakami brute-force.",
+        "confirmLabel": "Wyłącz"
+      },
+      "dialog": {
+        "setTitle": "Ustaw hasło",
+        "setDescription": "Wprowadź hasło, które będzie wymagane do odblokowania notatek.",
+        "enableTitle": "Włącz ekran blokady",
+        "enableDescription": "Wprowadź hasło, aby włączyć ekran blokady.",
+        "disableTitle": "Wyłącz ekran blokady",
+        "disableDescription": "Wprowadź hasło, aby wyłączyć ekran blokady.",
+        "enableEncryptionTitle": "Włącz szyfrowanie notatek",
+        "enableEncryptionDescription": "Wprowadź hasło, aby zaszyfrować przechowywane pliki notatek.",
+        "disableEncryptionTitle": "Wyłącz szyfrowanie notatek",
+        "disableEncryptionDescription": "Wprowadź hasło, aby odszyfrować przechowywane pliki notatek.",
+        "changeTitle": "Zmień hasło",
+        "changeDescription": "Wprowadź obecne hasło, a następnie wybierz nowe.",
+        "currentPassword": "Obecne hasło",
+        "newPassword": "Nowe hasło",
+        "confirmPassword": "Potwierdź hasło",
+        "passwordRequired": "Wprowadź hasło, aby kontynuować.",
+        "newPasswordRequired": "Wprowadź nowe hasło.",
+        "passwordTooShort": "Hasło musi mieć co najmniej {{minLength}} znaków.",
+        "confirmPasswordRequired": "Potwierdź nowe hasło.",
+        "passwordMismatch": "Hasła nie są zgodne.",
+        "invalidPassword": "Hasło jest niepoprawne.",
+        "setConfirm": "Ustaw hasło",
+        "enableConfirm": "Włącz",
+        "disableConfirm": "Wyłącz",
+        "enableEncryptionConfirm": "Zaszyfruj notatki",
+        "disableEncryptionConfirm": "Odszyfruj notatki",
+        "changeConfirm": "Zmień hasło",
+        "weakPasswordDialog": {
+          "title": "Użyć słabego hasła?",
+          "message": "To hasło może być łatwe do odgadnięcia. Słabe hasło redukuje ochronę przed atakami i może pozwolić atakującemu uzyskać dostęp do przechowywanych notatek. Zaleca się użycie silniejszego hasła, aby chronić swoje notatki.",
+          "cancelLabel": "Anuluj",
+          "confirmLabel": "Użyj mimo to"
+        }
+      }
+    },
     "dataStorage": {
       "notesFolderLocation": "Lokalizacja folderu z notatkami",
+      "securityFolderLocation": "Lokalizacja danych szyfrowania",
       "settingsFolderLocation": "Lokalizacja folderu z ustawieniami",
       "browserLocalStorage": "Lokalny magazyn przeglądarki"
     },
     "shortcuts": {
       "newNote": "Nowa notatka",
       "openSettings": "Otwórz ustawienia",
+      "lockNotes": "Zablokuj notatki",
+      "secureLock": "Bezpiecznie zablokuj notatki",
       "deleteAllNotes": "Usuń wszystkie notatki",
+      "enterNoteSelectionMode": "Zaznacz notatki",
+      "selectAllNotes": "Zaznacz wszystkie notatki",
+      "duplicateSelectedNotes": "Powiel wybrane notatki",
+      "clearOrCancelNoteSelection": "Wyczyść lub anuluj wybór notatek",
       "bold": "Pogrubienie",
       "italic": "Kursywa",
       "underline": "Podkreślenie",
       "strikethrough": "Przekreślenie",
+      "inlineCode": "Kod",
+      "highlight": "Wyróżnienie",
+      "clearFormatting": "Wyczyść formatowanie",
       "bulletList": "Lista punktowana",
       "dashedList": "Lista kreskowana",
       "numberedList": "Lista numerowana",
+      "checklist": "Lista zadań",
+      "increaseFontSize": "Zwiększ rozmiar czcionki",
+      "decreaseFontSize": "Zmniejsz rozmiar czcionki",
+      "disabledEncryptionTooltip": "Dostępne, gdy szyfrowanie notatek jest włączone.",
+      "disabledLockScreenTooltip": "Dostępne, gdy ekran blokady jest włączony.",
+      "sections": {
+        "general": "Ogólne",
+        "noteSelection": "Zaznaczanie notatek",
+        "security": "Bezpieczeństwo",
+        "textFormatting": "Formatowanie tekstu",
+        "lists": "Listy"
+      },
       "keys": {
         "command": "Komenda",
         "control": "Ctrl",
+        "option": "Opcja",
+        "alt": "Alt",
         "shift": "Shift",
         "backspace": "Backspace",
-        "comma": "Przecinek"
+        "comma": "Przecinek",
+        "escape": "Escape",
+        "plus": "Plus",
+        "minus": "Minus",
+        "backslash": "Backslash"
       }
     },
     "links": {
@@ -196,6 +417,8 @@
       "quit": "Wyjdź",
       "file": "Plik",
       "newNote": "Nowa notatka...",
+      "lockNotes": "Zablokuj notatki",
+      "secureLock": "Bezpiecznie zablokuj notatki",
       "close": "Zamknij",
       "edit": "Edycja",
       "undo": "Cofnij",
@@ -205,23 +428,34 @@
       "paste": "Wklej",
       "selectAll": "Zaznacz wszystko",
       "delete": "Usuń",
+      "selectNote": "Zaznacz notatkę",
+      "selectNotes": "Zaznacz notatki...",
+      "selectAllNotes": "Zaznacz wszystkie notatki",
+      "deselectAllNotes": "Odznacz wszystkie notatki",
+      "cancelNoteSelection": "Anuluj zaznaczanie notatek",
       "format": "Format",
       "bold": "Pogrubienie",
       "italic": "Kursywa",
       "underline": "Podkreślenie",
       "strikethrough": "Przekreślenie",
+      "inlineCode": "Kod",
+      "highlight": "Wyróżnienie",
       "superscript": "Indeks górny",
       "subscript": "Indeks dolny",
       "bulletList": "Lista punktowana",
       "dashedList": "Lista kreskowana",
       "numberedList": "Lista numerowana",
+      "checklist": "Lista zadań",
+      "fontSize": "Rozmiar czcionki",
+      "font": "Czcionka",
+      "clearFormatting": "Wyczyść formatowanie",
       "deleteAllNotes": "Usuń wszystkie notatki",
       "view": "Widok",
       "reload": "Przeładuj",
       "resetZoom": "Rzeczywisty rozmiar",
       "zoomIn": "Powiększ",
       "zoomOut": "Pomniejsz",
-      "toggleFullScreen": "Przełącz widok pełnego ekranu",
+      "toggleFullScreen": "Włącz tryb pełnoekranowy",
       "window": "Okno",
       "help": "Pomoc",
       "welcome": "Ekran powitalny",
@@ -233,6 +467,15 @@
       "settings": "Ustawienia",
       "license": "Licencja",
       "note": "Notatka"
+    },
+     "storageMigration": {
+      "windowCloseTitle": "Migracja danych jest wciąż w toku",
+      "windowCloseMessage": "Axion Notes aktualizuje zaszyfrowane dane notatek. Zamknięcie tego okna teraz może ukryć postęp migracji i utrudnić odzyskiwanie, jeśli proces zostanie przerwany.",
+      "quitTitle": "Wyjść podczas działania migracji danych?",
+      "quitMessage": "Axion Notes aktualizuje zaszyfrowane przechowywanie notatek. Wyjście teraz może nieodwracalnie uszkodzić zaszyfrowane pliki notatek.",
+      "keepWaiting": "Czekaj dalej",
+      "closeAnyway": "Zamknij mimo to",
+      "quitAnyway": "Wyjdź mimo to"
     }
   }
 }
