@@ -28,6 +28,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added atomic writes for encrypted notes, manifests, records, and plaintext note files to reduce corruption risk during crashes or interrupted writes
 - Added migration guards that warn before closing windows or quitting during encryption/decryption storage updates and block lock shortcuts while migration is active
 - Added encrypted storage format validators and version migration hooks for note records, manifests, and encryption metadata
+- Added the initial testing framework with unit, integration, regression, and E2E test layers
 
 ## [v0.4.0-beta.2] - September 5, 2026 - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
