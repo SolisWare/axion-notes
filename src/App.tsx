@@ -136,7 +136,7 @@ function App() {
     }
 
     return window.api.security.onSecureLockComplete(() => {
-      setToastMessage(i18n.t("mainWindow.secureLockCompleteToast"));
+      setToastMessage(i18n.t("decryptedNotesCleared"));
     });
   }, []);
 

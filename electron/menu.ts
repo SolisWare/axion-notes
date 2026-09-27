@@ -14,6 +14,7 @@ import { translate } from "./utils/electronI18n";
 import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
+import { withEllipsis } from "../src/utils/text";
 
 type MenubarOptions = {
   onLockNotes: () => void | Promise<void>;
@@ -25,11 +26,11 @@ export function createMenubar(options: MenubarOptions): Menu {
     ...(isMac ? [{
       label: app.name,
       submenu: [
-        { role: 'about', label: translate("electron.menu.about", { appName: "Axion Notes" }) },
+        { role: 'about', label: translate("aboutApp", { appName: "Axion Notes" }) },
         { type: 'separator' },
         {
           id: menuIds.app.settings,
-          label: translate("electron.menu.settings"),
+          label: withEllipsis(translate("settings")),
           accelerator: 'Cmd+,',
           click: () => {
             createSettingsWindow();
@@ -38,7 +39,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.app.lockNotes,
-          label: translate("electron.menu.lockNotes"),
+          label: translate("lockNotes"),
           accelerator: 'Shift+CmdOrCtrl+L',
           click: () => {
             options.onLockNotes();
@@ -46,33 +47,33 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.app.secureLock,
-          label: translate("electron.menu.secureLock"),
+          label: translate("secureLock"),
           accelerator: 'Alt+Shift+CmdOrCtrl+L',
           click: () => {
             options.onSecureLock();
           }
         },
         { type: 'separator' },
-        { role: 'services', label: translate("electron.menu.services") },
+        { role: 'services', label: translate("services") },
         { type: 'separator' },
-        { role: 'hide', label: translate("electron.menu.hide") },
-        { role: 'hideOthers', label: translate("electron.menu.hideOthers") },
-        { role: 'unhide', label: translate("electron.menu.unhide") },
+        { role: 'hide', label: translate("hide") },
+        { role: 'hideOthers', label: translate("hideOthers") },
+        { role: 'unhide', label: translate("showAll") },
         { type: 'separator' },
-        { role: 'quit', label: translate("electron.menu.quit") },
+        { role: 'quit', label: translate("quit") },
       ]
     }] : []),
     {
       id: menuIds.file.root,
-      label: translate("electron.menu.file"),
+      label: translate("file"),
       submenu: [
         ...(isWindows ? [
-          { role: 'about' as const, label: translate("electron.menu.about", { appName: "Axion Notes" }) },
+          { role: 'about' as const, label: translate("aboutApp", { appName: "Axion Notes" }) },
           { type: 'separator' as const }
         ] : []),
         {
           id: menuIds.file.newNote,
-          label: translate("electron.menu.newNote"),
+          label: withEllipsis(translate("newNote")),
           accelerator: 'CmdOrCtrl+N',
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.newNote);
@@ -82,7 +83,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         ...(!isMac ? [
           {
             id: menuIds.file.lockNotes,
-            label: translate("electron.menu.lockNotes"),
+            label: translate("lockNotes"),
             accelerator: 'Shift+CmdOrCtrl+L',
             click: () => {
               options.onLockNotes();
@@ -90,7 +91,7 @@ export function createMenubar(options: MenubarOptions): Menu {
           },
           {
             id: menuIds.file.secureLock,
-            label: translate("electron.menu.secureLock"),
+            label: translate("secureLock"),
             accelerator: 'Alt+Shift+CmdOrCtrl+L',
             click: () => {
               options.onSecureLock();
@@ -101,7 +102,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         ...(isWindows ? [
           {
             id: menuIds.file.settings,
-            label: translate("electron.menu.settings"),
+            label: withEllipsis(translate("settings")),
             click: () => {
               createSettingsWindow();
             }
@@ -109,28 +110,28 @@ export function createMenubar(options: MenubarOptions): Menu {
           { type: 'separator' as const }
         ] : []),
         isMac
-          ? { role: 'close', label: translate("electron.menu.close") }
-          : { role: 'quit', label: translate("electron.menu.quit") }
+          ? { role: 'close', label: translate("close") }
+          : { role: 'quit', label: translate("quit") }
       ]
     },
     {
       id: menuIds.edit.root,
-      label: translate("electron.menu.edit"),
+      label: translate("edit"),
       submenu: [
-        { role: 'undo', label: translate("electron.menu.undo") },
-        { role: 'redo', label: translate("electron.menu.redo") },
+        { role: 'undo', label: translate("undo") },
+        { role: 'redo', label: translate("redo") },
         { type: 'separator' },
-        { id: menuIds.edit.cut, role: 'cut', label: translate("electron.menu.cut"), enabled: false },
-        { id: menuIds.edit.copy, role: 'copy', label: translate("electron.menu.copy"), enabled: false },
-        { id: menuIds.edit.paste, role: 'paste', label: translate("electron.menu.paste"), enabled: false },
-        { role: 'selectAll', label: translate("electron.menu.selectAll") },
+        { id: menuIds.edit.cut, role: 'cut', label: translate("cut"), enabled: false },
+        { id: menuIds.edit.copy, role: 'copy', label: translate("copy"), enabled: false },
+        { id: menuIds.edit.paste, role: 'paste', label: translate("paste"), enabled: false },
+        { role: 'selectAll', label: translate("selectAll") },
         ...(isMac ? [
-          { id: menuIds.edit.delete, role: 'delete' as const, label: translate("electron.menu.delete"), enabled: false }
+          { id: menuIds.edit.delete, role: 'delete' as const, label: translate("delete"), enabled: false }
         ] : []),
         { type: 'separator' },
         {
           id: menuIds.edit.selectNote,
-          label: translate("electron.menu.selectNotes"),
+          label: withEllipsis(translate("selectNotes")),
           accelerator: 'Shift+CmdOrCtrl+A',
           enabled: false,
           click: () => {
@@ -139,7 +140,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.edit.selectAllNotes,
-          label: translate("electron.menu.selectAllNotes"),
+          label: translate("selectAllNotes"),
           enabled: false,
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.selectAllNotes);
@@ -147,7 +148,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.edit.cancelNoteSelection,
-          label: translate("electron.menu.cancelNoteSelection"),
+          label: translate("cancelNoteSelection"),
           enabled: false,
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.cancelNoteSelection);
@@ -156,7 +157,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.edit.deleteAllNotes,
-          label: translate("electron.menu.deleteAllNotes"),
+          label: withEllipsis(translate("deleteAllNotes")),
           accelerator: 'Shift+CmdOrCtrl+Backspace',
           enabled: false,
           click: () => {
@@ -167,12 +168,12 @@ export function createMenubar(options: MenubarOptions): Menu {
     },
     {
       id: menuIds.format.root,
-      label: translate("electron.menu.format"),
+      label: translate("format"),
       enabled: false,
       submenu: [
         {
           id: menuIds.format.bold,
-          label: translate("electron.menu.bold"),
+          label: translate("formatting.bold"),
           accelerator: 'CmdOrCtrl+B',
           type: 'checkbox',
           enabled: false,
@@ -182,7 +183,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.italic,
-          label: translate("electron.menu.italic"),
+          label: translate("formatting.italic"),
           accelerator: 'CmdOrCtrl+I',
           type: 'checkbox',
           enabled: false,
@@ -192,7 +193,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.underline,
-          label: translate("electron.menu.underline"),
+          label: translate("formatting.underline"),
           accelerator: 'CmdOrCtrl+U',
           type: 'checkbox',
           enabled: false,
@@ -202,7 +203,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.strikethrough,
-          label: translate("electron.menu.strikethrough"),
+          label: translate("formatting.strikethrough"),
           accelerator: 'Shift+CmdOrCtrl+X',
           type: 'checkbox',
           enabled: false,
@@ -212,7 +213,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.highlight,
-          label: translate("electron.menu.highlight"),
+          label: translate("formatting.highlight"),
           accelerator: 'Shift+CmdOrCtrl+H',
           type: 'checkbox',
           enabled: false,
@@ -222,7 +223,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.inlineCode,
-          label: translate("electron.menu.inlineCode"),
+          label: translate("formatting.inlineCode"),
           accelerator: 'CmdOrCtrl+M',
           type: 'checkbox',
           enabled: false,
@@ -233,7 +234,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.format.superscript,
-          label: translate("electron.menu.superscript"),
+          label: translate("formatting.superscript"),
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -242,7 +243,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.subscript,
-          label: translate("electron.menu.subscript"),
+          label: translate("formatting.subscript"),
           type: 'checkbox',
           enabled: false,
           click: () => {
@@ -252,7 +253,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.format.bulletList,
-          label: translate("electron.menu.bulletList"),
+          label: translate("formatting.bulletList"),
           accelerator: 'Shift+CmdOrCtrl+6',
           type: 'checkbox',
           enabled: false,
@@ -262,7 +263,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.dashedList,
-          label: translate("electron.menu.dashedList"),
+          label: translate("formatting.dashedList"),
           accelerator: 'Shift+CmdOrCtrl+7',
           type: 'checkbox',
           enabled: false,
@@ -272,7 +273,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.numberedList,
-          label: translate("electron.menu.numberedList"),
+          label: translate("formatting.numberedList"),
           accelerator: 'Shift+CmdOrCtrl+8',
           type: 'checkbox',
           enabled: false,
@@ -282,7 +283,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.checklist,
-          label: translate("electron.menu.checklist"),
+          label: translate("formatting.checklist"),
           accelerator: 'Shift+CmdOrCtrl+9',
           type: 'checkbox',
           enabled: false,
@@ -293,7 +294,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.format.fontSize.root,
-          label: translate("electron.menu.fontSize"),
+          label: translate("formatting.fontSize"),
           enabled: false,
           submenu: NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => ({
             id: menuIds.format.fontSize.option(fontSize),
@@ -310,10 +311,10 @@ export function createMenubar(options: MenubarOptions): Menu {
         },
         {
           id: menuIds.format.fontFamily.root,
-          label: translate("electron.menu.font"),
+          label: translate("formatting.font"),
           enabled: false,
           submenu: NOTE_FONT_CATEGORIES.map((fontCategory) => ({
-            label: translate(`settingsWindow.editor.noteFontCategories.${fontCategory}`),
+            label: translate(`fontCategories.${fontCategory}`),
             submenu: NOTE_FONT_OPTIONS
               .filter((fontOption) => fontOption.category === fontCategory)
               .map((fontOption) => ({
@@ -333,7 +334,7 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.format.clearFormatting,
-          label: translate("electron.menu.clearFormatting"),
+          label: translate("formatting.clearFormatting"),
           accelerator: 'CmdOrCtrl+\\',
           enabled: false,
           click: () => {
@@ -344,17 +345,17 @@ export function createMenubar(options: MenubarOptions): Menu {
     },
     {
       id: menuIds.view.root,
-      label: translate("electron.menu.view"),
+      label: translate("view"),
       submenu: [
-        { role: 'reload', label: translate("electron.menu.reload") },
+        { role: 'reload', label: translate("reload") },
         { type: 'separator' },
-        { role: 'resetZoom', label: translate("electron.menu.resetZoom") },
-        { role: 'zoomIn', label: translate("electron.menu.zoomIn") },
-        { role: 'zoomOut', label: translate("electron.menu.zoomOut") },
+        { role: 'resetZoom', label: translate("zoomActualSize") },
+        { role: 'zoomIn', label: translate("zoomIn") },
+        { role: 'zoomOut', label: translate("zoomOut") },
         { type: 'separator' },
         {
           id: menuIds.view.toggleFullScreen,
-          label: translate("electron.menu.toggleFullScreen"),
+          label: translate("toggleFullScreen"),
           accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
           click: () => {
             const focusedWindow = BrowserWindow.getFocusedWindow();
@@ -363,15 +364,15 @@ export function createMenubar(options: MenubarOptions): Menu {
         }
       ]
     },
-    { role: 'windowMenu', label: translate("electron.menu.window") },
+    { role: 'windowMenu', label: translate("window") },
     {
       role: 'help',
       id: menuIds.help.root,
-      label: translate("electron.menu.help"),
+      label: translate("help"),
       submenu: [
         {
           id: menuIds.help.welcome,
-          label: translate("electron.menu.welcome"),
+          label: translate("welcome"),
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.showWelcome);
           }
@@ -379,21 +380,21 @@ export function createMenubar(options: MenubarOptions): Menu {
         { type: 'separator' },
         {
           id: menuIds.help.viewLicense,
-          label: translate("electron.menu.viewLicense"),
+          label: translate("viewLicense"),
           click: () => {
             createLicenseWindow();
           }
         },
         {
           id: menuIds.help.visitWebsite,
-          label: translate("electron.menu.visitWebsite"),
+          label: translate("visitWebsite"),
           click: () => {
             shell.openExternal('https://solisware.com');
           }
         },
         {
           id: menuIds.help.checkoutGitHub,
-          label: translate("electron.menu.checkoutGitHub"),
+          label: translate("checkoutGitHub"),
           click: () => {
             shell.openExternal('https://github.com/SolisWare');
           }

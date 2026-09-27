@@ -173,14 +173,14 @@ function WelcomeScreen(props: WelcomeProps) {
             fontWeight="bold"
             style={{ color: appColors.MAIN }}
           >
-            {t("mainWindow.welcome.title")}
+            {t("welcomeToApp")}
           </Typography>
           <Typography className={classes.intro} variant="body1">
-            {t("mainWindow.welcome.intro")}
+            {t("welcomeIntro")}
           </Typography>
           <div className={classes.actions}>
             <Button className={classes.getStartedButton} variant="contained" onClick={props.onGetStarted}>
-              {t("mainWindow.welcome.getStarted")}
+              {t("getStarted")}
               <ArrowForwardIcon className={classes.buttonIcon} fontSize="small" />
             </Button>
             <FormControlLabel
@@ -198,7 +198,7 @@ function WelcomeScreen(props: WelcomeProps) {
                   }}
                 />
               }
-              label={t("mainWindow.welcome.doNotShowAgain")}
+              label={t("doNotShowWelcomeAgain")}
             />
           </div>
         </div>
@@ -212,13 +212,13 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">{t("mainWindow.welcome.preview.today")}</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("today")}</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />
             <div className={classes.featureRow}>
               <AutoAwesomeOutlinedIcon className={classes.featureIcon} />
-              <Typography variant="body2">{t("mainWindow.welcome.preview.freshWorkspace")}</Typography>
+              <Typography variant="body2">{t("freshWorkspace")}</Typography>
             </div>
           </div>
           <div
@@ -230,12 +230,12 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">{t("mainWindow.welcome.preview.ideas")}</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("ideas")}</Typography>
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />
             <div className={classes.featureRow}>
               <ColorLensOutlinedIcon className={classes.featureIcon} />
-              <Typography variant="body2">{t("mainWindow.welcome.preview.colorfulNotes")}</Typography>
+              <Typography variant="body2">{t("colorfulNotes")}</Typography>
             </div>
           </div>
           <div
@@ -247,7 +247,7 @@ function WelcomeScreen(props: WelcomeProps) {
               border: "1px solid " + appColors.WELCOME_NOTE_PREVIEW_BORDER
             }}
           >
-            <Typography className={classes.noteTitle} variant="body1">{t("mainWindow.welcome.preview.next")}</Typography>
+            <Typography className={classes.noteTitle} variant="body1">{t("next")}</Typography>
             <div className={classes.noteLine} />
             <div className={classes.noteLine} />
             <div className={`${classes.noteLine} ${classes.shortLine}`} />

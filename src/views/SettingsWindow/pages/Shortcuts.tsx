@@ -37,46 +37,46 @@ type ShortcutsProps = {
 function getShortcutSections(t: TFunction, encryptionDisabledTooltip: string, lockScreenDisabledTooltip: string): ShortcutSection[] {
   const isMac = window.api.os.isMac;
   const commandKey = isMac
-    ? { label: "⌘", ariaLabel: t("settingsWindow.shortcuts.keys.command") }
-    : { label: "⌃", ariaLabel: t("settingsWindow.shortcuts.keys.control") };
+    ? { label: "⌘", ariaLabel: t("keys.command") }
+    : { label: "⌃", ariaLabel: t("keys.control") };
   const optionKey = isMac
-    ? { label: "⌥", ariaLabel: t("settingsWindow.shortcuts.keys.option") }
-    : { label: "Alt", ariaLabel: t("settingsWindow.shortcuts.keys.alt") };
-  const shiftKey = { label: "⇧", ariaLabel: t("settingsWindow.shortcuts.keys.shift") };
-  const backspaceKey = { label: "⌫", ariaLabel: t("settingsWindow.shortcuts.keys.backspace") };
-  const escapeKey = { label: "Esc", ariaLabel: t("settingsWindow.shortcuts.keys.escape") };
+    ? { label: "⌥", ariaLabel: t("keys.option") }
+    : { label: "Alt", ariaLabel: t("keys.alt") };
+  const shiftKey = { label: "⇧", ariaLabel: t("keys.shift") };
+  const backspaceKey = { label: "⌫", ariaLabel: t("keys.backspace") };
+  const escapeKey = { label: "Esc", ariaLabel: t("keys.escape") };
 
   return [
     {
-      title: t("settingsWindow.shortcuts.sections.general"),
+      title: t("general"),
       shortcuts: [
-        { label: t("settingsWindow.shortcuts.newNote"), keys: [commandKey, { label: "N", ariaLabel: "N" }] },
+        { label: t("newNote"), keys: [commandKey, { label: "N", ariaLabel: "N" }] },
         ...(isMac ? [
-          { label: t("settingsWindow.shortcuts.openSettings"), keys: [commandKey, { label: ",", ariaLabel: t("settingsWindow.shortcuts.keys.comma") }] },
+          { label: t("openSettings"), keys: [commandKey, { label: ",", ariaLabel: t("keys.comma") }] },
         ] : []),
-        { label: t("settingsWindow.shortcuts.deleteAllNotes"), keys: [commandKey, shiftKey, backspaceKey] }
+        { label: t("deleteAllNotes"), keys: [commandKey, shiftKey, backspaceKey] }
       ]
     },
     {
-      title: t("settingsWindow.shortcuts.sections.noteSelection"),
+      title: t("noteSelection"),
       shortcuts: [
-        { label: t("settingsWindow.shortcuts.enterNoteSelectionMode"), keys: [commandKey, shiftKey, { label: "A", ariaLabel: "A" }] },
-        { label: t("settingsWindow.shortcuts.selectAllNotes"), keys: [commandKey, { label: "A", ariaLabel: "A" }] },
-        { label: t("settingsWindow.shortcuts.duplicateSelectedNotes"), keys: [commandKey, shiftKey, { label: "D", ariaLabel: "D" }] },
-        { label: t("settingsWindow.shortcuts.clearOrCancelNoteSelection"), keys: [escapeKey] }
+        { label: t("selectNotes"), keys: [commandKey, shiftKey, { label: "A", ariaLabel: "A" }] },
+        { label: t("selectAllNotes"), keys: [commandKey, { label: "A", ariaLabel: "A" }] },
+        { label: t("duplicateSelectedNotes"), keys: [commandKey, shiftKey, { label: "D", ariaLabel: "D" }] },
+        { label: t("clearOrCancelSelection"), keys: [escapeKey] }
       ]
     },
     {
-      title: t("settingsWindow.shortcuts.sections.security"),
+      title: t("security"),
       shortcuts: [
         {
-          label: t("settingsWindow.shortcuts.lockNotes"),
+          label: t("lockNotes"),
           keys: [commandKey, shiftKey, { label: "L", ariaLabel: "L" }],
           disabledTooltip: lockScreenDisabledTooltip,
           requiresLockScreen: true
         },
         {
-          label: t("settingsWindow.shortcuts.secureLock"),
+          label: t("secureLock"),
           keys: [commandKey, shiftKey, optionKey, { label: "L", ariaLabel: "L" }],
           disabledTooltip: encryptionDisabledTooltip,
           requiresEncryption: true
@@ -84,26 +84,26 @@ function getShortcutSections(t: TFunction, encryptionDisabledTooltip: string, lo
       ]
     },
     {
-      title: t("settingsWindow.shortcuts.sections.textFormatting"),
+      title: t("textFormatting"),
       shortcuts: [
-        { label: t("settingsWindow.shortcuts.bold"), keys: [commandKey, { label: "B", ariaLabel: "B" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.italic"), keys: [commandKey, { label: "I", ariaLabel: "I" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.strikethrough"), keys: [commandKey, shiftKey, { label: "X", ariaLabel: "X" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.highlight"), keys: [commandKey, shiftKey, { label: "H", ariaLabel: "H" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.inlineCode"), keys: [commandKey, { label: "M", ariaLabel: "M" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.clearFormatting"), keys: [commandKey, { label: "\\", ariaLabel: t("settingsWindow.shortcuts.keys.backslash") }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.increaseFontSize"), keys: [commandKey, { label: "+", ariaLabel: t("settingsWindow.shortcuts.keys.plus") }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.decreaseFontSize"), keys: [commandKey, { label: "-", ariaLabel: t("settingsWindow.shortcuts.keys.minus") }], requiresRichTextEditor: true }
+        { label: t("formatting.bold"), keys: [commandKey, { label: "B", ariaLabel: "B" }], requiresRichTextEditor: true },
+        { label: t("formatting.italic"), keys: [commandKey, { label: "I", ariaLabel: "I" }], requiresRichTextEditor: true },
+        { label: t("formatting.underline"), keys: [commandKey, { label: "U", ariaLabel: "U" }], requiresRichTextEditor: true },
+        { label: t("formatting.strikethrough"), keys: [commandKey, shiftKey, { label: "X", ariaLabel: "X" }], requiresRichTextEditor: true },
+        { label: t("formatting.highlight"), keys: [commandKey, shiftKey, { label: "H", ariaLabel: "H" }], requiresRichTextEditor: true },
+        { label: t("formatting.inlineCode"), keys: [commandKey, { label: "M", ariaLabel: "M" }], requiresRichTextEditor: true },
+        { label: t("formatting.clearFormatting"), keys: [commandKey, { label: "\\", ariaLabel: t("keys.backslash") }], requiresRichTextEditor: true },
+        { label: t("increaseFontSize"), keys: [commandKey, { label: "+", ariaLabel: t("keys.plus") }], requiresRichTextEditor: true },
+        { label: t("decreaseFontSize"), keys: [commandKey, { label: "-", ariaLabel: t("keys.minus") }], requiresRichTextEditor: true }
       ]
     },
     {
-      title: t("settingsWindow.shortcuts.sections.lists"),
+      title: t("formatting.lists"),
       shortcuts: [
-        { label: t("settingsWindow.shortcuts.bulletList"), keys: [commandKey, shiftKey, { label: "6", ariaLabel: "6" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.dashedList"), keys: [commandKey, shiftKey, { label: "7", ariaLabel: "7" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.numberedList"), keys: [commandKey, shiftKey, { label: "8", ariaLabel: "8" }], requiresRichTextEditor: true },
-        { label: t("settingsWindow.shortcuts.checklist"), keys: [commandKey, shiftKey, { label: "9", ariaLabel: "9" }], requiresRichTextEditor: true }
+        { label: t("formatting.bulletList"), keys: [commandKey, shiftKey, { label: "6", ariaLabel: "6" }], requiresRichTextEditor: true },
+        { label: t("formatting.dashedList"), keys: [commandKey, shiftKey, { label: "7", ariaLabel: "7" }], requiresRichTextEditor: true },
+        { label: t("formatting.numberedList"), keys: [commandKey, shiftKey, { label: "8", ariaLabel: "8" }], requiresRichTextEditor: true },
+        { label: t("formatting.checklist"), keys: [commandKey, shiftKey, { label: "9", ariaLabel: "9" }], requiresRichTextEditor: true }
       ]
     }
   ];
@@ -111,9 +111,9 @@ function getShortcutSections(t: TFunction, encryptionDisabledTooltip: string, lo
 
 function Shortcuts(props: ShortcutsProps) {
   const { t } = useTranslation();
-  const disabledFormattingTooltip = t("settingsWindow.disabledRichTextEditorTooltip");
-  const disabledEncryptionTooltip = t("settingsWindow.shortcuts.disabledEncryptionTooltip");
-  const disabledLockScreenTooltip = t("settingsWindow.shortcuts.disabledLockScreenTooltip");
+  const disabledFormattingTooltip = t("richTextEditorRequired");
+  const disabledEncryptionTooltip = t("encryptionRequired");
+  const disabledLockScreenTooltip = t("lockScreenRequired");
 
   return (
     <div className={styles.shortcutsPage}>

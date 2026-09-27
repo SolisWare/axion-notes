@@ -64,7 +64,7 @@ export const storageApi = {
   },
 
   getNotesFolderLocation: async (): Promise<string> => {
-    return i18n.t("settingsWindow.dataStorage.browserLocalStorage");
+    return i18n.t("localStorage");
   },
 
   deleteNote: (noteId: string) => {

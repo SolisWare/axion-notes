@@ -148,12 +148,12 @@ function NoteWindow(props: NoteWindowProps) {
               dateFormat={props.appSettings.dateFormat}
               timeFormat={props.appSettings.timeFormat}
               noteFont={props.appSettings.noteFont}
-              noteTitleFont={props.appSettings.noteTitleFont}
-              noteContentFontSize={props.appSettings.noteContentFontSize}
-              noteTitleFontSize={props.appSettings.noteTitleFontSize}
+              titleFont={props.appSettings.titleFont}
+              contentFontSize={props.appSettings.contentFontSize}
+              titleFontSize={props.appSettings.titleFontSize}
               richTextEditorEnabled={props.appSettings.richTextEditorEnabled}
               noteSize={NoteSizePreference.DEFAULT}
-              showNoteTitles={props.appSettings.showNoteTitles}
+              showTitles={props.appSettings.showTitles}
               showNoteFooters={props.appSettings.showNoteFooters}
               handleDeleteNoteButton={handleDeleteNote}
               handleDuplicateNote={handleDuplicateNote}
@@ -176,7 +176,7 @@ function NoteWindow(props: NoteWindowProps) {
             />
             {props.embedded && props.onClose && (
               <IconButton
-                aria-label={t("common.close")}
+                aria-label={t("close")}
                 className={styles.closeButton}
                 onClick={props.onClose}
                 size="small"

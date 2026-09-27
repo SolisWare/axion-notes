@@ -87,7 +87,7 @@ function MainWindow(props: MainWindowProps) {
   const isNotesAccessLockedRef = useRef(false);
   const currentNotesSortOrder = useRef(appSettings.notesSortOrder);
   const previousNoteLayout = useRef(appSettings.noteLayout);
-  const previousShowNoteTitles = useRef(appSettings.showNoteTitles);
+  const previousShowNoteTitles = useRef(appSettings.showTitles);
   const openNoteWindowNoteIds = useRef<Set<string>>(new Set());
     
   const isDeleteAllButtonDisabled = notes.length === 0;
@@ -104,7 +104,7 @@ function MainWindow(props: MainWindowProps) {
     const newNote = {
       id: nanoid(),
       bgcolor: noteColor,
-      isTitleHidden: !appSettings.showNoteTitles,
+      isTitleHidden: !appSettings.showTitles,
       isFolded: true,
       content: "",
       createdOn: new Date(),
@@ -112,7 +112,7 @@ function MainWindow(props: MainWindowProps) {
     };
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
-  }, [appSettings.defaultNoteColor, appSettings.showNoteTitles]);
+  }, [appSettings.defaultNoteColor, appSettings.showTitles]);
 
   const handleToggleSelectAllNotes = useCallback(() => {
     setSelectedNoteIds((currentSelectedNoteIds) => {
@@ -216,22 +216,22 @@ function MainWindow(props: MainWindowProps) {
   }, [appSettings.notesSortOrder]);
 
   useEffect(() => {
-    if (previousShowNoteTitles.current === appSettings.showNoteTitles) {
+    if (previousShowNoteTitles.current === appSettings.showTitles) {
       return;
     }
 
-    previousShowNoteTitles.current = appSettings.showNoteTitles;
+    previousShowNoteTitles.current = appSettings.showTitles;
     setNotes((prevNotes) => prevNotes.map((note) => {
       const updatedNote = {
         ...note,
-        isTitleHidden: !appSettings.showNoteTitles
+        isTitleHidden: !appSettings.showTitles
       };
 
       window.api.storage.setNote(updatedNote);
 
       return updatedNote;
     }));
-  }, [appSettings.showNoteTitles]);
+  }, [appSettings.showTitles]);
 
   useEffect(() => {
     return window.api.noteSort.onSortRequest(() => {
@@ -784,10 +784,10 @@ function MainWindow(props: MainWindowProps) {
       break;
     case AppView.home:
       page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} isLocked={isNotesAccessLocked} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
-                   noteTitleFont={appSettings.noteTitleFont}
-                   noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   titleFont={appSettings.titleFont}
+                   contentFontSize={appSettings.contentFontSize} titleFontSize={appSettings.titleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
-                   noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
+                   noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showTitles={appSettings.showTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
@@ -797,10 +797,10 @@ function MainWindow(props: MainWindowProps) {
       break;
     default:
       page = <Home theme={props.theme} notes={notes} hasLoadedNotes={hasLoadedNotes} isLocked={isNotesAccessLocked} dateFormat={appSettings.dateFormat} timeFormat={appSettings.timeFormat} noteFont={appSettings.noteFont}
-                   noteTitleFont={appSettings.noteTitleFont}
-                   noteContentFontSize={appSettings.noteContentFontSize} noteTitleFontSize={appSettings.noteTitleFontSize}
+                   titleFont={appSettings.titleFont}
+                   contentFontSize={appSettings.contentFontSize} titleFontSize={appSettings.titleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
-                   noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showNoteTitles={appSettings.showNoteTitles} showNoteFooters={appSettings.showNoteFooters}
+                   noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showTitles={appSettings.showTitles} showNoteFooters={appSettings.showNoteFooters}
                    showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
@@ -819,16 +819,16 @@ function MainWindow(props: MainWindowProps) {
         <CssBaseline/>
         <ConfirmationDialog theme={props.theme}
                             open={isDeleteAllNotesDialogOpen}
-                            title={t("mainWindow.deleteAllNotesDialog.title")}
-                            message={t("mainWindow.deleteAllNotesDialog.message")}
-                            confirmLabel={t("mainWindow.deleteAllNotesDialog.confirmLabel")}
+                            title={t("deleteAllNotesHeading")}
+                            message={t("deleteAllNotesWarning")}
+                            confirmLabel={t("deleteAll")}
                             onConfirm={handleDeleteAllNotes}
                             onCancel={() => setDeleteAllNotesDialogOpen(false)} />
         <ConfirmationDialog theme={props.theme}
                             open={isDeleteSelectedNotesDialogOpen}
-                            title={t("mainWindow.noteSelectionToolbar.deleteDialogTitle")}
-                            message={t("mainWindow.noteSelectionToolbar.deleteDialogMessage")}
-                            confirmLabel={t("mainWindow.noteSelectionToolbar.deleteDialogConfirmLabel")}
+                            title={t("deleteSelectedNotes")}
+                            message={t("deleteSelectedNotesWarning")}
+                            confirmLabel={t("delete")}
                             onConfirm={handleDeleteSelectedNotes}
                             onCancel={() => setDeleteSelectedNotesDialogOpen(false)} />
         <WebSettingsDialog theme={props.theme}

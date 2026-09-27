@@ -34,11 +34,11 @@ export type AppSettings = {
   timeFormat: TimeFormat;
   richTextEditorEnabled: boolean;
   noteFont: NoteFontPreference;
-  noteTitleFont: NoteFontPreference;
-  noteContentFontSize: NoteFontSize;
-  noteTitleFontSize: NoteFontSize;
+  titleFont: NoteFontPreference;
+  contentFontSize: NoteFontSize;
+  titleFontSize: NoteFontSize;
   noteSize: NoteSizePreference;
-  showNoteTitles: boolean;
+  showTitles: boolean;
   showNoteFooters: boolean;
   noteLayout: NoteLayoutPreference;
   showFloatingFormatToolbar: boolean;

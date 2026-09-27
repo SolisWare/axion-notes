@@ -55,7 +55,7 @@ function Appearance(props: AppearanceProps) {
   function handleShowNoteTitlesChange(event: ChangeEvent<HTMLInputElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
-      showNoteTitles: event.target.checked
+      showTitles: event.target.checked
     });
   }
 
@@ -78,9 +78,9 @@ function Appearance(props: AppearanceProps) {
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
-            <h3 className={styles.settingsSectionTitle} id="appearance-theme-title">{t("settingsWindow.appearance.applicationTheme")}</h3>
+            <h3 className={styles.settingsSectionTitle} id="appearance-theme-title">{t("applicationTheme")}</h3>
             <fieldset className={styles.radioGroup}>
-              <legend className={styles.visuallyHidden}>{t("settingsWindow.appearance.applicationTheme")}</legend>
+              <legend className={styles.visuallyHidden}>{t("applicationTheme")}</legend>
               <label className={styles.radioOption}>
                 <input
                   checked={props.appSettings.theme === AppThemePreference.AUTO}
@@ -90,7 +90,7 @@ function Appearance(props: AppearanceProps) {
                   value={AppThemePreference.AUTO}
                   onChange={handleThemeChange}
                 />
-                <span className={styles.radioLabel}>{t("settingsWindow.appearance.themeOptions.auto")}</span>
+                <span className={styles.radioLabel}>{t("themeOptions.auto")}</span>
                 <span className={styles.radioControl} aria-hidden="true" />
               </label>
               <label className={styles.radioOption}>
@@ -102,7 +102,7 @@ function Appearance(props: AppearanceProps) {
                   value={AppThemePreference.LIGHT}
                   onChange={handleThemeChange}
                 />
-                <span className={styles.radioLabel}>{t("settingsWindow.appearance.themeOptions.light")}</span>
+                <span className={styles.radioLabel}>{t("themeOptions.light")}</span>
                 <span className={styles.radioControl} aria-hidden="true" />
               </label>
               <label className={styles.radioOption}>
@@ -114,20 +114,20 @@ function Appearance(props: AppearanceProps) {
                   value={AppThemePreference.DARK}
                   onChange={handleThemeChange}
                 />
-                <span className={styles.radioLabel}>{t("settingsWindow.appearance.themeOptions.dark")}</span>
+                <span className={styles.radioLabel}>{t("themeOptions.dark")}</span>
                 <span className={styles.radioControl} aria-hidden="true" />
               </label>
             </fieldset>
           </div>
           <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="show-note-titles-title">{t("settingsWindow.appearance.showNoteTitles")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showNoteTitlesDescription")}</p>
+              <h3 className={styles.settingsSectionTitle} id="show-note-titles-title">{t("showTitles")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("showTitlesDescription")}</p>
             </div>
             <label className={styles.switchControl}>
               <input
                 aria-labelledby="show-note-titles-title"
-                checked={props.appSettings.showNoteTitles}
+                checked={props.appSettings.showTitles}
                 className={styles.switchInput}
                 type="checkbox"
                 onChange={handleShowNoteTitlesChange}
@@ -135,13 +135,13 @@ function Appearance(props: AppearanceProps) {
               <span className={styles.switchTrack} aria-hidden="true">
                 <span className={styles.switchThumb} />
               </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteTitles")}</span>
+              <span className={styles.visuallyHidden}>{t("showTitles")}</span>
             </label>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="show-note-footers-title">{t("settingsWindow.appearance.showNoteFooters")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showNoteFootersDescription")}</p>
+              <h3 className={styles.settingsSectionTitle} id="show-note-footers-title">{t("showNoteFooters")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("showNoteFootersHelp")}</p>
             </div>
             <label className={styles.switchControl}>
               <input
@@ -154,7 +154,7 @@ function Appearance(props: AppearanceProps) {
               <span className={styles.switchTrack} aria-hidden="true">
                 <span className={styles.switchThumb} />
               </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showNoteFooters")}</span>
+              <span className={styles.visuallyHidden}>{t("showNoteFooters")}</span>
             </label>
           </div>
           <Tooltip
@@ -162,12 +162,12 @@ function Appearance(props: AppearanceProps) {
             disableHoverListener={!isFloatingFormatToolbarDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.disabledRichTextEditorTooltip")}
+            title={t("richTextEditorRequired")}
           >
             <div className={`${styles.settingsRow} ${isFloatingFormatToolbarDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="show-floating-format-toolbar-title">{t("settingsWindow.appearance.showFloatingFormatToolbar")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.appearance.showFloatingFormatToolbarDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="show-floating-format-toolbar-title">{t("showFloatingFormatToolbar")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("showFloatingFormatToolbarHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -181,13 +181,13 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.appearance.showFloatingFormatToolbar")}</span>
+                <span className={styles.visuallyHidden}>{t("showFloatingFormatToolbar")}</span>
               </label>
             </div>
           </Tooltip>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} htmlFor="note-size">
-              {t("settingsWindow.appearance.noteSize")}
+              {t("noteSize")}
             </label>
             <select
               className={styles.settingsSelect}
@@ -195,18 +195,18 @@ function Appearance(props: AppearanceProps) {
               value={props.appSettings.noteSize}
               onChange={handleNoteSizeChange}
             >
-              <option value={NoteSizePreference.COMPACT}>{t("settingsWindow.appearance.noteSizeOptions.compact")}</option>
-              <option value={NoteSizePreference.DEFAULT}>{t("settingsWindow.appearance.noteSizeOptions.default")}</option>
-              <option value={NoteSizePreference.LARGE}>{t("settingsWindow.appearance.noteSizeOptions.large")}</option>
-              <option value={NoteSizePreference.WIDE}>{t("settingsWindow.appearance.noteSizeOptions.wide")}</option>
+              <option value={NoteSizePreference.COMPACT}>{t("noteSizeOptions.compact")}</option>
+              <option value={NoteSizePreference.DEFAULT}>{t("noteSizeOptions.default")}</option>
+              <option value={NoteSizePreference.LARGE}>{t("noteSizeOptions.large")}</option>
+              <option value={NoteSizePreference.WIDE}>{t("noteSizeOptions.wide")}</option>
             </select>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.appearance.newNoteDefaultColor")}</h3>
+              <h3 className={styles.settingsSectionTitle}>{t("newNoteDefaultColor")}</h3>
             </div>
             <fieldset className={styles.colorSwatchGroup}>
-              <legend className={styles.visuallyHidden}>{t("settingsWindow.appearance.newNoteDefaultColor")}</legend>
+              <legend className={styles.visuallyHidden}>{t("newNoteDefaultColor")}</legend>
               <label className={styles.colorSwatchOption}>
                 <input
                   checked={props.appSettings.defaultNoteColor === NoteColorPreference.AUTO}
@@ -221,7 +221,7 @@ function Appearance(props: AppearanceProps) {
                   style={{ background: autoColorBackground }}
                   aria-hidden="true"
                 />
-                <span className={styles.colorSwatchLabel}>{t("settingsWindow.appearance.noteColors.auto")}</span>
+                <span className={styles.colorSwatchLabel}>{t("noteColors.auto")}</span>
               </label>
               {noteColorKeys.map((colorKey) => (
                 <label className={styles.colorSwatchOption} key={colorKey}>
@@ -239,7 +239,7 @@ function Appearance(props: AppearanceProps) {
                     aria-hidden="true"
                   />
                   <span className={styles.colorSwatchLabel}>
-                    {t(`settingsWindow.appearance.noteColors.${colorKey}`)}
+                    {t(`noteColors.${colorKey}`)}
                   </span>
                 </label>
               ))}

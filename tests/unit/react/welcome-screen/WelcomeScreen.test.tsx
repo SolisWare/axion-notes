@@ -16,15 +16,15 @@ import { SystemTheme } from "../../../../src/theme/SystemTheme";
 
 const { translate } = vi.hoisted(() => {
   const translations: Record<string, string> = {
-    "mainWindow.welcome.title": "Welcome to Axion Notes",
-    "mainWindow.welcome.intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
-    "mainWindow.welcome.getStarted": "Get Started",
-    "mainWindow.welcome.doNotShowAgain": "Do not show this welcome screen again",
-    "mainWindow.welcome.preview.today": "Today",
-    "mainWindow.welcome.preview.freshWorkspace": "Fresh workspace",
-    "mainWindow.welcome.preview.ideas": "Ideas",
-    "mainWindow.welcome.preview.colorfulNotes": "Colorful notes",
-    "mainWindow.welcome.preview.next": "Next"
+    "welcomeToApp": "Welcome to Axion Notes",
+    "welcomeIntro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
+    "getStarted": "Get Started",
+    "doNotShowWelcomeAgain": "Do not show this welcome screen again",
+    "today": "Today",
+    "freshWorkspace": "Fresh workspace",
+    "ideas": "Ideas",
+    "colorfulNotes": "Colorful notes",
+    "next": "Next"
   };
 
   return {
@@ -163,15 +163,15 @@ describe("WelcomeScreen", () => {
     it("requests the expected welcome translation keys", () => {
       renderWelcomeScreen();
 
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.title");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.intro");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.getStarted");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.doNotShowAgain");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.preview.today");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.preview.freshWorkspace");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.preview.ideas");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.preview.colorfulNotes");
-      expect(translate).toHaveBeenCalledWith("mainWindow.welcome.preview.next");
+      expect(translate).toHaveBeenCalledWith("welcomeToApp");
+      expect(translate).toHaveBeenCalledWith("welcomeIntro");
+      expect(translate).toHaveBeenCalledWith("getStarted");
+      expect(translate).toHaveBeenCalledWith("doNotShowWelcomeAgain");
+      expect(translate).toHaveBeenCalledWith("today");
+      expect(translate).toHaveBeenCalledWith("freshWorkspace");
+      expect(translate).toHaveBeenCalledWith("ideas");
+      expect(translate).toHaveBeenCalledWith("colorfulNotes");
+      expect(translate).toHaveBeenCalledWith("next");
     });
   });
 

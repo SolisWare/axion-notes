@@ -76,7 +76,7 @@ export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindo
     return existingWindow;
   }
 
-  const windowTitle = `Axion Notes — ${translate("electron.windows.note")}`;
+  const windowTitle = `Axion Notes — ${translate("note")}`;
   const offsetBaseBounds = getOffsetBaseWindow(options.openerWindow)?.getBounds();
 
   const noteWindow = new BrowserWindow({

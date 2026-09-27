@@ -135,10 +135,10 @@ function WebToolbar(props: WebToolbarProps) {
   const classes = useStyles({ appColors });
   const isWindows = window.api.os.isWindows;
   const toolbarTextClassName = clsx(classes.toolbarBtnText, isWindows && classes.windowsToolbarBtnText);
-  const newNoteLabel = t("mainWindow.toolbar.newNote");
-  const selectNotesLabel = t("mainWindow.toolbar.selectNotes");
-  const deleteAllLabel = t("mainWindow.toolbar.deleteAll");
-  const settingsLabel = t("mainWindow.toolbar.settings");
+  const newNoteLabel = t("newNote");
+  const selectNotesLabel = t("selectNotes");
+  const deleteAllLabel = t("deleteAll");
+  const settingsLabel = t("settings");
 
   return (
     <AppBar

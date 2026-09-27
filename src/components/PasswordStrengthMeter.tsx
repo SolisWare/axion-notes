@@ -36,11 +36,43 @@ const PASSWORD_STRENGTH_COLORS: Record<PasswordStrengthLevel, string> = {
 const EMPTY_PASSWORD_SCORE = -1;
 
 function getPasswordStrengthLevelTranslationKey(level: PasswordStrengthLevel): string {
-  return `common.passwordStrength.levels.${level}`;
+  switch (level) {
+    case PasswordStrengthLevel.VERY_WEAK:
+      return "veryWeak";
+    case PasswordStrengthLevel.WEAK:
+      return "weak";
+    case PasswordStrengthLevel.MODERATE:
+      return "moderate";
+    case PasswordStrengthLevel.STRONG:
+      return "strong";
+    case PasswordStrengthLevel.VERY_STRONG:
+      return "veryStrong";
+  }
 }
 
 function getPasswordCrackTimeEstimateTranslationKey(estimate: PasswordCrackTimeEstimate): string {
-  return `common.passwordStrength.crackTimes.${estimate}`;
+  switch (estimate) {
+    case PasswordCrackTimeEstimate.INSTANTLY:
+      return "time.instantly";
+    case PasswordCrackTimeEstimate.SECONDS:
+      return "time.seconds";
+    case PasswordCrackTimeEstimate.MINUTES:
+      return "time.minutes";
+    case PasswordCrackTimeEstimate.HOURS:
+      return "time.hours";
+    case PasswordCrackTimeEstimate.DAYS:
+      return "time.days";
+    case PasswordCrackTimeEstimate.MONTHS:
+      return "time.months";
+    case PasswordCrackTimeEstimate.YEARS:
+      return "time.years";
+    case PasswordCrackTimeEstimate.DECADES:
+      return "time.decades";
+    case PasswordCrackTimeEstimate.CENTURIES:
+      return "time.centuries";
+    case PasswordCrackTimeEstimate.IMPRACTICAL:
+      return "time.impractical";
+  }
 }
 
 function PasswordStrengthMeter(props: PasswordStrengthMeterProps) {
@@ -59,7 +91,7 @@ function PasswordStrengthMeter(props: PasswordStrengthMeterProps) {
   return (
     <div className={styles.passwordStrengthMeter} style={meterStyle}>
       <div className={styles.passwordStrengthHeader}>
-        <span>{t("common.passwordStrength.title")}</span>
+        <span>{t("passwordStrength")}</span>
         {passwordStrength && (
           <span className={styles.passwordStrengthLevel}>{t(getPasswordStrengthLevelTranslationKey(passwordStrength.level))}</span>
         )}
@@ -77,12 +109,12 @@ function PasswordStrengthMeter(props: PasswordStrengthMeterProps) {
       </div>
       {passwordStrength ? (
         <p className={styles.passwordStrengthEstimate}>
-          {t("common.passwordStrength.estimatedResistance", {
+          {t("estimatedResistance", {
             estimate: t(getPasswordCrackTimeEstimateTranslationKey(passwordStrength.estimatedCrackTime))
           })}
         </p>
       ) : (
-        <p className={styles.passwordStrengthEstimate}>{t("common.passwordStrength.empty")}</p>
+        <p className={styles.passwordStrengthEstimate}>{t("enterPasswordToEstimateStrength")}</p>
       )}
       <p className={styles.passwordStrengthHint}>{hint}</p>
     </div>

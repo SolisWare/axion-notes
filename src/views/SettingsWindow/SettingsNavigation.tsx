@@ -41,32 +41,32 @@ export type SettingsNavigationSection = {
 
 export const settingsNavigationSections: SettingsNavigationSection[] = [
   {
-    labelKey: "settingsWindow.navigation.sections.preferences",
+    labelKey: "preferences",
     items: [
-      { id: SettingsView.general, labelKey: "settingsWindow.navigation.pages.general", icon: <AppsOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.appearance, labelKey: "settingsWindow.navigation.pages.appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.editor, labelKey: "settingsWindow.navigation.pages.editor", icon: <EditNoteOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.general, labelKey: "general", icon: <AppsOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.appearance, labelKey: "appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
+      { id: SettingsView.editor, labelKey: "editor", icon: <EditNoteOutlinedIcon fontSize="small" /> },
       ...(UserAgent.isElectron ? [
-        { id: SettingsView.security, labelKey: "settingsWindow.navigation.pages.security", icon: <SecurityOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.security, labelKey: "security", icon: <SecurityOutlinedIcon fontSize="small" /> }
       ] : []),
       ...(UserAgent.isElectron ? [
-        { id: SettingsView.shortcuts, labelKey: "settingsWindow.navigation.pages.shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.shortcuts, labelKey: "shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
       ] : [])
     ]
   },
   {
-    labelKey: "settingsWindow.navigation.sections.storage",
+    labelKey: "storage",
     items: [
-      { id: SettingsView.dataStorage, labelKey: "settingsWindow.navigation.pages.dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> }
     ]
   },
   {
-    labelKey: "settingsWindow.navigation.sections.info",
+    labelKey: "info",
     items: [
       ...(!UserAgent.isElectron ? [
-        { id: SettingsView.license, labelKey: "settingsWindow.navigation.pages.license", icon: <ArticleOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.links, labelKey: "settingsWindow.navigation.pages.links", icon: <LinkOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.about, labelKey: "settingsWindow.navigation.pages.about", icon: <InfoOutlinedIcon fontSize="small" /> }
+        { id: SettingsView.license, labelKey: "license", icon: <ArticleOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.links, labelKey: "links", icon: <LinkOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.about, labelKey: "about", icon: <InfoOutlinedIcon fontSize="small" /> }
       ] : [])
     ]
   }

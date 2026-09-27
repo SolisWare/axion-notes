@@ -17,17 +17,17 @@ import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiM
 
 const { navigate, translate } = vi.hoisted(() => {
   const translations: Record<string, string> = {
-    "mainWindow.welcome.title": "Welcome to Axion Notes",
-    "mainWindow.welcome.intro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
-    "mainWindow.welcome.getStarted": "Get Started",
-    "mainWindow.welcome.doNotShowAgain": "Do not show this welcome screen again",
-    "mainWindow.welcome.preview.today": "Today",
-    "mainWindow.welcome.preview.freshWorkspace": "Fresh workspace",
-    "mainWindow.welcome.preview.ideas": "Ideas",
-    "mainWindow.welcome.preview.colorfulNotes": "Colorful notes",
-    "mainWindow.welcome.preview.next": "Next",
-    "mainWindow.toolbar.newNote": "New Note",
-    "mainWindow.emptyNotes.title": "You don't have any notes yet!"
+    "welcomeToApp": "Welcome to Axion Notes",
+    "welcomeIntro": "Keep quick thoughts close, tidy, and ready whenever you need them.",
+    "getStarted": "Get Started",
+    "doNotShowWelcomeAgain": "Do not show this welcome screen again",
+    "today": "Today",
+    "freshWorkspace": "Fresh workspace",
+    "ideas": "Ideas",
+    "colorfulNotes": "Colorful notes",
+    "next": "Next",
+    "newNote": "New Note",
+    "noNotesYet": "You don't have any notes yet!"
   };
 
   return {
@@ -224,7 +224,7 @@ describe("WelcomeScreen integration", () => {
       const appSettings = {
         ...defaultAppSettings,
         keepNotesMainWindowOnTop: true,
-        showNoteTitles: false,
+        showTitles: false,
         showWelcomeScreenOnLaunch: true
       };
 

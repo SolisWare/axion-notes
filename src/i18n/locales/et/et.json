@@ -1,214 +1,151 @@
 {
-  "common": {
-    "cancel": "Katkesta",
-    "close": "Sulge"
+  "themeOptions": {
+    "auto": "Automaatne kujundus",
+    "light": "Hele kujundus",
+    "dark": "Tume kujundus"
   },
-  "mainWindow": {
-    "welcome": {
-      "preview": {
-        "today": "Täna",
-        "freshWorkspace": "Uus töötuba",
-        "ideas": "Ideed",
-        "colorfulNotes": "Märkmed on värvilised",
-        "next": "Järgmine"
-      },
-      "getStarted": "Alustame siis",
-      "doNotShowAgain": "Ära näita seda tervitusvaadet uuesti",
-      "title": "Tere tulemast, see on Axion Notes",
-      "intro": "Hoia oma mõtete kiired ülestähendused käepärast, hallatuna ja valmis, et neid vajaduse korral kohe kasutada saaksid."
-    },
-    "toolbar": {
-      "newNote": "Uus märge",
-      "deleteAll": "Kustuta kõik",
-      "settings": "Seadistused"
-    },
-    "emptyNotes": {
-      "title": "Sul pole veel märkmeid!",
-      "addFirstNote": "Esimese märkme lisamiseks klõpsa {{shortcut}}"
-    },
-    "note": {
-      "titlePlaceholder": "Pealkiri",
-      "contentPlaceholder": "Kirjuta siia…",
-      "lastModified": "Viimati muudetud:",
-      "at": "kell",
-      "lastModifiedCompact": "Muudetud:",
-      "contextMenu": {
-        "moveToTop": "Tõsta üles",
-        "moveToBottom": "Tõsta alla",
-        "duplicate": "Tee koopia",
-        "hideTitle": "Peida pealkiri",
-        "showTitle": "Näita pealkirja",
-        "delete": "Kustuta märge",
-        "noteColorAriaLabel": "Märkme värv",
-        "noteColor": "Märkme värv…",
-        "openInNewWindow": "Ava uues aknas",
-        "pin": "Tõsta märge esile",
-        "unpin": "Eemalda märke esiletõstmine"
-      },
-      "unfold": "Lappa märge lahti",
-      "fold": "Lappa märge kokku"
-    },
-    "deleteAllNotesDialog": {
-      "title": "Kustuta kõik märkmed",
-      "message": "Kas oled kindel, et soovid kõik märkmed kustutada? Seda tegevust ei saa tagasi pöörata.",
-      "confirmLabel": "Kustuta kõik"
-    }
+  "noteSizeOptions": {
+    "compact": "Kompaktne",
+    "default": "Vaikimisi",
+    "large": "Suur",
+    "wide": "Lai"
   },
-  "settingsWindow": {
-    "navigation": {
-      "sections": {
-        "preferences": "Eelistused",
-        "storage": "Andmeruum",
-        "info": "Teave"
-      },
-      "pages": {
-        "general": "Üldseadistused",
-        "appearance": "Välimus",
-        "shortcuts": "Kiirklahvid",
-        "dataStorage": "Andmed ja salvestusruum",
-        "license": "Litsents",
-        "links": "Lingid",
-        "about": "Rakenduse teave"
-      }
-    },
-    "general": {
-      "language": "Keel",
-      "requiresRestart": "(Eeldab uuesti käivitamist)",
-      "sortNotesBy": "Märkmete järjestus",
-      "sortOptions": {
-        "dateCreatedAsc": "Loomise kuupäev (esmalt vanemad)",
-        "dateCreatedDesc": "Loomise kuupäev (esmalt uuemad)",
-        "lastModified": "Viimati muudetud",
-        "titleAsc": "Pealkiri A-Z",
-        "titleDesc": "Pealkiri Z-A",
-        "custom": "Kohendatud järjestuses"
-      },
-      "resortNotes": "Järjesta märkmed uuesti",
-      "keepNotesOnTop": "Märkmed on kõige peal",
-      "keepNotesOnTopDescription": "Hoia märkmete rakendus teiste akende peal",
-      "dateTimeFormat": "Kuupäeva ja aja vorming",
-      "timeFormat": "Ajavorming",
-      "dateTimeFormatExample": "Näide:",
-      "timeFormatOptions": {
-        "regular": "12 tundi",
-        "military": "24 tundi"
-      },
-      "noteLayout": "Märkmete paigutus",
-      "noteLayoutDescription": "Saad muuta märkmete paigutuse viisi",
-      "noteLayoutOptions": {
-        "grid": "Ruudustikuvaade",
-        "list": "Loendivaade"
-      }
-    },
-    "appearance": {
-      "applicationTheme": "Rakenduse kujundus",
-      "themeOptions": {
-        "auto": "Automaatne kujundus",
-        "light": "Hele kujundus",
-        "dark": "Tume kujundus"
-      },
-      "newNoteDefaultColor": "Uue märkme vaikimisi värv",
-      "noteColors": {
-        "auto": "Automaatne värv",
-        "yellow": "Kollane",
-        "green": "Roheline",
-        "indigo": "Indigosinine",
-        "red": "Punane",
-        "teal": "Sinakasroheline",
-        "lilac": "Kahvatulilla"
-      },
-      "showNoteTitles": "Näita märkmete pealkirju",
-      "showNoteTitlesDescription": "Näitab märkmete pealkirjad või peidab need. Üksikte märkmete puhul saad seda sürjutada.",
-      "noteFont": "Märkme kirjatüüp",
-      "noteFontOptions": {
-        "system": "Süsteemi vaikimisi kirjatüüp",
-        "serif": "Seriifidega kirjatüüp",
-        "sansSerif": "Seriifideta kirjatüüp",
-        "monospace": "Fikseeritud laiusega kirjatüüp"
-      },
-      "noteFontPreview": "See väike mölder jõuab rongile hüpata.",
-      "showNoteFooters": "Näita märkmete jaluseid",
-      "showNoteFootersDescription": "Näitab märkmete jalused või peidab need.",
-      "noteSize": "Märkme suurus",
-      "noteSizeOptions": {
-        "compact": "Kompaktne",
-        "default": "Vaikimisi",
-        "large": "Suur",
-        "wide": "Lai"
-      }
-    },
-    "dataStorage": {
-      "notesFolderLocation": "Märkmete kausta asukoht",
-      "settingsFolderLocation": "Seadistuste kausta asukoht",
-      "browserLocalStorage": "Veebibrauseri kohalik andmeruum"
-    },
-    "about": {
-      "webVersionLabel": "Veeb",
-      "version": "Versioon {{version}}",
-      "rights": "Kõik õigused kaitstud."
-    },
-    "shortcuts": {
-      "newNote": "Uus märge",
-      "openSettings": "Ava seadistused",
-      "deleteAllNotes": "Kustuta kõik märkmed",
-      "keys": {
-        "command": "Käsk",
-        "control": "Ctrl",
-        "shift": "Shift",
-        "backspace": "Tagasisammuklahv (Backspace)",
-        "comma": "Koma"
-      }
-    },
-    "links": {
-      "website": {
-        "label": "Veebisait",
-        "description": "Vaata SolisWare’i veebilehte, et saada teavet viimaste tootevärskenduste, allalaadimiste ja muudki tiimi tegemiste kohta."
-      },
-      "github": {
-        "label": "GitHub",
-        "description": "Jälgi SolisWare’i tegevust GitHubis, et leida projekte, uusi versioone ja lähtekoodi uuendusi."
-      },
-      "description": "Täname, et kasutad rakendust {{appName}}. Nende linkide abil saad jälgida uute väljaannete avaldamistlähtekoodi uuendusi ja muude SolisWare'i projektide tegemisi."
-    }
+  "noteColors": {
+    "auto": "Automaatne värv",
+    "yellow": "Kollane",
+    "green": "Roheline",
+    "indigo": "Indigosinine",
+    "red": "Punane",
+    "teal": "Sinakasroheline",
+    "lilac": "Kahvatulilla"
   },
-  "electron": {
-    "menu": {
-      "settings": "Seadistused…",
-      "file": "Fail",
-      "newNote": "Uus märge…",
-      "edit": "Muuda",
-      "deleteAllNotes": "Kustuta kõik märkmed…",
-      "view": "Vaata",
-      "toggleFullScreen": "Lülita täisekraanivaade sisse/välja",
-      "welcome": "Tere tulemast",
-      "viewLicense": "Vaata litsentsi",
-      "visitWebsite": "Vaata veebisaiti",
-      "checkoutGitHub": "Vaata GitHubi",
-      "about": "Rakenduse teave: {{appName}}",
-      "services": "Teenused",
-      "hide": "Peida",
-      "hideOthers": "Peida teised",
-      "unhide": "Näita kõiki",
-      "quit": "Välju",
-      "close": "Sulge",
-      "undo": "Võta tegevus tagasi",
-      "redo": "Korda tegevust",
-      "cut": "Lõika",
-      "copy": "Kopeeri",
-      "paste": "Aseta",
-      "selectAll": "Vali kõik",
-      "delete": "Kustuta",
-      "reload": "Laadi uuesti",
-      "resetZoom": "Tegelik suurus",
-      "zoomIn": "Suumi sisse/suurenda",
-      "zoomOut": "Suumi välja/vähenda",
-      "window": "Aken",
-      "help": "Abiteave"
-    },
-    "windows": {
-      "settings": "Seadistused",
-      "license": "Litsents",
-      "note": "Märge"
-    }
-  }
+  "fonts": {
+    "system": "Süsteemi vaikimisi kirjatüüp",
+    "serif": "Seriifidega kirjatüüp",
+    "sansSerif": "Seriifideta kirjatüüp",
+    "monospace": "Fikseeritud laiusega kirjatüüp"
+  },
+  "keys": {
+    "command": "Käsk",
+    "control": "Ctrl",
+    "shift": "Shift",
+    "backspace": "Tagasisammuklahv (Backspace)",
+    "comma": "Koma"
+  },
+  "timeFormatOptions": {
+    "regular": "12 tundi",
+    "military": "24 tundi"
+  },
+  "appearance": "Välimus",
+  "at": "kell",
+  "cancel": "Katkesta",
+  "close": "Sulge",
+  "copy": "Kopeeri",
+  "cut": "Lõika",
+  "delete": "Kustuta",
+  "edit": "Muuda",
+  "exampleLabel": "Näide:",
+  "file": "Fail",
+  "general": "Üldseadistused",
+  "github": "GitHub",
+  "grid": "Ruudustikuvaade",
+  "help": "Abiteave",
+  "hide": "Peida",
+  "ideas": "Ideed",
+  "info": "Teave",
+  "language": "Keel",
+  "license": "Litsents",
+  "links": "Lingid",
+  "list": "Loendivaade",
+  "modified": "Muudetud:",
+  "next": "Järgmine",
+  "note": "Märge",
+  "paste": "Aseta",
+  "preferences": "Eelistused",
+  "quit": "Välju",
+  "services": "Teenused",
+  "settings": "Seadistused",
+  "shortcuts": "Kiirklahvid",
+  "storage": "Andmeruum",
+  "timeFormat": "Ajavorming",
+  "title": "Pealkiri",
+  "today": "Täna",
+  "version": "Versioon {{version}}",
+  "view": "Vaata",
+  "web": "Veeb",
+  "website": "Veebisait",
+  "window": "Aken",
+  "about": "Rakenduse teave",
+  "aboutApp": "Rakenduse teave: {{appName}}",
+  "applicationTheme": "Rakenduse kujundus",
+  "checkoutGitHub": "Vaata GitHubi",
+  "deleteAll": "Kustuta kõik",
+  "deleteNote": "Kustuta märge",
+  "duplicate": "Tee koopia",
+  "freshWorkspace": "Uus töötuba",
+  "getStarted": "Alustame siis",
+  "hideOthers": "Peida teised",
+  "hideTitle": "Peida pealkiri",
+  "lastModified": "Viimati muudetud",
+  "moveNoteToBottom": "Tõsta alla",
+  "moveNoteToTop": "Tõsta üles",
+  "newNote": "Uus märge",
+  "noteColor": "Märkme värv",
+  "noteLastModified": "Viimati muudetud:",
+  "noteLayout": "Märkmete paigutus",
+  "noteSize": "Märkme suurus",
+  "noteSortCustom": "Kohendatud järjestuses",
+  "openSettings": "Ava seadistused",
+  "redo": "Korda tegevust",
+  "reload": "Laadi uuesti",
+  "selectAll": "Vali kõik",
+  "showAll": "Näita kõiki",
+  "showTitle": "Näita pealkirja",
+  "sortNotesBy": "Märkmete järjestus",
+  "titleAsc": "Pealkiri A-Z",
+  "titleDesc": "Pealkiri Z-A",
+  "typeHere": "Kirjuta siia…",
+  "viewLicense": "Vaata litsentsi",
+  "visitWebsite": "Vaata veebisaiti",
+  "welcome": "Tere tulemast",
+  "zoomActualSize": "Tegelik suurus",
+  "addFirstNotePrompt": "Esimese märkme lisamiseks klõpsa {{shortcut}}",
+  "colorfulNotes": "Märkmed on värvilised",
+  "dataStorage": "Andmed ja salvestusruum",
+  "dateTimeFormat": "Kuupäeva ja aja vorming",
+  "deleteAllNotes": "Kustuta kõik märkmed",
+  "deleteAllNotesHeading": "Kustuta kõik märkmed",
+  "deleteAllNotesWarning": "Kas oled kindel, et soovid kõik märkmed kustutada? Seda tegevust ei saa tagasi pöörata.",
+  "doNotShowWelcomeAgain": "Ära näita seda tervitusvaadet uuesti",
+  "externalLinksHelp": "Täname, et kasutad rakendust {{appName}}. Nende linkide abil saad jälgida uute väljaannete avaldamistlähtekoodi uuendusi ja muude SolisWare'i projektide tegemisi.",
+  "foldNote": "Lappa märge kokku",
+  "githubLinkHelp": "Jälgi SolisWare’i tegevust GitHubis, et leida projekte, uusi versioone ja lähtekoodi uuendusi.",
+  "keepNotesOnTop": "Märkmed on kõige peal",
+  "keepNotesOnTopHelp": "Hoia märkmete rakendus teiste akende peal",
+  "localStorage": "Veebibrauseri kohalik andmeruum",
+  "newNoteDefaultColor": "Uue märkme vaikimisi värv",
+  "noNotesYet": "Sul pole veel märkmeid!",
+  "noteLayoutHelp": "Saad muuta märkmete paigutuse viisi",
+  "notesLocation": "Märkmete kausta asukoht",
+  "noteSortDateCreatedAsc": "Loomise kuupäev (esmalt vanemad)",
+  "noteSortDateCreatedDesc": "Loomise kuupäev (esmalt uuemad)",
+  "openInNewWindow": "Ava uues aknas",
+  "pinNote": "Tõsta märge esile",
+  "requiresRestart": "(Eeldab uuesti käivitamist)",
+  "resortNotes": "Järjesta märkmed uuesti",
+  "rightsReserved": "Kõik õigused kaitstud.",
+  "settingsLocation": "Seadistuste kausta asukoht",
+  "showNoteFooters": "Näita märkmete jaluseid",
+  "showNoteFootersHelp": "Näitab märkmete jalused või peidab need.",
+  "showTitles": "Näita märkmete pealkirju",
+  "showTitlesHelp": "Näitab märkmete pealkirjad või peidab need. Üksikte märkmete puhul saad seda sürjutada.",
+  "toggleFullScreen": "Lülita täisekraanivaade sisse/välja",
+  "undo": "Võta tegevus tagasi",
+  "unfoldNote": "Lappa märge lahti",
+  "unpinNote": "Eemalda märke esiletõstmine",
+  "websiteLinkHelp": "Vaata SolisWare’i veebilehte, et saada teavet viimaste tootevärskenduste, allalaadimiste ja muudki tiimi tegemiste kohta.",
+  "welcomeIntro": "Hoia oma mõtete kiired ülestähendused käepärast, hallatuna ja valmis, et neid vajaduse korral kohe kasutada saaksid.",
+  "welcomeToApp": "Tere tulemast, see on Axion Notes",
+  "zoomIn": "Suumi sisse/suurenda",
+  "zoomOut": "Suumi välja/vähenda"
 }

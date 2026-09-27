@@ -31,13 +31,13 @@ export function registerStorageMigrationGuard(noteService: NoteService): void {
       const shouldClose = dialog.showMessageBoxSync(window, {
         type: "warning",
         buttons: [
-          translate("electron.storageMigration.keepWaiting"),
-          translate("electron.storageMigration.closeAnyway")
+          translate("keepWaiting"),
+          translate("closeAnyway")
         ],
         cancelId: 0,
         defaultId: 0,
-        message: translate("electron.storageMigration.windowCloseTitle"),
-        detail: translate("electron.storageMigration.windowCloseMessage")
+        message: translate("storageMigrationRunning"),
+        detail: translate("storageMigrationCloseWarning")
       }) === 1;
 
       if (shouldClose) {
@@ -57,13 +57,13 @@ export function registerStorageMigrationGuard(noteService: NoteService): void {
     const shouldQuit = dialog.showMessageBoxSync(BrowserWindow.getFocusedWindow() ?? undefined, {
       type: "warning",
       buttons: [
-        translate("electron.storageMigration.keepWaiting"),
-        translate("electron.storageMigration.quitAnyway")
+        translate("keepWaiting"),
+        translate("quitAnyway")
       ],
       cancelId: 0,
       defaultId: 0,
-      message: translate("electron.storageMigration.quitTitle"),
-      detail: translate("electron.storageMigration.quitMessage")
+      message: translate("quitDuringStorageMigrationQuestion"),
+      detail: translate("storageMigrationQuitWarning")
     }) === 1;
 
     if (shouldQuit) {

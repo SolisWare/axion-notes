@@ -14,6 +14,7 @@ import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "
 import { getAppColors } from "../theme/AppColors";
 import { NoteColorKey, NoteColors } from "../theme/NoteColors";
 import { SystemTheme } from "../theme/SystemTheme";
+import { withEllipsis } from "../utils/text";
 import styles from "./NoteContextMenu.module.css";
 
 export type NoteContextMenuPosition = {
@@ -167,8 +168,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
   const activeFontSize = props.formatState?.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
   const activeFont = props.formatState?.activeFont ?? NoteFontPreference.SYSTEM;
   const noteContextColorLabel = hoveredNoteColor === null
-    ? t("mainWindow.note.contextMenu.noteColor")
-    : t(`settingsWindow.appearance.noteColors.${hoveredNoteColor}`);
+    ? withEllipsis(t("noteColor"))
+    : t(`noteColors.${hoveredNoteColor}`);
   const menuStyle = {
     backgroundColor: appColors.DIALOG_BACKGROUND,
     color: appColors.DIALOG_TEXT,
@@ -366,8 +367,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           onPointerEnter={closeAllSubmenusWithAim}
         >
           {props.isPinned
-            ? t("mainWindow.note.contextMenu.unpin")
-            : t("mainWindow.note.contextMenu.pin")}
+            ? t("unpinNote")
+            : t("pinNote")}
         </div>
       )}
       {props.onSelectNote && (
@@ -377,8 +378,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           onPointerEnter={closeAllSubmenusWithAim}
         >
           {props.isSelectionMode && props.isSelected
-            ? t("mainWindow.note.deselect")
-            : t("mainWindow.note.select")}
+            ? t("deselectNote")
+            : t("selectNote")}
         </div>
       )}
       {(props.onTogglePin || props.onSelectNote) && !props.onOpenNoteWindow && (
@@ -394,7 +395,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             onClick={props.onOpenNoteWindow}
             onPointerEnter={closeAllSubmenusWithAim}
           >
-            {t("mainWindow.note.contextMenu.openInNewWindow")}
+            {t("openInNewWindow")}
           </div>
           {props.onToggleFold && (
             <div
@@ -403,8 +404,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               onPointerEnter={closeAllSubmenusWithAim}
             >
               {props.isFolded
-                ? t("mainWindow.note.unfold")
-                : t("mainWindow.note.fold")}
+                ? t("unfoldNote")
+                : t("foldNote")}
             </div>
           )}
           <Divider className={styles.noteContextMenuDivider} />
@@ -418,8 +419,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             onPointerEnter={closeAllSubmenusWithAim}
           >
             {props.isFolded
-              ? t("mainWindow.note.unfold")
-              : t("mainWindow.note.fold")}
+              ? t("unfoldNote")
+              : t("foldNote")}
           </div>
           <Divider className={styles.noteContextMenuDivider} />
         </>
@@ -431,14 +432,14 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             onClick={props.onMoveNoteToTop}
             onPointerEnter={closeAllSubmenusWithAim}
           >
-            {t("mainWindow.note.contextMenu.moveToTop")}
+            {t("moveNoteToTop")}
           </div>
           <div
             className={styles.noteContextMenuItem}
             onClick={props.onMoveNoteToBottom}
             onPointerEnter={closeAllSubmenusWithAim}
           >
-            {t("mainWindow.note.contextMenu.moveToBottom")}
+            {t("moveNoteToBottom")}
           </div>
           <Divider className={styles.noteContextMenuDivider} />
         </>
@@ -451,7 +452,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           onPointerLeave={() => closeSubmenu("format")}
         >
           <span className={styles.noteContextMenuItemText}>
-            {t("electron.menu.format")}
+            {t("format")}
           </span>
           <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
           {isFormattingEnabled && (
@@ -467,42 +468,42 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.BOLD)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.bold")}
+                {t("formatting.bold")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isItalicActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.ITALIC)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.italic")}
+                {t("formatting.italic")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isUnderlineActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.UNDERLINE)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.underline")}
+                {t("formatting.underline")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isStrikethroughActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.STRIKETHROUGH)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.strikethrough")}
+                {t("formatting.strikethrough")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isHighlightActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.HIGHLIGHT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.highlight")}
+                {t("formatting.highlight")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isInlineCodeActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.INLINE_CODE)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.inlineCode")}
+                {t("formatting.inlineCode")}
               </div>
               <Divider className={styles.noteContextMenuDivider} />
               <div
@@ -510,14 +511,14 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUPERSCRIPT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.superscript")}
+                {t("formatting.superscript")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isSubscriptActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUBSCRIPT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.subscript")}
+                {t("formatting.subscript")}
               </div>
               <Divider className={styles.noteContextMenuDivider} />
               <div
@@ -525,28 +526,28 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.BULLET_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.bulletList")}
+                {t("formatting.bulletList")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isDashedListActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.DASHED_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.dashedList")}
+                {t("formatting.dashedList")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isNumberedListActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.NUMBERED_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.numberedList")}
+                {t("formatting.numberedList")}
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isChecklistActive ? styles.noteContextMenuItemActive : ""}`}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.CHECKLIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.checklist")}
+                {t("formatting.checklist")}
               </div>
               <Divider className={styles.noteContextMenuDivider} />
               <div
@@ -555,7 +556,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onPointerEnter={(event) => openChildSubmenu("fontSize", event)}
               >
                 <span className={styles.noteContextMenuItemText}>
-                  {t("electron.menu.fontSize")}
+                  {t("formatting.fontSize")}
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
@@ -584,7 +585,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onPointerEnter={(event) => openChildSubmenu("font", event)}
               >
                 <span className={styles.noteContextMenuItemText}>
-                  {t("electron.menu.font")}
+                  {t("formatting.font")}
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
@@ -596,7 +597,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                   {NOTE_FONT_CATEGORIES.map((fontCategory) => (
                     <div className={styles.noteContextMenuFontCategory} key={fontCategory}>
                       <div className={styles.noteContextMenuLabelItem}>
-                        {t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
+                        {t(`fontCategories.${fontCategory}`)}
                       </div>
                       {NOTE_FONT_OPTIONS
                         .filter((fontOption) => fontOption.category === fontCategory)
@@ -622,7 +623,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.CLEAR_FORMATTING)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
-                {t("electron.menu.clearFormatting")}
+                {t("formatting.clearFormatting")}
               </div>
             </div>
           )}
@@ -633,7 +634,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         onClick={props.onDuplicateNote}
         onPointerEnter={closeAllSubmenusWithAim}
       >
-        {t("mainWindow.note.contextMenu.duplicate")}
+        {t("duplicate")}
       </div>
       {props.showTitleVisibilityAction !== false && (
         <>
@@ -643,8 +644,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             onPointerEnter={closeAllSubmenusWithAim}
           >
             {props.isTitleHidden
-              ? t("mainWindow.note.contextMenu.showTitle")
-              : t("mainWindow.note.contextMenu.hideTitle")}
+              ? t("showTitle")
+              : t("hideTitle")}
           </div>
           <Divider className={styles.noteContextMenuDivider} />
         </>
@@ -655,7 +656,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       <div
         className={styles.noteContextColorRow}
         role="radiogroup"
-        aria-label={t("mainWindow.note.contextMenu.noteColorAriaLabel")}
+        aria-label={t("noteColor")}
       >
         <div className={styles.noteContextColorStrip} onMouseLeave={() => setHoveredNoteColor(null)}>
           {noteColorKeys.map((colorKey) => {
@@ -665,11 +666,11 @@ function NoteContextMenu(props: NoteContextMenuProps) {
             return (
               <button
                 aria-checked={isSelected}
-                aria-label={t(`settingsWindow.appearance.noteColors.${colorKey}`)}
+                aria-label={t(`noteColors.${colorKey}`)}
                 className={styles.noteContextColorButton}
                 key={colorKey}
                 role="radio"
-                title={t(`settingsWindow.appearance.noteColors.${colorKey}`)}
+                title={t(`noteColors.${colorKey}`)}
                 type="button"
                 onClick={() => props.onNoteColorChange(colorKey)}
                 onMouseEnter={() => setHoveredNoteColor(colorKey)}
@@ -705,7 +706,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         onClick={props.onDeleteNote}
         onPointerEnter={closeAllSubmenusWithAim}
       >
-        {t("mainWindow.note.contextMenu.delete")}
+        {t("deleteNote")}
       </div>
     </div>
   );

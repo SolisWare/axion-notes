@@ -78,7 +78,7 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
       </DialogContent>
       <DialogActions className={classes.actions}>
         <Button className={classes.cancelButton} onClick={props.onCancel}>
-          {props.cancelLabel ?? t("common.cancel")}
+          {props.cancelLabel ?? t("cancel")}
         </Button>
         <Button onClick={props.onConfirm} color={props.confirmColor ?? "error"} variant="contained">
           {props.confirmLabel}

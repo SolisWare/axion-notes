@@ -36,7 +36,7 @@ function General(props: GeneralProps) {
   const currentYear = new Date().getFullYear();
   const dateFormatSampleDate = new Date(currentYear, 5, 20);
   const dateTimeFormatPreview = new Date();
-  const formattedDateTimePreview = `${t("settingsWindow.general.dateTimeFormatExample")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
+  const formattedDateTimePreview = `${t("exampleLabel")} ${Formatter.getFormattedDate(dateTimeFormatPreview, props.appSettings.dateFormat)} ${t("at")} ${Formatter.getFormattedTimestamp(dateTimeFormatPreview, props.appSettings.timeFormat)}`;
   const dateFormatGroups = [
     {
       label: "MM-DD-YYYY",
@@ -64,14 +64,14 @@ function General(props: GeneralProps) {
     }
   ];
   const noteSortOptions = [
-    { value: NoteSortOrder.DATE_CREATED_ASC, label: t("settingsWindow.general.sortOptions.dateCreatedAsc") },
-    { value: NoteSortOrder.DATE_CREATED_DESC, label: t("settingsWindow.general.sortOptions.dateCreatedDesc") },
-    { value: NoteSortOrder.LAST_MODIFIED, label: t("settingsWindow.general.sortOptions.lastModified") },
-    { value: NoteSortOrder.TITLE_ASC, label: t("settingsWindow.general.sortOptions.titleAsc") },
-    { value: NoteSortOrder.TITLE_DESC, label: t("settingsWindow.general.sortOptions.titleDesc") }
+    { value: NoteSortOrder.DATE_CREATED_ASC, label: t("noteSortDateCreatedAsc") },
+    { value: NoteSortOrder.DATE_CREATED_DESC, label: t("noteSortDateCreatedDesc") },
+    { value: NoteSortOrder.LAST_MODIFIED, label: t("lastModified") },
+    { value: NoteSortOrder.TITLE_ASC, label: t("titleAsc") },
+    { value: NoteSortOrder.TITLE_DESC, label: t("titleDesc") }
   ];
   const isResortNotesDisabled = props.appSettings.notesSortOrder === NoteSortOrder.CUSTOM;
-  const customNoteSortLabel = t("settingsWindow.general.sortOptions.custom");
+  const customNoteSortLabel = t("noteSortCustom");
   const selectedNoteSortLabel = isResortNotesDisabled
     ? customNoteSortLabel
     : noteSortOptions.find((option) => option.value === props.appSettings.notesSortOrder)?.label ?? "";
@@ -131,7 +131,7 @@ function General(props: GeneralProps) {
       <section className={styles.settingsSection} aria-labelledby="note-sort-order-title">
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
-            <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">{t("settingsWindow.general.sortNotesBy")}</label>
+            <label className={styles.settingsSectionTitle} id="note-sort-order-title" htmlFor="note-sort-order">{t("sortNotesBy")}</label>
             <div className={styles.sortControls}>
               <FittedSelect
                 className={styles.settingsSelect}
@@ -149,15 +149,15 @@ function General(props: GeneralProps) {
               </FittedSelect>
               <button className={styles.linkButton} disabled={isResortNotesDisabled} type="button" onClick={window.api.noteSort.requestSort}>
                 <SyncIcon fontSize="small" />
-                <span>{t("settingsWindow.general.resortNotes")}</span>
+                <span>{t("resortNotes")}</span>
               </button>
             </div>
           </div>
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
               <div className={styles.settingsRowText}>
-                <label className={styles.settingsSectionTitle} id="note-layout-title" htmlFor="note-layout">{t("settingsWindow.general.noteLayout")}</label>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.general.noteLayoutDescription")}</p>
+                <label className={styles.settingsSectionTitle} id="note-layout-title" htmlFor="note-layout">{t("noteLayout")}</label>
+                <p className={styles.settingsSectionDescription}>{t("noteLayoutHelp")}</p>
               </div>
               <select
                 className={styles.settingsSelect}
@@ -165,16 +165,16 @@ function General(props: GeneralProps) {
                 value={props.appSettings.noteLayout}
                 onChange={handleNoteLayoutChange}
               >
-                <option value={NoteLayoutPreference.GRID}>{t("settingsWindow.general.noteLayoutOptions.grid")}</option>
-                <option value={NoteLayoutPreference.LIST}>{t("settingsWindow.general.noteLayoutOptions.list")}</option>
+                <option value={NoteLayoutPreference.GRID}>{t("grid")}</option>
+                <option value={NoteLayoutPreference.LIST}>{t("list")}</option>
               </select>
             </div>
           )}
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">{t("settingsWindow.general.keepNotesOnTop")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.general.keepNotesOnTopDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="keep-notes-on-top-title">{t("keepNotesOnTop")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("keepNotesOnTopHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -186,13 +186,13 @@ function General(props: GeneralProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.general.keepNotesOnTop")}</span>
+                <span className={styles.visuallyHidden}>{t("keepNotesOnTop")}</span>
               </label>
             </div>
           )}
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} id="date-time-format-title" htmlFor="date-format">
-              {t("settingsWindow.general.dateTimeFormat")}
+              {t("dateTimeFormat")}
             </label>
             <div className={styles.dateTimeControls}>
               <select
@@ -211,7 +211,7 @@ function General(props: GeneralProps) {
                   </optgroup>
                 ))}
               </select>
-              <fieldset className={styles.timeFormatRadioGroup} aria-label={t("settingsWindow.general.timeFormat")}>
+              <fieldset className={styles.timeFormatRadioGroup} aria-label={t("timeFormat")}>
                 <label className={styles.timeFormatRadioOption}>
                   <input
                     checked={props.appSettings.timeFormat === TimeFormat.Regular}
@@ -222,7 +222,7 @@ function General(props: GeneralProps) {
                     onChange={handleTimeFormatChange}
                   />
                   <span className={styles.radioControl} aria-hidden="true" />
-                  <span className={styles.radioLabel}>{t("settingsWindow.general.timeFormatOptions.regular")}</span>
+                  <span className={styles.radioLabel}>{t("timeFormatOptions.regular")}</span>
                 </label>
                 <label className={styles.timeFormatRadioOption}>
                   <input
@@ -234,7 +234,7 @@ function General(props: GeneralProps) {
                     onChange={handleTimeFormatChange}
                   />
                   <span className={styles.radioControl} aria-hidden="true" />
-                  <span className={styles.radioLabel}>{t("settingsWindow.general.timeFormatOptions.military")}</span>
+                  <span className={styles.radioLabel}>{t("timeFormatOptions.military")}</span>
                 </label>
               </fieldset>
               <span className={styles.dateTimeFormatPreview}>{formattedDateTimePreview}</span>
@@ -242,7 +242,7 @@ function General(props: GeneralProps) {
           </div>
           <div className={styles.settingsRow}>
             <label className={styles.settingsSectionTitle} id="language-title" htmlFor="language">
-              {t("settingsWindow.general.language")}
+              {t("language")}
             </label>
             <div className={styles.sortControls}>
               <select
@@ -258,7 +258,7 @@ function General(props: GeneralProps) {
                 ))}
               </select>
               {UserAgent.isElectron && (
-                <span className={styles.settingsLanguageSwitcherNote}>{t("settingsWindow.general.requiresRestart")}</span>
+                <span className={styles.settingsLanguageSwitcherNote}>{t("requiresRestart")}</span>
               )}
             </div>
           </div>

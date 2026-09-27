@@ -68,13 +68,13 @@ function About(props: AboutProps) {
             Axion Notes
           </Typography>
           <Typography className={`${classes.text} ${classes.version}`} variant="body2">
-            {t("settingsWindow.about.version", { version: getVersionLabel() })}
+            {t("version", { version: getVersionLabel() })}
           </Typography>
           <Typography className={classes.text} variant="body2">
             Copyright © 2023-2026 SolisWare.
           </Typography>
           <Typography className={classes.text} variant="body2">
-            {t("settingsWindow.about.rights")}
+            {t("rightsReserved")}
           </Typography>
         </div>
       </div>

@@ -32,7 +32,7 @@ export function createLicenseWindow(): BrowserWindow {
     return licenseWindow;
   }
 
-  const windowTitle = `Axion Notes — ${translate("electron.windows.license")}`;
+  const windowTitle = `Axion Notes — ${translate("license")}`;
 
   const createdLicenseWindow = new BrowserWindow({
     width: 560,

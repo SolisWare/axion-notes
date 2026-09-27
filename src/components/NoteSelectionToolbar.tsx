@@ -42,9 +42,9 @@ function NoteSelectionToolbar(props: NoteSelectionToolbarProps) {
   } as CSSProperties;
 
   return (
-    <div className={styles.toolbar} role="toolbar" aria-label={t("mainWindow.noteSelectionToolbar.label")} style={toolbarStyle}>
+    <div className={styles.toolbar} role="toolbar" aria-label={t("noteSelectionActions")} style={toolbarStyle}>
       <span className={styles.count}>
-        {t("mainWindow.noteSelectionToolbar.selectedCount", { count: props.selectedCount })}
+        {t("selectedNotesCount", { count: props.selectedCount })}
       </span>
       <div className={styles.divider} aria-hidden="true" />
       <button
@@ -54,7 +54,7 @@ function NoteSelectionToolbar(props: NoteSelectionToolbarProps) {
         onClick={props.onDeleteSelectedNotes}
       >
         <DeleteOutlineRoundedIcon className={styles.buttonIcon} />
-        {t("mainWindow.noteSelectionToolbar.delete")}
+        {t("delete")}
       </button>
       <button
         className={styles.button}
@@ -63,7 +63,7 @@ function NoteSelectionToolbar(props: NoteSelectionToolbarProps) {
         onClick={props.onDuplicateSelectedNotes}
       >
         <ContentCopyRoundedIcon className={styles.buttonIcon} />
-        {t("mainWindow.noteSelectionToolbar.duplicate")}
+        {t("duplicate")}
       </button>
       <button
         className={styles.button}
@@ -72,12 +72,12 @@ function NoteSelectionToolbar(props: NoteSelectionToolbarProps) {
         onClick={props.onClearSelection}
       >
         <RemoveDoneRoundedIcon className={styles.buttonIcon} />
-        {t("mainWindow.noteSelectionToolbar.clear")}
+        {t("clearSelection")}
       </button>
       <div className={styles.divider} aria-hidden="true" />
       <button className={styles.button} type="button" onClick={props.onCancelSelection}>
         <CloseRoundedIcon className={styles.buttonIcon} />
-        {t("mainWindow.noteSelectionToolbar.cancel")}
+        {t("cancel")}
       </button>
     </div>
   );

@@ -219,15 +219,15 @@ function Security(props: SecurityProps) {
 
   function getEncryptionProgressTitle(progress: EncryptionProgressEvent): string {
     return t(progress.operation === EncryptionProgressOperation.ENCRYPT
-      ? "settingsWindow.security.encryptionProgress.encryptTitle"
-      : "settingsWindow.security.encryptionProgress.decryptTitle");
+      ? "encryptingNotes"
+      : "decryptingNotes");
   }
 
   function getEncryptionProgressStatus(progress: EncryptionProgressEvent): string {
     if (progress.phase === EncryptionProgressPhase.PROCESSING_NOTES) {
       return t(progress.operation === EncryptionProgressOperation.ENCRYPT
-        ? "settingsWindow.security.encryptionProgress.encryptingNotes"
-        : "settingsWindow.security.encryptionProgress.decryptingNotes", {
+        ? "encryptingNoteCount"
+        : "decryptingNoteCount", {
         current: progress.current ?? 0,
         total: progress.total ?? 0
       });
@@ -235,15 +235,15 @@ function Security(props: SecurityProps) {
 
     if (progress.phase === EncryptionProgressPhase.VERIFYING) {
       return t(progress.operation === EncryptionProgressOperation.ENCRYPT
-        ? "settingsWindow.security.encryptionProgress.verifyingEncryption"
-        : "settingsWindow.security.encryptionProgress.verifyingDecryption");
+        ? "verifyingEncryptedNotes"
+        : "verifyingDecryptedNotes");
     }
 
     if (progress.phase === EncryptionProgressPhase.CLEANING_UP) {
-      return t("settingsWindow.security.encryptionProgress.cleaningUp");
+      return t("cleaningUp");
     }
 
-    return t("settingsWindow.security.encryptionProgress.preparing");
+    return t("preparing");
   }
 
   return (
@@ -271,19 +271,19 @@ function Security(props: SecurityProps) {
       <ConfirmationDialog
         theme={props.theme}
         open={isDisableBruteForceProtectionDialogOpen}
-        title={t("settingsWindow.security.disableBruteForceProtectionDialog.title")}
-        message={t("settingsWindow.security.disableBruteForceProtectionDialog.message")}
-        confirmLabel={t("settingsWindow.security.disableBruteForceProtectionDialog.confirmLabel")}
+        title={t("turnOffBruteForceProtection")}
+        message={t("bruteForceProtectionDisableWarning")}
+        confirmLabel={t("turnOff")}
         onConfirm={handleDisableBruteForceProtectionConfirm}
         onCancel={() => setDisableBruteForceProtectionDialogOpen(false)}
       />
       <ConfirmationDialog
         theme={props.theme}
         open={isEnableEncryptionDialogOpen}
-        title={t("settingsWindow.security.enableEncryptionDialog.title")}
-        message={t("settingsWindow.security.enableEncryptionDialog.message")}
-        confirmLabel={t("settingsWindow.security.enableEncryptionDialog.confirmLabel")}
-        cancelLabel={t("settingsWindow.security.enableEncryptionDialog.cancelLabel")}
+        title={t("enableNoteEncryptionQuestion")}
+        message={t("enableNoteEncryptionWarning")}
+        confirmLabel={t("enable")}
+        cancelLabel={t("cancel")}
         onConfirm={handleEnableEncryptionConfirm}
         onCancel={() => setEnableEncryptionDialogOpen(false)}
       />
@@ -296,12 +296,12 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isLockScreenRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledLockScreenTooltip")}
+            title={t("turnOffEncryptionFirst")}
           >
             <div className={`${styles.settingsRow} ${isLockScreenRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="lock-screen-enabled-title">{t("settingsWindow.security.lockScreen")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockScreenDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-enabled-title">{t("notesLock")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("notesLockHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -315,7 +315,7 @@ function Security(props: SecurityProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockScreen")}</span>
+                <span className={styles.visuallyHidden}>{t("notesLock")}</span>
               </label>
             </div>
           </Tooltip>
@@ -326,12 +326,12 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isEncryptionRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
+            title={t("lockScreenRequired")}
           >
             <div className={`${styles.settingsRow} ${isEncryptionRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="notes-encryption-enabled-title">{t("settingsWindow.security.notesEncryption")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.notesEncryptionDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="notes-encryption-enabled-title">{t("notesEncryption")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("notesEncryptionHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -345,7 +345,7 @@ function Security(props: SecurityProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.security.notesEncryption")}</span>
+                <span className={styles.visuallyHidden}>{t("notesEncryption")}</span>
               </label>
             </div>
           </Tooltip>
@@ -356,12 +356,12 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isPasswordRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
+            title={t("lockScreenRequired")}
           >
             <div className={`${styles.settingsRow} ${isPasswordRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.security.password")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.passwordDescription")}</p>
+                <h3 className={styles.settingsSectionTitle}>{t("password")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("changePasswordHelp")}</p>
               </div>
               <button
                 className={styles.settingsButton}
@@ -372,7 +372,7 @@ function Security(props: SecurityProps) {
                   setPasswordDialogMode(SecurityPasswordDialogMode.CHANGE);
                 }}
               >
-                {t("settingsWindow.security.changePassword")}
+                {t("changePassword")}
               </button>
             </div>
           </Tooltip>
@@ -384,14 +384,14 @@ function Security(props: SecurityProps) {
               disableTouchListener={!isRequirePasswordDelayRowDisabled}
               enterDelay={300}
               enterNextDelay={300}
-              title={t("settingsWindow.security.disabledPasswordTooltip")}
+              title={t("lockScreenRequired")}
             >
               <div className={`${styles.settingsRow} ${isRequirePasswordDelayRowDisabled ? styles.settingsRowDisabled : ""}`}>
                 <div className={styles.settingsRowText}>
                   <label className={styles.settingsSectionTitle} htmlFor="lock-screen-require-password-delay">
-                    {t("settingsWindow.security.requirePasswordDelay")}
+                    {t("requirePasswordDelay")}
                   </label>
-                  <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.requirePasswordDelayDescription")}</p>
+                  <p className={styles.settingsSectionDescription}>{t("requirePasswordDelayHelp")}</p>
                 </div>
                 <select
                   className={styles.settingsSelect}
@@ -400,12 +400,12 @@ function Security(props: SecurityProps) {
                   value={props.appSettings.lockScreenRequirePasswordDelay}
                   onChange={handleRequirePasswordDelayChange}
                 >
-                  <option value={LockScreenRequirePasswordDelay.IMMEDIATELY}>{t("common.time.immediately")}</option>
-                  <option value={LockScreenRequirePasswordDelay.FIVE_SECONDS}>{t("common.time.fiveSeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.TEN_SECONDS}>{t("common.time.tenSeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.THIRTY_SECONDS}>{t("common.time.thirtySeconds")}</option>
-                  <option value={LockScreenRequirePasswordDelay.ONE_MINUTE}>{t("common.time.oneMinute")}</option>
-                  <option value={LockScreenRequirePasswordDelay.FIVE_MINUTES}>{t("common.time.fiveMinutes")}</option>
+                  <option value={LockScreenRequirePasswordDelay.IMMEDIATELY}>{t("time.immediately")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_SECONDS}>{t("time.fiveSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.TEN_SECONDS}>{t("time.tenSeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.THIRTY_SECONDS}>{t("time.thirtySeconds")}</option>
+                  <option value={LockScreenRequirePasswordDelay.ONE_MINUTE}>{t("time.oneMinute")}</option>
+                  <option value={LockScreenRequirePasswordDelay.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
                 </select>
               </div>
             </Tooltip>
@@ -417,12 +417,12 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isLockOnSystemSleepRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
+            title={t("lockScreenRequired")}
           >
             <div className={`${styles.settingsRow} ${isLockOnSystemSleepRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="lock-screen-on-system-sleep-enabled-title">{t("settingsWindow.security.lockOnSystemSleep")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockOnSystemSleepDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-on-system-sleep-enabled-title">{t("lockOnSystemSleep")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("lockOnSystemSleepHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -436,7 +436,7 @@ function Security(props: SecurityProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.security.lockOnSystemSleep")}</span>
+                <span className={styles.visuallyHidden}>{t("lockOnSystemSleep")}</span>
               </label>
             </div>
           </Tooltip>
@@ -447,14 +447,14 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isIdleTimeoutRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
+            title={t("lockScreenRequired")}
           >
             <div className={`${styles.settingsRow} ${isIdleTimeoutRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
                 <label className={styles.settingsSectionTitle} htmlFor="lock-screen-idle-timeout">
-                  {t("settingsWindow.security.lockAfterIdle")}
+                  {t("lockAfterIdle")}
                 </label>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.lockAfterIdleDescription")}</p>
+                <p className={styles.settingsSectionDescription}>{t("lockAfterIdleHelp")}</p>
               </div>
               <select
                 className={styles.settingsSelect}
@@ -463,13 +463,13 @@ function Security(props: SecurityProps) {
                 value={props.appSettings.lockScreenIdleTimeout}
                 onChange={handleLockScreenIdleTimeoutChange}
               >
-                <option value={LockScreenIdleTimeout.NEVER}>{t("common.time.never")}</option>
-                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("common.time.oneMinute")}</option>
-                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("common.time.fiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("common.time.tenMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("common.time.twentyMinutes")}</option>
-                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("common.time.fortyFiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("common.time.sixtyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.NEVER}>{t("time.never")}</option>
+                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("time.oneMinute")}</option>
+                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("time.tenMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("time.twentyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("time.fortyFiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("time.sixtyMinutes")}</option>
               </select>
             </div>
           </Tooltip>
@@ -480,12 +480,12 @@ function Security(props: SecurityProps) {
             disableTouchListener={!isBruteForceProtectionRowDisabled}
             enterDelay={300}
             enterNextDelay={300}
-            title={t("settingsWindow.security.disabledPasswordTooltip")}
+            title={t("lockScreenRequired")}
           >
             <div className={`${styles.settingsRow} ${isBruteForceProtectionRowDisabled ? styles.settingsRowDisabled : ""}`}>
               <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="brute-force-protection-enabled-title">{t("settingsWindow.security.bruteForceProtection")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("settingsWindow.security.bruteForceProtectionDescription")}</p>
+                <h3 className={styles.settingsSectionTitle} id="brute-force-protection-enabled-title">{t("bruteForceProtection")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("bruteForceProtectionHelp")}</p>
               </div>
               <label className={styles.switchControl}>
                 <input
@@ -499,7 +499,7 @@ function Security(props: SecurityProps) {
                 <span className={styles.switchTrack} aria-hidden="true">
                   <span className={styles.switchThumb} />
                 </span>
-                <span className={styles.visuallyHidden}>{t("settingsWindow.security.bruteForceProtection")}</span>
+                <span className={styles.visuallyHidden}>{t("bruteForceProtection")}</span>
               </label>
             </div>
           </Tooltip>

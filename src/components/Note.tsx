@@ -34,12 +34,12 @@ type NoteProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
-  noteTitleFont: NoteFontPreference;
-  noteContentFontSize: NoteFontSize;
-  noteTitleFontSize: NoteFontSize;
+  titleFont: NoteFontPreference;
+  contentFontSize: NoteFontSize;
+  titleFontSize: NoteFontSize;
   richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
-  showNoteTitles: boolean;
+  showTitles: boolean;
   showNoteFooters: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
@@ -280,16 +280,16 @@ function Note(props: NoteProps) {
   const isDarkTheme = props.theme === SystemTheme.DARK;
   const color = getNoteColor(note.bgcolor, props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
-  const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
+  const titleFontFamily = getNoteFontFamily(props.titleFont);
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
-  const isTitleHidden = note.isTitleHidden ?? !props.showNoteTitles;
+  const isTitleHidden = note.isTitleHidden ?? !props.showTitles;
   const isPinned = note.isPinned === true;
   const noteTitleWrapperStyle: CSSProperties | undefined = (props.reserveCloseButtonSpace || isPinned)
     ? { paddingRight: (props.reserveCloseButtonSpace ? 34 : 0) + (isPinned ? 24 : 0) }
     : undefined;
-  const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("mainWindow.note.lastModifiedCompact") : t("mainWindow.note.lastModified");
-  const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("mainWindow.note.at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
-  const noteFooterTextStats = t("mainWindow.note.textStats", {
+  const noteFooterModifiedLabel = props.noteSize === NoteSizePreference.COMPACT ? t("modified") : t("noteLastModified");
+  const noteFooterDateText = `${noteFooterModifiedLabel} ${Formatter.getFormattedDate(note.lastModifiedOn, props.dateFormat)} ${t("at")} ${Formatter.getFormattedTimestamp(note.lastModifiedOn, props.timeFormat)}`;
+  const noteFooterTextStats = t("wordCharacterCount", {
     characterCount: note.content.length,
     wordCount: getWordCount(note.content)
   });
@@ -545,7 +545,7 @@ function Note(props: NoteProps) {
     >
       {props.isSelectionMode && (
         <button
-          aria-label={props.isSelected ? t("mainWindow.note.deselect") : t("mainWindow.note.select")}
+          aria-label={props.isSelected ? t("deselectNote") : t("selectNote")}
           aria-pressed={props.isSelected === true}
           className={`${classes.noteSelectionButton} ${props.isSelected ? classes.noteSelectionButtonSelected : ""}`}
           style={{ color: appColors.NOTE_SELECTION }}
@@ -562,12 +562,12 @@ function Note(props: NoteProps) {
       )}
       {isPinned && props.handleToggleNotePin && (
         <button
-          aria-label={t("mainWindow.note.contextMenu.unpin")}
+          aria-label={t("unpinNote")}
           className={classes.pinnedNoteMarker}
           onClick={handlePinnedNoteMarkerClick}
           onPointerDown={(event) => event.stopPropagation()}
           style={props.reserveCloseButtonSpace ? { right: 36 } : undefined}
-          title={t("mainWindow.note.contextMenu.unpin")}
+          title={t("unpinNote")}
           type="button"
         >
           <PushPinRoundedIcon fontSize="small" />
@@ -611,15 +611,15 @@ function Note(props: NoteProps) {
                   key={props.theme}
                   className={classes.noteTitleInput}
                   style={{
-                    fontFamily: noteTitleFontFamily,
-                    fontSize: props.noteTitleFontSize,
-                    lineHeight: `${props.noteTitleFontSize + 5}px`,
+                    fontFamily: titleFontFamily,
+                    fontSize: props.titleFontSize,
+                    lineHeight: `${props.titleFontSize + 5}px`,
                     color: appColors.NOTE_TEXT,
                     caretColor: appColors.NOTE_TEXT,
                     WebkitTextFillColor: note.title ? appColors.NOTE_TEXT : appColors.NOTE_PLACEHOLDER_TEXT
                   }}
                   value={note.title ?? ""}
-                  placeholder={t("mainWindow.note.titlePlaceholder")}
+                  placeholder={t("title")}
                   onChange={handleTitleChange}
                 />
                 <div
@@ -650,8 +650,8 @@ function Note(props: NoteProps) {
                 <NoteRichTextEditor
                   theme={props.theme}
                   fontFamily={noteFontFamily}
-                  fontSize={props.noteContentFontSize}
-                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  fontSize={props.contentFontSize}
+                  placeholder={t("typeHere")}
                   content={note.content}
                   richContent={note.richContent}
                   formatActionRequest={formatActionRequest}
@@ -667,8 +667,8 @@ function Note(props: NoteProps) {
                 <NoteTextarea
                   theme={props.theme}
                   fontFamily={noteFontFamily}
-                  fontSize={props.noteContentFontSize}
-                  placeholder={t("mainWindow.note.contentPlaceholder")}
+                  fontSize={props.contentFontSize}
+                  placeholder={t("typeHere")}
                   content={note.content}
                   onChange={handlePlainTextNoteChange}
                 />

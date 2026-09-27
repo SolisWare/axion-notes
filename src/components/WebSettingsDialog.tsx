@@ -50,7 +50,7 @@ function WebSettingsDialog(props: WebSettingsDialogProps) {
       </DialogContent>
       <DialogActions className={styles.actions}>
         <Button onClick={props.onClose} variant="contained">
-          {t("common.close")}
+          {t("close")}
         </Button>
       </DialogActions>
     </Dialog>

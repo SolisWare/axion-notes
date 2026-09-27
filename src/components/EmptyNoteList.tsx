@@ -46,11 +46,11 @@ function EmptyNoteList(props: EmptyNoteListProps) {
   const isMac = window.api.os.isMac;
   const platform = isMac ? "Cmd" : "Ctrl";
   const title = props.isLocked
-    ? t("mainWindow.emptyNotes.lockedTitle", { appName: "Axion Notes" })
-    : t("mainWindow.emptyNotes.title");
+    ? t("passwordProtected", { appName: "Axion Notes" })
+    : t("noNotesYet");
   const message = props.isLocked
-    ? t("mainWindow.emptyNotes.lockedMessage")
-    : t("mainWindow.emptyNotes.addFirstNote", { shortcut: `${platform}+N` });
+    ? t("notTheNotesYouAreLookingFor")
+    : t("addFirstNotePrompt", { shortcut: `${platform}+N` });
   
   return (
     <div className={classes.wrapper}>

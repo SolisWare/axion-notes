@@ -24,12 +24,12 @@ export type NoteGridProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
-  noteTitleFont: NoteFontPreference;
-  noteContentFontSize: NoteFontSize;
-  noteTitleFontSize: NoteFontSize;
+  titleFont: NoteFontPreference;
+  contentFontSize: NoteFontSize;
+  titleFontSize: NoteFontSize;
   richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
-  showNoteTitles: boolean;
+  showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
@@ -162,12 +162,12 @@ function NoteGrid (props: NoteGridProps) {
                 dateFormat={props.dateFormat}
                 timeFormat={props.timeFormat}
                 noteFont={props.noteFont}
-                noteTitleFont={props.noteTitleFont}
-                noteContentFontSize={props.noteContentFontSize}
-                noteTitleFontSize={props.noteTitleFontSize}
+                titleFont={props.titleFont}
+                contentFontSize={props.contentFontSize}
+                titleFontSize={props.titleFontSize}
                 richTextEditorEnabled={props.richTextEditorEnabled}
                 noteSize={props.noteSize}
-                showNoteTitles={props.showNoteTitles}
+                showTitles={props.showTitles}
                 showNoteFooters={props.showNoteFooters}
                 showFloatingFormatToolbar={props.showFloatingFormatToolbar}
                 handleNoteSave={props.handleNoteSave}

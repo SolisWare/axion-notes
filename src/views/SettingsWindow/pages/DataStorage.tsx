@@ -10,9 +10,9 @@ import styles from "./SettingsPages.module.css";
 
 function DataStorage() {
   const { t } = useTranslation();
-  const [notesFolderLocation, setNotesFolderLocation] = useState("");
-  const [securityFolderLocation, setSecurityFolderLocation] = useState("");
-  const [settingsFolderLocation, setSettingsFolderLocation] = useState("");
+  const [notesLocation, setNotesFolderLocation] = useState("");
+  const [passwordEncryptionDataLocation, setSecurityFolderLocation] = useState("");
+  const [settingsLocation, setSettingsFolderLocation] = useState("");
 
   useEffect(() => {
     window.api.storage.getNotesFolderLocation()
@@ -40,20 +40,20 @@ function DataStorage() {
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="notes-folder-location-title">{t("settingsWindow.dataStorage.notesFolderLocation")}</h3>
-              <p className={styles.settingsSectionDescription}>{notesFolderLocation}</p>
+              <h3 className={styles.settingsSectionTitle} id="notes-folder-location-title">{t("notesLocation")}</h3>
+              <p className={styles.settingsSectionDescription}>{notesLocation}</p>
             </div>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.dataStorage.settingsFolderLocation")}</h3>
-              <p className={styles.settingsSectionDescription}>{settingsFolderLocation}</p>
+              <h3 className={styles.settingsSectionTitle}>{t("settingsLocation")}</h3>
+              <p className={styles.settingsSectionDescription}>{settingsLocation}</p>
             </div>
           </div>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("settingsWindow.dataStorage.securityFolderLocation")}</h3>
-              <p className={styles.settingsSectionDescription}>{securityFolderLocation}</p>
+              <h3 className={styles.settingsSectionTitle}>{t("passwordEncryptionDataLocation")}</h3>
+              <p className={styles.settingsSectionDescription}>{passwordEncryptionDataLocation}</p>
             </div>
           </div>
         </div>

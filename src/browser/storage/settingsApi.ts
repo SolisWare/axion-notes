@@ -20,7 +20,7 @@ export const settingsApi = {
   },
 
   getSettingsFolderLocation: async (): Promise<string> => {
-    return i18n.t("settingsWindow.dataStorage.browserLocalStorage");
+    return i18n.t("localStorage");
   },
 
   setSettings: (settings: AppSettings) => {

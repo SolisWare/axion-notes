@@ -12,14 +12,14 @@ import styles from "./SettingsPages.module.css";
 
 const links = [
   {
-    labelKey: "settingsWindow.links.website.label",
-    descriptionKey: "settingsWindow.links.website.description",
+    labelKey: "website",
+    descriptionKey: "websiteLinkHelp",
     href: "https://solisware.com",
     icon: <PublicOutlinedIcon fontSize="small" />
   },
   {
-    labelKey: "settingsWindow.links.github.label",
-    descriptionKey: "settingsWindow.links.github.description",
+    labelKey: "github",
+    descriptionKey: "githubLinkHelp",
     href: "https://github.com/SolisWare",
     icon: <GitHubIcon fontSize="small" />
   }
@@ -32,7 +32,7 @@ function Links() {
     <div className={styles.linksPage}>
       <div className={styles.linksHeader}>
         <p className={styles.pageDescription}>
-          {t("settingsWindow.links.description", { appName: "Axion Notes" })}
+          {t("externalLinksHelp", { appName: "Axion Notes" })}
         </p>
       </div>
       <div className={styles.linksList}>

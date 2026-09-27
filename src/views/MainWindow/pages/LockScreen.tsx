@@ -143,7 +143,7 @@ function LockScreen(props: LockScreenProps) {
     }
 
     if (!password) {
-      setErrorMessage(t("mainWindow.lockScreen.passwordRequired"));
+      setErrorMessage(t("enterPasswordToContinue"));
       passwordInputRef.current?.focus();
       return;
     }
@@ -165,7 +165,7 @@ function LockScreen(props: LockScreenProps) {
       return;
     }
 
-    setErrorMessage(t("mainWindow.lockScreen.invalidPassword"));
+    setErrorMessage(t("incorrectPassword"));
     passwordInputRef.current?.focus();
   }
 
@@ -186,8 +186,8 @@ function LockScreen(props: LockScreenProps) {
     const countdown = `${totalMinutes}:${seconds.toString().padStart(2, "0")}`;
 
     return [
-      t("mainWindow.lockScreen.cooldownMessageLine1"),
-      t("mainWindow.lockScreen.cooldownMessageLine2", { countdown })
+      t("tooManyIncorrectAttempts"),
+      t("tryAgainIn", { countdown })
     ].join("\n");
   }
 
@@ -206,18 +206,18 @@ function LockScreen(props: LockScreenProps) {
         <LockOutlinedIcon className={styles.lockIcon} aria-hidden="true" />
 
         <Typography className={styles.title} variant="h1">
-          {t("mainWindow.lockScreen.title")}
+          {t("notesLocked")}
         </Typography>
         {!isRecoveryRequired && (
           <Typography className={styles.description} variant="body2">
-            {t("mainWindow.lockScreen.description")}
+            {t("enterPasswordToViewNotes")}
           </Typography>
         )}
 
         {isRecoveryRequired ? (
           <Typography className={styles.recoveryMessage} variant="body2" component="p" role="alert">
-            <span>{t("mainWindow.lockScreen.recoveryRequiredLine1")}</span>
-            <span>{t("mainWindow.lockScreen.recoveryRequiredLine2", { appName: "Axion Notes" })}</span>
+            <span>{t("lockPasswordDataDamaged")}</span>
+            <span>{t("appCannotUnlockNeedsRepair", { appName: "Axion Notes" })}</span>
           </Typography>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
@@ -229,7 +229,7 @@ function LockScreen(props: LockScreenProps) {
                   className={styles.input}
                   type={isPasswordVisible ? "text" : "password"}
                   value={password}
-                  placeholder={t("mainWindow.lockScreen.passwordPlaceholder")}
+                  placeholder={t("enterPassword")}
                   autoComplete="current-password"
                   disabled={isCooldownActive}
                   aria-invalid={Boolean(displayMessage)}
@@ -240,8 +240,8 @@ function LockScreen(props: LockScreenProps) {
                   className={styles.visibilityButton}
                   disabled={isCooldownActive}
                   aria-label={t(isPasswordVisible
-                    ? "mainWindow.lockScreen.hidePassword"
-                    : "mainWindow.lockScreen.showPassword")}
+                    ? "hidePassword"
+                    : "showPassword")}
                   onClick={() => setPasswordVisible((currentValue) => !currentValue)}
                 >
                   {isPasswordVisible
@@ -265,7 +265,7 @@ function LockScreen(props: LockScreenProps) {
 
             <Button className={styles.unlockButton} disabled={!canSubmit} disableElevation={!canSubmit} type="submit" variant="contained">
               <span className={styles.buttonContent}>
-                {t("mainWindow.lockScreen.unlock")}
+                {t("unlockNotes")}
                 <ArrowForwardIcon aria-hidden="true" />
               </span>
             </Button>
@@ -275,23 +275,23 @@ function LockScreen(props: LockScreenProps) {
         <ul className={styles.disclosures}>
           <li className={styles.disclosure}>
             <ComputerOutlinedIcon aria-hidden="true" />
-            <span>{t("mainWindow.lockScreen.offlineDisclosure")}</span>
+            <span>{t("offlineOnly")}</span>
           </li>
           <li className={styles.disclosure}>
             {isBruteForceProtectionEnabled
               ? <GppGoodOutlinedIcon aria-hidden="true" />
               : <GppMaybeOutlinedIcon aria-hidden="true" />}
             <span>{t(isBruteForceProtectionEnabled
-              ? "mainWindow.lockScreen.bruteForceProtectionEnabledDisclosure"
-              : "mainWindow.lockScreen.bruteForceProtectionDisabledDisclosure")}</span>
+              ? "bruteForceProtectionEnabled"
+              : "bruteForceProtectionDisabled")}</span>
           </li>
           <li className={styles.disclosure}>
             {isNotesEncryptionEnabled
               ? <LockOutlinedIcon aria-hidden="true" />
               : <LockOpenRoundedIcon aria-hidden="true" />}
             <span>{t(isNotesEncryptionEnabled
-              ? "mainWindow.lockScreen.encryptionEnabledDisclosure"
-              : "mainWindow.lockScreen.encryptionDisabledDisclosure")}</span>
+              ? "notesEncrypted"
+              : "notesNotEncrypted")}</span>
           </li>
         </ul>
       </div>

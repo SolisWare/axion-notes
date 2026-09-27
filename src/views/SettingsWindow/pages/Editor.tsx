@@ -24,8 +24,8 @@ function Editor(props: EditorProps) {
   const { t } = useTranslation();
   const [isDisableRichTextEditorDialogOpen, setDisableRichTextEditorDialogOpen] = useState(false);
   const noteFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteFont);
-  const noteTitleFontPreviewFontFamily = getNoteFontFamily(props.appSettings.noteTitleFont);
-  const noteFontPreview = t("settingsWindow.editor.noteFontPreview");
+  const titleFontPreviewFontFamily = getNoteFontFamily(props.appSettings.titleFont);
+  const noteFontPreview = t("fontSampleText");
 
   function handleRichTextEditorEnabledChange(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.checked) {
@@ -59,7 +59,7 @@ function Editor(props: EditorProps) {
   function handleNoteTitleFontChange(event: ChangeEvent<HTMLSelectElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
-      noteTitleFont: event.target.value as NoteFontPreference
+      titleFont: event.target.value as NoteFontPreference
     });
 
     event.currentTarget.blur();
@@ -68,7 +68,7 @@ function Editor(props: EditorProps) {
   function handleNoteContentFontSizeChange(event: ChangeEvent<HTMLSelectElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
-      noteContentFontSize: Number(event.target.value) as NoteFontSize
+      contentFontSize: Number(event.target.value) as NoteFontSize
     });
 
     event.currentTarget.blur();
@@ -77,7 +77,7 @@ function Editor(props: EditorProps) {
   function handleNoteTitleFontSizeChange(event: ChangeEvent<HTMLSelectElement>) {
     props.onAppSettingsChange({
       ...props.appSettings,
-      noteTitleFontSize: Number(event.target.value) as NoteFontSize
+      titleFontSize: Number(event.target.value) as NoteFontSize
     });
 
     event.currentTarget.blur();
@@ -96,9 +96,9 @@ function Editor(props: EditorProps) {
       <ConfirmationDialog
         theme={props.theme}
         open={isDisableRichTextEditorDialogOpen}
-        title={t("settingsWindow.editor.disableRichTextEditorDialog.title")}
-        message={t("settingsWindow.editor.disableRichTextEditorDialog.message")}
-        confirmLabel={t("settingsWindow.editor.disableRichTextEditorDialog.confirmLabel")}
+        title={t("turnOffRichTextEditor")}
+        message={t("richTextEditorDisableWarning")}
+        confirmLabel={t("turnOff")}
         onConfirm={handleDisableRichTextEditorConfirm}
         onCancel={() => setDisableRichTextEditorDialogOpen(false)}
       />
@@ -106,8 +106,8 @@ function Editor(props: EditorProps) {
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle} id="rich-text-editor-enabled-title">{t("settingsWindow.editor.richTextEditor")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.richTextEditorDescription")}</p>
+              <h3 className={styles.settingsSectionTitle} id="rich-text-editor-enabled-title">{t("richTextEditor")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("richTextEditorHelp")}</p>
             </div>
             <label className={styles.switchControl}>
               <input
@@ -120,33 +120,33 @@ function Editor(props: EditorProps) {
               <span className={styles.switchTrack} aria-hidden="true">
                 <span className={styles.switchThumb} />
               </span>
-              <span className={styles.visuallyHidden}>{t("settingsWindow.editor.richTextEditor")}</span>
+              <span className={styles.visuallyHidden}>{t("richTextEditor")}</span>
             </label>
           </div>
         </div>
         <h3 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderFirst}`}>
-          {t("settingsWindow.editor.titleSection")}
+          {t("title")}
         </h3>
         <div className={styles.settingsRows}>
           <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <div>
               <label className={styles.settingsSectionTitle} htmlFor="note-title-font">
-                {t("settingsWindow.editor.noteTitleFont")}
+                {t("titleFont")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.noteTitleFontDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("titleFontDescription")}</p>
             </div>
             <div className={styles.noteFontControls}>
               <select
                 className={styles.settingsSelect}
                 id="note-title-font"
-                style={{ fontFamily: noteTitleFontPreviewFontFamily }}
-                value={getVisibleNoteFontValue(props.appSettings.noteTitleFont, NoteFontPreference.SANS_SERIF)}
+                style={{ fontFamily: titleFontPreviewFontFamily }}
+                value={getVisibleNoteFontValue(props.appSettings.titleFont, NoteFontPreference.SANS_SERIF)}
                 onChange={handleNoteTitleFontChange}
               >
                 {NOTE_FONT_CATEGORIES.map((fontCategory) => (
                   <optgroup
                     key={fontCategory}
-                    label={t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
+                    label={t(`fontCategories.${fontCategory}`)}
                   >
                     {getNoteFontOptionsByCategory(fontCategory, NoteFontPreference.SANS_SERIF).map((fontOption) => (
                       <option
@@ -163,7 +163,7 @@ function Editor(props: EditorProps) {
             </div>
             <span
               className={styles.noteFontPreview}
-              style={{ fontFamily: noteTitleFontPreviewFontFamily }}
+              style={{ fontFamily: titleFontPreviewFontFamily }}
             >
               {noteFontPreview}
             </span>
@@ -171,14 +171,14 @@ function Editor(props: EditorProps) {
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
               <label className={styles.settingsSectionTitle} htmlFor="note-title-font-size">
-                {t("settingsWindow.editor.noteTitleFontSize")}
+                {t("titleFontSize")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.noteTitleFontSizeDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("titleFontSizeDescription")}</p>
             </div>
             <select
               className={styles.settingsSelect}
               id="note-title-font-size"
-              value={props.appSettings.noteTitleFontSize}
+              value={props.appSettings.titleFontSize}
               onChange={handleNoteTitleFontSizeChange}
             >
               {NOTE_TITLE_FONT_SIZE_OPTIONS.map((fontSize) => (
@@ -188,15 +188,15 @@ function Editor(props: EditorProps) {
           </div>
         </div>
         <h3 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderSpaced}`}>
-          {t("settingsWindow.editor.contentSection")}
+          {t("content")}
         </h3>
         <div className={styles.settingsRows}>
           <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <div>
               <label className={styles.settingsSectionTitle} id="editor-note-text-title" htmlFor="note-font">
-                {t("settingsWindow.editor.noteFont")}
+                {t("contentFont")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.noteFontDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("contentFontDescription")}</p>
             </div>
             <div className={styles.noteFontControls}>
               <select
@@ -209,7 +209,7 @@ function Editor(props: EditorProps) {
                 {NOTE_FONT_CATEGORIES.map((fontCategory) => (
                   <optgroup
                     key={fontCategory}
-                    label={t(`settingsWindow.editor.noteFontCategories.${fontCategory}`)}
+                    label={t(`fontCategories.${fontCategory}`)}
                   >
                     {getNoteFontOptionsByCategory(fontCategory, NoteFontPreference.MONOSPACE).map((fontOption) => (
                       <option
@@ -234,14 +234,14 @@ function Editor(props: EditorProps) {
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
               <label className={styles.settingsSectionTitle} htmlFor="note-content-font-size">
-                {t("settingsWindow.editor.noteContentFontSize")}
+                {t("contentFontSize")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("settingsWindow.editor.noteContentFontSizeDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("contentFontSizeDescription")}</p>
             </div>
             <select
               className={styles.settingsSelect}
               id="note-content-font-size"
-              value={props.appSettings.noteContentFontSize}
+              value={props.appSettings.contentFontSize}
               onChange={handleNoteContentFontSizeChange}
             >
               {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (

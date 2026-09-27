@@ -186,8 +186,8 @@ function updateNoteMenuItems(): void {
     selectAllNotesMenuItem.enabled = isNewNoteEnabled && noteSelectionState.hasNotes;
     selectAllNotesMenuItem.label = translate(
       noteSelectionState.areAllNotesSelected
-        ? "electron.menu.deselectAllNotes"
-        : "electron.menu.selectAllNotes"
+        ? "deselectAllNotes"
+        : "selectAllNotes"
     );
   }
 

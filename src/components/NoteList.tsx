@@ -29,12 +29,12 @@ type NoteListProps = {
   dateFormat: DateFormat;
   timeFormat: TimeFormat;
   noteFont: NoteFontPreference;
-  noteTitleFont: NoteFontPreference;
-  noteContentFontSize: NoteFontSize;
-  noteTitleFontSize: NoteFontSize;
+  titleFont: NoteFontPreference;
+  contentFontSize: NoteFontSize;
+  titleFontSize: NoteFontSize;
   richTextEditorEnabled: boolean;
   noteSize: NoteSizePreference;
-  showNoteTitles: boolean;
+  showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
@@ -100,8 +100,8 @@ function getFirstContentLine(note: NoteType): string {
   return note.content.split(/\r?\n/).find((line) => line.trim().length > 0)?.trim() ?? "";
 }
 
-function getFoldedNoteContent(note: NoteType, showNoteTitles: boolean): FoldedNoteContent {
-  const isTitleHidden = note.isTitleHidden ?? !showNoteTitles;
+function getFoldedNoteContent(note: NoteType, showTitles: boolean): FoldedNoteContent {
+  const isTitleHidden = note.isTitleHidden ?? !showTitles;
   const title = note.title?.trim();
   const body = getFirstContentLine(note);
 
@@ -130,7 +130,7 @@ function NoteList(props: NoteListProps) {
   
   const appColors = getAppColors(props.theme);
   const noteFontFamily = getNoteFontFamily(props.noteFont);
-  const noteTitleFontFamily = getNoteFontFamily(props.noteTitleFont);
+  const titleFontFamily = getNoteFontFamily(props.titleFont);
   const noteListStyle = {
     "--note-list-text": appColors.NOTE_TEXT,
     "--note-list-background": appColors.ACCENT,
@@ -296,7 +296,7 @@ function NoteList(props: NoteListProps) {
       return;
     }
 
-    const isTitleHidden = contextMenuNote.isTitleHidden ?? !props.showNoteTitles;
+    const isTitleHidden = contextMenuNote.isTitleHidden ?? !props.showTitles;
 
     handleCloseFoldedNoteContextMenu();
     props.handleNoteSave({
@@ -381,7 +381,7 @@ function NoteList(props: NoteListProps) {
           <div className={styles.list}>
             {props.notes.map((note) => {
               const isFolded = note.isFolded ?? true;
-              const foldedNoteContent = getFoldedNoteContent(note, props.showNoteTitles);
+              const foldedNoteContent = getFoldedNoteContent(note, props.showTitles);
 
               if (isFolded) {
                 const noteColor = getNoteColor(note.bgcolor, props.theme);
@@ -402,7 +402,7 @@ function NoteList(props: NoteListProps) {
                     >
                       {props.isSelectionMode && (
                         <button
-                          aria-label={props.selectedNoteIds.has(note.id) ? t("mainWindow.note.deselect") : t("mainWindow.note.select")}
+                          aria-label={props.selectedNoteIds.has(note.id) ? t("deselectNote") : t("selectNote")}
                           aria-pressed={props.selectedNoteIds.has(note.id)}
                           className={`${styles.selectionButton} ${props.selectedNoteIds.has(note.id) ? styles.selectionButtonSelected : ""}`}
                           style={{ color: appColors.NOTE_SELECTION }}
@@ -419,7 +419,7 @@ function NoteList(props: NoteListProps) {
                       )}
                       {note.isPinned && (
                         <button
-                          aria-label={t("mainWindow.note.contextMenu.unpin")}
+                          aria-label={t("unpinNote")}
                           className={styles.pinnedFoldedNoteMarker}
                           onClick={(event) => {
                             event.preventDefault();
@@ -427,7 +427,7 @@ function NoteList(props: NoteListProps) {
                             props.handleToggleNotePin(note);
                           }}
                           onPointerDown={(event) => event.stopPropagation()}
-                          title={t("mainWindow.note.contextMenu.unpin")}
+                          title={t("unpinNote")}
                           type="button"
                         >
                           <PushPinRoundedIcon fontSize="small" />
@@ -442,23 +442,23 @@ function NoteList(props: NoteListProps) {
                       </div>
                       <div className={styles.listItemContent}>
                         {foldedNoteContent.title && (
-                          <span className={styles.listItemTitle} style={{ fontFamily: noteTitleFontFamily, fontSize: props.noteTitleFontSize }}>
+                          <span className={styles.listItemTitle} style={{ fontFamily: titleFontFamily, fontSize: props.titleFontSize }}>
                             {foldedNoteContent.title}
                           </span>
                         )}
                         <span
                           className={foldedNoteContent.title ? styles.listItemBody : styles.listItemBodyPrimary}
-                          style={{ fontFamily: noteFontFamily, fontSize: props.noteContentFontSize }}
+                          style={{ fontFamily: noteFontFamily, fontSize: props.contentFontSize }}
                         >
                           {foldedNoteContent.body}
                         </span>
                       </div>
                       <button
-                        aria-label={t("mainWindow.note.unfold")}
+                        aria-label={t("unfoldNote")}
                         className={styles.unfoldButton}
                         onClick={() => handleUnfoldNote(note)}
                         onPointerDown={(event) => event.stopPropagation()}
-                        title={t("mainWindow.note.unfold")}
+                        title={t("unfoldNote")}
                         type="button"
                       />
                     </div>
@@ -482,12 +482,12 @@ function NoteList(props: NoteListProps) {
                       dateFormat={props.dateFormat}
                       timeFormat={props.timeFormat}
                       noteFont={props.noteFont}
-                      noteTitleFont={props.noteTitleFont}
-                      noteContentFontSize={props.noteContentFontSize}
-                      noteTitleFontSize={props.noteTitleFontSize}
+                      titleFont={props.titleFont}
+                      contentFontSize={props.contentFontSize}
+                      titleFontSize={props.titleFontSize}
                       richTextEditorEnabled={props.richTextEditorEnabled}
                       noteSize={NoteSizePreference.WIDE}
-                      showNoteTitles={props.showNoteTitles}
+                      showTitles={props.showTitles}
                       showNoteFooters={props.showNoteFooters}
                       showFloatingFormatToolbar={props.showFloatingFormatToolbar}
                       initiallyShowDragIndicator={initialDragIndicatorNoteId === note.id}
@@ -513,10 +513,10 @@ function NoteList(props: NoteListProps) {
                       }}
                     />
                     <button
-                      aria-label={t("mainWindow.note.fold")}
+                      aria-label={t("foldNote")}
                       className={styles.foldButton}
                       onClick={() => handleFoldNote(note)}
-                      title={t("mainWindow.note.fold")}
+                      title={t("foldNote")}
                       type="button"
                     />
                   </div>
@@ -531,7 +531,7 @@ function NoteList(props: NoteListProps) {
           theme={props.theme}
           position={foldedNoteContextMenuPosition}
           selectedColor={contextMenuNote.bgcolor}
-          isTitleHidden={contextMenuNote.isTitleHidden ?? !props.showNoteTitles}
+          isTitleHidden={contextMenuNote.isTitleHidden ?? !props.showTitles}
           isPinned={contextMenuNote.isPinned === true}
           isSelectionMode={props.isSelectionMode}
           isSelected={props.selectedNoteIds.has(contextMenuNote.id)}

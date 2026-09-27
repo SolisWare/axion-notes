@@ -32,7 +32,7 @@ export function createSettingsWindow(): BrowserWindow {
     return settingsWindow;
   }
 
-  const windowTitle = `Axion Notes — ${translate("electron.windows.settings")}`;
+  const windowTitle = `Axion Notes — ${translate("settings")}`;
 
   const createdSettingsWindow = new BrowserWindow({
     width: 730,
