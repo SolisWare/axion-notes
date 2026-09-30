@@ -3,7 +3,7 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
-## [v0.4.0] - September 5, 2026 - Viewport
+## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities
 
 ## [v0.4.0-beta.2] - September 5, 2026 - Viewport
