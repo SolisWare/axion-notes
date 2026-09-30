@@ -30,6 +30,9 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added encrypted storage format validators and version migration hooks for note records, manifests, and encryption metadata
 - Added the initial testing framework with unit, integration, regression, and E2E test layers
 
+## [v0.4.0] - September 30, 2026 - Viewport
+- Updated Electron dependencies and reduced reported dependency vulnerabilities
+
 ## [v0.4.0-beta.2] - September 5, 2026 - Viewport
 - Added bundled custom note fonts with grouped font categories in the Note font setting
 - Split note font settings into separate title and content font pickers
