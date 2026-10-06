@@ -145,9 +145,14 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run web E2E tests
-        run: npm run test:e2e:web
+        run: npm run test:e2e:web -- --reporter=list,json
         env:
           CI: false
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-web-report.json
+
+      - name: Write web E2E summary
+        if: always()
+        run: node tests/utils/e2e/writePlaywrightSummary.cjs playwright-web-report.json "Playwright Web E2E Test Report"
 
   test-e2e-desktop:
     needs: build
@@ -172,7 +177,13 @@ jobs:
           path: build/
 
       - name: Run desktop E2E tests
-        run: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests
+        run: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-desktop-report.json
+
+      - name: Write desktop E2E summary
+        if: always()
+        run: node tests/utils/e2e/writePlaywrightSummary.cjs playwright-desktop-report.json "Playwright Desktop E2E Test Report"
 
   dist-web:
     needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
