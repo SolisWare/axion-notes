@@ -221,6 +221,37 @@ describe("WebToolbar", () => {
       expect(screen.getByRole("button", { name: /settings/i })).toBeEnabled();
     });
   });
+
+  describe("localization", () => {
+    it("requests the expected toolbar translation keys", () => {
+      renderWebToolbar();
+
+      expect(translate).toHaveBeenCalledWith("newNote");
+      expect(translate).toHaveBeenCalledWith("selectNotes");
+      expect(translate).toHaveBeenCalledWith("deleteAll");
+      expect(translate).toHaveBeenCalledWith("settings");
+    });
+
+    it("renders localized toolbar labels from the translation function", () => {
+      translate.mockImplementation((key: string) => {
+        const translations: Record<string, string> = {
+          newNote: "Create a new sticky note",
+          selectNotes: "Choose notes for batch actions",
+          deleteAll: "Remove every note",
+          settings: "Open application preferences"
+        };
+
+        return translations[key] ?? key;
+      });
+
+      renderWebToolbar();
+
+      expect(screen.getByRole("button", { name: /create a new sticky note/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /choose notes for batch actions/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /remove every note/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /open application preferences/i })).toBeInTheDocument();
+    });
+  });
 });
 
 function renderWebToolbar(props?: Partial<ComponentProps<typeof WebToolbar>>) {
