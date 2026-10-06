@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
@@ -117,6 +117,68 @@ describe("WebToolbar", () => {
       expect(handlers.handleSelectNotesButton).not.toHaveBeenCalled();
       expect(handlers.handleDeleteAllNotesButton).not.toHaveBeenCalled();
       expect(handlers.handleSettingsButton).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("disabled states", () => {
+    it("enables Select notes when the select-notes disabled prop is false", () => {
+      renderWebToolbar({ isSelectNotesButtonDisabled: false });
+
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeEnabled();
+    });
+
+    it("disables Select notes when the select-notes disabled prop is true", () => {
+      renderWebToolbar({ isSelectNotesButtonDisabled: true });
+
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeDisabled();
+    });
+
+    it("enables Delete All when the delete-all disabled prop is false", () => {
+      renderWebToolbar({ isDeleteAllButtonDisabled: false });
+
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
+    });
+
+    it("disables Delete All when the delete-all disabled prop is true", () => {
+      renderWebToolbar({ isDeleteAllButtonDisabled: true });
+
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeDisabled();
+    });
+
+    it("does not call the select-notes handler when Select notes is disabled", async () => {
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar({
+        ...handlers,
+        isSelectNotesButtonDisabled: true
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /select notes/i }));
+
+      expect(handlers.handleSelectNotesButton).not.toHaveBeenCalled();
+    });
+
+    it("does not call the delete-all handler when Delete All is disabled", async () => {
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar({
+        ...handlers,
+        isDeleteAllButtonDisabled: true
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: /delete all/i }));
+
+      expect(handlers.handleDeleteAllNotesButton).not.toHaveBeenCalled();
+    });
+
+    it("keeps New note and Settings enabled when Select notes and Delete All are disabled", () => {
+      renderWebToolbar({
+        isSelectNotesButtonDisabled: true,
+        isDeleteAllButtonDisabled: true
+      });
+
+      expect(screen.getByRole("button", { name: /new note/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /settings/i })).toBeEnabled();
     });
   });
 });
