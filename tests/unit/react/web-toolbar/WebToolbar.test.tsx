@@ -6,6 +6,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import userEvent from "@testing-library/user-event";
 import { ThemeProvider } from "@mui/material/styles";
 import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -60,6 +61,64 @@ describe("WebToolbar", () => {
       expect(screen.getAllByRole("button")).toHaveLength(4);
     });
   });
+
+  describe("button actions", () => {
+    it("calls the add-note handler when New note is clicked", async () => {
+      const user = userEvent.setup();
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar(handlers);
+
+      await user.click(screen.getByRole("button", { name: /new note/i }));
+
+      expect(handlers.handleAddNoteButton).toHaveBeenCalledOnce();
+      expect(handlers.handleSelectNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleDeleteAllNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleSettingsButton).not.toHaveBeenCalled();
+    });
+
+    it("calls the select-notes handler when Select notes is clicked", async () => {
+      const user = userEvent.setup();
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar(handlers);
+
+      await user.click(screen.getByRole("button", { name: /select notes/i }));
+
+      expect(handlers.handleAddNoteButton).not.toHaveBeenCalled();
+      expect(handlers.handleSelectNotesButton).toHaveBeenCalledOnce();
+      expect(handlers.handleDeleteAllNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleSettingsButton).not.toHaveBeenCalled();
+    });
+
+    it("calls the delete-all handler when Delete All is clicked", async () => {
+      const user = userEvent.setup();
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar(handlers);
+
+      await user.click(screen.getByRole("button", { name: /delete all/i }));
+
+      expect(handlers.handleAddNoteButton).not.toHaveBeenCalled();
+      expect(handlers.handleSelectNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleDeleteAllNotesButton).toHaveBeenCalledOnce();
+      expect(handlers.handleSettingsButton).not.toHaveBeenCalled();
+    });
+
+    it("calls the settings handler when Settings is clicked", async () => {
+      const user = userEvent.setup();
+      const handlers = createToolbarHandlers();
+
+      renderWebToolbar(handlers);
+
+      await user.click(screen.getByRole("button", { name: /settings/i }));
+
+      expect(handlers.handleAddNoteButton).not.toHaveBeenCalled();
+      expect(handlers.handleSelectNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleDeleteAllNotesButton).not.toHaveBeenCalled();
+      expect(handlers.handleSettingsButton).toHaveBeenCalledOnce();
+    });
+  });
 });
 
 function renderWebToolbar(props?: Partial<ComponentProps<typeof WebToolbar>>) {
@@ -78,6 +137,15 @@ function renderWebToolbar(props?: Partial<ComponentProps<typeof WebToolbar>>) {
       />
     </ThemeProvider>
   );
+}
+
+function createToolbarHandlers() {
+  return {
+    handleAddNoteButton: vi.fn(),
+    handleSelectNotesButton: vi.fn(),
+    handleDeleteAllNotesButton: vi.fn(),
+    handleSettingsButton: vi.fn()
+  };
 }
 
 function setDesktopPlatform(platform: { isWindows: boolean }) {
