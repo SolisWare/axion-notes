@@ -14,8 +14,8 @@ import WebToolbar from "../../../../src/components/WebToolbar";
 import { AppTheme } from "../../../../src/theme/AppTheme";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 
-const { translate } = vi.hoisted(() => {
-  const translations: Record<string, string> = {
+const { defaultTranslations, translate } = vi.hoisted(() => {
+  const defaultTranslations: Record<string, string> = {
     newNote: "New note",
     selectNotes: "Select notes",
     deleteAll: "Delete All",
@@ -23,7 +23,8 @@ const { translate } = vi.hoisted(() => {
   };
 
   return {
-    translate: vi.fn((key: string) => translations[key] ?? key)
+    defaultTranslations,
+    translate: vi.fn((key: string) => defaultTranslations[key] ?? key)
   };
 });
 
@@ -35,7 +36,8 @@ vi.mock("react-i18next", () => ({
 
 describe("WebToolbar", () => {
   beforeEach(() => {
-    translate.mockClear();
+    translate.mockReset();
+    translate.mockImplementation((key: string) => defaultTranslations[key] ?? key);
     setDesktopPlatform({ isWindows: false });
   });
 
@@ -252,6 +254,36 @@ describe("WebToolbar", () => {
       expect(screen.getByRole("button", { name: /open application preferences/i })).toBeInTheDocument();
     });
   });
+
+  describe("label sizing behavior", () => {
+    it("keeps single-word labels on one line with inline sizing", () => {
+      const longSingleWordLabel = "Supercalifragilisticexpialidocious";
+
+      mockToolbarTranslations({ newNote: longSingleWordLabel });
+      renderWebToolbar();
+
+      const label = screen.getByText(longSingleWordLabel);
+
+      expect(label.style.fontSize).not.toBe("");
+      expect(label.style.whiteSpace).toBe("nowrap");
+      expect(label.style.overflowWrap).toBe("normal");
+      expect(screen.getByRole("button", { name: longSingleWordLabel })).toBeInTheDocument();
+    });
+
+    it("does not force multi-word labels into single-line sizing", () => {
+      const multiWordLabel = "Create new note";
+
+      mockToolbarTranslations({ newNote: multiWordLabel });
+      renderWebToolbar();
+
+      const label = screen.getByText(multiWordLabel);
+
+      expect(label.style.fontSize).toBe("");
+      expect(label.style.whiteSpace).toBe("");
+      expect(label.style.overflowWrap).toBe("");
+      expect(screen.getByRole("button", { name: multiWordLabel })).toBeInTheDocument();
+    });
+  });
 });
 
 function renderWebToolbar(props?: Partial<ComponentProps<typeof WebToolbar>>) {
@@ -279,6 +311,10 @@ function createToolbarHandlers() {
     handleDeleteAllNotesButton: vi.fn(),
     handleSettingsButton: vi.fn()
   };
+}
+
+function mockToolbarTranslations(translations: Partial<Record<string, string>>) {
+  translate.mockImplementation((key: string) => translations[key] ?? defaultTranslations[key] ?? key);
 }
 
 function setDesktopPlatform(platform: { isWindows: boolean }) {
