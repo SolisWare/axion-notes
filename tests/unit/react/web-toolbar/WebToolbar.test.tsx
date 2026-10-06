@@ -181,6 +181,46 @@ describe("WebToolbar", () => {
       expect(screen.getByRole("button", { name: /settings/i })).toBeEnabled();
     });
   });
+
+  describe("platform-specific rendering", () => {
+    it("renders the regular toolbar outside Windows mode", () => {
+      const { container } = renderWebToolbar();
+
+      expect(container.querySelector("header")?.className).not.toContain("windowsToolbar");
+      expect(screen.getByRole("heading", { name: "Axion Notes" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /new note/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /settings/i })).toBeInTheDocument();
+    });
+
+    it("renders the Windows toolbar when Windows mode is active", () => {
+      setDesktopPlatform({ isWindows: true });
+
+      const { container } = renderWebToolbar();
+
+      expect(container.querySelector("header")?.className).toContain("windowsToolbar");
+      expect(screen.getByRole("heading", { name: "Axion Notes" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /new note/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /settings/i })).toBeInTheDocument();
+    });
+
+    it("keeps disabled state behavior unchanged in Windows mode", () => {
+      setDesktopPlatform({ isWindows: true });
+
+      renderWebToolbar({
+        isSelectNotesButtonDisabled: true,
+        isDeleteAllButtonDisabled: true
+      });
+
+      expect(screen.getByRole("button", { name: /new note/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /settings/i })).toBeEnabled();
+    });
+  });
 });
 
 function renderWebToolbar(props?: Partial<ComponentProps<typeof WebToolbar>>) {
