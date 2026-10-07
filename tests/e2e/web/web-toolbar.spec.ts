@@ -62,6 +62,52 @@ test.describe("Web toolbar", () => {
       await expect(page.getByText("General").first()).toBeVisible();
     });
   });
+
+  test.describe("state transitions", () => {
+    test("starts with Select notes and Delete All disabled when there are no notes", async ({ page }) => {
+      await openNotesView(page);
+
+      await expect(page.getByRole("button", { name: "New note" })).toBeEnabled();
+      await expect(page.getByRole("button", { name: "Select notes" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Delete All" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Settings" })).toBeEnabled();
+    });
+
+    test("enables Select notes and Delete All after adding a note", async ({ page }) => {
+      await openNotesView(page);
+
+      await addNoteFromToolbar(page);
+
+      await expect(page.getByRole("button", { name: "Select notes" })).toBeEnabled();
+      await expect(page.getByRole("button", { name: "Delete All" })).toBeEnabled();
+    });
+
+    test("disables Select notes and Delete All again after deleting every note", async ({ page }) => {
+      await openNotesView(page);
+      await addNoteFromToolbar(page);
+
+      await deleteAllNotesFromToolbar(page);
+
+      await expect(page.getByText("You don't have any notes yet!")).toBeVisible();
+      await expect(page.getByRole("button", { name: "Select notes" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Delete All" })).toBeDisabled();
+    });
+
+    test("returns to the normal toolbar after canceling note selection", async ({ page }) => {
+      await openNotesView(page);
+      await addNoteFromToolbar(page);
+
+      await page.getByRole("button", { name: "Select notes" }).click();
+      await expect(page.getByRole("toolbar", { name: "Note selection actions" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Select notes" })).toBeDisabled();
+
+      await page.getByRole("button", { name: "Cancel" }).click();
+
+      await expect(page.getByRole("toolbar", { name: "Note selection actions" })).not.toBeVisible();
+      await expect(page.getByRole("button", { name: "Select notes" })).toBeEnabled();
+      await expect(page.getByRole("button", { name: "Delete All" })).toBeEnabled();
+    });
+  });
 });
 
 async function openNotesView(page: Page) {
@@ -74,4 +120,10 @@ async function openNotesView(page: Page) {
 async function addNoteFromToolbar(page: Page) {
   await page.getByRole("button", { name: "New note" }).click();
   await expect(page.getByPlaceholder("Title")).toBeVisible();
+}
+
+async function deleteAllNotesFromToolbar(page: Page) {
+  await page.getByRole("button", { name: "Delete All" }).click();
+  await expect(page.getByRole("heading", { name: "Delete All Notes" })).toBeVisible();
+  await page.getByRole("button", { name: "Delete All" }).click();
 }
