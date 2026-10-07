@@ -25,11 +25,13 @@ const { translate } = vi.hoisted(() => {
     cancel: "Cancel",
     close: "Close",
     content: "Content",
+    delete: "Delete",
     deleteAll: "Delete All",
     deleteAllNotesHeading: "Delete All Notes",
     deleteAllNotesWarning: "Are you sure you want to delete all notes? This action cannot be undone.",
     deleteSelectedNotes: "Delete Selected Notes",
     deleteSelectedNotesWarning: "Are you sure you want to delete the selected notes? This action cannot be undone.",
+    duplicate: "Duplicate",
     general: "General",
     newNote: "New note",
     noNotesYet: "You don't have any notes yet!",
@@ -127,6 +129,61 @@ describe("WebToolbar integration", () => {
       expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
       expect(screen.getByText("Preferences")).toBeInTheDocument();
       expect(screen.getAllByText("General").length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("state transitions", () => {
+    it("enables Select notes and Delete All after adding the first note", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow();
+
+      expect(await screen.findByText("You don't have any notes yet!")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeDisabled();
+
+      await user.click(screen.getByRole("button", { name: /new note/i }));
+
+      expect(await screen.findByPlaceholderText("Title")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
+    });
+
+    it("disables Select notes and Delete All again after deleting all notes", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow({ notes: [createNote()] });
+
+      expect(await screen.findByDisplayValue("First note")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
+
+      await user.click(screen.getByRole("button", { name: /delete all/i }));
+      await user.click(screen.getByRole("button", { name: "Delete All" }));
+
+      expect(await screen.findByText("You don't have any notes yet!")).toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Delete All Notes" })).not.toBeInTheDocument());
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeDisabled();
+    });
+
+    it("restores normal toolbar state after canceling note selection mode", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow({ notes: [createNote()] });
+
+      expect(await screen.findByDisplayValue("First note")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /select notes/i }));
+
+      expect(screen.getByRole("toolbar", { name: "Note selection actions" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeDisabled();
+
+      await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+      expect(screen.queryByRole("toolbar", { name: "Note selection actions" })).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /select notes/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
     });
   });
 });
