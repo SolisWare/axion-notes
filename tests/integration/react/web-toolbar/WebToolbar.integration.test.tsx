@@ -19,8 +19,8 @@ import { UserAgent } from "../../../../src/utils/UserAgent";
 import MainWindow from "../../../../src/views/MainWindow/MainWindow";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
-const { translate } = vi.hoisted(() => {
-  const translations: Record<string, string> = {
+const { defaultTranslations, translate } = vi.hoisted(() => {
+  const defaultTranslations: Record<string, string> = {
     addFirstNotePrompt: "Press {{shortcut}} to add your first note",
     cancel: "Cancel",
     close: "Close",
@@ -44,16 +44,19 @@ const { translate } = vi.hoisted(() => {
     typeHere: "Type here..."
   };
 
+  function translateKey(key: string, values?: Record<string, string | number>, translations: Record<string, string> = defaultTranslations) {
+    let translation = translations[key] ?? key;
+
+    for (const [valueKey, value] of Object.entries(values ?? {})) {
+      translation = translation.replace(`{{${valueKey}}}`, String(value));
+    }
+
+    return translation;
+  }
+
   return {
-    translate: vi.fn((key: string, values?: Record<string, string | number>) => {
-      let translation = translations[key] ?? key;
-
-      for (const [valueKey, value] of Object.entries(values ?? {})) {
-        translation = translation.replace(`{{${valueKey}}}`, String(value));
-      }
-
-      return translation;
-    })
+    defaultTranslations,
+    translate: vi.fn(translateKey)
   };
 });
 
@@ -74,7 +77,10 @@ vi.mock("../../../../src/App", () => ({
 
 describe("WebToolbar integration", () => {
   beforeEach(() => {
-    translate.mockClear();
+    translate.mockReset();
+    translate.mockImplementation((key: string, values?: Record<string, string | number>) => {
+      return translateToolbarKey(key, values);
+    });
     UserAgent.isElectron = false;
     installDesktopApiMock();
   });
@@ -186,6 +192,42 @@ describe("WebToolbar integration", () => {
       expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
     });
   });
+
+  describe("localization and layout smoke", () => {
+    it("renders localized toolbar labels without losing toolbar actions", async () => {
+      mockToolbarTranslations({
+        newNote: "Create a brand new note",
+        selectNotes: "Choose notes for actions",
+        deleteAll: "Remove all notes",
+        settings: "Open app preferences"
+      });
+
+      renderMainWindow();
+
+      expect(await screen.findByRole("button", { name: "Create a brand new note" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Choose notes for actions" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Remove all notes" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Open app preferences" })).toBeInTheDocument();
+    });
+
+    it("keeps localized toolbar actions interactive", async () => {
+      const user = userEvent.setup();
+
+      mockToolbarTranslations({
+        newNote: "Create a brand new note",
+        selectNotes: "Choose notes for actions",
+        deleteAll: "Remove all notes",
+        settings: "Open app preferences"
+      });
+      renderMainWindow();
+
+      await user.click(await screen.findByRole("button", { name: "Create a brand new note" }));
+
+      expect(await screen.findByPlaceholderText("Title")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Choose notes for actions" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Remove all notes" })).toBeEnabled();
+    });
+  });
 });
 
 function renderMainWindow(options?: { notes?: NoteType[] } & Partial<ComponentProps<typeof MainWindow>>) {
@@ -223,4 +265,27 @@ function createNote(overrides: Partial<NoteType> = {}): NoteType {
     lastModifiedOn: new Date("2026-01-01T00:00:00.000Z"),
     ...overrides
   };
+}
+
+function mockToolbarTranslations(translations: Partial<Record<string, string>>) {
+  translate.mockImplementation((key: string, values?: Record<string, string | number>) => {
+    return translateToolbarKey(key, values, {
+      ...defaultTranslations,
+      ...translations
+    });
+  });
+}
+
+function translateToolbarKey(
+  key: string,
+  values?: Record<string, string | number>,
+  translations: Record<string, string> = defaultTranslations
+) {
+  let translation = translations[key] ?? key;
+
+  for (const [valueKey, value] of Object.entries(values ?? {})) {
+    translation = translation.replace(`{{${valueKey}}}`, String(value));
+  }
+
+  return translation;
 }
