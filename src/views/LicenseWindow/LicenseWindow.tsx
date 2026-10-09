@@ -50,6 +50,21 @@ function LicenseWindow(props: LicenseWindowProps) {
       <CssBaseline />
       <main className={classes.root}>
         <Typography className={classes.title} variant="h6" style={{ color: appColors.MAIN }}>
+          Axion Notes License Notice
+        </Typography>
+        <Typography className={classes.body} variant="body2" style={{ fontWeight: "600" }}>
+          The Axion Notes source code is licensed under the MIT License.
+        </Typography>
+        <br />
+        <Typography className={classes.body} variant="body2">
+          The Axion Notes name, logo, app icons, favicons, splash icon, and related brand
+          artwork are proprietary SolisWare assets and are not licensed under the MIT
+          License. Normal source-code references such as module names, constants,
+          identifiers, metadata, and package names remain part of the MIT-licensed source
+          code. See BRAND-ASSETS-LICENSE.txt for the terms that apply to brand assets.
+        </Typography>
+        <br />
+        <Typography className={classes.body} variant="body2" style={{ fontWeight: "600" }}>
           MIT License
         </Typography>
         <Typography className={classes.body} variant="body2" style={{ fontWeight: "600" }}>

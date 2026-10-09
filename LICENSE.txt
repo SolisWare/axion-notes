@@ -1,3 +1,16 @@
+Axion Notes License Notice
+
+The Axion Notes source code is licensed under the MIT License below.
+
+The Axion Notes name, logo, app icons, favicons, splash icon, and related brand
+artwork are proprietary SolisWare assets and are not licensed under the MIT
+License. See BRAND-ASSETS-LICENSE.txt for the terms that apply to those assets.
+
+This brand-assets exclusion does not restrict normal use of module names,
+constants, identifiers, metadata, package names, or other source-code references
+inside the Axion Notes source code when using, modifying, or distributing the
+MIT-licensed code.
+
 MIT License
 
 Copyright (c) 2023 - present SolisWare

@@ -2,7 +2,7 @@
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-September%202026-blue)
 ![Version](https://img.shields.io/badge/version-0.4-green)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+![License](https://img.shields.io/badge/license-code%20MIT%20%7C%20icons%20proprietary-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
 Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, format, organize, and save digital sticky notes locally on your device.
@@ -252,7 +252,9 @@ The platform app icon formats are:
 These platform icon files should be generated from the padded `1024 x 1024` source artwork using an icon generator such as [ConvertICO](https://convertico.com/icon-converters/). App icons and generated icon files used by the application should stay in `public/` or `assets/`, depending on how they are consumed by the build.
 
 ## License
-Axion Notes is open source software licensed under the [MIT License](LICENSE.txt).
+The Axion Notes source code is open source software licensed under the [MIT License](LICENSE.txt).
+
+The Axion Notes name, logo, app icons, favicons, splash icon, and related brand artwork are proprietary SolisWare assets and are not licensed under MIT. See [BRAND-ASSETS-LICENSE.txt](BRAND-ASSETS-LICENSE.txt) for the terms that apply to those assets. Normal source-code references such as module names, constants, identifiers, metadata, and package names remain part of the MIT-licensed source code.
  
 You are free to use, modify, and distribute this software. Attribution is not required but is greatly appreciated — if you use our code in your project, a mention or a link back to this repository means a lot to us.
 
