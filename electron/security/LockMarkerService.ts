@@ -46,12 +46,17 @@ export class LockMarkerService {
    * Writes the lock marker to disk.
    */
   public async writeLockMarker(): Promise<void> {
+    if (await this.hasLockMarker()) {
+      return;
+    }
+
     const marker: LockMarker = {
       version: LOCK_MARKER_VERSION,
       lockConfigured: true
     };
 
     await fs.promises.mkdir(path.dirname(this.lockMarkerPath), { recursive: true });
+    await this.removeLockMarker();
     await fs.promises.writeFile(this.lockMarkerPath, JSON.stringify(marker, null, 2), "utf-8");
     await this.hideLockMarkerOnWindows();
   }
