@@ -83,17 +83,34 @@ function updateSubmenuDirection(event: PointerEvent<HTMLDivElement>): SubmenuAim
 
   submenu.style.display = "block";
   submenu.style.pointerEvents = "none";
+  submenu.style.transform = "none";
   submenu.style.visibility = "hidden";
+  submenu.dataset.openLeft = "false";
+  submenu.dataset.openUp = "false";
 
   const submenuRect = submenu.getBoundingClientRect();
-  const shouldOpenLeft = menuItemRect.right + submenuRect.width + MENU_VIEWPORT_MARGIN > window.innerWidth
-    && menuItemRect.left - submenuRect.width >= MENU_VIEWPORT_MARGIN;
-  const shouldOpenUp = menuItemRect.top + submenuRect.height + MENU_VIEWPORT_MARGIN > window.innerHeight
-    && menuItemRect.bottom - submenuRect.height >= MENU_VIEWPORT_MARGIN;
+  const horizontalOverlap = menuItemRect.right - submenuRect.left;
+  const verticalOverlap = menuItemRect.top - submenuRect.top;
+  const spaceToLeft = menuItemRect.left + horizontalOverlap - MENU_VIEWPORT_MARGIN;
+  const spaceToRight = window.innerWidth - submenuRect.left - MENU_VIEWPORT_MARGIN;
+  const spaceAbove = menuItemRect.bottom + verticalOverlap - MENU_VIEWPORT_MARGIN;
+  const spaceBelow = window.innerHeight - submenuRect.top - MENU_VIEWPORT_MARGIN;
+  const shouldOpenLeft = submenuRect.width > spaceToRight && spaceToLeft > spaceToRight;
+  const shouldOpenUp = submenuRect.height > spaceBelow && spaceAbove > spaceBelow;
 
   submenu.dataset.openLeft = shouldOpenLeft ? "true" : "false";
   submenu.dataset.openUp = shouldOpenUp ? "true" : "false";
   menuItem.dataset.submenuOpensLeft = shouldOpenLeft ? "true" : "false";
+
+  const directedSubmenuRect = submenu.getBoundingClientRect();
+  const translateX = directedSubmenuRect.left < MENU_VIEWPORT_MARGIN
+    ? MENU_VIEWPORT_MARGIN - directedSubmenuRect.left
+    : Math.min(0, window.innerWidth - MENU_VIEWPORT_MARGIN - directedSubmenuRect.right);
+  const translateY = directedSubmenuRect.top < MENU_VIEWPORT_MARGIN
+    ? MENU_VIEWPORT_MARGIN - directedSubmenuRect.top
+    : Math.min(0, window.innerHeight - MENU_VIEWPORT_MARGIN - directedSubmenuRect.bottom);
+
+  submenu.style.transform = `translate(${translateX}px, ${translateY}px)`;
 
   const positionedSubmenuRect = submenu.getBoundingClientRect();
 
@@ -158,7 +175,6 @@ function NoteContextMenu(props: NoteContextMenuProps) {
 
   const [hoveredNoteColor, setHoveredNoteColor] = useState<NoteColorKey | null>(null);
   const [menuPosition, setMenuPosition] = useState(props.position);
-  const [shouldOpenSubmenuLeft, setShouldOpenSubmenuLeft] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState<SubmenuId[]>([]);
   const [isSubmenuAimActive, setIsSubmenuAimActive] = useState(false);
 
@@ -311,7 +327,6 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         ? Math.max(MENU_VIEWPORT_MARGIN, props.position.mouseY - menuRect.height)
         : Math.min(props.position.mouseY, window.innerHeight - menuRect.height - MENU_VIEWPORT_MARGIN);
 
-      setShouldOpenSubmenuLeft(left + (menuRect.width * 2) + MENU_VIEWPORT_MARGIN > window.innerWidth);
       setMenuPosition((currentPosition) => (
         currentPosition.mouseX === left && currentPosition.mouseY === top
           ? currentPosition
@@ -457,8 +472,6 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           {isFormattingEnabled && (
             <div
               className={styles.noteContextMenuSubmenu}
-              data-open-left={shouldOpenSubmenuLeft}
-              data-open-up="false"
               onPointerEnter={(event) => openSubmenu("format", event)}
               onPointerLeave={() => closeSubmenu("format")}
             >
@@ -559,9 +572,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
-                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuFontSizeSubmenu}`}
-                  data-open-left="false"
-                  data-open-up="false"
+                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuScrollableSubmenu} ${styles.noteContextMenuFontSizeSubmenu}`}
                   onPointerEnter={(event) => openSubmenu("fontSize", event)}
                 >
                   {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
@@ -588,9 +599,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
-                  className={styles.noteContextMenuSubmenu}
-                  data-open-left="false"
-                  data-open-up="false"
+                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuScrollableSubmenu}`}
                   onPointerEnter={(event) => openSubmenu("font", event)}
                 >
                   {NOTE_FONT_CATEGORIES.map((fontCategory) => (
