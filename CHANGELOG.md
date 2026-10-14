@@ -28,6 +28,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added encrypted storage format validators and version migration hooks for note records, manifests, and encryption metadata
 - Added the initial testing framework with unit, integration, regression, and E2E test layers
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
+- Fixed hidden lock marker file handling on Windows
 
 ## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities
