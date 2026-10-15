@@ -48,6 +48,8 @@ type NoteContextMenuProps = {
 };
 
 const MENU_VIEWPORT_MARGIN = 8;
+const SUBMENU_HORIZONTAL_OVERLAP = 4;
+const SUBMENU_VERTICAL_OVERLAP = 7;
 const SUBMENU_AIM_DELAY_MS = 320;
 
 type SubmenuId = "format" | "fontSize" | "font";
@@ -83,34 +85,35 @@ function updateSubmenuDirection(event: PointerEvent<HTMLDivElement>): SubmenuAim
 
   submenu.style.display = "block";
   submenu.style.pointerEvents = "none";
-  submenu.style.transform = "none";
   submenu.style.visibility = "hidden";
-  submenu.dataset.openLeft = "false";
-  submenu.dataset.openUp = "false";
+  submenu.style.right = "auto";
+  submenu.style.bottom = "auto";
 
   const submenuRect = submenu.getBoundingClientRect();
-  const horizontalOverlap = menuItemRect.right - submenuRect.left;
-  const verticalOverlap = menuItemRect.top - submenuRect.top;
-  const spaceToLeft = menuItemRect.left + horizontalOverlap - MENU_VIEWPORT_MARGIN;
-  const spaceToRight = window.innerWidth - submenuRect.left - MENU_VIEWPORT_MARGIN;
-  const spaceAbove = menuItemRect.bottom + verticalOverlap - MENU_VIEWPORT_MARGIN;
-  const spaceBelow = window.innerHeight - submenuRect.top - MENU_VIEWPORT_MARGIN;
+  const spaceToLeft = menuItemRect.left + SUBMENU_HORIZONTAL_OVERLAP - MENU_VIEWPORT_MARGIN;
+  const spaceToRight = window.innerWidth - menuItemRect.right + SUBMENU_HORIZONTAL_OVERLAP - MENU_VIEWPORT_MARGIN;
+  const spaceAbove = menuItemRect.bottom + SUBMENU_VERTICAL_OVERLAP - MENU_VIEWPORT_MARGIN;
+  const spaceBelow = window.innerHeight - menuItemRect.top + SUBMENU_VERTICAL_OVERLAP - MENU_VIEWPORT_MARGIN;
   const shouldOpenLeft = submenuRect.width > spaceToRight && spaceToLeft > spaceToRight;
   const shouldOpenUp = submenuRect.height > spaceBelow && spaceAbove > spaceBelow;
+  const preferredLeft = shouldOpenLeft
+    ? menuItemRect.left + SUBMENU_HORIZONTAL_OVERLAP - submenuRect.width
+    : menuItemRect.right - SUBMENU_HORIZONTAL_OVERLAP;
+  const preferredTop = shouldOpenUp
+    ? menuItemRect.bottom + SUBMENU_VERTICAL_OVERLAP - submenuRect.height
+    : menuItemRect.top - SUBMENU_VERTICAL_OVERLAP;
+  const left = Math.max(
+    MENU_VIEWPORT_MARGIN,
+    Math.min(preferredLeft, window.innerWidth - submenuRect.width - MENU_VIEWPORT_MARGIN)
+  );
+  const top = Math.max(
+    MENU_VIEWPORT_MARGIN,
+    Math.min(preferredTop, window.innerHeight - submenuRect.height - MENU_VIEWPORT_MARGIN)
+  );
 
-  submenu.dataset.openLeft = shouldOpenLeft ? "true" : "false";
-  submenu.dataset.openUp = shouldOpenUp ? "true" : "false";
   menuItem.dataset.submenuOpensLeft = shouldOpenLeft ? "true" : "false";
-
-  const directedSubmenuRect = submenu.getBoundingClientRect();
-  const translateX = directedSubmenuRect.left < MENU_VIEWPORT_MARGIN
-    ? MENU_VIEWPORT_MARGIN - directedSubmenuRect.left
-    : Math.min(0, window.innerWidth - MENU_VIEWPORT_MARGIN - directedSubmenuRect.right);
-  const translateY = directedSubmenuRect.top < MENU_VIEWPORT_MARGIN
-    ? MENU_VIEWPORT_MARGIN - directedSubmenuRect.top
-    : Math.min(0, window.innerHeight - MENU_VIEWPORT_MARGIN - directedSubmenuRect.bottom);
-
-  submenu.style.transform = `translate(${translateX}px, ${translateY}px)`;
+  submenu.style.left = `${left}px`;
+  submenu.style.top = `${top}px`;
 
   const positionedSubmenuRect = submenu.getBoundingClientRect();
 
@@ -288,6 +291,22 @@ function NoteContextMenu(props: NoteContextMenuProps) {
     closeSubmenusWithAim("format", "fontSize", "font");
   };
 
+  const closeAllSubmenusImmediately = () => {
+    const submenuCloseTimers = submenuCloseTimersRef.current;
+
+    Object.values(submenuCloseTimers).forEach((closeTimer) => {
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+      }
+    });
+    (Object.keys(submenuCloseTimers) as SubmenuId[]).forEach((submenuId) => {
+      delete submenuCloseTimers[submenuId];
+    });
+    submenuAimsRef.current = {};
+    setIsSubmenuAimActive(false);
+    setOpenSubmenus([]);
+  };
+
   const closeChildSubmenusWithAim = () => {
     closeSubmenusWithAim("fontSize", "font");
   };
@@ -373,6 +392,11 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         };
       }}
       onPointerDown={(event) => event.stopPropagation()}
+      onScroll={(event) => {
+        if (event.currentTarget === event.target) {
+          closeAllSubmenusImmediately();
+        }
+      }}
     >
       {props.onTogglePin && (
         <div
@@ -572,7 +596,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
-                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuScrollableSubmenu} ${styles.noteContextMenuFontSizeSubmenu}`}
+                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuFontSizeSubmenu}`}
                   onPointerEnter={(event) => openSubmenu("fontSize", event)}
                 >
                   {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
@@ -599,7 +623,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
-                  className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuScrollableSubmenu}`}
+                  className={styles.noteContextMenuSubmenu}
                   onPointerEnter={(event) => openSubmenu("font", event)}
                 >
                   {NOTE_FONT_CATEGORIES.map((fontCategory) => (
