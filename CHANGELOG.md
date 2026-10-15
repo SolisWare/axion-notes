@@ -12,6 +12,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed nested checklist indentation and checkbox alignment
 - Fixed rich-text font controls so mixed font sizes and families are shown accurately for selections
 - Fixed opening an already-open note so its dedicated window is restored and focused
+- Updated Electron dependencies and reduced reported dependency vulnerabilities
 
 ## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities
