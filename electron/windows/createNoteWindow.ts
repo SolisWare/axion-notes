@@ -65,12 +65,22 @@ function getProductionNoteWindowRoute(noteId: string): [string, LoadFileOptions]
   ];
 }
 
+function focusNoteWindow(window: BrowserWindow): void {
+  if (window.isMinimized()) {
+    window.restore();
+  }
+
+  window.show();
+  window.moveTop();
+  window.focus();
+}
+
 export function createNoteWindow(options: CreateNoteWindowOptions): BrowserWindow {
   const { noteId } = options;
   const existingWindow = noteWindows.get(noteId);
 
   if (existingWindow && !existingWindow.isDestroyed()) {
-    existingWindow.focus();
+    focusNoteWindow(existingWindow);
     return existingWindow;
   }
 

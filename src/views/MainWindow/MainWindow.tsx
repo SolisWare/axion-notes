@@ -491,18 +491,18 @@ function MainWindow(props: MainWindowProps) {
   }
 
   function handleOpenNoteWindow(noteId: string) {
-    if (openNoteWindowNoteIds.current.has(noteId)) {
-      return;
-    }
-
-    openNoteWindowNoteIds.current.add(noteId);
-
     if (UserAgent.isElectron) {
       window.api.noteWindow.open(noteId, {
         offsetFromCurrentWindow: true
       });
       return;
     }
+
+    if (openNoteWindowNoteIds.current.has(noteId)) {
+      return;
+    }
+
+    openNoteWindowNoteIds.current.add(noteId);
 
     setWebNoteWindowNoteId(noteId);
   }
