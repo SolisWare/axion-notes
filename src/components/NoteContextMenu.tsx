@@ -601,7 +601,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 >
                   {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
                     <div
-                      className={`${styles.noteContextMenuItem} ${activeFontSize === fontSize ? styles.noteContextMenuItemActive : ""}`}
+                      className={`${styles.noteContextMenuItem} ${!props.formatState?.isFontSizeMixed && activeFontSize === fontSize ? styles.noteContextMenuItemActive : ""}`}
                       key={fontSize}
                       onClick={() => props.onFormatAction?.({
                         command: RichTextFormatCommand.FONT_SIZE,
@@ -635,7 +635,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                         .filter((fontOption) => fontOption.category === fontCategory)
                         .map((fontOption) => (
                           <div
-                            className={`${styles.noteContextMenuItem} ${activeFont === fontOption.value ? styles.noteContextMenuItemActive : ""}`}
+                            className={`${styles.noteContextMenuItem} ${!props.formatState?.isFontMixed && activeFont === fontOption.value ? styles.noteContextMenuItemActive : ""}`}
                             key={fontOption.value}
                             onClick={() => props.onFormatAction?.({
                               command: RichTextFormatCommand.FONT_FAMILY,

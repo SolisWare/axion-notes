@@ -10,6 +10,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed dashed-list spacing, marker and caret sizing, and font-size inheritance for new list items
 - Fixed nested dashed lists so markers and new items inherit their parent list's formatting
 - Fixed nested checklist indentation and checkbox alignment
+- Fixed rich-text font controls so mixed font sizes and families are shown accurately for selections
 
 ## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities

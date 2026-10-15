@@ -485,6 +485,42 @@ function getFontSizeFeedbackLabel(fontSizes: NoteFontSize[]): string {
   return `${uniqueFontSizes[0]}-${uniqueFontSizes[uniqueFontSizes.length - 1]} px`;
 }
 
+function getSelectionFontState(editor: Editor): Pick<RichTextFormatState, "activeFontSize" | "isFontSizeMixed" | "activeFont" | "isFontMixed"> {
+  const { state } = editor;
+
+  if (state.selection.empty) {
+    const textStyleAttributes = editor.getAttributes("textStyle");
+
+    return {
+      activeFontSize: getNoteFontSizePreference(textStyleAttributes.fontSize),
+      isFontSizeMixed: false,
+      activeFont: getNoteFontPreferenceByFontFamily(textStyleAttributes.fontFamily),
+      isFontMixed: false
+    };
+  }
+
+  const fontSizes = new Set<NoteFontSize>();
+  const fonts = new Set<NoteFontPreference>();
+
+  state.doc.nodesBetween(state.selection.from, state.selection.to, (node) => {
+    if (!node.isText) {
+      return;
+    }
+
+    const textStyleMark = node.marks.find((mark) => mark.type.name === "textStyle");
+
+    fontSizes.add(getNoteFontSizePreference(textStyleMark?.attrs.fontSize) ?? DEFAULT_NOTE_CONTENT_FONT_SIZE);
+    fonts.add(getNoteFontPreferenceByFontFamily(textStyleMark?.attrs.fontFamily) ?? NoteFontPreference.SYSTEM);
+  });
+
+  return {
+    activeFontSize: fontSizes.size === 1 ? [...fontSizes][0] : undefined,
+    isFontSizeMixed: fontSizes.size > 1,
+    activeFont: fonts.size === 1 ? [...fonts][0] : undefined,
+    isFontMixed: fonts.size > 1
+  };
+}
+
 function getFormatState(editor: Editor) {
   const bulletListAttributes = {
     [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_BULLET
@@ -492,8 +528,7 @@ function getFormatState(editor: Editor) {
   const dashedListAttributes = {
     [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
   };
-  const textStyleAttributes = editor.getAttributes("textStyle");
-  const activeFontFamily = textStyleAttributes.fontFamily;
+  const selectionFontState = getSelectionFontState(editor);
 
   return {
     canFormat: true,
@@ -509,8 +544,7 @@ function getFormatState(editor: Editor) {
     isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
     isNumberedListActive: editor.isActive("orderedList"),
     isChecklistActive: editor.isActive("taskList"),
-    activeFontSize: getNoteFontSizePreference(textStyleAttributes.fontSize),
-    activeFont: getNoteFontPreferenceByFontFamily(activeFontFamily)
+    ...selectionFontState
   };
 }
 

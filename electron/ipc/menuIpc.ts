@@ -180,7 +180,7 @@ function updateNoteMenuItems(): void {
 
     if (formatFontSizeOptionMenuItem) {
       formatFontSizeOptionMenuItem.enabled = isRichTextFormattingEnabled;
-      formatFontSizeOptionMenuItem.checked = activeFontSize === fontSize;
+      formatFontSizeOptionMenuItem.checked = !richTextFormatState.isFontSizeMixed && activeFontSize === fontSize;
     }
   });
 
@@ -193,7 +193,7 @@ function updateNoteMenuItems(): void {
 
     if (formatFontFamilyOptionMenuItem) {
       formatFontFamilyOptionMenuItem.enabled = isRichTextFormattingEnabled;
-      formatFontFamilyOptionMenuItem.checked = activeFont === fontOption.value;
+      formatFontFamilyOptionMenuItem.checked = !richTextFormatState.isFontMixed && activeFont === fontOption.value;
     }
   });
 

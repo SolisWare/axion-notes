@@ -22,7 +22,9 @@ export type RichTextFormatState = {
   isNumberedListActive: boolean;
   isChecklistActive: boolean;
   activeFontSize?: NoteFontSize;
+  isFontSizeMixed: boolean;
   activeFont?: NoteFontPreference;
+  isFontMixed: boolean;
 };
 
 export function getInactiveRichTextFormatState(): RichTextFormatState {
@@ -41,6 +43,8 @@ export function getInactiveRichTextFormatState(): RichTextFormatState {
     isNumberedListActive: false,
     isChecklistActive: false,
     activeFontSize: undefined,
-    activeFont: undefined
+    isFontSizeMixed: false,
+    activeFont: undefined,
+    isFontMixed: false
   };
 }

@@ -59,6 +59,7 @@
         "highlight": "Highlight",
         "clearFormatting": "Clear formatting",
         "fontSize": "Font size",
+        "multiple": "Multiple",
         "font": "Font"
       },
       "contextMenu": {
