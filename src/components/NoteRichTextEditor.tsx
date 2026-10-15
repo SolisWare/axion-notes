@@ -8,7 +8,9 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
 import FontFamily from "@tiptap/extension-font-family";
-import { Mark as ProseMirrorMark } from "@tiptap/pm/model";
+import { Mark as ProseMirrorMark, Node as ProseMirrorNode } from "@tiptap/pm/model";
+import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import TaskItem from "@tiptap/extension-task-item";
@@ -16,7 +18,7 @@ import TaskList from "@tiptap/extension-task-list";
 import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
-import { Editor, JSONContent, Mark, mergeAttributes } from "@tiptap/core";
+import { Editor, Extension, JSONContent, Mark, mergeAttributes } from "@tiptap/core";
 import { CSSProperties, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TiptapDocument } from "../models/NoteType";
 import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
@@ -31,6 +33,8 @@ const NOTE_TEXTAREA_DEFAULT_FONT_FAMILY = "monospace";
 const BULLET_LIST_MARKER_TYPE_ATTRIBUTE = "listMarkerType";
 const BULLET_LIST_MARKER_TYPE_BULLET = "bullet";
 const BULLET_LIST_MARKER_TYPE_DASH = "dash";
+const DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE = "dashListFontSize";
+const DASH_LIST_MARKER_FONT_SIZE_PROPERTY = "--note-dash-list-marker-font-size";
 const FONT_SIZE_FEEDBACK_TIMEOUT_MS = 900;
 let focusedEditorId: string | null = null;
 
@@ -52,6 +56,285 @@ const MarkerBulletList = BulletList.extend({
         )
       }
     };
+  }
+});
+
+const dashListMarkerSizePluginKey = new PluginKey<DecorationSet>("dashListMarkerSize");
+
+function getFontSizeFromMarks(marks: readonly ProseMirrorMark[]): string | undefined {
+  const textStyleMark = marks.find((mark) => mark.type.name === "textStyle");
+  const markedFontSize = textStyleMark?.attrs.fontSize;
+  const noteFontSize = getNoteFontSizePreference(
+    typeof markedFontSize === "string" ? markedFontSize : undefined
+  );
+
+  return noteFontSize === undefined ? undefined : `${noteFontSize}px`;
+}
+
+function getFirstTextFontSize(node: ProseMirrorNode | null): string | undefined {
+  let fontSize: string | undefined;
+
+  node?.descendants((descendant) => {
+    if (fontSize || !descendant.isText) {
+      return !fontSize;
+    }
+
+    fontSize = getFontSizeFromMarks(descendant.marks);
+
+    return false;
+  });
+
+  return fontSize;
+}
+
+function getDashListItemMarkerFontSize(node: ProseMirrorNode): string | undefined {
+  const paragraph = node.firstChild;
+
+  if (paragraph?.content.size) {
+    return getFirstTextFontSize(paragraph);
+  }
+
+  return normalizeDashListFontSize(node.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]);
+}
+
+function getParentBulletListMarkerType(state: EditorState, position: number): string | undefined {
+  const $position = state.doc.resolve(position);
+
+  for (let depth = $position.depth; depth >= 0; depth -= 1) {
+    const node = $position.node(depth);
+
+    if (node.type.name === "bulletList") {
+      return node.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE] === BULLET_LIST_MARKER_TYPE_DASH
+        ? BULLET_LIST_MARKER_TYPE_DASH
+        : BULLET_LIST_MARKER_TYPE_BULLET;
+    }
+  }
+
+  return undefined;
+}
+
+type ActiveDashListItemFontSize = {
+  fontSize: string;
+  listItemNode: ProseMirrorNode;
+  listItemPosition: number;
+  emptyParagraphRange?: {
+    from: number;
+    to: number;
+  };
+};
+
+function normalizeDashListFontSize(fontSize: unknown): string | undefined {
+  const noteFontSize = getNoteFontSizePreference(typeof fontSize === "string" ? fontSize : undefined);
+
+  return noteFontSize === undefined ? undefined : `${noteFontSize}px`;
+}
+
+function getActiveDashListItemFontSize(state: EditorState): ActiveDashListItemFontSize | undefined {
+  if (!state.selection.empty) {
+    return undefined;
+  }
+
+  const { $from } = state.selection;
+
+  for (let depth = $from.depth; depth > 0; depth -= 1) {
+    const node = $from.node(depth);
+    const parent = $from.node(depth - 1);
+
+    const isDashedListItem = node.type.name === "listItem"
+      && parent.type.name === "bulletList"
+      && (
+        parent.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE] === BULLET_LIST_MARKER_TYPE_DASH
+        || getParentBulletListMarkerType(state, $from.before(depth - 1)) === BULLET_LIST_MARKER_TYPE_DASH
+      );
+
+    if (isDashedListItem) {
+      const listItemIndex = $from.index(depth - 1);
+      const previousListItem = listItemIndex > 0 ? parent.child(listItemIndex - 1) : null;
+      const containingListItem = depth >= 2 && $from.node(depth - 2).type.name === "listItem"
+        ? $from.node(depth - 2)
+        : null;
+      const fontSize = getFontSizeFromMarks(state.storedMarks ?? $from.marks())
+        ?? normalizeDashListFontSize(node.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE])
+        ?? getFirstTextFontSize(previousListItem?.firstChild ?? null)
+        ?? normalizeDashListFontSize(previousListItem?.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE])
+        ?? getFirstTextFontSize(containingListItem?.firstChild ?? null)
+        ?? normalizeDashListFontSize(containingListItem?.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]);
+
+      if (!fontSize) {
+        return undefined;
+      }
+
+      return {
+        fontSize,
+        listItemNode: node,
+        listItemPosition: $from.before(depth),
+        emptyParagraphRange: $from.parent.content.size === 0
+          ? {
+            from: $from.before($from.depth),
+            to: $from.after($from.depth)
+          }
+          : undefined
+      };
+    }
+  }
+
+  return undefined;
+}
+
+function getDashListMarkerSizeDecorations(state: EditorState): DecorationSet {
+  const decorations: Decoration[] = [];
+  const activeListItem = getActiveDashListItemFontSize(state);
+
+  state.doc.descendants((node, position, parent) => {
+    if (
+      node.type.name !== "listItem"
+      || parent?.type.name !== "bulletList"
+      || parent.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE] !== BULLET_LIST_MARKER_TYPE_DASH
+    ) {
+      return true;
+    }
+
+    const fontSize = activeListItem?.listItemPosition === position && activeListItem.emptyParagraphRange
+      ? activeListItem.fontSize
+      : getDashListItemMarkerFontSize(node);
+
+    decorations.push(Decoration.node(position, position + node.nodeSize, {
+      // Define the variable on every item so a nested item without an
+      // explicit text size cannot inherit a stale value from its parent.
+      style: `${DASH_LIST_MARKER_FONT_SIZE_PROPERTY}: ${fontSize ?? "1em"}`
+    }));
+
+    return true;
+  });
+
+  if (activeListItem?.emptyParagraphRange) {
+    decorations.push(Decoration.node(
+      activeListItem.emptyParagraphRange.from,
+      activeListItem.emptyParagraphRange.to,
+      {
+        "data-empty-dash-list-caret": "true",
+        style: `font-size: ${activeListItem.fontSize}`
+      }
+    ));
+  }
+
+  return DecorationSet.create(state.doc, decorations);
+}
+
+const DashListMarkerSize = Extension.create({
+  name: "dashListMarkerSize",
+
+  addGlobalAttributes() {
+    return [{
+      types: ["listItem"],
+      attributes: {
+        [DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]: {
+          default: null,
+          keepOnSplit: true,
+          parseHTML: (element: HTMLElement) => normalizeDashListFontSize(
+            element.getAttribute("data-dash-list-font-size")
+          ) ?? null,
+          renderHTML: (attributes: Record<string, unknown>) => {
+            const fontSize = normalizeDashListFontSize(attributes[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]);
+
+            return fontSize ? { "data-dash-list-font-size": fontSize } : {};
+          }
+        }
+      }
+    }];
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      new Plugin<DecorationSet>({
+        key: dashListMarkerSizePluginKey,
+        state: {
+          init: (_configuration, state) => getDashListMarkerSizeDecorations(state),
+          apply: (_transaction, _decorations, _oldState, newState) => getDashListMarkerSizeDecorations(newState)
+        },
+        props: {
+          decorations: (state) => dashListMarkerSizePluginKey.getState(state) ?? null
+        },
+        appendTransaction: (_transactions, _oldState, newState) => {
+          const activeListItem = getActiveDashListItemFontSize(newState);
+          const transaction = newState.tr;
+          let hasChanged = false;
+          const currentMarks = newState.storedMarks ?? newState.selection.$from.marks();
+
+          newState.doc.descendants((node, position) => {
+            if (
+              node.type.name === "listItem"
+              && node.firstChild?.content.size
+              && node.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE] !== null
+            ) {
+              // This attribute only carries formatting while an item is
+              // empty. Once text exists, its marks are the source of truth.
+              transaction.setNodeAttribute(
+                position,
+                DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE,
+                null
+              );
+              hasChanged = true;
+            }
+
+            if (node.type.name !== "bulletList") {
+              return true;
+            }
+
+            const parentMarkerType = getParentBulletListMarkerType(newState, position);
+
+            if (
+              parentMarkerType
+              && node.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE] !== parentMarkerType
+            ) {
+              transaction.setNodeAttribute(
+                position,
+                BULLET_LIST_MARKER_TYPE_ATTRIBUTE,
+                parentMarkerType
+              );
+              hasChanged = true;
+            }
+
+            return true;
+          });
+
+          if (activeListItem?.emptyParagraphRange) {
+            const persistedFontSize = normalizeDashListFontSize(
+              activeListItem.listItemNode.attrs[DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]
+            );
+
+            if (persistedFontSize !== activeListItem.fontSize) {
+              transaction.setNodeAttribute(
+                activeListItem.listItemPosition,
+                DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE,
+                activeListItem.fontSize
+              );
+              hasChanged = true;
+            }
+
+            const textStyleType = newState.schema.marks.textStyle;
+
+            if (textStyleType && getFontSizeFromMarks(currentMarks) !== activeListItem.fontSize) {
+              const currentTextStyleMark = currentMarks.find((mark) => mark.type === textStyleType);
+
+              transaction.addStoredMark(textStyleType.create({
+                ...(currentTextStyleMark?.attrs ?? {}),
+                fontSize: activeListItem.fontSize
+              }));
+              hasChanged = true;
+            }
+          }
+
+          if (hasChanged && transaction.storedMarks === null) {
+            // Document-changing steps clear stored marks. Preserve them after
+            // persisting list attributes so newly typed text keeps its format.
+            transaction.setStoredMarks(currentMarks);
+          }
+
+          return hasChanged ? transaction : null;
+        }
+      })
+    ];
   }
 });
 
@@ -342,7 +625,21 @@ function applyRichTextFormatCommand(editor: Editor, action: RichTextFormatAction
       break;
     case RichTextFormatCommand.FONT_SIZE:
       if (typeof action === "string" || action.command !== RichTextFormatCommand.FONT_SIZE || action.fontSize === DEFAULT_NOTE_CONTENT_FONT_SIZE) {
-        commandChain.unsetFontSize().run();
+        commandChain.unsetFontSize();
+
+        if (
+          editor.state.selection.empty
+          && editor.state.selection.$from.parent.content.size === 0
+          && editor.isActive("bulletList", {
+            [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
+          })
+        ) {
+          commandChain.updateAttributes("listItem", {
+            [DASH_LIST_ITEM_FONT_SIZE_ATTRIBUTE]: null
+          });
+        }
+
+        commandChain.run();
         break;
       }
 
@@ -463,6 +760,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
         underline: false
       }),
       MarkerBulletList,
+      DashListMarkerSize,
       TaskList,
       TaskItem.configure({
         nested: true

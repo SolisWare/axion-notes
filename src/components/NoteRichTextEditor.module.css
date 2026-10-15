@@ -66,7 +66,14 @@
 
 .wrapper :global(.ProseMirror ul[data-list-marker-type="dash"]) {
   list-style: none;
-  padding-left: 0.8em;
+  padding-left: 1.2em;
+}
+
+/* A nested list inherits its dash marker in the following editor transaction.
+   Render it as dashed immediately so reparenting never briefly shows bullets. */
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] ul) {
+  list-style: none;
+  padding-left: 1.2em;
 }
 
 .wrapper :global(.ProseMirror li) {
@@ -78,10 +85,52 @@
   position: relative;
 }
 
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] ul > li) {
+  position: relative;
+  --note-dash-list-marker-font-size: 1em;
+}
+
 .wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] > li::before) {
   content: "-";
   position: absolute;
-  left: -0.55em;
+  right: calc(100% + 0.35em);
+  font-size: var(--note-dash-list-marker-font-size, 1em);
+}
+
+.wrapper :global(.ProseMirror ul[data-list-marker-type="dash"] ul > li::before) {
+  content: "-";
+  position: absolute;
+  right: calc(100% + 0.35em);
+  font-size: var(--note-dash-list-marker-font-size, 1em);
+}
+
+.wrapper :global(.ProseMirror p[data-empty-dash-list-caret="true"]) {
+  position: relative;
+  min-height: 1.2em;
+  line-height: 1.2;
+  caret-color: transparent;
+}
+
+.wrapper :global(.ProseMirror.ProseMirror-focused p[data-empty-dash-list-caret="true"]::before) {
+  content: "";
+  position: absolute;
+  top: 0.1em;
+  left: 0;
+  width: 1px;
+  height: 1em;
+  background: currentColor;
+  pointer-events: none;
+  animation: noteRichTextCaretBlink 1s steps(1, end) infinite;
+}
+
+@keyframes noteRichTextCaretBlink {
+  0%, 49% {
+    opacity: 1;
+  }
+
+  50%, 100% {
+    opacity: 0;
+  }
 }
 
 .wrapper :global(.ProseMirror ol) {
