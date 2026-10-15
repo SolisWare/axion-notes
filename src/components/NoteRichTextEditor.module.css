@@ -123,28 +123,23 @@
 
 .wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input),
 .wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: 0;
-  opacity: 0;
-}
-
-.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label span),
-.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label span) {
   position: relative;
-  display: block;
   width: 1.08em;
   height: 1.08em;
+  margin: 0;
   border: 1px solid currentColor;
   border-radius: 0.18em;
   background: rgba(255, 255, 255, 0.34);
   box-sizing: border-box;
+  color: inherit;
   cursor: pointer;
+  font: inherit;
+  appearance: none;
+  -webkit-appearance: none;
 }
 
-.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input:checked + span::after),
-.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input:checked + span::after) {
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input:checked::after),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input:checked::after) {
   content: "";
   position: absolute;
   left: 0.27em;
@@ -154,6 +149,12 @@
   border: solid currentColor;
   border-width: 0 0.13em 0.13em 0;
   transform: rotate(45deg);
+}
+
+.wrapper :global(.ProseMirror ul[data-type="taskList"] > li > label input:focus-visible),
+.wrapper :global(.ProseMirror ul[data-type="taskList"] li[data-type="taskItem"] > label input:focus-visible) {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .wrapper :global(.ProseMirror ul[data-type="taskList"] > li > div),

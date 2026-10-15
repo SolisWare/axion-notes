@@ -6,6 +6,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ## [v0.4.1] - Unreleased - Viewport
 - Fixed nested note context menus so Format, Font Size, and Font submenus choose the available direction and remain within the viewport
 - Added scrolling to note context menus and submenus when their content exceeds the available window height
+- Fixed checklist items so their checkboxes are visible again
 
 ## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities
