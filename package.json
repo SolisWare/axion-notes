@@ -111,7 +111,7 @@
     "react": "^18.2.0",
     "react-autosave": "^0.4.4",
     "react-dom": "^18.2.0",
-    "react-i18next": "^15.5.0",
+    "react-i18next": "15.5.0",
     "react-router-dom": "^6.17.0",
     "web-vitals": "^3.5.0"
   },
