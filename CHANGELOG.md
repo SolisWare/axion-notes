@@ -30,6 +30,17 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
 - Fixed hidden lock marker file handling on Windows
 
+## [v0.4.1] - October 15, 2026 - Viewport
+- Fixed nested note context menus so Format, Font Size, and Font submenus choose the available direction and remain within the viewport
+- Added scrolling to note context menus and submenus when their content exceeds the available window height
+- Fixed checklist items so their checkboxes are visible again
+- Fixed dashed-list spacing, marker and caret sizing, and font-size inheritance for new list items
+- Fixed nested dashed lists so markers and new items inherit their parent list's formatting
+- Fixed nested checklist indentation and checkbox alignment
+- Fixed rich-text font controls so mixed font sizes and families are shown accurately for selections
+- Fixed opening an already-open note so its dedicated window is restored and focused
+- Updated Electron dependencies and reduced reported dependency vulnerabilities
+
 ## [v0.4.0] - September 30, 2026 - Viewport
 - Updated Electron dependencies and reduced reported dependency vulnerabilities
 

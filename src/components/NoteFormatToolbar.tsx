@@ -59,10 +59,14 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
     || props.formatState.isDashedListActive
     || props.formatState.isNumberedListActive
     || props.formatState.isChecklistActive;
-  const selectedFontOption = NOTE_FONT_OPTIONS.find((fontOption) => fontOption.value === (props.formatState.activeFont ?? selectedFont));
+  const selectedFontOption = props.formatState.isFontMixed
+    ? undefined
+    : NOTE_FONT_OPTIONS.find((fontOption) => fontOption.value === (props.formatState.activeFont ?? selectedFont));
   const fontPickerButtonLabel = props.compactInlineStyles
     ? "Aa"
-    : t(selectedFontOption?.labelKey ?? "formatting.font");
+    : props.formatState.isFontMixed
+      ? t("multiple")
+      : t(selectedFontOption?.labelKey ?? "mainWindow.note.formatToolbar.font");
   const toolbarStyle = {
     "--note-format-toolbar-button-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
@@ -502,14 +506,16 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           title={t("formatting.fontSize")}
           type="button"
         >
-          <span className={styles.fontSizePickerButtonLabel}>{selectedFontSize}</span>
+          <span className={styles.fontSizePickerButtonLabel}>
+            {props.formatState.isFontSizeMixed ? "—" : selectedFontSize}
+          </span>
           <KeyboardArrowDownRoundedIcon className={styles.fontSizePickerButtonIcon} fontSize="small" />
         </button>
         {isFontSizeMenuOpen && (
           <div className={styles.fontSizePickerMenu} role="menu" aria-label={t("formatting.fontSize")}>
             {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
               <button
-                className={`${styles.fontSizePickerOption} ${selectedFontSize === fontSize ? styles.fontSizePickerOptionActive : ""}`}
+                className={`${styles.fontSizePickerOption} ${!props.formatState.isFontSizeMixed && selectedFontSize === fontSize ? styles.fontSizePickerOptionActive : ""}`}
                 key={fontSize}
                 onClick={() => {
                   setSelectedFontSize(fontSize);
@@ -564,7 +570,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
                   .filter((fontOption) => fontOption.category === fontCategory)
                   .map((fontOption) => (
                     <button
-                      className={`${styles.fontPickerOption} ${selectedFontOption?.value === fontOption.value ? styles.fontPickerOptionActive : ""}`}
+                      className={`${styles.fontPickerOption} ${!props.formatState.isFontMixed && selectedFontOption?.value === fontOption.value ? styles.fontPickerOptionActive : ""}`}
                       key={fontOption.value}
                       onClick={() => {
                         setSelectedFont(fontOption.value);

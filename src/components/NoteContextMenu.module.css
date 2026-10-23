@@ -1,11 +1,15 @@
 .noteContextMenu {
   min-width: 190px;
+  max-height: calc(100vh - 16px);
   position: fixed;
   z-index: 1300;
+  box-sizing: border-box;
   padding: 7px 0;
   border-radius: 7px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   cursor: default;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   user-select: none;
 }
 
@@ -55,30 +59,22 @@
 
 .noteContextMenuSubmenu {
   min-width: 160px;
+  max-height: calc(100vh - 16px);
   display: none;
-  position: absolute;
+  position: fixed;
   z-index: 1;
-  top: -7px;
-  left: calc(100% - 4px);
+  box-sizing: border-box;
   padding: 7px 0;
   border-radius: 7px;
   background: var(--note-context-menu-background);
   color: var(--note-context-menu-text);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .noteContextMenuFontSizeSubmenu {
   min-width: 64px;
-}
-
-.noteContextMenuSubmenu[data-open-left="true"] {
-  right: calc(100% - 4px);
-  left: auto;
-}
-
-.noteContextMenuSubmenu[data-open-up="true"] {
-  top: auto;
-  bottom: -7px;
 }
 
 .noteContextMenuItem[data-submenu-open="true"] > .noteContextMenuSubmenu {
