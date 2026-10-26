@@ -3,8 +3,10 @@
  *
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
+ *
+ * @author Michael Polowczuk
  */
-import { CSSProperties } from "react";
+import { CSSProperties, useId } from "react";
 import { Dialog, DialogContent, LinearProgress, Typography } from "@mui/material";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -39,6 +41,7 @@ function getNormalizedProgress(value: number, min: number, max: number): number 
 }
 
 function BlockingProgressDialog(props: BlockingProgressDialogProps) {
+  const titleId = useId();
   const appColors = getAppColors(props.theme);
   const min = props.min ?? 0;
   const max = props.max ?? 100;
@@ -56,12 +59,13 @@ function BlockingProgressDialog(props: BlockingProgressDialogProps) {
   return (
     <Dialog
       BackdropProps={{ className: styles.backdrop }}
+      aria-labelledby={titleId}
       classes={{ paper: styles.paper }}
       disableEscapeKeyDown
       open={props.open}
       style={rootStyle}
     >
-      <Typography className={styles.title} component="h2" variant="h6">
+      <Typography className={styles.title} component="h2" id={titleId} variant="h6">
         {props.title}
       </Typography>
       <DialogContent className={styles.content}>
