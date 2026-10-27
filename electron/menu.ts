@@ -99,7 +99,7 @@ export function createMenubar(options: MenubarOptions): Menu {
           },
           { type: 'separator' as const }
         ] : []),
-        ...(isWindows ? [
+        ...(!isMac ? [
           {
             id: menuIds.file.settings,
             label: withEllipsis(translate("settings")),
