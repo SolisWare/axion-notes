@@ -1,11 +1,11 @@
 # Axion Notes - Sticky Notes App for macOS, Windows, and Web
 
 ![Last Modified](https://img.shields.io/badge/last%20modified-October%202026-blue)
-![Version](https://img.shields.io/badge/version-0.4.1-green)
+![Version](https://img.shields.io/badge/version-0.5--beta.1-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Web-lightgray)
 
-Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, format, organize, and save digital sticky notes locally on your device.
+Axion Notes is an open source sticky notes app for macOS, Windows, and the web, built by SolisWare. It combines a React web app with an Electron desktop client so you can create, format, organize, and save digital sticky notes locally on your device. The desktop app also supports a lock screen and optional local encryption for notes.
 
 ### Early release notice
 > SolisWare Axion Notes is currently pre-1.0 software. Features, storage formats, settings, and app behavior may change between releases, and backward compatibility is not guaranteed until a stable 1.0 release.
@@ -30,6 +30,7 @@ Key features:
 - Smart sorting
 - Light, dark, and system themes
 - Local storage and auto-save
+- Desktop lock screen and optional local note encryption
 - Desktop and web apps
 
 ### Desktop App
@@ -51,6 +52,13 @@ Desktop users can open a note in its own dedicated window with live synchronizat
 
 ### Customize The Workspace
 Axion Notes includes settings for theme, note size, title and content fonts, default font sizes, default note color, title visibility, footer visibility, sorting, editor mode, and layout. The desktop app also supports always-on-top mode.
+
+### Security & Privacy (Desktop)
+Desktop users can protect their notes with a lock screen and configure a password to unlock them. Optional local encryption protects note data at rest, while Secure Lock clears decrypted notes from memory when you lock the app. You can also configure the app to lock when the system locks, sleeps, or has been idle.
+
+![Axion Notes desktop Security settings with lock screen and encryption options](docs/images/settings-security.png)
+
+<!-- Add a lock screen screenshot here: docs/images/lock-screen.png -->
 
 ### Language Support
 Axion Notes can choose supported language, date, and time defaults from the OS or browser on first launch, then keeps those settings until you change them. English is the source locale, with Estonian, Polish, and Spanish translations currently available.
@@ -271,6 +279,9 @@ Axion Notes stores notes locally on the device or browser where you create them.
 
 ### Can I sync notes between devices?
 Not currently. Desktop and web notes are stored locally for now, so notes do not automatically sync between devices or browsers.
+
+### Are my notes encrypted?
+Optional local encryption is available in the desktop app. When enabled, notes are encrypted on disk and require the password you configured to unlock them. Encryption is not available in the web app. As this is pre-1.0 software, keep a backup of important notes before updating or changing security settings.
 
 ### Can I use plain text instead of rich text?
 Yes. Axion Notes includes a Rich Text Editor setting. Turning it off uses the Plain Text Editor instead. Existing formatted notes keep their rich content unless you edit them while the Plain Text Editor is active, which converts that note to plain text.
