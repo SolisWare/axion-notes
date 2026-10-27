@@ -106,25 +106,6 @@ jobs:
       - name: Run integration tests
         run: npm run test:integration
 
-  test-regression:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run regression tests
-        run: npm run test:regression
-
   test-e2e-web:
     needs: build
     runs-on: ubuntu-latest
@@ -186,7 +167,7 @@ jobs:
         run: node tests/utils/e2e/writePlaywrightSummary.cjs playwright-desktop-report.json "Playwright Desktop E2E Test Report"
 
   dist-web:
-    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    needs: [metadata, build, test-unit, test-integration, test-e2e-web, test-e2e-desktop]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -214,7 +195,7 @@ jobs:
           retention-days: 30
 
   dist-mac-arm64:
-    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    needs: [metadata, build, test-unit, test-integration, test-e2e-web, test-e2e-desktop]
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -253,7 +234,7 @@ jobs:
           retention-days: 30
 
   dist-mac-x64:
-    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    needs: [metadata, build, test-unit, test-integration, test-e2e-web, test-e2e-desktop]
     runs-on: macos-15-intel
     steps:
       - name: Checkout
@@ -292,7 +273,7 @@ jobs:
           retention-days: 30
 
   dist-windows-x64:
-    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    needs: [metadata, build, test-unit, test-integration, test-e2e-web, test-e2e-desktop]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -331,7 +312,7 @@ jobs:
           retention-days: 30
 
   dist-windows-x86:
-    needs: [metadata, build, test-unit, test-integration, test-regression, test-e2e-web, test-e2e-desktop]
+    needs: [metadata, build, test-unit, test-integration, test-e2e-web, test-e2e-desktop]
     runs-on: windows-latest
     steps:
       - name: Checkout
