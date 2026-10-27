@@ -1,6 +1,6 @@
 # Testing strategy
 
-Axion Notes should use a layered testing structure. Fast tests should sit close to the code they verify, while slower end-to-end and regression tests should be reserved for full app confidence before release.
+Axion Notes should use a layered testing structure. Fast tests should sit close to the code they verify, while slower end-to-end tests should be reserved for full app confidence before release.
 
 This document describes the intended structure only. It does not mean every layer is already wired.
 
@@ -21,12 +21,6 @@ tests/
   e2e/
     desktop/
     web/
-
-  regression/
-    security/
-    encryption/
-    storage/
-    ui/
 
   fixtures/
     notes/
@@ -108,33 +102,6 @@ tests/e2e/desktop/
 tests/e2e/web/
 ```
 
-## Regression tests
-
-Regression tests are targeted release checks. They should protect behavior that has already broken once, or behavior that would be risky to accidentally weaken.
-
-For v0.5 security and encryption, release regression tests should cover:
-
-- locked app does not expose plaintext notes to the renderer
-- route bypass while locked still shows the protected empty-note state
-- lock shortcut and menu item are disabled when lock screen is disabled
-- Secure Lock flushes plaintext note cache when encryption is enabled
-- Secure Lock is disabled once plaintext cache has already been flushed
-- encryption migration writes `data/notes/*.note` and `data/notes.manifest`
-- decryption migration restores the plaintext layout only after verification
-- missing or corrupt lock/password/encryption files show the repair state
-- brute-force cooldown disables unlock and counts down correctly
-- settings/main window close and app quit are guarded during encryption migration
-- lock on system sleep and idle timeout trigger only when configured
-
-Suggested locations:
-
-```text
-tests/regression/security/
-tests/regression/encryption/
-tests/regression/storage/
-tests/regression/ui/
-```
-
 ## Fixtures
 
 Fixtures are prepared test data reused by tests.
@@ -184,7 +151,7 @@ The preferred direction is:
 - Electron service tests: Vitest running main-process modules directly where possible
 - desktop E2E tests: Playwright with Electron support
 - web E2E tests: Playwright
-- release regression tests: selected Playwright and integration tests
+- release checks: selected Playwright and integration tests
 
 The project currently still has Create React App/Jest-era testing dependencies. Moving to Vitest and Playwright should be done as a separate implementation step.
 
@@ -196,7 +163,6 @@ The initial test framework scripts are:
 npm run test:unit
 npm run test:unit:watch
 npm run test:integration
-npm run test:regression
 npm run test:e2e
 npm run test:e2e:desktop
 npm run test:e2e:web
@@ -211,8 +177,8 @@ Before a security-focused release, the minimum useful check should be:
 1. unit tests
 2. Electron integration tests for storage, lock state, password, brute-force, and encryption services
 3. desktop E2E lock/encryption happy paths
-4. targeted v0.5 regression checks
+4. targeted v0.5 security and encryption checks
 5. production build
 6. npm audit review
 
-The goal is not to test every implementation detail. The goal is to make security regressions boringly hard to reintroduce.
+The goal is not to test every implementation detail. The goal is to make security issues boringly hard to reintroduce.

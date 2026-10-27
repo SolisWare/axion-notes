@@ -14,8 +14,7 @@ export default defineConfig({
     globals: true,
     include: [
       "tests/unit/**/*.{test,spec}.{ts,tsx}",
-      "tests/integration/**/*.{test,spec}.{ts,tsx}",
-      "tests/regression/**/*.{test,spec}.{ts,tsx}"
+      "tests/integration/**/*.{test,spec}.{ts,tsx}"
     ],
     passWithNoTests: true,
     restoreMocks: true,
