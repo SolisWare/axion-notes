@@ -52,6 +52,23 @@ test.describe("Web toolbar", () => {
       await expect(page.getByText("You don't have any notes yet!")).toBeVisible();
     });
 
+    test("keeps notes when Delete All is cancelled", async ({ page }) => {
+      await openNotesView(page);
+      await addNoteFromToolbar(page);
+
+      await page.getByRole("button", { name: "Delete All" }).click();
+
+      const confirmationDialog = page.getByRole("dialog", { name: "Delete All Notes" });
+      await expect(confirmationDialog).toHaveAccessibleDescription("Are you sure you want to delete all notes? This action cannot be undone.");
+
+      await page.getByRole("button", { name: "Cancel" }).click();
+
+      await expect(confirmationDialog).not.toBeVisible();
+      await expect(page.getByPlaceholder("Title")).toBeVisible();
+      await expect(page.getByText("You don't have any notes yet!")).not.toBeVisible();
+      await expect(page.getByRole("button", { name: "Delete All" })).toBeEnabled();
+    });
+
     test("opens settings from the web toolbar", async ({ page }) => {
       await openNotesView(page);
 

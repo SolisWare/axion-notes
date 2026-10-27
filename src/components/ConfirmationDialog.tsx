@@ -1,9 +1,12 @@
 /**
  * Copyright (c) 2026 SolisWare.
- * 
+ *
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
+ *
+ * @author Michael Polowczuk
  */
+import { useId } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle, Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useTranslation } from "react-i18next";
@@ -54,6 +57,8 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((_theme: Theme) => ({
 }));
 
 function ConfirmationDialog(props: ConfirmationDialogProps) {
+  const titleId = useId();
+  const messageId = useId();
   const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
@@ -67,17 +72,19 @@ function ConfirmationDialog(props: ConfirmationDialogProps) {
 
   return(
     <Dialog
+      aria-describedby={messageId}
+      aria-labelledby={titleId}
       open={props.open}
       onClose={handleClose}
       classes={{ paper: classes.dialogPaper }}
       BackdropProps={{ classes: { root: classes.backdrop } }}
     >
-      <DialogTitle className={classes.title}>{props.title}</DialogTitle>
+      <DialogTitle className={classes.title} id={titleId}>{props.title}</DialogTitle>
       <DialogContent className={classes.content}>
-        <DialogContentText className={classes.message}>{props.message}</DialogContentText>
+        <DialogContentText className={classes.message} id={messageId}>{props.message}</DialogContentText>
       </DialogContent>
       <DialogActions className={classes.actions}>
-        <Button className={classes.cancelButton} onClick={props.onCancel}>
+        <Button autoFocus className={classes.cancelButton} onClick={props.onCancel}>
           {props.cancelLabel ?? t("cancel")}
         </Button>
         <Button onClick={props.onConfirm} color={props.confirmColor ?? "error"} variant="contained">

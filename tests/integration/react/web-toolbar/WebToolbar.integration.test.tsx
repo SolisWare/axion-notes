@@ -124,6 +124,34 @@ describe("WebToolbar integration", () => {
       expect(screen.getByText("Are you sure you want to delete all notes? This action cannot be undone.")).toBeInTheDocument();
     });
 
+    it("keeps notes when Delete All is cancelled", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow({ notes: [createNote()] });
+      expect(await screen.findByDisplayValue("First note")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /delete all/i }));
+      await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Delete All Notes" })).not.toBeInTheDocument());
+      expect(screen.getByDisplayValue("First note")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
+    });
+
+    it("keeps notes when Delete All is cancelled with Escape", async () => {
+      const user = userEvent.setup();
+
+      renderMainWindow({ notes: [createNote()] });
+      expect(await screen.findByDisplayValue("First note")).toBeInTheDocument();
+
+      await user.click(screen.getByRole("button", { name: /delete all/i }));
+      await user.keyboard("{Escape}");
+
+      await waitFor(() => expect(screen.queryByRole("dialog", { name: "Delete All Notes" })).not.toBeInTheDocument());
+      expect(screen.getByDisplayValue("First note")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /delete all/i })).toBeEnabled();
+    });
+
     it("opens the web settings dialog when Settings is clicked", async () => {
       const user = userEvent.setup();
 
