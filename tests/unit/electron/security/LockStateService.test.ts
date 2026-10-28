@@ -26,7 +26,9 @@ describe("LockStateService content protection", () => {
       {} as never
     );
     const mainWindow = createMainWindow();
+    const noteWindow = createMainWindow();
     service.registerMainWindow(mainWindow.window);
+    service.registerContentProtectedWindow(noteWindow.window);
 
     service.applySettings({
       ...defaultAppSettings,
@@ -34,9 +36,10 @@ describe("LockStateService content protection", () => {
     });
 
     expect(mainWindow.setContentProtection).toHaveBeenLastCalledWith(true);
+    expect(noteWindow.setContentProtection).toHaveBeenLastCalledWith(true);
   });
 
-  it("removes content protection immediately when disabled", () => {
+  it("removes content protection from main and note windows immediately when disabled", () => {
     const service = new LockStateService(
       {} as never,
       {} as never,
@@ -44,12 +47,15 @@ describe("LockStateService content protection", () => {
       {} as never
     );
     const mainWindow = createMainWindow();
+    const noteWindow = createMainWindow();
     service.registerMainWindow(mainWindow.window);
+    service.registerContentProtectedWindow(noteWindow.window);
     service.applySettings({
       ...defaultAppSettings,
       lockScreenEnabled: true
     });
     expect(mainWindow.setContentProtection).toHaveBeenLastCalledWith(true);
+    expect(noteWindow.setContentProtection).toHaveBeenLastCalledWith(true);
 
     service.applySettings({
       ...defaultAppSettings,
@@ -58,6 +64,7 @@ describe("LockStateService content protection", () => {
     });
 
     expect(mainWindow.setContentProtection).toHaveBeenLastCalledWith(false);
+    expect(noteWindow.setContentProtection).toHaveBeenLastCalledWith(false);
   });
 });
 

@@ -50,6 +50,7 @@ export class LockStateService {
   private idleLockInterval: NodeJS.Timeout | undefined;
   private lastUnlockedMainWindowClosedAt: number | undefined;
   private mainWindow: BrowserWindow | undefined;
+  private readonly contentProtectedWindows = new Set<BrowserWindow>();
   private readonly listeners = new Set<LockStateChangeListener>();
 
   public constructor(
@@ -116,6 +117,7 @@ export class LockStateService {
    */
   public registerMainWindow(window: BrowserWindow): void {
     this.mainWindow = window;
+    this.registerContentProtectedWindow(window);
     window.webContents.on("before-input-event", (event, input: Input) => {
       if (this.isReloadShortcut(input)) {
         event.preventDefault();
@@ -140,8 +142,25 @@ export class LockStateService {
       }
     });
 
-    this.applyMainWindowContentProtection();
     this.forceLockRouteIfNeeded();
+  }
+
+  /**
+   * Registers a notes window whose screen-capture protection follows the
+   * Lock screen setting.
+   *
+   * @param window Notes window to protect when the setting is enabled.
+   */
+  public registerContentProtectedWindow(window: BrowserWindow): void {
+    if (this.contentProtectedWindows.has(window)) {
+      return;
+    }
+
+    this.contentProtectedWindows.add(window);
+    window.on("closed", () => {
+      this.contentProtectedWindows.delete(window);
+    });
+    this.applyContentProtection();
   }
 
   /**
@@ -159,7 +178,7 @@ export class LockStateService {
     this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
     this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
 
-    this.applyMainWindowContentProtection();
+    this.applyContentProtection();
 
     if (!settings.bruteForceProtectionEnabled) {
       void this.bruteForceProtectionService.reset();
@@ -366,7 +385,7 @@ export class LockStateService {
 
     this.isLocked = isLocked;
     this.isRecoveryRequired = isRecoveryRequired;
-    this.applyMainWindowContentProtection();
+    this.applyContentProtection();
     this.listeners.forEach((listener) => listener(this.getLockState()));
   }
 
@@ -445,16 +464,19 @@ export class LockStateService {
     }
   }
 
-  private applyMainWindowContentProtection(): void {
-    if (!this.mainWindow || this.mainWindow.isDestroyed()) {
-      return;
-    }
+  private applyContentProtection(): void {
+    this.contentProtectedWindows.forEach((window) => {
+      if (window.isDestroyed()) {
+        this.contentProtectedWindows.delete(window);
+        return;
+      }
 
-    try {
-      this.mainWindow.setContentProtection(this.isLockScreenEnabled && this.isLockScreenContentProtectionEnabled);
-    } catch (err) {
-      console.warn("Failed to update main window content protection:", err);
-    }
+      try {
+        window.setContentProtection(this.isLockScreenEnabled && this.isLockScreenContentProtectionEnabled);
+      } catch (err) {
+        console.warn("Failed to update window content protection:", err);
+      }
+    });
   }
 
   private forceLockRouteIfNeeded(): void {

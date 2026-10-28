@@ -6,7 +6,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ## [v0.5.0-beta.2] - Unreleased - Vault
 
 ### Added
-- Added a Security setting to allow screen capture while Lock screen is enabled when needed; protection remains enabled by default
+- Added a Security setting to allow screen capture for main and note windows while Lock screen is enabled when needed; protection remains enabled by default
 
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support

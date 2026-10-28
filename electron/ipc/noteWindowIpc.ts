@@ -17,9 +17,10 @@ type NoteWindowIpcOptions = {
 
 export function registerNoteWindowIpc(options: NoteWindowIpcOptions): void {
   protectedOn<[string, OpenNoteWindowOptions | undefined]>(channels.noteWindow.open, options, (event, noteId, openOptions) => {
-    createNoteWindow({
+    const noteWindow = createNoteWindow({
       noteId,
       openerWindow: openOptions?.offsetFromCurrentWindow ? BrowserWindow.fromWebContents(event.sender) ?? undefined : undefined
     });
+    options.lockStateService.registerContentProtectedWindow(noteWindow);
   });
 }
