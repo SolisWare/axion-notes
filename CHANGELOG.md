@@ -10,6 +10,10 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a Close window action to the context menu in focused note windows
 - Added Grid view and List view options to the desktop View menu
 - Added non-custom note sorting options to the desktop Edit menu
+- Added Vitest V8 coverage reports for unit and integration tests
+
+### Changed
+- Migrated the web build and development tooling from Create React App to Vite
 
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support

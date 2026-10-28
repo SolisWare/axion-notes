@@ -9,6 +9,21 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     clearMocks: true,
+    coverage: {
+      all: true,
+      exclude: [
+        "src/**/*.d.ts",
+        "src/index.tsx",
+        "src/setupTests.ts"
+      ],
+      include: [
+        "electron/**/*.ts",
+        "src/**/*.{ts,tsx}"
+      ],
+      provider: "v8",
+      reporter: ["text", "html", "lcov"],
+      reportsDirectory: "test-results/coverage"
+    },
     css: true,
     environment: "jsdom",
     globals: true,

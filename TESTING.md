@@ -153,7 +153,7 @@ The preferred direction is:
 - web E2E tests: Playwright
 - release checks: selected Playwright and integration tests
 
-The project currently still has Create React App/Jest-era testing dependencies. Moving to Vitest and Playwright should be done as a separate implementation step.
+Vitest coverage uses the V8 provider and reports against the application and Electron source. It does not include Playwright E2E coverage.
 
 ## Commands
 
@@ -163,10 +163,13 @@ The initial test framework scripts are:
 npm run test:unit
 npm run test:unit:watch
 npm run test:integration
+npm run test:coverage
 npm run test:e2e
 npm run test:e2e:desktop
 npm run test:e2e:web
 ```
+
+`npm run test:coverage` runs the unit and integration suites, prints a terminal summary, and writes HTML and LCOV reports to `test-results/coverage/`. Open `test-results/coverage/index.html` to browse the HTML report.
 
 The suites are allowed to pass when empty while the framework is being introduced.
 
