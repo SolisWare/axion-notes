@@ -355,51 +355,56 @@ jobs:
     needs: [metadata, dist-web, dist-mac-arm64, dist-mac-x64, dist-windows-x64, dist-windows-x86]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download web release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-web
-          path: release-assets
+      - name: Download release artifact archives
+        env:
+          ARTIFACT_NAME_PREFIX: ${{ needs.metadata.outputs.artifact_name_prefix }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir release-assets
+          artifact_names=(
+            "${ARTIFACT_NAME_PREFIX}-macos-arm64"
+            "${ARTIFACT_NAME_PREFIX}-macos-x64"
+            "${ARTIFACT_NAME_PREFIX}-web"
+            "${ARTIFACT_NAME_PREFIX}-windows-x64"
+            "${ARTIFACT_NAME_PREFIX}-windows-x86"
+          )
+          artifacts="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts")"
 
-      - name: Download macOS arm64 release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-macos-arm64
-          path: release-assets
+          for artifact_name in "${artifact_names[@]}"; do
+            artifact_id="$(jq -r --arg name "$artifact_name" '.artifacts[] | select(.name == $name) | .id' <<< "$artifacts")"
 
-      - name: Download macOS x64 release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-macos-x64
-          path: release-assets
+            if [[ -z "$artifact_id" || "$artifact_id" == "null" ]]; then
+              echo "Could not find the ${artifact_name} artifact." >&2
+              exit 1
+            fi
 
-      - name: Download Windows x64 release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-windows-x64
-          path: release-assets
-
-      - name: Download Windows x86 release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.metadata.outputs.artifact_name_prefix }}-windows-x86
-          path: release-assets
+            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}/zip" > "release-assets/${artifact_name}.zip"
+          done
 
       - name: Create draft GitHub release
         env:
+          ARTIFACT_NAME_PREFIX: ${{ needs.metadata.outputs.artifact_name_prefix }}
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         shell: bash
         run: |
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" release-assets/* --clobber
+            gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' | while IFS= read -r asset_name; do
+              case "$asset_name" in
+                "${ARTIFACT_NAME_PREFIX}"-*) gh release delete-asset "$RELEASE_TAG" "$asset_name" --yes ;;
+              esac
+            done
+            gh release upload "$RELEASE_TAG" release-assets/*.zip --clobber
           else
-            gh release create "$RELEASE_TAG" release-assets/* \
+            gh release create "$RELEASE_TAG" release-assets/*.zip \
               --draft \
               --title "$RELEASE_TAG" \
               --notes ""
