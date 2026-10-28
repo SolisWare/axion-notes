@@ -44,7 +44,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>(() => ({
 }));
 
 function getVersionLabel(): string {
-  const appVersionConfig = process.env.REACT_APP_APP_VERSION_CONFIG;
+  const appVersionConfig = import.meta.env.VITE_APP_VERSION_CONFIG;
 
   if (!appVersionConfig) {
     return window.api.version.getShortDisplayVersion().replace(/^v/, "");
@@ -57,7 +57,7 @@ function About(props: AboutProps) {
   const { t } = useTranslation();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
-  const appIcon = `${process.env.PUBLIC_URL}/axion_notes_icon1024.png`;
+  const appIcon = `${import.meta.env.BASE_URL}axion_notes_icon1024.png`;
 
   return (
     <div className={styles.aboutPage}>

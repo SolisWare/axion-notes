@@ -19,7 +19,8 @@ export default defineConfig({
   projects: [
     {
       name: "desktop",
-      testDir: "./tests/e2e/desktop"
+      testDir: "./tests/e2e/desktop",
+      workers: 1
     },
     {
       name: "web",

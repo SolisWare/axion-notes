@@ -6,9 +6,12 @@
  */
 export class UserAgent {
   
-  private static userAgent = window.navigator.userAgent.toLowerCase();
+  private static userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent.toLowerCase();
   
-  public static isElectron = Boolean(window.api) || UserAgent.userAgent.includes("electron");
+  public static isElectron = (
+    typeof process !== "undefined" && Boolean(process.versions?.electron)) || (
+    typeof window !== "undefined" && (Boolean(window.api) || UserAgent.userAgent.includes("electron"))
+  );
   
   public static isMac = (UserAgent.userAgent.includes("mac") || UserAgent.userAgent.includes("macintosh"));
 

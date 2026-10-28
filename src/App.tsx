@@ -6,8 +6,7 @@
  */
 import './App.css';
 import i18n from './i18n/i18n';
-import { BrowserRouter, Routes, Route as WebRoute } from "react-router-dom";
-import { Router, Route } from 'electron-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route as WebRoute } from "react-router-dom";
 import MainWindow from './views/MainWindow/MainWindow';
 import NoteWindow from './views/NoteWindow/NoteWindow';
 import LicenseWindow from './views/LicenseWindow/LicenseWindow';
@@ -25,6 +24,7 @@ import { resolvePreferredDateFormat } from './utils/dt-formatter/dateFormatConfi
 import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfig';
 import AppToast from './components/AppToast';
 import LockScreen from './views/MainWindow/pages/LockScreen';
+import { ElectronWindowId } from './types/ElectronWindowId';
 
 export enum AppView {
   home = "/home",
@@ -33,7 +33,26 @@ export enum AppView {
   license = "/license"
 }
 
-function getPreferredBrowserLanguage(): string[] {
+function getElectronWindowId(): ElectronWindowId {
+  const [windowId] = window.location.hash.slice(2).split("/");
+
+  switch (windowId?.toLowerCase()) {
+    case ElectronWindowId.LICENSE:
+      return ElectronWindowId.LICENSE;
+    case ElectronWindowId.NOTE:
+      return ElectronWindowId.NOTE;
+    case ElectronWindowId.SETTINGS:
+      return ElectronWindowId.SETTINGS;
+    default:
+      return ElectronWindowId.MAIN;
+  }
+}
+
+function hasElectronWindowRoute(): boolean {
+  return window.location.hash.startsWith("#/");
+}
+
+function getPreferredBrowserLanguage(): readonly string[] {
   return navigator.languages.length > 0 ? navigator.languages : [navigator.language];
 }
 
@@ -72,6 +91,7 @@ function App() {
   const startupMainWindowElement = startupMainWindowPage === AppView.lock
     ? <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
     : <MainWindow view={startupMainWindowPage} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />;
+  const electronWindowId = getElectronWindowId();
 
   function handleAppSettingsChange(settings: AppSettings) {
     if (!UserAgent.isElectron && settings.language !== appSettings.language) {
@@ -235,34 +255,35 @@ function App() {
       <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={effectiveTheme} onClose={() => setToastMessage("")} />
       { UserAgent.isElectron ?
         /* Router for an Electron "native" app */
-        <Router main={
-          <>
-            <Route path={AppView.home} element={
-              <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
-            } />
-            <Route path={AppView.welcome} element={
-              <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
-            } />
-            <Route path={AppView.lock} element={
-              <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
-            } />
-            <Route path="/" element={
-              startupMainWindowElement
-            } />
-          </>
-        } license={
-          <Route path="/" element={
-            <LicenseWindow theme={effectiveTheme} />
-          } />
-        } note={
-          <Route path="/" element={
-            <NoteWindow theme={effectiveTheme} appSettings={appSettings} />
-          } />
-        } settings={
-          <Route path="/" element={
-            <SettingsWindow theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
-          } />
-        } />
+        <HashRouter basename={hasElectronWindowRoute() ? `/${electronWindowId}` : undefined}>
+          <Routes>
+            {electronWindowId === ElectronWindowId.MAIN && (
+              <>
+                <WebRoute path={AppView.home} element={
+                  <MainWindow view={AppView.home} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
+                } />
+                <WebRoute path={AppView.welcome} element={
+                  <MainWindow view={AppView.welcome} theme={effectiveTheme} appSettings={appSettings} onReady={handleMainWindowReady} onAppSettingsChange={handleAppSettingsChange} />
+                } />
+                <WebRoute path={AppView.lock} element={
+                  <LockScreen theme={effectiveTheme} onReady={handleMainWindowReady} />
+                } />
+                <WebRoute path="/" element={
+                  startupMainWindowElement
+                } />
+              </>
+            )}
+            {electronWindowId === ElectronWindowId.LICENSE && <WebRoute path="/" element={
+              <LicenseWindow theme={effectiveTheme} />} />
+            }
+            {electronWindowId === ElectronWindowId.NOTE && <WebRoute path="/" element={
+              <NoteWindow theme={effectiveTheme} appSettings={appSettings} />} />
+            }
+            {electronWindowId === ElectronWindowId.SETTINGS && <WebRoute path="/" element={
+              <SettingsWindow theme={effectiveTheme} appSettings={appSettings} onAppSettingsChange={handleAppSettingsChange} />
+            } />}
+          </Routes>
+        </HashRouter>
         :
         /* Router for a React web app */
         <BrowserRouter>

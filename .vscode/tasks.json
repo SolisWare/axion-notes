@@ -25,8 +25,8 @@
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "Starting the development server",
-          "endsPattern": "Compiled successfully|webpack compiled successfully"
+          "beginsPattern": "^\\s*VITE v",
+          "endsPattern": "Local:\\s+http://127\\.0\\.0\\.1:3000/"
         }
       }
     },

@@ -13,6 +13,7 @@ import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 import { blockProductionDevTools } from "../utils/devTools";
 import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
+import { ElectronWindowId } from "../../src/types/ElectronWindowId";
 
 let licenseWindow: BrowserWindow | null = null;
 
@@ -73,9 +74,9 @@ export function createLicenseWindow(): BrowserWindow {
   });
 
   if (isDev) {
-    createdLicenseWindow.loadURL(dev("license"));
+    createdLicenseWindow.loadURL(dev(ElectronWindowId.LICENSE));
   } else {
-    createdLicenseWindow.loadFile(...production("license"));
+    createdLicenseWindow.loadFile(...production(ElectronWindowId.LICENSE));
   }
 
   return createdLicenseWindow;

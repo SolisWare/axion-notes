@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, MessageBoxSyncOptions } from "electron";
 import { NoteService } from "./NoteService";
 import { translate } from "../utils/electronI18n";
 
@@ -54,7 +54,7 @@ export function registerStorageMigrationGuard(noteService: NoteService): void {
 
     event.preventDefault();
 
-    const shouldQuit = dialog.showMessageBoxSync(BrowserWindow.getFocusedWindow() ?? undefined, {
+    const messageBoxOptions: MessageBoxSyncOptions = {
       type: "warning",
       buttons: [
         translate("keepWaiting"),
@@ -64,7 +64,11 @@ export function registerStorageMigrationGuard(noteService: NoteService): void {
       defaultId: 0,
       message: translate("quitDuringStorageMigrationQuestion"),
       detail: translate("storageMigrationQuitWarning")
-    }) === 1;
+    };
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    const shouldQuit = (focusedWindow
+      ? dialog.showMessageBoxSync(focusedWindow, messageBoxOptions)
+      : dialog.showMessageBoxSync(messageBoxOptions)) === 1;
 
     if (shouldQuit) {
       isQuitConfirmed = true;

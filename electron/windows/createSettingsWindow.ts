@@ -13,6 +13,7 @@ import { translate } from "../utils/electronI18n";
 import { dev, production } from "./routes";
 import { blockProductionDevTools } from "../utils/devTools";
 import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
+import { ElectronWindowId } from "../../src/types/ElectronWindowId";
 
 let settingsWindow: BrowserWindow | null = null;
 
@@ -71,9 +72,9 @@ export function createSettingsWindow(): BrowserWindow {
   });
 
   if (isDev) {
-    createdSettingsWindow.loadURL(dev("settings"));
+    createdSettingsWindow.loadURL(dev(ElectronWindowId.SETTINGS));
   } else {
-    createdSettingsWindow.loadFile(...production("settings"));
+    createdSettingsWindow.loadFile(...production(ElectronWindowId.SETTINGS));
   }
 
   return createdSettingsWindow;

@@ -22,7 +22,7 @@ function getBrowserSystemTheme(): SystemTheme {
 }
 
 function getBrowserVersionLabel(): string {
-  const appVersionConfig = process.env.REACT_APP_APP_VERSION_CONFIG;
+  const appVersionConfig = import.meta.env.VITE_APP_VERSION_CONFIG;
   const webLabel = i18n.t("web");
 
   if (!appVersionConfig) {

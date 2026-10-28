@@ -986,7 +986,7 @@ export class NoteService {
       await this.syncDirectory(directory);
     } catch (err) {
       if (fileHandle) {
-        await fileHandle.close().catch(() => undefined);
+        await fileHandle.close().catch((): undefined => undefined);
       }
 
       await this.removePathIfExists(temporaryFilePath);
@@ -1004,7 +1004,7 @@ export class NoteService {
       // Some filesystems do not allow syncing directories. The atomic rename
       // still protects against torn file contents in that case.
     } finally {
-      await directoryHandle?.close().catch(() => undefined);
+      await directoryHandle?.close().catch((): undefined => undefined);
     }
   }
 

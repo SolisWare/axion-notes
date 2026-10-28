@@ -17,6 +17,7 @@ import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
 import { blockProductionDevTools } from "../utils/devTools";
 import { LockStateService } from "../security/LockStateService";
 import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
+import { ElectronWindowId } from "../../src/types/ElectronWindowId";
 
 type MainWindowOptions = {
   mainWindowStateFilePath: string;
@@ -93,10 +94,10 @@ export function createMainWindow(options: MainWindowOptions): BrowserWindow {
   });
 
   if (isDev) {
-    mainWindow.loadURL(dev("main", options.lockStateService.getIsLocked() ? "/lock" : ""));
+    mainWindow.loadURL(dev(ElectronWindowId.MAIN, options.lockStateService.getIsLocked() ? "/lock" : ""));
     mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    mainWindow.loadFile(...production("main", options.lockStateService.getIsLocked() ? "/lock" : ""));
+    mainWindow.loadFile(...production(ElectronWindowId.MAIN, options.lockStateService.getIsLocked() ? "/lock" : ""));
   }
 
   return mainWindow;

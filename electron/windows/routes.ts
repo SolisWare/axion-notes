@@ -6,18 +6,15 @@
  */
 import { LoadFileOptions } from "electron";
 import * as path from "path";
-import { createFileRoute, createURLRoute } from "electron-router-dom";
+import { ElectronWindowId } from "../../src/types/ElectronWindowId";
 
-export const dev = (handle: string, routePath = ""): string => {
-  return createURLRoute(
-    "http://localhost:3000",
-    handle
-  ).toString() + routePath;
+export const dev = (windowId: ElectronWindowId, routePath = ""): string => {
+  return `http://127.0.0.1:3000/#/${windowId}${routePath}`;
 };
 
-export const production = (handle: string, routePath = ""): [string, LoadFileOptions] => {
-  return createFileRoute(
+export const production = (windowId: ElectronWindowId, routePath = ""): [string, LoadFileOptions] => {
+  return [
     path.join(__dirname, "../../index.html"),
-    `${handle}${routePath}`
-  );
+    { hash: `/${windowId}${routePath}` }
+  ];
 };

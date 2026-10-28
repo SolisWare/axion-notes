@@ -20,8 +20,8 @@ function getSplashFilePath(): string {
 
 export function createSplashWindow(): BrowserWindow {
   const splashWindow = new BrowserWindow({
-    width: 360,
-    height: 240,
+    width: 320,
+    height: 188,
     center: true,
     frame: false,
     transparent: true,

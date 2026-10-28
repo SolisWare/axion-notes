@@ -15,6 +15,7 @@ import { dev } from "./routes";
 import { registerRichTextShortcuts } from "../utils/richTextShortcuts";
 import { blockProductionDevTools } from "../utils/devTools";
 import { getAppIndexFilePath, getAppWindowWebPreferences, registerWindowNavigationGuards } from "./windowSecurity";
+import { ElectronWindowId } from "../../src/types/ElectronWindowId";
 
 const noteWindows = new Map<string, BrowserWindow>();
 const NOTE_WINDOW_OFFSET = 28;
@@ -49,7 +50,7 @@ function getOffsetBaseWindow(openerWindow?: BrowserWindow): BrowserWindow | unde
 }
 
 function getNoteWindowRoute(noteId: string): string {
-  const noteRoute = dev("note");
+  const noteRoute = dev(ElectronWindowId.NOTE);
   const [baseUrl, hashRoute] = noteRoute.split("#");
 
   return `${baseUrl}?noteId=${encodeURIComponent(noteId)}#${hashRoute}`;
@@ -59,7 +60,7 @@ function getProductionNoteWindowRoute(noteId: string): [string, LoadFileOptions]
   return [
     path.join(__dirname, "../../index.html"),
     {
-      hash: "/note",
+      hash: `/${ElectronWindowId.NOTE}`,
       query: {
         noteId
       }
