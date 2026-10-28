@@ -71,6 +71,9 @@ describe("NoteFormatToolbar integration", () => {
     await user.click(screen.getByRole("button", { name: "formatting.dashedList" }));
 
     await expectRichContentToContain('"listMarkerType":"dash"');
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "formatting.dashedList" })).toHaveAttribute("aria-pressed", "true");
+    });
   });
 });
 

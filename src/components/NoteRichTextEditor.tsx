@@ -8,8 +8,8 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { BulletList } from "@tiptap/extension-bullet-list";
 import FontFamily from "@tiptap/extension-font-family";
-import { Mark as ProseMirrorMark, Node as ProseMirrorNode } from "@tiptap/pm/model";
-import { EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
+import { Mark as ProseMirrorMark, Node as ProseMirrorNode, ResolvedPos } from "@tiptap/pm/model";
+import { AllSelection, EditorState, Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
@@ -522,12 +522,7 @@ function getSelectionFontState(editor: Editor): Pick<RichTextFormatState, "activ
 }
 
 function getFormatState(editor: Editor) {
-  const bulletListAttributes = {
-    [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_BULLET
-  };
-  const dashedListAttributes = {
-    [BULLET_LIST_MARKER_TYPE_ATTRIBUTE]: BULLET_LIST_MARKER_TYPE_DASH
-  };
+  const activeBulletListMarkerType = getActiveBulletListMarkerType(editor);
   const selectionFontState = getSelectionFontState(editor);
 
   return {
@@ -540,12 +535,61 @@ function getFormatState(editor: Editor) {
     isHighlightActive: editor.isActive("highlight"),
     isSuperscriptActive: editor.isActive("superscript"),
     isSubscriptActive: editor.isActive("subscript"),
-    isBulletListActive: editor.isActive("bulletList", bulletListAttributes),
-    isDashedListActive: editor.isActive("bulletList", dashedListAttributes),
+    isBulletListActive: activeBulletListMarkerType === BULLET_LIST_MARKER_TYPE_BULLET,
+    isDashedListActive: activeBulletListMarkerType === BULLET_LIST_MARKER_TYPE_DASH,
     isNumberedListActive: editor.isActive("orderedList"),
     isChecklistActive: editor.isActive("taskList"),
     ...selectionFontState
   };
+}
+
+function getActiveBulletListMarkerType(editor: Editor): string | undefined {
+  const { selection } = editor.state;
+  const { $from, $to, empty } = selection;
+  const fromMarkerType = getBulletListMarkerTypeAtPosition($from);
+
+  if (empty) {
+    return fromMarkerType;
+  }
+
+  const toMarkerType = getBulletListMarkerTypeAtPosition($to);
+
+  if (fromMarkerType && toMarkerType) {
+    return fromMarkerType === toMarkerType ? fromMarkerType : undefined;
+  }
+
+  if (!(selection instanceof AllSelection)) {
+    return undefined;
+  }
+
+  const markerTypes = new Set<string>();
+
+  editor.state.doc.nodesBetween(editor.state.selection.from, editor.state.selection.to, (node) => {
+    if (node.type.name !== "bulletList") {
+      return;
+    }
+
+    const markerType = node.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE];
+
+    if (typeof markerType === "string") {
+      markerTypes.add(markerType);
+    }
+  });
+
+  return markerTypes.size === 1 ? [...markerTypes][0] : undefined;
+}
+
+function getBulletListMarkerTypeAtPosition(position: ResolvedPos): string | undefined {
+  for (let depth = position.depth; depth > 0; depth -= 1) {
+    const node = position.node(depth);
+
+    if (node.type.name === "bulletList") {
+      const markerType = node.attrs[BULLET_LIST_MARKER_TYPE_ATTRIBUTE];
+      return typeof markerType === "string" ? markerType : undefined;
+    }
+  }
+
+  return undefined;
 }
 
 function clearFocusedFormatState(editorId: string) {
