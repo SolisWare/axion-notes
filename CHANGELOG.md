@@ -3,6 +3,11 @@ All changes to Axion Notes, the cross-platform desktop client and web app by Sol
 
 The format is inspired by Keep a Changelog, and this project uses release tags for version tracking.
 
+## [v0.5.0-beta.2] - Unreleased - Vault
+
+### Added
+- Added a Security setting to allow screen capture while Lock screen is enabled when needed; protection remains enabled by default
+
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support
 - Added Security settings for enabling the lock screen and setting, verifying, changing, or clearing the lock password through a main-process scrypt password service

@@ -54,7 +54,7 @@ Desktop users can open a note in its own dedicated window with live synchronizat
 Axion Notes includes settings for theme, note size, title and content fonts, default font sizes, default note color, title visibility, footer visibility, sorting, editor mode, and layout. The desktop app also supports always-on-top mode.
 
 ### Security & Privacy (Desktop)
-Desktop users can protect their notes with a lock screen and configure a password to unlock them. Optional local encryption protects note data at rest, while Secure Lock clears decrypted notes from memory when you lock the app. You can also configure the app to lock when the system locks, sleeps, or has been idle.
+Desktop users can protect their notes with a lock screen and configure a password to unlock them. Optional local encryption protects note data at rest, while Secure Lock clears decrypted notes from memory when you lock the app. By default, the Axion Notes window is protected from screen capture where supported while Lock screen is enabled; this can be changed in Security settings when needed. You can also configure the app to lock when the system locks, sleeps, or has been idle.
 
 ![Axion Notes desktop Security settings with lock screen and encryption options](docs/images/settings-security.png)
 

@@ -21,6 +21,7 @@ export type AppSettings = {
   showWelcomeScreenOnLaunch: boolean;
   lockScreenEnabled: boolean;
   notesEncryptionEnabled: boolean;
+  lockScreenContentProtectionEnabled: boolean;
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay;
   lockScreenIdleTimeout: LockScreenIdleTimeout;
   lockScreenOnSystemSleepEnabled: boolean;

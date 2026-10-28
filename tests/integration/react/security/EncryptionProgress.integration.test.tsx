@@ -6,7 +6,7 @@
  *
  * @author Michael Polowczuk
  */
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,6 +22,7 @@ const { translate } = vi.hoisted(() => ({
       cleaningUp: "Cleaning up encrypted storage",
       decryptingNotes: "Decrypting notes",
       encryptingNotes: "Encrypting notes",
+      preventScreenCapture: "Prevent screen capture",
       preparing: "Preparing encrypted storage",
       verifyingDecryptedNotes: "Verifying decrypted notes",
       verifyingEncryptedNotes: "Verifying encrypted notes"
@@ -45,7 +46,7 @@ vi.mock("react-i18next", () => ({
   })
 }));
 
-describe("Security encryption progress integration", () => {
+describe("Security settings integration", () => {
   beforeEach(() => {
     translate.mockClear();
   });
@@ -163,6 +164,27 @@ describe("Security encryption progress integration", () => {
 
     expect(onEncryptionProgress).toHaveBeenCalledOnce();
     expect(unsubscribeEncryptionProgress).toHaveBeenCalledOnce();
+  });
+
+  it("updates screen capture protection when the lock screen is enabled", () => {
+    const onAppSettingsChange = vi.fn();
+    const appSettings = {
+      ...defaultAppSettings,
+      lockScreenEnabled: true
+    };
+    installDesktopApiMock();
+
+    renderSecurity({ appSettings, onAppSettingsChange });
+
+    const contentProtectionCheckbox = screen.getByRole("checkbox", { name: "Prevent screen capture" });
+    expect(contentProtectionCheckbox).toBeChecked();
+
+    fireEvent.click(contentProtectionCheckbox);
+
+    expect(onAppSettingsChange).toHaveBeenCalledWith({
+      ...appSettings,
+      lockScreenContentProtectionEnabled: false
+    });
   });
 });
 

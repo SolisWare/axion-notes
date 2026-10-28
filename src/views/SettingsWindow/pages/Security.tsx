@@ -30,6 +30,7 @@ function Security(props: SecurityProps) {
   const [isEnableEncryptionDialogOpen, setEnableEncryptionDialogOpen] = useState(false);
   const [encryptionProgress, setEncryptionProgress] = useState<EncryptionProgressEvent | null>(null);
   const isBruteForceProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isContentProtectionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isEncryptionRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockScreenRowDisabled = props.appSettings.notesEncryptionEnabled;
   const isPasswordRowDisabled = !props.appSettings.lockScreenEnabled;
@@ -61,6 +62,15 @@ function Security(props: SecurityProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       lockScreenRequirePasswordDelay: Number(event.target.value) as LockScreenRequirePasswordDelay
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleLockScreenContentProtectionEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      lockScreenContentProtectionEnabled: event.target.checked
     });
 
     event.currentTarget.blur();
@@ -316,6 +326,36 @@ function Security(props: SecurityProps) {
                   <span className={styles.switchThumb} />
                 </span>
                 <span className={styles.visuallyHidden}>{t("notesLock")}</span>
+              </label>
+            </div>
+          </Tooltip>
+          <Tooltip
+            arrow
+            disableFocusListener={!isContentProtectionRowDisabled}
+            disableHoverListener={!isContentProtectionRowDisabled}
+            disableTouchListener={!isContentProtectionRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isContentProtectionRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-content-protection-enabled-title">{t("preventScreenCapture")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("preventScreenCaptureHelp")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="lock-screen-content-protection-enabled-title"
+                  checked={props.appSettings.lockScreenContentProtectionEnabled}
+                  className={styles.switchInput}
+                  disabled={isContentProtectionRowDisabled}
+                  type="checkbox"
+                  onChange={handleLockScreenContentProtectionEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true">
+                  <span className={styles.switchThumb} />
+                </span>
+                <span className={styles.visuallyHidden}>{t("preventScreenCapture")}</span>
               </label>
             </div>
           </Tooltip>

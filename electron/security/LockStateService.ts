@@ -41,6 +41,7 @@ export class LockStateService {
   private isLocked = false;
   private isRecoveryRequired = false;
   private isBruteForceProtectionEnabled = true;
+  private isLockScreenContentProtectionEnabled = true;
   private isNotesEncryptionEnabled = false;
   private isLockScreenEnabled = false;
   private isLocking = false;
@@ -82,6 +83,7 @@ export class LockStateService {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     this.isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+    this.isLockScreenContentProtectionEnabled = settings.lockScreenContentProtectionEnabled;
     this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
     this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
     this.noteService.applyEncryptionSetting(settings.notesEncryptionEnabled);
@@ -153,8 +155,11 @@ export class LockStateService {
     this.isLockScreenEnabled = settings.lockScreenEnabled;
     this.isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
     this.isBruteForceProtectionEnabled = settings.bruteForceProtectionEnabled;
+    this.isLockScreenContentProtectionEnabled = settings.lockScreenContentProtectionEnabled;
     this.isLockOnSystemSleepEnabled = settings.lockScreenOnSystemSleepEnabled;
     this.lockScreenIdleTimeout = settings.lockScreenIdleTimeout;
+
+    this.applyMainWindowContentProtection();
 
     if (!settings.bruteForceProtectionEnabled) {
       void this.bruteForceProtectionService.reset();
@@ -446,7 +451,7 @@ export class LockStateService {
     }
 
     try {
-      this.mainWindow.setContentProtection(this.isLocked);
+      this.mainWindow.setContentProtection(this.isLockScreenEnabled && this.isLockScreenContentProtectionEnabled);
     } catch (err) {
       console.warn("Failed to update main window content protection:", err);
     }

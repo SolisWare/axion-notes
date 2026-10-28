@@ -297,6 +297,8 @@
   "notesLocation": "Notes folder location",
   "notesLocked": "Your notes are locked",
   "notesLockHelp": "Require a password before notes can be viewed.",
+  "preventScreenCapture": "Prevent screen capture",
+  "preventScreenCaptureHelp": "Keep the Axion Notes window out of screenshots and screen sharing where supported.",
   "notesNotEncrypted": "Your notes are not encrypted.",
   "noteSortDateCreatedAsc": "Date created (oldest first)",
   "noteSortDateCreatedDesc": "Date created (newest first)",

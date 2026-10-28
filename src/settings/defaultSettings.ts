@@ -23,6 +23,7 @@ export const defaultAppSettings: AppSettings = {
   showWelcomeScreenOnLaunch: true,
   lockScreenEnabled: false,
   notesEncryptionEnabled: false,
+  lockScreenContentProtectionEnabled: true,
   lockScreenRequirePasswordDelay: LockScreenRequirePasswordDelay.IMMEDIATELY,
   lockScreenIdleTimeout: LockScreenIdleTimeout.TEN_MINUTES,
   lockScreenOnSystemSleepEnabled: true,
