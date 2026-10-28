@@ -91,6 +91,10 @@ function NoteWindow(props: NoteWindowProps) {
     props.onClose?.() ?? window.api.appWindow.close();
   }
 
+  function handleCloseWindow() {
+    props.onClose?.() ?? window.api.appWindow.close();
+  }
+
   function handleDuplicateNote(note: NoteType) {
     const now = new Date();
     const duplicatedNote = {
@@ -155,6 +159,7 @@ function NoteWindow(props: NoteWindowProps) {
               noteSize={NoteSizePreference.DEFAULT}
               showTitles={props.appSettings.showTitles}
               showNoteFooters={props.appSettings.showNoteFooters}
+              onCloseWindow={props.embedded ? undefined : handleCloseWindow}
               handleDeleteNoteButton={handleDeleteNote}
               handleDuplicateNote={handleDuplicateNote}
               handleMoveNoteToBottom={() => {}}

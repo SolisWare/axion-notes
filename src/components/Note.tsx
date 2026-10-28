@@ -41,6 +41,7 @@ type NoteProps = {
   noteSize: NoteSizePreference;
   showTitles: boolean;
   showNoteFooters: boolean;
+  onCloseWindow?: () => void;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -368,6 +369,13 @@ function Note(props: NoteProps) {
     handleCloseNoteContextMenu();
     props.handleDuplicateNote(latestNote.current);
   };
+
+  const handleContextMenuCloseWindow = props.onCloseWindow
+    ? () => {
+      handleCloseNoteContextMenu();
+      props.onCloseWindow?.();
+    }
+    : undefined;
 
   const handleContextMenuOpenNoteWindow = props.handleOpenNoteWindow && props.showOpenNoteWindowContextAction !== false
     ? () => {
@@ -701,6 +709,7 @@ function Note(props: NoteProps) {
           isSelected={props.isSelected}
           isFolded={note.isFolded}
           onDeleteNote={handleContextMenuDeleteNote}
+          onCloseWindow={handleContextMenuCloseWindow}
           onDuplicateNote={handleContextMenuDuplicateNote}
           onOpenNoteWindow={handleContextMenuOpenNoteWindow}
           onTogglePin={handleContextMenuTogglePin}

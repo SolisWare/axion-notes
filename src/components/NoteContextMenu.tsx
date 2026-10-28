@@ -32,6 +32,7 @@ type NoteContextMenuProps = {
   isSelected?: boolean;
   isFolded?: boolean;
   onDeleteNote: () => void;
+  onCloseWindow?: () => void;
   onDuplicateNote: () => void;
   onOpenNoteWindow?: () => void;
   onTogglePin?: () => void;
@@ -741,6 +742,18 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       >
         {t("deleteNote")}
       </div>
+      {props.onCloseWindow && (
+        <>
+          <Divider className={styles.noteContextMenuDivider} />
+          <div
+            className={styles.noteContextMenuItem}
+            onClick={props.onCloseWindow}
+            onPointerEnter={closeAllSubmenusWithAim}
+          >
+            {t("closeWindow")}
+          </div>
+        </>
+      )}
     </div>
   );
 }
