@@ -28,6 +28,7 @@ import ConfirmationDialog from "../../components/ConfirmationDialog";
 import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
+import { NoteLayoutPreference } from "../../settings/NoteLayoutPreference";
 import { NoteSortOrder } from "../../settings/NoteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
@@ -72,6 +73,7 @@ function MainWindow(props: MainWindowProps) {
   const classes = useStyles();
   const navigate = useNavigate();
   const appSettings = props.appSettings;
+  const onAppSettingsChange = props.onAppSettingsChange;
   const onReady = props.onReady;
   const view = props.view;
 
@@ -113,6 +115,13 @@ function MainWindow(props: MainWindowProps) {
 
     setNotes((prevNotes) => [newNote, ...prevNotes]);
   }, [appSettings.defaultNoteColor, appSettings.showTitles]);
+
+  const handleNoteLayoutChange = useCallback((noteLayout: NoteLayoutPreference) => {
+    onAppSettingsChange({
+      ...appSettings,
+      noteLayout
+    });
+  }, [appSettings, onAppSettingsChange]);
 
   const handleToggleSelectAllNotes = useCallback(() => {
     setSelectedNoteIds((currentSelectedNoteIds) => {
@@ -241,6 +250,7 @@ function MainWindow(props: MainWindowProps) {
 
   useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
+    const offMenuSetNoteLayout = window.api.menu.onMenuSetNoteLayout(handleNoteLayoutChange);
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
     const offMenuSelectNote = window.api.menu.onMenuSelectNote(() => setIsSelectionMode(true));
     const offMenuSelectAllNotes = window.api.menu.onMenuSelectAllNotes(handleToggleSelectAllNotes);
@@ -249,13 +259,14 @@ function MainWindow(props: MainWindowProps) {
 
     return () => {
       offMenuNewNote();
+      offMenuSetNoteLayout();
       offMenuShowWelcome();
       offMenuSelectNote();
       offMenuSelectAllNotes();
       offMenuCancelNoteSelection();
       offMenuDeleteAllNotes();
     };
-  }, [handleAddNote, handleCancelNoteSelection, handleToggleSelectAllNotes, navigate]);
+  }, [handleAddNote, handleCancelNoteSelection, handleNoteLayoutChange, handleToggleSelectAllNotes, navigate]);
 
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);

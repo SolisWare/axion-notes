@@ -38,6 +38,7 @@ export interface IElectronAPI {
   },
   menu: {
     onMenuNewNote: (callback: () => void) => () => void;
+    onMenuSetNoteLayout: (callback: (layout: NoteLayoutPreference) => void) => () => void;
     onMenuShowWelcome: (callback: () => void) => () => void;
     onMenuSelectNote: (callback: () => void) => () => void;
     onMenuSelectAllNotes: (callback: () => void) => () => void;

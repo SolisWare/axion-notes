@@ -42,6 +42,7 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
     },
     menu: {
       onMenuNewNote: vi.fn(() => unsubscribe),
+      onMenuSetNoteLayout: vi.fn(() => unsubscribe),
       onMenuShowWelcome: vi.fn(() => unsubscribe),
       onMenuSelectNote: vi.fn(() => unsubscribe),
       onMenuSelectAllNotes: vi.fn(() => unsubscribe),

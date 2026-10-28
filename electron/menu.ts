@@ -14,6 +14,7 @@ import { translate } from "./utils/electronI18n";
 import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
+import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
 import { withEllipsis } from "../src/utils/text";
 
 type MenubarOptions = {
@@ -348,6 +349,24 @@ export function createMenubar(options: MenubarOptions): Menu {
       label: translate("view"),
       submenu: [
         { role: 'reload', label: translate("reload") },
+        { type: 'separator' },
+        {
+          id: menuIds.view.gridView,
+          label: translate("gridView"),
+          type: "radio",
+          checked: true,
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteLayout, NoteLayoutPreference.GRID);
+          }
+        },
+        {
+          id: menuIds.view.listView,
+          label: translate("listView"),
+          type: "radio",
+          click: () => {
+            BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteLayout, NoteLayoutPreference.LIST);
+          }
+        },
         { type: 'separator' },
         { role: 'resetZoom', label: translate("zoomActualSize") },
         { role: 'zoomIn', label: translate("zoomIn") },

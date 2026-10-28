@@ -11,6 +11,7 @@ import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/m
 import { AppSettings } from "../../src/settings/AppSettings";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
+import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 import { translate } from "../utils/electronI18n";
@@ -22,6 +23,7 @@ let isLockScreenActive = false;
 let isNotesEncryptionEnabled = false;
 let isSecureLockAvailable = false;
 let isStorageMigrationInProgress = false;
+let currentNoteLayout = NoteLayoutPreference.GRID;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
@@ -131,6 +133,8 @@ function updateNoteMenuItems(): void {
   const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
   const formatClearFormattingMenuItem = applicationMenu?.getMenuItemById(menuIds.format.clearFormatting);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
+  const gridViewMenuItem = applicationMenu?.getMenuItemById(menuIds.view.gridView);
+  const listViewMenuItem = applicationMenu?.getMenuItemById(menuIds.view.listView);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
   const isRichTextFormattingEnabled = isNewNoteEnabled && richTextFormatState.canFormat;
   const activeFontSize = richTextFormatState.activeFontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE;
@@ -292,11 +296,20 @@ function updateNoteMenuItems(): void {
   if (deleteAllNotesMenuItem) {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
   }
+
+  if (currentNoteLayout === NoteLayoutPreference.GRID && gridViewMenuItem) {
+    gridViewMenuItem.checked = true;
+  }
+
+  if (currentNoteLayout === NoteLayoutPreference.LIST && listViewMenuItem) {
+    listViewMenuItem.checked = true;
+  }
 }
 
 export function applyMenuSettings(settings: AppSettings): void {
   isLockScreenEnabled = settings.lockScreenEnabled;
   isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
+  currentNoteLayout = settings.noteLayout;
   updateNoteMenuItems();
 }
 

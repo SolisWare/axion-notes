@@ -47,6 +47,7 @@ export function installBrowserApi(): void {
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,
+      onMenuSetNoteLayout: () => unsubscribe,
       onMenuShowWelcome: () => unsubscribe,
       onMenuSelectNote: () => unsubscribe,
       onMenuSelectAllNotes: () => unsubscribe,

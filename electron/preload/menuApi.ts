@@ -10,6 +10,7 @@ import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState"
 import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
 import { RichTextFormatAction } from "../../src/models/RichTextFormatCommand";
 import { RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 
 export const menuApi = {
 
@@ -17,6 +18,12 @@ export const menuApi = {
     const listener = () => callback();
     on(channels.menu.newNote, listener);
     return () => off(channels.menu.newNote, listener);
+  },
+
+  onMenuSetNoteLayout: (callback: (layout: NoteLayoutPreference) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, layout: NoteLayoutPreference) => callback(layout);
+    on(channels.menu.setNoteLayout, listener);
+    return () => off(channels.menu.setNoteLayout, listener);
   },
 
   onMenuShowWelcome: (callback: () => void) => {

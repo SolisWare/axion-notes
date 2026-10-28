@@ -54,6 +54,8 @@ export const menuIds = {
   },
   view: {
     root: "viewMenu",
+    gridView: "gridView",
+    listView: "listView",
     toggleFullScreen: "toggleFullScreen"
   },
   help: {
