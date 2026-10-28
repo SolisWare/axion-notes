@@ -133,6 +133,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             aria-label={t("format")}
             aria-expanded={isInlineStyleMenuOpen}
             aria-haspopup="true"
+            aria-pressed={isInlineStyleActive}
             className={`${styles.toolbarButton} ${styles.inlineStyleMenuButton} ${isInlineStyleActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -153,6 +154,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             <div className={styles.inlineStyleSubtoolbar} role="toolbar" aria-label={t("format")}>
               <IconButton
                 aria-label={t("formatting.bold")}
+                aria-pressed={props.formatState.isBoldActive}
                 className={`${styles.toolbarButton} ${props.formatState.isBoldActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -168,6 +170,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.italic")}
+                aria-pressed={props.formatState.isItalicActive}
                 className={`${styles.toolbarButton} ${props.formatState.isItalicActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -183,6 +186,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.underline")}
+                aria-pressed={props.formatState.isUnderlineActive}
                 className={`${styles.toolbarButton} ${props.formatState.isUnderlineActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -198,6 +202,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.strikethrough")}
+                aria-pressed={props.formatState.isStrikethroughActive}
                 className={`${styles.toolbarButton} ${props.formatState.isStrikethroughActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -213,6 +218,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.highlight")}
+                aria-pressed={props.formatState.isHighlightActive}
                 className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -228,6 +234,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.inlineCode")}
+                aria-pressed={props.formatState.isInlineCodeActive}
                 className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -248,6 +255,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         <>
           <IconButton
             aria-label={t("formatting.bold")}
+            aria-pressed={props.formatState.isBoldActive}
             className={`${styles.toolbarButton} ${props.formatState.isBoldActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -260,6 +268,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.italic")}
+            aria-pressed={props.formatState.isItalicActive}
             className={`${styles.toolbarButton} ${props.formatState.isItalicActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -272,6 +281,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.underline")}
+            aria-pressed={props.formatState.isUnderlineActive}
             className={`${styles.toolbarButton} ${props.formatState.isUnderlineActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -284,6 +294,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.strikethrough")}
+            aria-pressed={props.formatState.isStrikethroughActive}
             className={`${styles.toolbarButton} ${props.formatState.isStrikethroughActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -296,6 +307,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.highlight")}
+            aria-pressed={props.formatState.isHighlightActive}
             className={`${styles.toolbarButton} ${props.formatState.isHighlightActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -308,6 +320,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.inlineCode")}
+            aria-pressed={props.formatState.isInlineCodeActive}
             className={`${styles.toolbarButton} ${props.formatState.isInlineCodeActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -327,6 +340,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             aria-label={t("formatting.lists")}
             aria-expanded={isListMenuOpen}
             aria-haspopup="true"
+            aria-pressed={isListActive}
             className={`${styles.toolbarButton} ${styles.listMenuButton} ${isListActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -347,6 +361,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
             <div className={styles.listSubtoolbar} role="toolbar" aria-label={t("formatting.lists")}>
               <IconButton
                 aria-label={t("formatting.bulletList")}
+                aria-pressed={props.formatState.isBulletListActive}
                 className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -362,6 +377,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.dashedList")}
+                aria-pressed={props.formatState.isDashedListActive}
                 className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -377,6 +393,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.numberedList")}
+                aria-pressed={props.formatState.isNumberedListActive}
                 className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -392,6 +409,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
               </IconButton>
               <IconButton
                 aria-label={t("formatting.checklist")}
+                aria-pressed={props.formatState.isChecklistActive}
                 className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
                 disableRipple
                 disabled={!props.formatState.canFormat}
@@ -412,6 +430,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
         <>
           <IconButton
             aria-label={t("formatting.bulletList")}
+            aria-pressed={props.formatState.isBulletListActive}
             className={`${styles.toolbarButton} ${props.formatState.isBulletListActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -424,6 +443,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.dashedList")}
+            aria-pressed={props.formatState.isDashedListActive}
             className={`${styles.toolbarButton} ${props.formatState.isDashedListActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -436,6 +456,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.numberedList")}
+            aria-pressed={props.formatState.isNumberedListActive}
             className={`${styles.toolbarButton} ${props.formatState.isNumberedListActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -448,6 +469,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.checklist")}
+            aria-pressed={props.formatState.isChecklistActive}
             className={`${styles.toolbarButton} ${props.formatState.isChecklistActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -465,6 +487,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           <span className={styles.toolbarDivider} aria-hidden="true" />
           <IconButton
             aria-label={t("formatting.superscript")}
+            aria-pressed={props.formatState.isSuperscriptActive}
             className={`${styles.toolbarButton} ${props.formatState.isSuperscriptActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
@@ -477,6 +500,7 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
           </IconButton>
           <IconButton
             aria-label={t("formatting.subscript")}
+            aria-pressed={props.formatState.isSubscriptActive}
             className={`${styles.toolbarButton} ${props.formatState.isSubscriptActive ? styles.toolbarButtonActive : ""}`}
             disableRipple
             disabled={!props.formatState.canFormat}
