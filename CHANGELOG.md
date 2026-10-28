@@ -15,6 +15,9 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ### Changed
 - Migrated the web build and development tooling from Create React App to Vite
 
+### Security
+- Reduced reported dependency vulnerabilities through ongoing dependency maintenance
+
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support
 - Added Security settings for enabling the lock screen and setting, verifying, changing, or clearing the lock password through a main-process scrypt password service
