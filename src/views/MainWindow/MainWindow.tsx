@@ -123,6 +123,17 @@ function MainWindow(props: MainWindowProps) {
     });
   }, [appSettings, onAppSettingsChange]);
 
+  const handleNoteSortOrderChange = useCallback((notesSortOrder: NoteSortOrder) => {
+    onAppSettingsChange({
+      ...appSettings,
+      notesSortOrder
+    });
+  }, [appSettings, onAppSettingsChange]);
+
+  const handleResortNotes = useCallback(() => {
+    window.api.noteSort.requestSort();
+  }, []);
+
   const handleToggleSelectAllNotes = useCallback(() => {
     setSelectedNoteIds((currentSelectedNoteIds) => {
       if (notes.length > 0 && currentSelectedNoteIds.size === notes.length) {
@@ -251,6 +262,8 @@ function MainWindow(props: MainWindowProps) {
   useEffect(() => {
     const offMenuNewNote = window.api.menu.onMenuNewNote(handleAddNote);
     const offMenuSetNoteLayout = window.api.menu.onMenuSetNoteLayout(handleNoteLayoutChange);
+    const offMenuSetNoteSortOrder = window.api.menu.onMenuSetNoteSortOrder(handleNoteSortOrderChange);
+    const offMenuResortNotes = window.api.menu.onMenuResortNotes(handleResortNotes);
     const offMenuShowWelcome = window.api.menu.onMenuShowWelcome(() => navigate(AppView.welcome));
     const offMenuSelectNote = window.api.menu.onMenuSelectNote(() => setIsSelectionMode(true));
     const offMenuSelectAllNotes = window.api.menu.onMenuSelectAllNotes(handleToggleSelectAllNotes);
@@ -260,13 +273,15 @@ function MainWindow(props: MainWindowProps) {
     return () => {
       offMenuNewNote();
       offMenuSetNoteLayout();
+      offMenuSetNoteSortOrder();
+      offMenuResortNotes();
       offMenuShowWelcome();
       offMenuSelectNote();
       offMenuSelectAllNotes();
       offMenuCancelNoteSelection();
       offMenuDeleteAllNotes();
     };
-  }, [handleAddNote, handleCancelNoteSelection, handleNoteLayoutChange, handleToggleSelectAllNotes, navigate]);
+  }, [handleAddNote, handleCancelNoteSelection, handleNoteLayoutChange, handleNoteSortOrderChange, handleResortNotes, handleToggleSelectAllNotes, navigate]);
 
   useEffect(() => {
     window.api.menu.setDeleteAllNotesEnabled(notes.length > 0);

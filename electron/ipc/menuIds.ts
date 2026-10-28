@@ -26,7 +26,12 @@ export const menuIds = {
     selectNote: "selectNote",
     selectAllNotes: "selectAllNotes",
     cancelNoteSelection: "cancelNoteSelection",
-    deleteAllNotes: "deleteAllNotes"
+    deleteAllNotes: "deleteAllNotes",
+    sortNotes: {
+      root: "sortNotes",
+      resort: "resortNotes",
+      option: (sortOrder: string) => `sortNotes-${sortOrder}`
+    }
   },
   format: {
     root: "formatMenu",

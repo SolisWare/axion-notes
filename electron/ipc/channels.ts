@@ -14,6 +14,8 @@ export const channels = {
   menu: {
     newNote: "menu.newNote",
     setNoteLayout: "menu.setNoteLayout",
+    setNoteSortOrder: "menu.setNoteSortOrder",
+    resortNotes: "menu.resortNotes",
     showWelcome: "menu.showWelcome",
     selectNote: "menu.selectNote",
     selectAllNotes: "menu.selectAllNotes",

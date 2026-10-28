@@ -48,6 +48,8 @@ export function installBrowserApi(): void {
     menu: {
       onMenuNewNote: () => unsubscribe,
       onMenuSetNoteLayout: () => unsubscribe,
+      onMenuSetNoteSortOrder: () => unsubscribe,
+      onMenuResortNotes: () => unsubscribe,
       onMenuShowWelcome: () => unsubscribe,
       onMenuSelectNote: () => unsubscribe,
       onMenuSelectAllNotes: () => unsubscribe,

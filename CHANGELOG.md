@@ -9,6 +9,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a Security setting to allow screen capture for main and note windows while Lock screen is enabled when needed; protection remains enabled by default
 - Added a Close window action to the context menu in focused note windows
 - Added Grid view and List view options to the desktop View menu
+- Added non-custom note sorting options to the desktop Edit menu
 
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support

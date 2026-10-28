@@ -15,6 +15,7 @@ import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
+import { NoteSortOrder } from "../src/settings/NoteSortOrder";
 import { withEllipsis } from "../src/utils/text";
 
 type MenubarOptions = {
@@ -154,6 +155,68 @@ export function createMenubar(options: MenubarOptions): Menu {
           click: () => {
             BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.cancelNoteSelection);
           }
+        },
+        { type: 'separator' },
+        {
+          id: menuIds.edit.sortNotes.root,
+          label: translate("sortNotesBy"),
+          submenu: [
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.DATE_CREATED_ASC),
+              label: translate("noteSortDateCreatedAsc"),
+              type: "radio",
+              checked: true,
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteSortOrder, NoteSortOrder.DATE_CREATED_ASC);
+              }
+            },
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.DATE_CREATED_DESC),
+              label: translate("noteSortDateCreatedDesc"),
+              type: "radio",
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteSortOrder, NoteSortOrder.DATE_CREATED_DESC);
+              }
+            },
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.LAST_MODIFIED),
+              label: translate("lastModified"),
+              type: "radio",
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteSortOrder, NoteSortOrder.LAST_MODIFIED);
+              }
+            },
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.TITLE_ASC),
+              label: translate("titleAsc"),
+              type: "radio",
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteSortOrder, NoteSortOrder.TITLE_ASC);
+              }
+            },
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.TITLE_DESC),
+              label: translate("titleDesc"),
+              type: "radio",
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.setNoteSortOrder, NoteSortOrder.TITLE_DESC);
+              }
+            },
+            {
+              id: menuIds.edit.sortNotes.option(NoteSortOrder.CUSTOM),
+              label: translate("noteSortCustom"),
+              type: "radio",
+              visible: false
+            },
+            { type: "separator" },
+            {
+              id: menuIds.edit.sortNotes.resort,
+              label: translate("resortNotes"),
+              click: () => {
+                BrowserWindow.getFocusedWindow()?.webContents.send(channels.menu.resortNotes);
+              }
+            }
+          ]
         },
         { type: 'separator' },
         {

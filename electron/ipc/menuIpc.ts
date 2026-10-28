@@ -12,6 +12,7 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
+import { NoteSortOrder } from "../../src/settings/NoteSortOrder";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 import { translate } from "../utils/electronI18n";
@@ -24,6 +25,7 @@ let isNotesEncryptionEnabled = false;
 let isSecureLockAvailable = false;
 let isStorageMigrationInProgress = false;
 let currentNoteLayout = NoteLayoutPreference.GRID;
+let currentNoteSortOrder = NoteSortOrder.DATE_CREATED_ASC;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false
@@ -133,6 +135,8 @@ function updateNoteMenuItems(): void {
   const formatFontFamilyMenuItem = applicationMenu?.getMenuItemById(menuIds.format.fontFamily.root);
   const formatClearFormattingMenuItem = applicationMenu?.getMenuItemById(menuIds.format.clearFormatting);
   const deleteAllNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.deleteAllNotes);
+  const sortNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.sortNotes.root);
+  const resortNotesMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.sortNotes.resort);
   const gridViewMenuItem = applicationMenu?.getMenuItemById(menuIds.view.gridView);
   const listViewMenuItem = applicationMenu?.getMenuItemById(menuIds.view.listView);
   const hasClipboardContent = clipboard.availableFormats().length > 0;
@@ -297,6 +301,20 @@ function updateNoteMenuItems(): void {
     deleteAllNotesMenuItem.enabled = isNewNoteEnabled && isDeleteAllNotesEnabled;
   }
 
+  if (sortNotesMenuItem) {
+    sortNotesMenuItem.enabled = isNewNoteEnabled;
+  }
+
+  const selectedSortOrderMenuItem = applicationMenu?.getMenuItemById(menuIds.edit.sortNotes.option(currentNoteSortOrder));
+
+  if (selectedSortOrderMenuItem) {
+    selectedSortOrderMenuItem.checked = true;
+  }
+
+  if (resortNotesMenuItem) {
+    resortNotesMenuItem.enabled = isNewNoteEnabled && currentNoteSortOrder !== NoteSortOrder.CUSTOM;
+  }
+
   if (currentNoteLayout === NoteLayoutPreference.GRID && gridViewMenuItem) {
     gridViewMenuItem.checked = true;
   }
@@ -310,6 +328,7 @@ export function applyMenuSettings(settings: AppSettings): void {
   isLockScreenEnabled = settings.lockScreenEnabled;
   isNotesEncryptionEnabled = settings.notesEncryptionEnabled;
   currentNoteLayout = settings.noteLayout;
+  currentNoteSortOrder = settings.notesSortOrder;
   updateNoteMenuItems();
 }
 
