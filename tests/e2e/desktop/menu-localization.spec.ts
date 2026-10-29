@@ -23,9 +23,12 @@ test.describe("Native menu localization", () => {
     }
   });
 
-  test("rebuilds role labels when the application language changes", async () => {
+  test("applies a language change only after the application restarts", async () => {
     desktopApp = await launchTestElectronApp();
     userDataDir = desktopApp.userDataDir;
+
+    await expect(desktopApp.page.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeVisible();
+    await expect.poll(() => getMenuItemLabelByRole(desktopApp!, "close")).toBe("Close");
 
     await desktopApp.page.evaluate(async () => {
       const settings = await window.api.settings.getSettings();
@@ -40,6 +43,16 @@ test.describe("Native menu localization", () => {
       });
     });
 
+    await expect.poll(async () => desktopApp!.page.evaluate(async () => {
+      return (await window.api.settings.getSettings())?.language;
+    })).toBe("es");
+    await expect(desktopApp.page.getByRole("heading", { name: "Welcome to Axion Notes" })).toBeVisible();
+    await expect.poll(() => getMenuItemLabelByRole(desktopApp!, "close")).toBe("Close");
+
+    await desktopApp.close();
+    desktopApp = await launchTestElectronApp(userDataDir);
+
+    await expect(desktopApp.page.getByRole("heading", { name: "Bienvenido a Axion Notes" })).toBeVisible();
     await expect.poll(() => getMenuItemLabelByRole(desktopApp!, "close")).toBe("Cerrar");
   });
 });

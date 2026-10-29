@@ -179,13 +179,7 @@ app.on("ready", async () => {
     mainWindowStateFilePath,
     noteService,
     onSettingsChange: (settings: AppSettings) => {
-      const didLanguageChange = currentSettings?.language !== settings.language;
       currentSettings = settings;
-      setElectronLanguage(settings.language);
-
-      if (didLanguageChange) {
-        installApplicationMenu();
-      }
     },
     passwordService,
     settingsService
@@ -220,7 +214,6 @@ app.on('activate', async () => {
     if (settings.lockScreenEnabled || lockStateService.getIsLocked()) {
       settings = (await loadAppSettings(settingsService, true)).settings;
       currentSettings = settings;
-      setElectronLanguage(settings.language);
 
       await lockStateService.refreshLockState(settings);
     }
