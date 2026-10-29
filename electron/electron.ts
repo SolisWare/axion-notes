@@ -142,7 +142,7 @@ app.on("ready", async () => {
   const { settings: initialSettings, hasSettingsFile } = await loadAppSettings(settingsService);
 
   currentSettings = initialSettings;
-  setElectronLanguage(initialSettings.language);
+  await setElectronLanguage(initialSettings.language);
   const bruteForceProtectionService = new BruteForceProtectionService(bruteForceProtectionRecordPath);
   const encryptionService = new EncryptionService();
   const encryptionKeyService = new EncryptionKeyService(encryptionService);

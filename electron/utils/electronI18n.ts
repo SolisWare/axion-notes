@@ -22,8 +22,8 @@ void electronI18n.init({
   resources: getI18nResources() as unknown as Resource
 });
 
-export function setElectronLanguage(language: SupportedLanguageCode): void {
-  void electronI18n.changeLanguage(isSupportedLanguageCode(language) ? language : DEFAULT_LANGUAGE);
+export async function setElectronLanguage(language: SupportedLanguageCode): Promise<void> {
+  await electronI18n.changeLanguage(isSupportedLanguageCode(language) ? language : DEFAULT_LANGUAGE);
 }
 
 export function translate(key: string, variables?: TranslationVariables): string {
