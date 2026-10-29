@@ -12,7 +12,7 @@ type TranslationVariables = Record<string, string | number>;
 
 const electronI18n = i18next.createInstance();
 
-void electronI18n.init({
+const electronI18nInitialization = electronI18n.init({
   fallbackLng: DEFAULT_LANGUAGE,
   initImmediate: false,
   interpolation: {
@@ -23,6 +23,7 @@ void electronI18n.init({
 });
 
 export async function setElectronLanguage(language: SupportedLanguageCode): Promise<void> {
+  await electronI18nInitialization;
   await electronI18n.changeLanguage(isSupportedLanguageCode(language) ? language : DEFAULT_LANGUAGE);
 }
 
