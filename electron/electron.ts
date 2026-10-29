@@ -107,6 +107,31 @@ function registerSessionSecurityHandlers(): void {
   });
 }
 
+function installApplicationMenu(): void {
+  Menu.setApplicationMenu(createMenubar({
+    onLockNotes: () => {
+      lockStateService?.lock().catch((err) => {
+        console.warn("Failed to lock notes from menu:", err);
+      });
+    },
+    onSecureLock: () => {
+      lockStateService?.secureLock().then((didSecureLock) => {
+        if (!didSecureLock) {
+          return;
+        }
+
+        BrowserWindow.getAllWindows().forEach((window) => {
+          if (!window.webContents.isDestroyed()) {
+            window.webContents.send(channels.security.onSecureLockComplete);
+          }
+        });
+      }).catch((err) => {
+        console.warn("Failed to securely lock notes from menu:", err);
+      });
+    }
+  }));
+}
+
 // This method is called when Electron has finished the initialization
 // and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -139,28 +164,7 @@ app.on("ready", async () => {
     settingsService.setSettings(initialSettings);
   }
 
-  Menu.setApplicationMenu(createMenubar({
-    onLockNotes: () => {
-      lockStateService?.lock().catch((err) => {
-        console.warn("Failed to lock notes from menu:", err);
-      });
-    },
-    onSecureLock: () => {
-      lockStateService?.secureLock().then((didSecureLock) => {
-        if (!didSecureLock) {
-          return;
-        }
-
-        BrowserWindow.getAllWindows().forEach((window) => {
-          if (!window.webContents.isDestroyed()) {
-            window.webContents.send(channels.security.onSecureLockComplete);
-          }
-        });
-      }).catch((err) => {
-        console.warn("Failed to securely lock notes from menu:", err);
-      });
-    }
-  }));
+  installApplicationMenu();
 
   if (isMac) {
     app.dock?.setIcon(getAppIconPath());
@@ -175,8 +179,13 @@ app.on("ready", async () => {
     mainWindowStateFilePath,
     noteService,
     onSettingsChange: (settings: AppSettings) => {
+      const didLanguageChange = currentSettings?.language !== settings.language;
       currentSettings = settings;
       setElectronLanguage(settings.language);
+
+      if (didLanguageChange) {
+        installApplicationMenu();
+      }
     },
     passwordService,
     settingsService

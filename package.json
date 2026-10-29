@@ -90,6 +90,7 @@
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.14.15",
     "@mui/styles": "^5.18.0",
+    "@solisware/electron-menu-i18next": "^1.0.1",
     "@tiptap/core": "^3.31.4",
     "@tiptap/extension-bullet-list": "^3.31.4",
     "@tiptap/extension-font-family": "^3.31.4",

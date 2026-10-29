@@ -10,13 +10,20 @@ import { channels } from "./ipc/channels";
 import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
-import { translate } from "./utils/electronI18n";
+import { getElectronMenuTranslator, translate } from "./utils/electronI18n";
 import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
 import { NoteSortOrder } from "../src/settings/NoteSortOrder";
 import { withEllipsis } from "../src/utils/text";
+
+const { localizeMenuTemplate } = require("@solisware/electron-menu-i18next") as {
+  localizeMenuTemplate: <T>(template: T[], options: {
+    appName: string;
+    t: ReturnType<typeof getElectronMenuTranslator>;
+  }) => T[];
+};
 
 type MenubarOptions = {
   onLockNotes: () => void | Promise<void>;
@@ -28,7 +35,7 @@ export function createMenubar(options: MenubarOptions): Menu {
     ...(isMac ? [{
       label: app.name,
       submenu: [
-        { role: 'about', label: translate("aboutApp", { appName: "Axion Notes" }) },
+        { role: 'about' },
         { type: 'separator' },
         {
           id: menuIds.app.settings,
@@ -56,13 +63,13 @@ export function createMenubar(options: MenubarOptions): Menu {
           }
         },
         { type: 'separator' },
-        { role: 'services', label: translate("services") },
+        { role: 'services' },
         { type: 'separator' },
-        { role: 'hide', label: translate("hide") },
-        { role: 'hideOthers', label: translate("hideOthers") },
-        { role: 'unhide', label: translate("showAll") },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
         { type: 'separator' },
-        { role: 'quit', label: translate("quit") },
+        { role: 'quit' },
       ]
     }] : []),
     {
@@ -70,7 +77,7 @@ export function createMenubar(options: MenubarOptions): Menu {
       label: translate("file"),
       submenu: [
         ...(isWindows ? [
-          { role: 'about' as const, label: translate("aboutApp", { appName: "Axion Notes" }) },
+          { role: 'about' as const },
           { type: 'separator' as const }
         ] : []),
         {
@@ -112,23 +119,23 @@ export function createMenubar(options: MenubarOptions): Menu {
           { type: 'separator' as const }
         ] : []),
         isMac
-          ? { role: 'close', label: translate("close") }
-          : { role: 'quit', label: translate("quit") }
+          ? { role: 'close' }
+          : { role: 'quit' }
       ]
     },
     {
       id: menuIds.edit.root,
       label: translate("edit"),
       submenu: [
-        { role: 'undo', label: translate("undo") },
-        { role: 'redo', label: translate("redo") },
+        { role: 'undo' },
+        { role: 'redo' },
         { type: 'separator' },
-        { id: menuIds.edit.cut, role: 'cut', label: translate("cut"), enabled: false },
-        { id: menuIds.edit.copy, role: 'copy', label: translate("copy"), enabled: false },
-        { id: menuIds.edit.paste, role: 'paste', label: translate("paste"), enabled: false },
-        { role: 'selectAll', label: translate("selectAll") },
+        { id: menuIds.edit.cut, role: 'cut', enabled: false },
+        { id: menuIds.edit.copy, role: 'copy', enabled: false },
+        { id: menuIds.edit.paste, role: 'paste', enabled: false },
+        { role: 'selectAll' },
         ...(isMac ? [
-          { id: menuIds.edit.delete, role: 'delete' as const, label: translate("delete"), enabled: false }
+          { id: menuIds.edit.delete, role: 'delete' as const, enabled: false }
         ] : []),
         { type: 'separator' },
         {
@@ -411,7 +418,7 @@ export function createMenubar(options: MenubarOptions): Menu {
       id: menuIds.view.root,
       label: translate("view"),
       submenu: [
-        { role: 'reload', label: translate("reload") },
+        { role: 'reload' },
         { type: 'separator' },
         {
           id: menuIds.view.gridView,
@@ -431,9 +438,9 @@ export function createMenubar(options: MenubarOptions): Menu {
           }
         },
         { type: 'separator' },
-        { role: 'resetZoom', label: translate("zoomActualSize") },
-        { role: 'zoomIn', label: translate("zoomIn") },
-        { role: 'zoomOut', label: translate("zoomOut") },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
         { type: 'separator' },
         {
           id: menuIds.view.toggleFullScreen,
@@ -446,11 +453,10 @@ export function createMenubar(options: MenubarOptions): Menu {
         }
       ]
     },
-    { role: 'windowMenu', label: translate("window") },
+    { role: 'windowMenu' },
     {
       role: 'help',
       id: menuIds.help.root,
-      label: translate("help"),
       submenu: [
         {
           id: menuIds.help.welcome,
@@ -485,5 +491,8 @@ export function createMenubar(options: MenubarOptions): Menu {
     }
   ];
 
-  return Menu.buildFromTemplate(template);
+  return Menu.buildFromTemplate(localizeMenuTemplate(template, {
+    appName: app.name,
+    t: getElectronMenuTranslator()
+  }));
 }

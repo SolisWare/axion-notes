@@ -8,6 +8,11 @@
     "regular": "12-horas",
     "military": "24-horas"
   },
+  "menu": {
+    "roles": {
+      "close": "Cerrar"
+    }
+  },
   "at": "en",
   "cancel": "Cancelar",
   "close": "Cerrar",
