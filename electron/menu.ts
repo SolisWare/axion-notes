@@ -453,7 +453,15 @@ export function createMenubar(options: MenubarOptions): Menu {
         }
       ]
     },
-    { role: 'windowMenu' },
+    isMac
+      ? { role: 'windowMenu' }
+      : {
+        role: 'windowMenu',
+        submenu: [
+          { role: 'minimize' },
+          { role: 'close' }
+        ]
+      },
     {
       role: 'help',
       id: menuIds.help.root,
