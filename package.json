@@ -9,6 +9,11 @@
     "email": "solisware@mail.com",
     "url": "https://solisware.com"
   },
+  "contributors": [
+    {
+      "name": "Michael Polowczuk"
+    }
+  ],
   "main": "build/electron/electron.js",
   "homepage": "./",
   "build": {

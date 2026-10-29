@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { ChangeEvent, CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, FormEvent, useEffect, useId, useRef, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle, IconButton } from "@mui/material";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
@@ -80,6 +80,12 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   const [acceptedWeakPassword, setAcceptedWeakPassword] = useState("");
 
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+  const errorMessageId = useId();
+  const currentPasswordId = useId();
+  const newPasswordId = useId();
+  const confirmPasswordId = useId();
 
   const dialogStyle: SecurityPasswordDialogCssProperties = {
     "--dialog-backdrop": appColors.DIALOG_BACKDROP,
@@ -99,6 +105,9 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   const canSubmit = (!needsCurrentPassword || Boolean(currentPassword))
     && (!needsNewPassword || Boolean(newPassword))
     && (!needsNewPassword || Boolean(confirmPassword));
+  const hasCurrentPasswordError = fieldError === PasswordDialogFieldError.CURRENT_PASSWORD;
+  const hasNewPasswordError = fieldError === PasswordDialogFieldError.NEW_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH;
+  const hasConfirmPasswordError = fieldError === PasswordDialogFieldError.CONFIRM_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH;
 
   useEffect(() => {
     if (!props.open) {
@@ -268,6 +277,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
   return (
     <>
       <Dialog
+        aria-describedby={descriptionId}
+        aria-labelledby={titleId}
         open={props.open}
         onClose={handleClose}
         disableRestoreFocus={true}
@@ -276,9 +287,9 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
         BackdropProps={{ classes: { root: styles.securityPasswordDialogBackdrop }, style: dialogStyle }}
       >
         <form onSubmit={handleSubmit}>
-          <DialogTitle className={styles.securityPasswordDialogTitle}>{getTitle()}</DialogTitle>
+          <DialogTitle className={styles.securityPasswordDialogTitle} id={titleId}>{getTitle()}</DialogTitle>
           <DialogContent className={styles.securityPasswordDialogContent}>
-            <DialogContentText className={styles.securityPasswordDialogMessage}>{getDescription()}</DialogContentText>
+            <DialogContentText className={styles.securityPasswordDialogMessage} id={descriptionId}>{getDescription()}</DialogContentText>
             <div className={styles.passwordDialogFields}>
               {needsCurrentPassword && (
                 <label className={styles.passwordDialogField}>
@@ -286,7 +297,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                   <span className={styles.passwordDialogInputWrapper}>
                     <input
                       ref={firstInputRef}
-                      className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.CURRENT_PASSWORD ? styles.passwordDialogInputError : ""}`}
+                      aria-describedby={hasCurrentPasswordError ? errorMessageId : undefined}
+                      aria-invalid={hasCurrentPasswordError}
+                      className={`${styles.passwordDialogInput} ${hasCurrentPasswordError ? styles.passwordDialogInputError : ""}`}
+                      id={currentPasswordId}
                       type={isCurrentPasswordVisible ? "text" : "password"}
                       value={currentPassword}
                       onChange={(event) => handlePasswordChange(event, setCurrentPassword)}
@@ -312,7 +326,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                     <span className={styles.passwordDialogInputWrapper}>
                       <input
                         ref={needsCurrentPassword ? undefined : firstInputRef}
-                        className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.NEW_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH ? styles.passwordDialogInputError : ""}`}
+                        aria-describedby={hasNewPasswordError ? errorMessageId : undefined}
+                        aria-invalid={hasNewPasswordError}
+                        className={`${styles.passwordDialogInput} ${hasNewPasswordError ? styles.passwordDialogInputError : ""}`}
+                        id={newPasswordId}
                         type={isNewPasswordVisible ? "text" : "password"}
                         value={newPassword}
                         onChange={handleNewPasswordChange}
@@ -334,7 +351,10 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                     <span className={styles.passwordDialogLabel}>{t("confirmPassword")}</span>
                     <span className={styles.passwordDialogInputWrapper}>
                       <input
-                        className={`${styles.passwordDialogInput} ${fieldError === PasswordDialogFieldError.CONFIRM_PASSWORD || fieldError === PasswordDialogFieldError.PASSWORD_MISMATCH ? styles.passwordDialogInputError : ""}`}
+                        aria-describedby={hasConfirmPasswordError ? errorMessageId : undefined}
+                        aria-invalid={hasConfirmPasswordError}
+                        className={`${styles.passwordDialogInput} ${hasConfirmPasswordError ? styles.passwordDialogInputError : ""}`}
+                        id={confirmPasswordId}
                         type={isNewPasswordVisible ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(event) => handlePasswordChange(event, setConfirmPassword)}
@@ -344,7 +364,7 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
                   <PasswordStrengthMeter password={newPassword} theme={props.theme} />
                 </>
               )}
-              <p className={styles.passwordDialogError} role={errorMessage ? "alert" : undefined} aria-live="polite">
+              <p className={styles.passwordDialogError} id={errorMessageId} role={errorMessage ? "alert" : undefined} aria-live="polite">
                 {errorMessage}
               </p>
             </div>
