@@ -16,6 +16,9 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Migrated the web build and development tooling from Create React App to Vite
 - Adopted the `@solisware/electron-menu-i18next` package to localize native Electron role-based menu items
 
+### Fixed
+- Fixed the lock-screen Unlock button so translated labels expand without wrapping
+
 ### Security
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
 
