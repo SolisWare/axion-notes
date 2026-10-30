@@ -7,7 +7,7 @@
 import EmptyNoteList from "../../../components/EmptyNoteList";
 import NoteGrid from "../../../components/NoteGrid";
 import NoteList from "../../../components/NoteList";
-import { NoteType } from "../../../models/NoteType";
+import { NoteType } from "../../../types/NoteType";
 import { NoteFontPreference } from "../../../settings/NoteFontPreference";
 import { NoteFontSize } from "../../../settings/NoteFontSize";
 import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";

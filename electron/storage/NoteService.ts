@@ -7,8 +7,8 @@
 import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../src/models/EncryptionProgressEvent";
-import { NoteType } from "../../src/models/NoteType";
+import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../src/types/EncryptionProgressEvent";
+import { NoteType } from "../../src/types/NoteType";
 import { EncryptedNoteManifest } from "../../src/security/EncryptedNoteManifest";
 import { EncryptedNoteRecord } from "../../src/security/EncryptedNoteRecord";
 import { EncryptionRecord } from "../../src/security/EncryptionRecord";

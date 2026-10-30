@@ -11,7 +11,7 @@ import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Note from "../../components/Note";
-import { NoteType } from "../../models/NoteType";
+import { NoteType } from "../../types/NoteType";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteSizePreference } from "../../settings/noteSizePreference";
 import { AppTheme } from "../../theme/AppTheme";

@@ -4,8 +4,8 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { RichTextFormatAction } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { RichTextFormatAction } from "../types/RichTextFormatCommand";
+import { RichTextFormatState } from "../types/RichTextFormatState";
 import { SystemTheme } from "../theme/SystemTheme";
 import NoteFormatToolbar from "./NoteFormatToolbar";
 import styles from "./FloatingNoteFormatToolbar.module.css";

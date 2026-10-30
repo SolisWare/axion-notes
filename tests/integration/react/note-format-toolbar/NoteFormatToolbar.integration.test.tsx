@@ -13,8 +13,8 @@ import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import NoteFormatToolbar from "../../../../src/components/NoteFormatToolbar";
 import NoteRichTextEditor from "../../../../src/components/NoteRichTextEditor";
-import { RichTextFormatAction } from "../../../../src/models/RichTextFormatCommand";
-import { getInactiveRichTextFormatState, RichTextFormatState } from "../../../../src/models/RichTextFormatState";
+import { RichTextFormatAction } from "../../../../src/types/RichTextFormatCommand";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../../../../src/types/RichTextFormatState";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 

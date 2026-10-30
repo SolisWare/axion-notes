@@ -7,7 +7,7 @@
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import Note from "./Note";
-import { NoteType } from "../models/NoteType";
+import { NoteType } from "../types/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteFontSize } from "../settings/NoteFontSize";
 import { NoteSizePreference } from "../settings/noteSizePreference";

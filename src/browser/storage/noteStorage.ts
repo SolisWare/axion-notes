@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { NoteType } from "../../models/NoteType";
+import { NoteType } from "../../types/NoteType";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
 
 const noteIndexKey = "solisware.axion-notes.notes.index";

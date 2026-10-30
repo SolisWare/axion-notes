@@ -5,9 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, clipboard, ipcMain, Menu } from "electron";
-import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
-import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
-import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { MenuEditSelectionState } from "../../src/types/MenuEditSelectionState";
+import { MenuNoteSelectionState } from "../../src/types/MenuNoteSelectionState";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../../src/types/RichTextFormatState";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";

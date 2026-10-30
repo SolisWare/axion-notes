@@ -6,10 +6,10 @@
  */
 import { channels } from "../ipc/channels";
 import { off, on, send } from "./ipcHelpers";
-import { MenuEditSelectionState } from "../../src/models/MenuEditSelectionState";
-import { MenuNoteSelectionState } from "../../src/models/MenuNoteSelectionState";
-import { RichTextFormatAction } from "../../src/models/RichTextFormatCommand";
-import { RichTextFormatState } from "../../src/models/RichTextFormatState";
+import { MenuEditSelectionState } from "../../src/types/MenuEditSelectionState";
+import { MenuNoteSelectionState } from "../../src/types/MenuNoteSelectionState";
+import { RichTextFormatAction } from "../../src/types/RichTextFormatCommand";
+import { RichTextFormatState } from "../../src/types/RichTextFormatState";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { NoteSortOrder } from "../../src/settings/NoteSortOrder";
 

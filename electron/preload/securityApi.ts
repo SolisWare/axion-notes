@@ -5,9 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { channels } from "../ipc/channels";
-import { EncryptionProgressEvent } from "../../src/models/EncryptionProgressEvent";
-import { LockState } from "../../src/models/LockState";
-import { UnlockResult } from "../../src/models/UnlockResult";
+import { EncryptionProgressEvent } from "../../src/types/EncryptionProgressEvent";
+import { LockState } from "../../src/types/LockState";
+import { UnlockResult } from "../../src/types/UnlockResult";
 import { off, on, receive } from "./ipcHelpers";
 
 export const securityApi = {

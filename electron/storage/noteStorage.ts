@@ -6,7 +6,7 @@
  */
 import * as fs from "node:fs";
 import * as path from "path";
-import { NoteType } from "../../src/models/NoteType";
+import { NoteType } from "../../src/types/NoteType";
 import { Formatter } from "../../src/utils/dt-formatter/Formatter";
 
 const noteOrderFileName = "note-order.json";

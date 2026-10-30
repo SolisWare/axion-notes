@@ -11,7 +11,7 @@ import { menuIds } from "./ipc/menuIds";
 import { createLicenseWindow } from "./windows/createLicenseWindow";
 import { createSettingsWindow } from "./windows/createSettingsWindow";
 import { getElectronMenuTranslator, translate } from "./utils/electronI18n";
-import { RichTextFormatCommand } from "../src/models/RichTextFormatCommand";
+import { RichTextFormatCommand } from "../src/types/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";

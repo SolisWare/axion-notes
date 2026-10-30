@@ -8,7 +8,7 @@ import { resolveSystemTheme, SystemTheme } from "../theme/SystemTheme";
 import i18n from "../i18n/i18n";
 import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
-import { type UnlockResult } from "../models/UnlockResult";
+import { type UnlockResult } from "../types/UnlockResult";
 import { UserAgent } from "../utils/UserAgent";
 import { settingsApi } from "./storage/settingsApi";
 import { storageApi } from "./storage/storageApi";

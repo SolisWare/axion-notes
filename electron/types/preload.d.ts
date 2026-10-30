@@ -4,20 +4,20 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { NoteType } from '../../src/models/NoteType';
+import { NoteType } from '../../src/types/NoteType';
 import { SystemTheme } from '../../src/theme/SystemTheme';
 import { AppSettings } from '../../src/settings/AppSettings';
-import { MenuEditSelectionState } from '../../src/models/MenuEditSelectionState';
-import { MenuNoteSelectionState } from '../../src/models/MenuNoteSelectionState';
+import { MenuEditSelectionState } from '../../src/types/MenuEditSelectionState';
+import { MenuNoteSelectionState } from '../../src/types/MenuNoteSelectionState';
 import { NoteLayoutPreference } from '../../src/settings/NoteLayoutPreference';
-import { NotesChangeEvent } from '../../src/models/NotesChangeEvent';
-import { NotesWithAccessState } from '../../src/models/NotesWithAccessState';
-import { OpenNoteWindowOptions } from '../../src/models/OpenNoteWindowOptions';
-import { RichTextFormatAction } from '../../src/models/RichTextFormatCommand';
-import { RichTextFormatState } from '../../src/models/RichTextFormatState';
-import { LockState } from '../../src/models/LockState';
-import { UnlockResult } from '../../src/models/UnlockResult';
-import { EncryptionProgressEvent } from '../../src/models/EncryptionProgressEvent';
+import { NotesChangeEvent } from '../../src/types/NotesChangeEvent';
+import { NotesWithAccessState } from '../../src/types/NotesWithAccessState';
+import { OpenNoteWindowOptions } from '../../src/types/OpenNoteWindowOptions';
+import { RichTextFormatAction } from '../../src/types/RichTextFormatCommand';
+import { RichTextFormatState } from '../../src/types/RichTextFormatState';
+import { LockState } from '../../src/types/LockState';
+import { UnlockResult } from '../../src/types/UnlockResult';
+import { EncryptionProgressEvent } from '../../src/types/EncryptionProgressEvent';
 
 export interface IElectronAPI {
   appWindow: {

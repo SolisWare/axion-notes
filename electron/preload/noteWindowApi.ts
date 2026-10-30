@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { channels } from "../ipc/channels";
-import { OpenNoteWindowOptions } from "../../src/models/OpenNoteWindowOptions";
+import { OpenNoteWindowOptions } from "../../src/types/OpenNoteWindowOptions";
 import { off, on, send } from "./ipcHelpers";
 
 export const noteWindowApi = {

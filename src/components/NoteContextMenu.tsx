@@ -7,8 +7,8 @@
 import { Divider } from "@mui/material";
 import { CSSProperties, PointerEvent, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RichTextFormatAction, RichTextFormatCommand } from "../models/RichTextFormatCommand";
-import { RichTextFormatState } from "../models/RichTextFormatState";
+import { RichTextFormatAction, RichTextFormatCommand } from "../types/RichTextFormatCommand";
+import { RichTextFormatState } from "../types/RichTextFormatState";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS, NoteFontPreference } from "../settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../settings/NoteFontSize";
 import { getAppColors } from "../theme/AppColors";

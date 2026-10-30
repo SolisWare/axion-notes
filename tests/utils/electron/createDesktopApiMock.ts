@@ -6,7 +6,7 @@
  */
 import { vi } from "vitest";
 import { IElectronAPI } from "../../../electron/types/preload";
-import { NoteAccessStatus } from "../../../src/models/NoteAccessStatus";
+import { NoteAccessStatus } from "../../../src/types/NoteAccessStatus";
 import { defaultAppSettings } from "../../../src/settings/defaultSettings";
 
 type DesktopApiMockOverrides = {

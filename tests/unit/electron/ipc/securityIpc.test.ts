@@ -5,8 +5,8 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { EncryptionProgressOperation, EncryptionProgressPhase } from "../../../../src/models/EncryptionProgressEvent";
-import { UnlockResultStatus } from "../../../../src/models/UnlockResultStatus";
+import { EncryptionProgressOperation, EncryptionProgressPhase } from "../../../../src/types/EncryptionProgressEvent";
+import { UnlockResultStatus } from "../../../../src/types/UnlockResultStatus";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerSecurityIpc } from "../../../../electron/ipc/securityIpc";
 import { LockStateService } from "../../../../electron/security/LockStateService";

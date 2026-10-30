@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, Input } from "electron";
-import { RichTextFormatCommand } from "../../src/models/RichTextFormatCommand";
+import { RichTextFormatCommand } from "../../src/types/RichTextFormatCommand";
 import { channels } from "../ipc/channels";
 import { isRichTextFormattingActive } from "../ipc/menuIpc";
 

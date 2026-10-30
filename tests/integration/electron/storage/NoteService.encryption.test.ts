@@ -11,7 +11,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { EncryptionKeyService } from "../../../../electron/security/EncryptionKeyService";
 import { EncryptionService } from "../../../../electron/security/EncryptionService";
 import { NoteService } from "../../../../electron/storage/NoteService";
-import { NoteType } from "../../../../src/models/NoteType";
+import { NoteType } from "../../../../src/types/NoteType";
 import { NoteColorKey } from "../../../../src/theme/NoteColors";
 
 const password = "correct horse battery staple";

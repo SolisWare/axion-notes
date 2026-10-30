@@ -5,10 +5,10 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, ipcMain } from "electron";
-import { NoteAccessStatus } from "../../src/models/NoteAccessStatus";
-import { NoteType } from "../../src/models/NoteType";
-import { NotesChangeEvent } from "../../src/models/NotesChangeEvent";
-import { NotesWithAccessState } from "../../src/models/NotesWithAccessState";
+import { NoteAccessStatus } from "../../src/types/NoteAccessStatus";
+import { NoteType } from "../../src/types/NoteType";
+import { NotesChangeEvent } from "../../src/types/NotesChangeEvent";
+import { NotesWithAccessState } from "../../src/types/NotesWithAccessState";
 import { channels } from "./channels";
 import { LockStateService } from "../security/LockStateService";
 import { NoteService } from "../storage/NoteService";

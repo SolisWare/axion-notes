@@ -9,7 +9,7 @@ import PushPinRoundedIcon from "@mui/icons-material/PushPinRounded";
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useTranslation } from "react-i18next";
-import { NoteType } from "../models/NoteType";
+import { NoteType } from "../types/NoteType";
 import { getNoteFontFamily, NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteFontSize } from "../settings/NoteFontSize";
 import { NoteSizePreference } from "../settings/noteSizePreference";

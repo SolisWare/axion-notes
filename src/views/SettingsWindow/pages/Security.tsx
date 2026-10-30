@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
-import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../../models/EncryptionProgressEvent";
+import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../../types/EncryptionProgressEvent";
 import { AppSettings } from "../../../settings/AppSettings";
 import { LockScreenIdleTimeout } from "../../../settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";

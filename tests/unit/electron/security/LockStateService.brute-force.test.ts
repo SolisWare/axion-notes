@@ -13,7 +13,7 @@ import { LockMarkerService } from "../../../../electron/security/LockMarkerServi
 import { LockStateService } from "../../../../electron/security/LockStateService";
 import { PasswordService } from "../../../../electron/security/PasswordService";
 import { NoteService } from "../../../../electron/storage/NoteService";
-import { UnlockResultStatus } from "../../../../src/models/UnlockResultStatus";
+import { UnlockResultStatus } from "../../../../src/types/UnlockResultStatus";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 
 vi.mock("electron", () => ({

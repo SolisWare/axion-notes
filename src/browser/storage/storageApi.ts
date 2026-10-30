@@ -4,10 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { NoteAccessStatus } from "../../models/NoteAccessStatus";
-import { NoteType } from "../../models/NoteType";
-import { NotesChangeEvent } from "../../models/NotesChangeEvent";
-import { NotesWithAccessState } from "../../models/NotesWithAccessState";
+import { NoteAccessStatus } from "../../types/NoteAccessStatus";
+import { NoteType } from "../../types/NoteType";
+import { NotesChangeEvent } from "../../types/NotesChangeEvent";
+import { NotesWithAccessState } from "../../types/NotesWithAccessState";
 import i18n from "../../i18n/i18n";
 import { deleteAllNotes, deleteNote, getNotes, setNote, setNoteOrder } from "./noteStorage";
 

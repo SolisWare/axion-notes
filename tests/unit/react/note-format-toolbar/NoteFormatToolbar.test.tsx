@@ -12,8 +12,8 @@ import userEvent from "@testing-library/user-event";
 import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import NoteFormatToolbar from "../../../../src/components/NoteFormatToolbar";
-import { RichTextFormatCommand } from "../../../../src/models/RichTextFormatCommand";
-import { getInactiveRichTextFormatState, RichTextFormatState } from "../../../../src/models/RichTextFormatState";
+import { RichTextFormatCommand } from "../../../../src/types/RichTextFormatCommand";
+import { getInactiveRichTextFormatState, RichTextFormatState } from "../../../../src/types/RichTextFormatState";
 import { NoteFontPreference } from "../../../../src/settings/NoteFontPreference";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 

@@ -10,7 +10,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../../../src/models/EncryptionProgressEvent";
+import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgressPhase } from "../../../../src/types/EncryptionProgressEvent";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import Security from "../../../../src/views/SettingsWindow/pages/Security";

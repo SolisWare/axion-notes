@@ -17,7 +17,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { AppView } from "../../../App";
-import { UnlockResultStatus } from "../../../models/UnlockResultStatus";
+import { UnlockResultStatus } from "../../../types/UnlockResultStatus";
 import { getAppColors } from "../../../theme/AppColors";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./LockScreen.module.css";

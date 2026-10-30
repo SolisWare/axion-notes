@@ -10,7 +10,7 @@ import { PointerEvent as ReactPointerEvent, useLayoutEffect, useMemo, useRef, us
 import { closestCenter, DndContext, DragEndEvent, PointerSensor, PointerSensorOptions, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import SortableNote from "./SortableNote";
-import { NoteType } from "../models/NoteType";
+import { NoteType } from "../types/NoteType";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
 import { NoteFontSize } from "../settings/NoteFontSize";
 import { getNoteSizeDefinition, NoteSizePreference } from "../settings/noteSizePreference";

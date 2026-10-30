@@ -4,10 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { NoteType } from "../../src/models/NoteType";
-import { NoteAccessStatus } from "../../src/models/NoteAccessStatus";
-import { NotesChangeEvent } from "../../src/models/NotesChangeEvent";
-import { NotesWithAccessState } from "../../src/models/NotesWithAccessState";
+import { NoteType } from "../../src/types/NoteType";
+import { NoteAccessStatus } from "../../src/types/NoteAccessStatus";
+import { NotesChangeEvent } from "../../src/types/NotesChangeEvent";
+import { NotesWithAccessState } from "../../src/types/NotesWithAccessState";
 import { channels } from "../ipc/channels";
 import { off, on, receive, send } from "./ipcHelpers";
 

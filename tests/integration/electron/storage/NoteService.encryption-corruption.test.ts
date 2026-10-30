@@ -14,7 +14,7 @@ import { NoteService } from "../../../../electron/storage/NoteService";
 import { EncryptedNoteManifest } from "../../../../src/security/EncryptedNoteManifest";
 import { EncryptedNoteRecord } from "../../../../src/security/EncryptedNoteRecord";
 import { EncryptionRecord } from "../../../../src/security/EncryptionRecord";
-import { NoteType } from "../../../../src/models/NoteType";
+import { NoteType } from "../../../../src/types/NoteType";
 import { NoteColorKey } from "../../../../src/theme/NoteColors";
 
 const password = "correct horse battery staple";

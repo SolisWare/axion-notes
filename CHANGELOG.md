@@ -11,16 +11,19 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added Grid view and List view options to the desktop View menu
 - Added non-custom note sorting options to the desktop Edit menu
 - Added Vitest V8 coverage reports for unit and integration tests
+- Expanded automated test coverage across the app, desktop, encrypted storage, and security flows
 
 ### Changed
 - Migrated the web build and development tooling from Create React App to Vite
 - Adopted the `@solisware/electron-menu-i18next` package to localize native Electron role-based menu items
+- Consolidated shared application type declarations under `src/types`
 
 ### Fixed
 - Fixed the lock-screen Unlock button so translated labels expand without wrapping
 
 ### Security
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
+- Added scheduled encryption fuzz testing and downloadable reports to continuously validate encrypted-note data integrity
 
 ## [v0.5.0-beta.1] - Unreleased - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support

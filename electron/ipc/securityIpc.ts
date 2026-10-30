@@ -5,9 +5,9 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, ipcMain } from "electron";
-import { EncryptionProgressEvent } from "../../src/models/EncryptionProgressEvent";
-import { UnlockResult } from "../../src/models/UnlockResult";
-import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
+import { EncryptionProgressEvent } from "../../src/types/EncryptionProgressEvent";
+import { UnlockResult } from "../../src/types/UnlockResult";
+import { UnlockResultStatus } from "../../src/types/UnlockResultStatus";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { NoteService } from "../storage/NoteService";

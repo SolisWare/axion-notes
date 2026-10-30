@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NoteAccessStatus } from "../../../../src/models/NoteAccessStatus";
+import { NoteAccessStatus } from "../../../../src/types/NoteAccessStatus";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerStorageIpc } from "../../../../electron/ipc/storageIpc";
 import { LockStateService } from "../../../../electron/security/LockStateService";

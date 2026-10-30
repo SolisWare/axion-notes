@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow } from "electron";
-import { OpenNoteWindowOptions } from "../../src/models/OpenNoteWindowOptions";
+import { OpenNoteWindowOptions } from "../../src/types/OpenNoteWindowOptions";
 import { createNoteWindow } from "../windows/createNoteWindow";
 import { channels } from "./channels";
 import { LockStateService } from "../security/LockStateService";

@@ -6,9 +6,9 @@
  */
 import { BrowserWindow, Input, powerMonitor } from "electron";
 import { AppSettings } from "../../src/settings/AppSettings";
-import { LockState } from "../../src/models/LockState";
-import { UnlockResult } from "../../src/models/UnlockResult";
-import { UnlockResultStatus } from "../../src/models/UnlockResultStatus";
+import { LockState } from "../../src/types/LockState";
+import { UnlockResult } from "../../src/types/UnlockResult";
+import { UnlockResultStatus } from "../../src/types/UnlockResultStatus";
 import { LockScreenIdleTimeout } from "../../src/settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../src/settings/LockScreenRequirePasswordDelay";
 import { BruteForceProtectionService } from "./BruteForceProtectionService";

@@ -11,8 +11,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { EncryptionKeyService } from "../../../../electron/security/EncryptionKeyService";
 import { EncryptionService } from "../../../../electron/security/EncryptionService";
 import { NoteService } from "../../../../electron/storage/NoteService";
-import { EncryptionProgressEvent, EncryptionProgressOperation } from "../../../../src/models/EncryptionProgressEvent";
-import { NoteType } from "../../../../src/models/NoteType";
+import { EncryptionProgressEvent, EncryptionProgressOperation } from "../../../../src/types/EncryptionProgressEvent";
+import { NoteType } from "../../../../src/types/NoteType";
 import { NoteColorKey } from "../../../../src/theme/NoteColors";
 
 const password = "correct horse battery staple";
