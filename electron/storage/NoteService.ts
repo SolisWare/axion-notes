@@ -35,6 +35,7 @@ const CLEANING_UP_PROGRESS = 100;
 type PlaintextCacheStateListener = (hasPlaintextCache: boolean) => void;
 type EncryptionProgressListener = (progress: EncryptionProgressEvent) => void;
 type StorageMigrationStateListener = (isMigrationInProgress: boolean) => void;
+type RenamePath = (oldPath: string, newPath: string) => Promise<void>;
 
 /**
  * Provides cached note access for the Electron main process.
@@ -58,7 +59,8 @@ export class NoteService {
     private readonly appDataDir: string,
     private readonly encryptionRecordPath: string,
     private readonly encryptionService: EncryptionService,
-    private readonly encryptionKeyService: EncryptionKeyService
+    private readonly encryptionKeyService: EncryptionKeyService,
+    private readonly renamePath: RenamePath = fs.promises.rename
   ) {
   }
 
@@ -150,10 +152,13 @@ export class NoteService {
    */
   public async enableEncryption(password: string, onProgress?: EncryptionProgressListener): Promise<void> {
     this.setStorageMigrationInProgress(true);
+    let masterKey: Uint8Array | undefined;
+    let didComplete = false;
 
     try {
       const notes = await this.getNotes();
-      const { record, masterKey } = await this.encryptionKeyService.createRecord(password);
+      const { record, masterKey: createdMasterKey } = await this.encryptionKeyService.createRecord(password);
+      masterKey = createdMasterKey;
       const operation = EncryptionProgressOperation.ENCRYPT;
 
       this.emitEncryptionProgress(onProgress, operation, EncryptionProgressPhase.PREPARING, PREPARING_PROGRESS);
@@ -172,8 +177,13 @@ export class NoteService {
       this.masterKey = masterKey;
       this.encryptedManifest = await this.readEncryptedManifest(masterKey);
       this.notes = notes;
+      didComplete = true;
       this.emitPlaintextCacheStateChange();
     } finally {
+      if (!didComplete) {
+        masterKey?.fill(0);
+      }
+
       this.setStorageMigrationInProgress(false);
     }
   }
@@ -185,17 +195,19 @@ export class NoteService {
     const record = await this.readEncryptionRecord();
     const masterKey = await this.encryptionKeyService.unlock(password, record);
 
-    this.notesEncryptionEnabled = true;
-    this.encryptionRecord = record;
-    this.masterKey = masterKey;
+    try {
+      const notes = this.notes ?? await this.readEncryptedNotes(masterKey);
 
-    if (this.notes) {
+      this.notesEncryptionEnabled = true;
+      this.encryptionRecord = record;
+      this.masterKey = masterKey;
+      this.notes = notes;
       this.emitPlaintextCacheStateChange();
-      return;
+    } catch (err) {
+      masterKey.fill(0);
+      this.encryptedManifest = undefined;
+      throw err;
     }
-
-    this.notes = await this.readEncryptedNotes(masterKey);
-    this.emitPlaintextCacheStateChange();
   }
 
   /**
@@ -435,6 +447,10 @@ export class NoteService {
       return this.sortNotes(notes.filter((note): note is NoteType => note !== null), new Map(manifest.noteOrder.map((noteId, index) => [noteId, index])));
     }
 
+    if (await this.pathExists(this.getEncryptedNotesDirPath(baseDir))) {
+      throw new Error("Encrypted notes manifest is missing.");
+    }
+
     const notes = await this.readLegacyEncryptedNotes(masterKey, baseDir);
 
     if (baseDir === this.appDataDir && notes.length > 0) {
@@ -466,7 +482,7 @@ export class NoteService {
     return this.sortNotes(notes.filter((note): note is NoteType => note !== null), noteOrderIndexes);
   }
 
-  private async readLegacyEncryptedNote(baseDir: string, file: string, masterKey: Uint8Array): Promise<NoteType | null> {
+  private async readLegacyEncryptedNote(baseDir: string, file: string, masterKey: Uint8Array): Promise<NoteType> {
     try {
       const content = await fs.promises.readFile(path.join(baseDir, file), "utf-8");
       const record = this.migrateEncryptedNoteRecord(JSON.parse(content));
@@ -475,9 +491,8 @@ export class NoteService {
       const serializedNote = new TextDecoder().decode(plaintext);
 
       return this.hydrateNote(JSON.parse(serializedNote) as NoteType);
-    } catch {
-      console.warn(`Skipping corrupt encrypted note file: ${file}`);
-      return null;
+    } catch (err) {
+      throw new Error(`Could not read encrypted note file: ${file}`);
     }
   }
 
@@ -486,7 +501,7 @@ export class NoteService {
     noteId: string,
     fileName: string,
     masterKey: Uint8Array
-  ): Promise<NoteType | null> {
+  ): Promise<NoteType> {
     try {
       const content = await fs.promises.readFile(path.join(this.getEncryptedNotesDirPath(baseDir), fileName), "utf-8");
       const record = this.migrateEncryptedNoteRecord(JSON.parse(content));
@@ -494,9 +509,8 @@ export class NoteService {
       const serializedNote = new TextDecoder().decode(plaintext);
 
       return this.hydrateNote(JSON.parse(serializedNote) as NoteType);
-    } catch {
-      console.warn(`Skipping corrupt encrypted note file: ${fileName}`);
-      return null;
+    } catch (err) {
+      throw new Error(`Could not read encrypted note file: ${fileName}`);
     }
   }
 
@@ -695,8 +709,8 @@ export class NoteService {
     await this.removeEncryptedLayout();
 
     try {
-      await fs.promises.rename(this.getEncryptedNotesManifestPath(stagingDir), this.getEncryptedNotesManifestPath());
-      await fs.promises.rename(this.getEncryptedNotesDirPath(stagingDir), this.getEncryptedNotesDirPath());
+      await this.renamePath(this.getEncryptedNotesManifestPath(stagingDir), this.getEncryptedNotesManifestPath());
+      await this.renamePath(this.getEncryptedNotesDirPath(stagingDir), this.getEncryptedNotesDirPath());
       await this.removePathIfExists(stagingDir);
     } catch (err) {
       await this.removeEncryptedLayout();
@@ -712,7 +726,7 @@ export class NoteService {
 
     try {
       for (const file of files) {
-        await fs.promises.rename(path.join(stagingDir, file), path.join(this.appDataDir, file));
+        await this.renamePath(path.join(stagingDir, file), path.join(this.appDataDir, file));
       }
 
       await this.removePathIfExists(stagingDir);
@@ -811,11 +825,14 @@ export class NoteService {
     this.assertEncryptedManifestShape(value);
 
     if (value.version === ENCRYPTED_NOTE_MANIFEST_VERSION) {
-      return {
+      const manifest = {
         version: value.version,
         noteOrder: value.noteOrder,
         files: value.files
       };
+
+      this.assertEncryptedManifestIntegrity(manifest);
+      return manifest;
     }
 
     throw new Error(`Unsupported encrypted note manifest version: ${value.version}.`);
@@ -849,6 +866,21 @@ export class NoteService {
       && Object.entries(value).every(([noteId, fileName]) => typeof noteId === "string" && typeof fileName === "string");
   }
 
+  private assertEncryptedManifestIntegrity(manifest: EncryptedNoteManifest): void {
+    const noteIds = new Set(manifest.noteOrder);
+    const fileNames = Object.values(manifest.files);
+
+    if (
+      noteIds.size !== manifest.noteOrder.length
+      || Object.keys(manifest.files).length !== noteIds.size
+      || Object.keys(manifest.files).some((noteId) => !noteIds.has(noteId))
+      || fileNames.some((fileName) => path.basename(fileName) !== fileName || path.extname(fileName) !== ENCRYPTED_NOTE_FILE_EXTENSION)
+      || new Set(fileNames).size !== fileNames.length
+    ) {
+      throw new Error("Invalid encrypted note manifest.");
+    }
+  }
+
   private isObjectRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
   }
@@ -856,6 +888,19 @@ export class NoteService {
   private async hasEncryptedManifest(baseDir = this.appDataDir): Promise<boolean> {
     try {
       await fs.promises.access(this.getEncryptedNotesManifestPath(baseDir), fs.constants.F_OK);
+      return true;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+        return false;
+      }
+
+      throw err;
+    }
+  }
+
+  private async pathExists(filePath: string): Promise<boolean> {
+    try {
+      await fs.promises.access(filePath, fs.constants.F_OK);
       return true;
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === "ENOENT") {
@@ -982,7 +1027,7 @@ export class NoteService {
       await fileHandle.sync();
       await fileHandle.close();
       fileHandle = undefined;
-      await fs.promises.rename(temporaryFilePath, filePath);
+      await this.renamePath(temporaryFilePath, filePath);
       await this.syncDirectory(directory);
     } catch (err) {
       if (fileHandle) {

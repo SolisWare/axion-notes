@@ -138,17 +138,25 @@ export class PasswordService {
 
   private async readPasswordRecord(): Promise<PasswordRecord> {
     const content = await fs.promises.readFile(this.passwordRecordPath, "utf-8");
-    const record = JSON.parse(content) as PasswordRecord;
+    const record = JSON.parse(content) as Partial<PasswordRecord>;
 
     if (
       record.version !== PASSWORD_RECORD_VERSION
       || record.algorithm !== PASSWORD_ALGORITHM
       || record.keyLength !== PASSWORD_KEY_LENGTH
+      || !this.isHexValue(record.salt, PASSWORD_SALT_LENGTH)
+      || !this.isHexValue(record.hash, PASSWORD_KEY_LENGTH)
     ) {
       throw new Error("Unsupported password record.");
     }
 
-    return record;
+    return record as PasswordRecord;
+  }
+
+  private isHexValue(value: unknown, expectedByteLength: number): value is string {
+    return typeof value === "string"
+      && value.length === expectedByteLength * 2
+      && /^[\da-f]+$/i.test(value);
   }
 
   private hashPassword(password: string, salt: Uint8Array, keyLength: number): Promise<Buffer> {

@@ -40,7 +40,11 @@ export class EncryptionKeyService {
       salt: this.bytesToHex(this.getRandomBytes(PASSWORD_SALT_LENGTH)),
       keyLength: PASSWORD_KEY_LENGTH
     };
-    const passwordKey = await this.derivePasswordKey(password, this.hexToBytes(keyDerivation.salt), keyDerivation.keyLength);
+    const passwordKey = await this.derivePasswordKey(
+      password,
+      this.hexToBytes(keyDerivation.salt, "Password salt", PASSWORD_SALT_LENGTH),
+      keyDerivation.keyLength
+    );
 
     try {
       const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
@@ -71,7 +75,7 @@ export class EncryptionKeyService {
 
     const passwordKey = await this.derivePasswordKey(
       password,
-      this.hexToBytes(supportedRecord.keyDerivation.salt),
+      this.hexToBytes(supportedRecord.keyDerivation.salt, "Password salt", PASSWORD_SALT_LENGTH),
       supportedRecord.keyDerivation.keyLength
     );
 
@@ -109,7 +113,11 @@ export class EncryptionKeyService {
       salt: this.bytesToHex(this.getRandomBytes(PASSWORD_SALT_LENGTH)),
       keyLength: PASSWORD_KEY_LENGTH
     };
-    const passwordKey = await this.derivePasswordKey(password, this.hexToBytes(keyDerivation.salt), keyDerivation.keyLength);
+    const passwordKey = await this.derivePasswordKey(
+      password,
+      this.hexToBytes(keyDerivation.salt, "Password salt", PASSWORD_SALT_LENGTH),
+      keyDerivation.keyLength
+    );
 
     try {
       const wrappedMasterKey = this.encryptionService.encrypt(masterKey, passwordKey, MASTER_KEY_AAD);
@@ -184,9 +192,13 @@ export class EncryptionKeyService {
     return this.copyBuffer(crypto.randomBytes(length));
   }
 
-  private hexToBytes(hex: string): Uint8Array {
-    if (hex.length % 2 !== 0) {
-      throw new Error("Hex value must contain an even number of characters.");
+  private hexToBytes(hex: string, name: string, expectedByteLength?: number): Uint8Array {
+    if (hex.length % 2 !== 0 || !/^[\da-f]*$/i.test(hex)) {
+      throw new Error(`${name} must be a valid hexadecimal value.`);
+    }
+
+    if (expectedByteLength !== undefined && hex.length !== expectedByteLength * 2) {
+      throw new Error(`${name} must be ${expectedByteLength} bytes long.`);
     }
 
     const bytes = new Uint8Array(hex.length / 2);

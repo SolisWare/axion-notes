@@ -96,6 +96,10 @@ export class EncryptionService {
     if (payload.algorithm !== EncryptionAlgorithm.AES_256_GCM) {
       throw new Error("Unsupported encryption algorithm.");
     }
+
+    this.assertHexValue(payload.iv, "IV", AES_GCM_IV_LENGTH);
+    this.assertHexValue(payload.authTag, "Authentication tag", 16);
+    this.assertHexValue(payload.ciphertext, "Ciphertext");
   }
 
   private assertSupportedKey(key: Uint8Array): void {
@@ -116,9 +120,7 @@ export class EncryptionService {
   }
 
   private hexToBytes(hex: string) {
-    if (hex.length % 2 !== 0) {
-      throw new Error("Hex value must contain an even number of characters.");
-    }
+    this.assertHexValue(hex, "Hex value");
 
     const bytes = new Uint8Array(hex.length / 2);
 
@@ -127,6 +129,16 @@ export class EncryptionService {
     }
 
     return bytes;
+  }
+
+  private assertHexValue(hex: string, name: string, expectedByteLength?: number): void {
+    if (typeof hex !== "string" || hex.length % 2 !== 0 || !/^[\da-f]*$/i.test(hex)) {
+      throw new Error(`${name} must be a valid hexadecimal value.`);
+    }
+
+    if (expectedByteLength !== undefined && hex.length !== expectedByteLength * 2) {
+      throw new Error(`${name} must be ${expectedByteLength} bytes long.`);
+    }
   }
 
   private bytesToHex(value: Uint8Array): string {
