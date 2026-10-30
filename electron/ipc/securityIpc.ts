@@ -53,8 +53,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   ipcMain.handle(channels.security.lock, async () => {
     try {
       return await options.lockStateService.lock();
-    } catch (err) {
-      console.warn("Failed to lock notes:", err);
+    } catch {
+      console.warn("Failed to lock notes.");
       return false;
     }
   });
@@ -62,8 +62,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   ipcMain.handle(channels.security.unlock, async (_event, password: string): Promise<UnlockResult> => {
     try {
       return await options.lockStateService.unlock(password);
-    } catch (err) {
-      console.warn("Failed to unlock notes:", err);
+    } catch {
+      console.warn("Failed to unlock notes.");
       return {
         status: UnlockResultStatus.INVALID_PASSWORD
       };
@@ -75,8 +75,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       await options.passwordService.setPassword(password);
       await options.lockStateService.markLockConfigured();
       return true;
-    } catch (err) {
-      console.warn("Failed to set password:", err);
+    } catch {
+      console.warn("Failed to set password.");
       return false;
     }
   });
@@ -84,8 +84,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
   protectedHandle<boolean, [string]>(channels.security.verifyPassword, { ...options, fallback: false }, async (_event, password) => {
     try {
       return await options.passwordService.verifyPassword(password);
-    } catch (err) {
-      console.warn("Failed to verify password:", err);
+    } catch {
+      console.warn("Failed to verify password.");
       return false;
     }
   });
@@ -110,8 +110,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
 
       await options.lockStateService.markLockConfigured();
       return true;
-    } catch (err) {
-      console.warn("Failed to change password:", err);
+    } catch {
+      console.warn("Failed to change password.");
       return false;
     }
   });
@@ -121,8 +121,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       await options.passwordService.clearPassword();
       await options.lockStateService.clearLockConfigured();
       return true;
-    } catch (err) {
-      console.warn("Failed to clear password:", err);
+    } catch {
+      console.warn("Failed to clear password.");
       return false;
     }
   });
@@ -139,8 +139,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       await options.passwordService.clearPassword();
       await options.lockStateService.markLockConfigured();
       return true;
-    } catch (err) {
-      console.warn("Failed to enable note encryption:", err);
+    } catch {
+      console.warn("Failed to enable note encryption.");
       return false;
     }
   });
@@ -151,8 +151,8 @@ export function registerSecurityIpc(options: SecurityIpcOptions): void {
       await options.passwordService.setPassword(password);
       await options.lockStateService.markLockConfigured();
       return true;
-    } catch (err) {
-      console.warn("Failed to disable note encryption:", err);
+    } catch {
+      console.warn("Failed to disable note encryption.");
       return false;
     }
   });
