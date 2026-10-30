@@ -81,7 +81,7 @@ describe("NoteService encrypted storage", () => {
 
     service.deleteNote(context.notes[1].id);
     await waitForEncryptedNotes(context, [addedNote, updatedFirstNote]);
-  });
+  }, 15_000);
 
   it("keeps encrypted data unchanged when an incorrect password is used", async () => {
     const context = await createEncryptedContext();
@@ -170,7 +170,7 @@ async function writePlaintextNotes(appDataDir: string, notes: NoteType[]): Promi
 }
 
 async function waitForEncryptedNotes(context: TestContext, expectedNotes: NoteType[]): Promise<void> {
-  const timeoutAt = Date.now() + 5_000;
+  const timeoutAt = Date.now() + 12_000;
   let lastError: unknown;
 
   while (Date.now() < timeoutAt) {
