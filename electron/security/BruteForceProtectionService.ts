@@ -144,9 +144,9 @@ export class BruteForceProtectionService {
   private async readRecord(): Promise<BruteForceProtectionRecord> {
     try {
       const content = await fs.promises.readFile(this.recordPath, "utf-8");
-      const record = JSON.parse(content) as BruteForceProtectionRecord;
+      const record = JSON.parse(content) as unknown;
 
-      if (record.version !== BRUTE_FORCE_PROTECTION_RECORD_VERSION) {
+      if (!this.isValidRecord(record)) {
         return this.createEmptyRecord();
       }
 
@@ -181,5 +181,23 @@ export class BruteForceProtectionService {
 
   private getSafeStageIndex(stageIndex: number): number {
     return Math.min(Math.max(0, stageIndex), BRUTE_FORCE_PROTECTION_STAGES.length - 1);
+  }
+
+  private isValidRecord(value: unknown): value is BruteForceProtectionRecord {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return false;
+    }
+
+    const record = value as Partial<BruteForceProtectionRecord>;
+
+    return record.version === BRUTE_FORCE_PROTECTION_RECORD_VERSION
+      && Number.isInteger(record.stageIndex)
+      && typeof record.failedAttemptsInStage === "number"
+      && Number.isFinite(record.failedAttemptsInStage)
+      && record.failedAttemptsInStage >= 0
+      && (record.cooldownUntil === undefined || (
+        typeof record.cooldownUntil === "string"
+        && Number.isFinite(Date.parse(record.cooldownUntil))
+      ));
   }
 }
