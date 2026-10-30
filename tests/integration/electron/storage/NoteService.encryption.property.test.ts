@@ -59,8 +59,8 @@ function noteVaultArbitrary(): fc.Arbitrary<NoteType[]> {
       isPinned: fc.option(fc.boolean(), { nil: undefined }),
       isTitleHidden: fc.option(fc.boolean(), { nil: undefined }),
       isFolded: fc.option(fc.boolean(), { nil: undefined }),
-      createdOn: fc.date({ min: minDate, max: maxDate }),
-      lastModifiedOn: fc.date({ min: minDate, max: maxDate })
+      createdOn: validDateArbitrary(),
+      lastModifiedOn: validDateArbitrary()
     }),
     {
       minLength: 0,
@@ -72,6 +72,13 @@ function noteVaultArbitrary(): fc.Arbitrary<NoteType[]> {
     pinnedOn: note.isPinned ? note.lastModifiedOn : undefined,
     pinnedFromNoteIds: note.isPinned ? [] : undefined
   })));
+}
+
+function validDateArbitrary(): fc.Arbitrary<Date> {
+  return fc.integer({
+    min: minDate.getTime(),
+    max: maxDate.getTime()
+  }).map((timestamp) => new Date(timestamp));
 }
 
 function createService(appDataDir: string, encryptionRecordPath: string): NoteService {

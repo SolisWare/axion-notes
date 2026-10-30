@@ -18,6 +18,9 @@ tests/
     react/
     electron/
 
+  fuzz/
+    electron/
+
   e2e/
     desktop/
     web/
@@ -102,6 +105,32 @@ tests/e2e/desktop/
 tests/e2e/web/
 ```
 
+## Fuzz tests
+
+Fuzz tests use randomized inputs and larger sample counts to look for failures
+outside the hand-written test matrix. They are intentionally separate from the
+ordinary unit and integration suites, so they do not slow each commit.
+
+They must report a reproducible fast-check seed and path when they fail. A
+reproduced failure should be promoted into the relevant deterministic unit or
+integration suite; “regression” is a test characteristic, not a separate
+runnable target.
+
+The scheduled workflow runs at 3 AM UTC each day. The same suite can be run
+locally, optionally with a fixed seed and larger case counts:
+
+```text
+npm run test:fuzz
+AXION_NOTES_FUZZ_SEED=12345 npm run test:fuzz
+AXION_NOTES_FUZZ_RUNS=10000 AXION_NOTES_FUZZ_STORAGE_RUNS=200 npm run test:fuzz
+```
+
+Fuzz runs write JSON and self-contained HTML reports to `test-results/fuzz/`.
+The HTML report opens directly in a browser; it does not require a preview server.
+Scheduled and manually dispatched runs publish that directory as a 30-day
+GitHub Actions artifact and add a pass/fail summary to the workflow run.
+Failure details include fast-check's reproduction seed and shrink path.
+
 ## Fixtures
 
 Fixtures are prepared test data reused by tests.
@@ -163,13 +192,14 @@ The initial test framework scripts are:
 npm run test:unit
 npm run test:unit:watch
 npm run test:integration
+npm run test:fuzz
 npm run test:coverage
 npm run test:e2e
 npm run test:e2e:desktop
 npm run test:e2e:web
 ```
 
-`npm run test:coverage` runs the unit and integration suites, prints a terminal summary, and writes HTML and LCOV reports to `test-results/coverage/`. Open `test-results/coverage/index.html` to browse the HTML report.
+`npm run test:coverage` runs the unit and integration suites, prints a terminal summary, and writes HTML and LCOV reports to `test-results/coverage/`. Open `test-results/coverage/index.html` to browse the HTML report. It deliberately excludes the separately scheduled fuzz suite.
 
 The suites are allowed to pass when empty while the framework is being introduced.
 

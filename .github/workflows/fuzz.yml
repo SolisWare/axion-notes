@@ -1,0 +1,51 @@
+# Copyright (c) 2026 SolisWare.
+#
+# All rights reserved. Licensed under the MIT license.
+# See the LICENSE.txt file in the project root directory for details.
+name: Axion Notes Fuzz Testing
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+      timezone: "Etc/UTC"
+  workflow_dispatch: {}
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run encryption fuzz tests
+        id: fuzz
+        continue-on-error: true
+        run: npm run test:fuzz
+        env:
+          AXION_NOTES_FUZZ_RUNS: 10000
+          AXION_NOTES_FUZZ_STORAGE_RUNS: 200
+
+      - name: Write fuzz test summary
+        if: always()
+        run: node tests/utils/fuzz/writeVitestSummary.cjs test-results/fuzz/fuzz-report.json
+
+      - name: Upload fuzz test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: encryption-fuzz-report
+          path: test-results/fuzz/
+          retention-days: 30
+
+      - name: Fail when fuzz tests fail
+        if: steps.fuzz.outcome == 'failure'
+        run: exit 1
