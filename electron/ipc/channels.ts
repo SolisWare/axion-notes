@@ -30,7 +30,8 @@ export const channels = {
   },
   noteSort: {
     requestSort: "noteSort.requestSort",
-    onSortRequest: "noteSort.onSortRequest"
+    onSortRequest: "noteSort.onSortRequest",
+    onSortApplied: "noteSort.onSortApplied"
   },
   noteWindow: {
     open: "noteWindow.open",

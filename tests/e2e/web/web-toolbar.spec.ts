@@ -78,6 +78,15 @@ test.describe("Web toolbar", () => {
       await expect(page.getByText("Preferences")).toBeVisible();
       await expect(page.getByText("General").first()).toBeVisible();
     });
+
+    test("shows the applied sort order after re-sorting from Settings", async ({ page }) => {
+      await openNotesView(page);
+
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "Re-sort notes" }).click();
+
+      await expect(page.getByRole("status")).toHaveText("Notes re-sorted by Date created (oldest first)");
+    });
   });
 
   test.describe("state transitions", () => {

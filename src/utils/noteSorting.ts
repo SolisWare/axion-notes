@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../types/NoteType";
-import { NoteSortOrder } from "../settings/NoteSortOrder";
+import { NoteSortOrder } from "../settings/noteSortOrder";
 
 export function sortNotes(notes: NoteType[], notesSortOrder: NoteSortOrder): NoteType[] {
   if (notesSortOrder === NoteSortOrder.CUSTOM) {

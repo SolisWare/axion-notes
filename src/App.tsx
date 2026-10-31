@@ -12,7 +12,7 @@ import NoteWindow from './views/NoteWindow/NoteWindow';
 import LicenseWindow from './views/LicenseWindow/LicenseWindow';
 import SettingsWindow from './views/SettingsWindow/SettingsWindow';
 import { UserAgent } from './utils/UserAgent';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { SystemTheme } from './theme/SystemTheme';
 import { AppSettings } from './settings/AppSettings';
 import { defaultAppSettings } from './settings/defaultSettings';
@@ -25,6 +25,7 @@ import { resolvePreferredTimeFormat } from './utils/dt-formatter/timeFormatConfi
 import AppToast from './components/AppToast';
 import LockScreen from './views/MainWindow/pages/LockScreen';
 import { ElectronWindowId } from './types/ElectronWindowId';
+import { getNotesResortedMessage } from './settings/noteSortOrder';
 
 export enum AppView {
   home = "/home",
@@ -86,6 +87,12 @@ function App() {
     hasSelection: false,
     hasEditableSelection: false
   });
+  const showToast = useCallback((message: string) => {
+    setToastMessage(message);
+  }, []);
+  const handleToastClose = useCallback(() => {
+    setToastMessage("");
+  }, []);
 
   const effectiveTheme = resolveAppThemePreference(appSettings.theme, systemTheme);
   const startupMainWindowElement = startupMainWindowPage === AppView.lock
@@ -156,9 +163,19 @@ function App() {
     }
 
     return window.api.security.onSecureLockComplete(() => {
-      setToastMessage(i18n.t("decryptedNotesCleared"));
+      showToast(i18n.t("decryptedNotesCleared"));
     });
-  }, []);
+  }, [showToast]);
+
+  useEffect(() => {
+    if (!UserAgent.isElectron) {
+      return;
+    }
+
+    return window.api.noteSort.onSortApplied(() => {
+      showToast(getNotesResortedMessage(i18n.t, appSettings.notesSortOrder));
+    });
+  }, [appSettings.notesSortOrder, showToast]);
 
   useEffect(() => {
     const channel = new BroadcastChannel("solisware.axion-notes.app-settings");
@@ -252,7 +269,7 @@ function App() {
 
   return (
     <div className="App"> 
-      <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={effectiveTheme} onClose={() => setToastMessage("")} />
+      <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={effectiveTheme} onClose={handleToastClose} />
       { UserAgent.isElectron ?
         /* Router for an Electron "native" app */
         <HashRouter basename={hasElectronWindowRoute() ? `/${electronWindowId}` : undefined}>

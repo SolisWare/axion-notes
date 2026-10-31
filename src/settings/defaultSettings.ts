@@ -8,7 +8,7 @@ import { AppThemePreference } from "./AppThemePreference";
 import { AppSettings } from "./AppSettings";
 import { AppWindowBounds } from "./AppWindowBounds";
 import { NoteColorPreference } from "./noteColorPreference";
-import { NoteSortOrder } from "./NoteSortOrder";
+import { NoteSortOrder } from "./noteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, DEFAULT_NOTE_TITLE_FONT_SIZE } from "./NoteFontSize";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";

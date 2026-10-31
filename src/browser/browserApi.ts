@@ -16,6 +16,7 @@ import { storageApi } from "./storage/storageApi";
 const noop = () => {};
 const unsubscribe = () => {};
 const noteSortRequestEventName = "axion-notes:note-sort-request";
+const noteSortAppliedEventName = "axion-notes:note-sort-applied";
 
 function getBrowserSystemTheme(): SystemTheme {
   return resolveSystemTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -65,6 +66,7 @@ export function installBrowserApi(): void {
     noteSort: {
       requestSort: () => {
         window.dispatchEvent(new Event(noteSortRequestEventName));
+        window.dispatchEvent(new Event(noteSortAppliedEventName));
       },
       onSortRequest: (callback) => {
         const listener = () => callback();
@@ -72,6 +74,14 @@ export function installBrowserApi(): void {
 
         return () => {
           window.removeEventListener(noteSortRequestEventName, listener);
+        };
+      },
+      onSortApplied: (callback) => {
+        const listener = () => callback();
+        window.addEventListener(noteSortAppliedEventName, listener);
+
+        return () => {
+          window.removeEventListener(noteSortAppliedEventName, listener);
         };
       }
     },

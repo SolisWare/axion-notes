@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { AppSettings } from "../../../settings/AppSettings";
 import { getLanguagePickerLabel, SUPPORTED_LANGUAGES, SupportedLanguageCode } from "../../../i18n/languageConfig";
 import { NoteLayoutPreference } from "../../../settings/NoteLayoutPreference";
-import { NoteSortOrder } from "../../../settings/NoteSortOrder";
+import { NoteSortOrder } from "../../../settings/noteSortOrder";
 import { UserAgent } from "../../../utils/UserAgent";
 import { DateFormat } from "../../../utils/dt-formatter/DateFormat";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
@@ -19,6 +19,7 @@ import styles from "./SettingsPages.module.css";
 
 type GeneralProps = {
   appSettings: AppSettings;
+  onResortNotes?: () => void;
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
@@ -147,7 +148,7 @@ function General(props: GeneralProps) {
                   <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
               </FittedSelect>
-              <button className={styles.linkButton} disabled={isResortNotesDisabled} type="button" onClick={window.api.noteSort.requestSort}>
+              <button className={styles.linkButton} disabled={isResortNotesDisabled} type="button" onClick={props.onResortNotes ?? window.api.noteSort.requestSort}>
                 <SyncIcon fontSize="small" />
                 <span>{t("resortNotes")}</span>
               </button>

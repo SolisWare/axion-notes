@@ -28,6 +28,7 @@ type SettingsWindowProps = {
   theme: SystemTheme;
   appSettings: AppSettings;
   embedded?: boolean;
+  onResortNotes?: () => void;
   onAppSettingsChange: (settings: AppSettings) => void;
 };
 
@@ -85,7 +86,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       break;
     case SettingsView.general:
     default:
-      page = <General appSettings={props.appSettings} onAppSettingsChange={props.onAppSettingsChange} />;
+      page = <General appSettings={props.appSettings} onResortNotes={props.onResortNotes} onAppSettingsChange={props.onAppSettingsChange} />;
   }
 
   return (

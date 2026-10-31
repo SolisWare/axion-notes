@@ -12,7 +12,7 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { NOTE_FONT_OPTIONS, NoteFontPreference } from "../../src/settings/NoteFontPreference";
 import { DEFAULT_NOTE_CONTENT_FONT_SIZE, NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
-import { NoteSortOrder } from "../../src/settings/NoteSortOrder";
+import { NoteSortOrder } from "../../src/settings/noteSortOrder";
 import { channels } from "./channels";
 import { menuIds } from "./menuIds";
 import { translate } from "../utils/electronI18n";
@@ -25,7 +25,7 @@ let isNotesEncryptionEnabled = false;
 let isSecureLockAvailable = false;
 let isStorageMigrationInProgress = false;
 let currentNoteLayout = NoteLayoutPreference.GRID;
-let currentNoteSortOrder = NoteSortOrder.DATE_CREATED_ASC;
+let currentNoteSortOrder: NoteSortOrder = NoteSortOrder.DATE_CREATED_ASC;
 let editSelectionState: MenuEditSelectionState = {
   hasSelection: false,
   hasEditableSelection: false

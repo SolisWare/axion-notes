@@ -56,6 +56,7 @@ export interface IElectronAPI {
   noteSort: {
     requestSort: () => void;
     onSortRequest: (callback: () => void) => () => void;
+    onSortApplied: (callback: () => void) => () => void;
   },
   noteWindow: {
     open: (noteId: string, options?: OpenNoteWindowOptions) => void;

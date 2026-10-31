@@ -11,7 +11,7 @@ import { MenuNoteSelectionState } from "../../src/types/MenuNoteSelectionState";
 import { RichTextFormatAction } from "../../src/types/RichTextFormatCommand";
 import { RichTextFormatState } from "../../src/types/RichTextFormatState";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
-import { NoteSortOrder } from "../../src/settings/NoteSortOrder";
+import { NoteSortOrder } from "../../src/settings/noteSortOrder";
 
 export const menuApi = {
 

@@ -59,6 +59,7 @@ test.describe("Sort notes menu", () => {
       });
     });
     await clickSortMenuItem(desktopApp, "resortNotes");
+    await expect(desktopApp.page.getByRole("status")).toHaveText("Notes re-sorted by Title Z-A");
     await expect.poll(() => desktopApp!.app.evaluate(() => {
       return (globalThis as typeof globalThis & { resortRequestCount?: number }).resortRequestCount;
     })).toBe(1);
@@ -93,7 +94,38 @@ test.describe("Sort notes menu", () => {
     ]);
     await expect.poll(() => getSortMenuItemState(desktopApp!, "resortNotes")).toEqual({ checked: false, enabled: false, label: "Re-sort notes" });
   });
+
+  test("shows a confirmation after re-sorting from Settings", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await expect(desktopApp.page.getByText("You don't have any notes yet!")).toBeVisible();
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Re-sort notes" }).click();
+
+    await expect(settingsPage.getByRole("status")).toHaveText("Notes re-sorted by Date created (oldest first)");
+  });
 });
+
+async function openSettings(desktopApp: TestElectronApp) {
+  const settingsPagePromise = desktopApp.app.waitForEvent("window");
+  await desktopApp.app.evaluate(({ Menu }) => {
+    const settingsMenuItem = Menu.getApplicationMenu()?.getMenuItemById("settings");
+
+    if (!settingsMenuItem) {
+      throw new Error("Could not find the Settings menu item.");
+    }
+
+    settingsMenuItem.click(undefined as never, undefined as never, undefined as never);
+  });
+
+  const settingsPage = await settingsPagePromise;
+  await settingsPage.waitForLoadState("domcontentloaded");
+
+  return settingsPage;
+}
 
 async function clickSortMenuItem(desktopApp: TestElectronApp, menuItemId: string): Promise<void> {
   await desktopApp.app.evaluate(({ Menu }, id) => {

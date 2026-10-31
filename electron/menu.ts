@@ -15,7 +15,7 @@ import { RichTextFormatCommand } from "../src/types/RichTextFormatCommand";
 import { NOTE_FONT_CATEGORIES, NOTE_FONT_OPTIONS } from "../src/settings/NoteFontPreference";
 import { NOTE_CONTENT_FONT_SIZE_OPTIONS } from "../src/settings/NoteFontSize";
 import { NoteLayoutPreference } from "../src/settings/NoteLayoutPreference";
-import { NoteSortOrder } from "../src/settings/NoteSortOrder";
+import { NoteSortOrder } from "../src/settings/noteSortOrder";
 import { withEllipsis } from "../src/utils/text";
 
 const { localizeMenuTemplate } = require("@solisware/electron-menu-i18next") as {

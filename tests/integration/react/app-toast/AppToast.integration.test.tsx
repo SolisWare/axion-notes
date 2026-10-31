@@ -16,7 +16,19 @@ import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiM
 const { i18n, userAgent } = vi.hoisted(() => ({
   i18n: {
     changeLanguage: vi.fn(),
-    t: vi.fn((key: string) => key === "decryptedNotesCleared" ? "Decrypted notes cleared" : key)
+    t: vi.fn((key: string, values?: Record<string, string>) => {
+      if (key === "decryptedNotesCleared") {
+        return "Decrypted notes cleared";
+      }
+
+      if (key === "noteSortDateCreatedAsc") {
+        return "Date created (oldest first)";
+      }
+
+      return key === "notesResortedBy"
+        ? `Notes re-sorted by ${values?.sortOrder}`
+        : key;
+    })
   },
   userAgent: {
     isElectron: true,
@@ -112,5 +124,36 @@ describe("AppToast integration", () => {
     unmount();
 
     expect(unsubscribeSecureLockComplete).toHaveBeenCalledOnce();
+  });
+
+  it("shows the active sort order after the requesting window applies a re-sort", async () => {
+    let sortAppliedHandler: (() => void) | undefined;
+    const onSortApplied = vi.fn((callback: () => void) => {
+      sortAppliedHandler = callback;
+      return vi.fn();
+    });
+
+    installDesktopApiMock({
+      noteSort: {
+        onSortApplied
+      },
+      security: {
+        getLockState: vi.fn().mockResolvedValue({ isLocked: false })
+      },
+      settings: {
+        getSettings: vi.fn().mockResolvedValue(defaultAppSettings)
+      }
+    });
+
+    render(<App />);
+
+    await waitFor(() => expect(onSortApplied).toHaveBeenCalledOnce());
+    act(() => {
+      sortAppliedHandler?.();
+    });
+
+    expect(i18n.t).toHaveBeenCalledWith("noteSortDateCreatedAsc");
+    expect(i18n.t).toHaveBeenCalledWith("notesResortedBy", { sortOrder: "Date created (oldest first)" });
+    expect(screen.getByRole("status")).toHaveTextContent("Notes re-sorted by Date created (oldest first)");
   });
 });

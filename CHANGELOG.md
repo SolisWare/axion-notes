@@ -10,6 +10,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a Close window action to the context menu in focused note windows
 - Added Grid view and List view options to the desktop View menu
 - Added non-custom note sorting options to the desktop Edit menu
+- Added contextual re-sort confirmations that show the active note sort order
 - Added Vitest V8 coverage reports for unit and integration tests
 - Expanded automated test coverage across the app, desktop, encrypted storage, and security flows
 

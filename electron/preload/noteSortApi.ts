@@ -17,5 +17,11 @@ export const noteSortApi = {
     const listener = () => callback();
     on(channels.noteSort.onSortRequest, listener);
     return () => off(channels.noteSort.onSortRequest, listener);
+  },
+
+  onSortApplied: (callback: () => void) => {
+    const listener = () => callback();
+    on(channels.noteSort.onSortApplied, listener);
+    return () => off(channels.noteSort.onSortApplied, listener);
   }
 };

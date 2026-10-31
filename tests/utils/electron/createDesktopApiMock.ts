@@ -59,7 +59,8 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
     },
     noteSort: {
       requestSort: vi.fn(),
-      onSortRequest: vi.fn(() => unsubscribe)
+      onSortRequest: vi.fn(() => unsubscribe),
+      onSortApplied: vi.fn(() => unsubscribe)
     },
     noteWindow: {
       open: vi.fn(),

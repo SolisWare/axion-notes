@@ -6,7 +6,7 @@
  */
 import { AppThemePreference } from "./AppThemePreference";
 import { DefaultNoteColorPreference } from "./noteColorPreference";
-import { NoteSortOrder } from "./NoteSortOrder";
+import { NoteSortOrder } from "./noteSortOrder";
 import { NoteFontPreference } from "./NoteFontPreference";
 import { NoteFontSize } from "./NoteFontSize";
 import { NoteLayoutPreference } from "./NoteLayoutPreference";

@@ -44,7 +44,7 @@ test.describe("App toast", () => {
 
     const toast = desktopApp.page.getByRole("status");
 
-    await expect(toast).toHaveText("Decrypted notes cleared from memory.");
+    await expect(toast).toHaveText("Decrypted notes cleared from memory");
     await expect(toast).toBeHidden({ timeout: 4_000 });
   });
 });

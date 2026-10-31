@@ -14,9 +14,11 @@ type NoteSortIpcOptions = {
 };
 
 export function registerNoteSortIpc(options: NoteSortIpcOptions): void {
-  protectedOn(channels.noteSort.requestSort, options, () => {
+  protectedOn(channels.noteSort.requestSort, options, (event) => {
     BrowserWindow.getAllWindows().forEach((window) => {
       window.webContents.send(channels.noteSort.onSortRequest);
     });
+
+    event.sender.send(channels.noteSort.onSortApplied);
   });
 }

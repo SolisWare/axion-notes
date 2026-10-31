@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import { AppSettings } from "../../settings/AppSettings";
 import { NoteColorPreference } from "../../settings/noteColorPreference";
 import { NoteLayoutPreference } from "../../settings/NoteLayoutPreference";
-import { NoteSortOrder } from "../../settings/NoteSortOrder";
+import { NoteSortOrder } from "../../settings/noteSortOrder";
 import { UserAgent } from "../../utils/UserAgent";
 import { Formatter } from "../../utils/dt-formatter/Formatter";
 import { getNotesWithPinnedNote, getNotesWithUnpinnedNote, isPinnedNote } from "../../utils/notePinning";
