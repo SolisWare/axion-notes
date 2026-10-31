@@ -24,6 +24,7 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
     appWindow: {
       close: vi.fn(),
       readyToShow: vi.fn(),
+      restart: vi.fn(),
       setAlwaysOnTop: vi.fn(),
       setLayout: vi.fn()
     },

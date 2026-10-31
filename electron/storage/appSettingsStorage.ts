@@ -26,11 +26,12 @@ export function getSettings(appSettingsFilePath: string): Promise<AppSettings | 
     });
 }
 
-export function setSettings(appSettingsFilePath: string, settings: AppSettings): void {
+export async function setSettings(appSettingsFilePath: string, settings: AppSettings): Promise<void> {
   const serializedSettings = JSON.stringify(settings, null, 2);
 
-  fs.promises.writeFile(appSettingsFilePath, serializedSettings)
-    .catch((err) => {
-      console.warn("Failed to write app settings:", err);
-    });
+  try {
+    await fs.promises.writeFile(appSettingsFilePath, serializedSettings);
+  } catch (err) {
+    console.warn("Failed to write app settings:", err);
+  }
 }

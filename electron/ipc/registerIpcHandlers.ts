@@ -32,7 +32,8 @@ type IpcHandlerOptions = {
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerAppWindowIpc({
     lockStateService: options.lockStateService,
-    mainWindowStateFilePath: options.mainWindowStateFilePath
+    mainWindowStateFilePath: options.mainWindowStateFilePath,
+    settingsService: options.settingsService
   });
   registerSystemThemeIpc();
   registerSecurityIpc({

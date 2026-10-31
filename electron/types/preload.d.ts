@@ -23,6 +23,7 @@ export interface IElectronAPI {
   appWindow: {
     close: () => void;
     readyToShow: () => void;
+    restart: () => void;
     setAlwaysOnTop: (enabled: boolean) => void;
     setLayout: (layout: NoteLayoutPreference) => void;
   },

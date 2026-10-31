@@ -12,6 +12,8 @@ import { AppTheme } from "../../theme/AppTheme";
 import { getAppColors } from "../../theme/AppColors";
 import { SystemTheme } from "../../theme/SystemTheme";
 import { AppSettings } from "../../settings/AppSettings";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
+import { UserAgent } from "../../utils/UserAgent";
 import General from "./pages/General";
 import Appearance from "./pages/Appearance";
 import Editor from "./pages/Editor";
@@ -35,6 +37,7 @@ type SettingsWindowProps = {
 function SettingsWindow(props: SettingsWindowProps) {
   const { t } = useTranslation();
   const [selectedPage, setSelectedPage] = useState<SettingsView>(SettingsView.general);
+  const [isLanguageRestartDialogOpen, setIsLanguageRestartDialogOpen] = useState(false);
   
   const appTheme = props.theme === SystemTheme.DARK ? AppTheme.DarkTheme : AppTheme.LightTheme;
   const appColors = getAppColors(props.theme);
@@ -86,7 +89,12 @@ function SettingsWindow(props: SettingsWindowProps) {
       break;
     case SettingsView.general:
     default:
-      page = <General appSettings={props.appSettings} onResortNotes={props.onResortNotes} onAppSettingsChange={props.onAppSettingsChange} />;
+      page = <General
+        appSettings={props.appSettings}
+        onLanguageChange={UserAgent.isElectron ? () => setIsLanguageRestartDialogOpen(true) : undefined}
+        onResortNotes={props.onResortNotes}
+        onAppSettingsChange={props.onAppSettingsChange}
+      />;
   }
 
   return (
@@ -121,6 +129,17 @@ function SettingsWindow(props: SettingsWindowProps) {
             { page }
           </div>
         </main>
+        <ConfirmationDialog
+          theme={props.theme}
+          open={isLanguageRestartDialogOpen}
+          title={t("restartToApplyLanguageTitle")}
+          message={t("restartToApplyLanguage")}
+          confirmLabel={t("restartNow")}
+          cancelLabel={t("later")}
+          confirmColor="primary"
+          onConfirm={() => window.api.appWindow.restart()}
+          onCancel={() => setIsLanguageRestartDialogOpen(false)}
+        />
       </div>
     </ThemeProvider>
   );

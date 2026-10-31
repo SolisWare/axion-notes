@@ -4,9 +4,10 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { LockStateService } from "../security/LockStateService";
+import { SettingsService } from "../storage/SettingsService";
 import { applyMainWindowLayout } from "../windows/mainWindowState";
 import { channels } from "./channels";
 import { protectedOn } from "./protectedIpc";
@@ -14,11 +15,18 @@ import { protectedOn } from "./protectedIpc";
 type AppWindowIpcOptions = {
   lockStateService: LockStateService;
   mainWindowStateFilePath: string;
+  settingsService: SettingsService;
 };
 
 export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
   ipcMain.on(channels.appWindow.close, (event) => {
     BrowserWindow.fromWebContents(event.sender)?.close();
+  });
+
+  protectedOn<[]>(channels.appWindow.restart, options, async () => {
+    await options.settingsService.waitForPendingSettingsWrite();
+    app.relaunch();
+    app.exit(0);
   });
 
   protectedOn<[boolean]>(channels.appWindow.setAlwaysOnTop, options, (event, enabled) => {

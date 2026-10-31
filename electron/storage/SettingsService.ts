@@ -14,6 +14,7 @@ import { getSettings, setSettings } from "./appSettingsStorage";
 export class SettingsService {
   
   private settings: AppSettings | undefined;
+  private pendingSettingsWrite: Promise<void> = Promise.resolve();
 
   public constructor(private readonly appSettingsFilePath: string) {
   }
@@ -51,7 +52,14 @@ export class SettingsService {
    */
   public setSettings(settings: AppSettings): void {
     this.settings = settings;
-    setSettings(this.appSettingsFilePath, settings);
+    this.pendingSettingsWrite = this.pendingSettingsWrite.then(() => setSettings(this.appSettingsFilePath, settings));
+  }
+
+  /**
+   * Waits for settings changes already accepted by this service to be saved.
+   */
+  public async waitForPendingSettingsWrite(): Promise<void> {
+    await this.pendingSettingsWrite;
   }
 
   /**

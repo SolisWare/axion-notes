@@ -19,6 +19,7 @@ import styles from "./SettingsPages.module.css";
 
 type GeneralProps = {
   appSettings: AppSettings;
+  onLanguageChange?: () => void;
   onResortNotes?: () => void;
   onAppSettingsChange: (settings: AppSettings) => void;
 };
@@ -33,7 +34,7 @@ type FittedSelectProps = {
 };
 
 function General(props: GeneralProps) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const dateFormatSampleDate = new Date(currentYear, 5, 20);
   const dateTimeFormatPreview = new Date();
@@ -103,10 +104,15 @@ function General(props: GeneralProps) {
   }
 
   function handleLanguageChange(event: ChangeEvent<HTMLSelectElement>) {
+    const language = event.target.value as SupportedLanguageCode;
+
     props.onAppSettingsChange({
       ...props.appSettings,
-      language: event.target.value as SupportedLanguageCode
+      language
     });
+    if (language !== i18n.language) {
+      props.onLanguageChange?.();
+    }
 
     event.currentTarget.blur();
   }
