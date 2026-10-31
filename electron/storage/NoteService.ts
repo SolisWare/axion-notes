@@ -50,6 +50,7 @@ export class NoteService {
   private notesEncryptionEnabled = false;
   private encryptionRecord: EncryptionRecord | undefined;
   private encryptedManifest: EncryptedNoteManifest | undefined;
+  private encryptedWriteQueue: Promise<void> = Promise.resolve();
   private masterKey: Uint8Array | undefined;
   private storageMigrationInProgress = false;
   private readonly plaintextCacheStateListeners = new Set<PlaintextCacheStateListener>();
@@ -304,7 +305,7 @@ export class NoteService {
    */
   public setNote(note: NoteType): void {
     if (this.notesEncryptionEnabled) {
-      void this.writeEncryptedNote(note).catch((err) => console.error(err));
+      this.enqueueEncryptedWrite(() => this.writeEncryptedNote(note));
     } else {
       this.writePlaintextNote(note);
     }
@@ -330,7 +331,7 @@ export class NoteService {
    */
   public setNoteOrder(noteIds: string[]): void {
     if (this.notesEncryptionEnabled) {
-      void this.writeEncryptedNoteOrder(noteIds).catch((err) => console.error(err));
+      this.enqueueEncryptedWrite(() => this.writeEncryptedNoteOrder(noteIds));
     } else {
       void this.writeNoteOrder(noteIds);
     }
@@ -349,7 +350,7 @@ export class NoteService {
    */
   public deleteNote(noteId: string): void {
     if (this.notesEncryptionEnabled) {
-      void this.deleteEncryptedNote(noteId).catch((err) => console.error(err));
+      this.enqueueEncryptedWrite(() => this.deleteEncryptedNote(noteId));
     } else {
       fs.promises.unlink(this.getPlaintextNoteFilePath(noteId)).catch((err) => {
         if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -367,7 +368,7 @@ export class NoteService {
    */
   public deleteAllNotes(): void {
     if (this.notesEncryptionEnabled) {
-      void this.deleteAllEncryptedNotes().catch((err) => console.error(err));
+      this.enqueueEncryptedWrite(() => this.deleteAllEncryptedNotes());
     } else {
       fs.promises.readdir(this.appDataDir)
         .then((files) => Promise.all(files
@@ -521,6 +522,14 @@ export class NoteService {
       lastModifiedOn: new Date(note.lastModifiedOn),
       pinnedOn: Formatter.toOptionalDate(note.pinnedOn)
     };
+  }
+
+  private enqueueEncryptedWrite(write: () => Promise<void>): void {
+    const nextWrite = this.encryptedWriteQueue.then(write);
+
+    this.encryptedWriteQueue = nextWrite.catch((err) => {
+      console.error(err);
+    });
   }
 
   private writePlaintextNote(note: NoteType): void {

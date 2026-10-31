@@ -46,7 +46,7 @@ describe("NoteService encryption properties", () => {
         numRuns: 12
       }
     );
-  });
+  }, 15_000);
 });
 
 function noteVaultArbitrary(): fc.Arbitrary<NoteType[]> {

@@ -21,6 +21,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 
 ### Fixed
 - Fixed the lock-screen Unlock button so translated labels expand without wrapping
+- Fixed encrypted note writes so rapid updates, reordering, and deletion cannot use stale manifest state
 
 ### Security
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance

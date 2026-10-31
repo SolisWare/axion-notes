@@ -70,17 +70,18 @@ describe("NoteService encrypted storage", () => {
       content: "Updated encrypted note content"
     };
     const addedNote = createNote("note-3", "New encrypted note", "Added encrypted note content", new Date("2026-10-29T13:00:00.000Z"));
-    service.setNote(updatedFirstNote);
-    await waitForEncryptedNotes(context, [updatedFirstNote, context.notes[1]]);
-
-    service.setNote(addedNote);
-    await waitForEncryptedNotes(context, [updatedFirstNote, context.notes[1], addedNote]);
-
-    service.setNoteOrder([addedNote.id, updatedFirstNote.id, context.notes[1].id]);
-    await waitForEncryptedNotes(context, [addedNote, updatedFirstNote, context.notes[1]]);
-
-    service.deleteNote(context.notes[1].id);
-    await waitForEncryptedNotes(context, [addedNote, updatedFirstNote]);
+    await persistAndVerifyEncryptedNotes(context, [updatedFirstNote, context.notes[1]], () => {
+      service.setNote(updatedFirstNote);
+    });
+    await persistAndVerifyEncryptedNotes(context, [updatedFirstNote, context.notes[1], addedNote], () => {
+      service.setNote(addedNote);
+    });
+    await persistAndVerifyEncryptedNotes(context, [addedNote, updatedFirstNote, context.notes[1]], () => {
+      service.setNoteOrder([addedNote.id, updatedFirstNote.id, context.notes[1].id]);
+    });
+    await persistAndVerifyEncryptedNotes(context, [addedNote, updatedFirstNote], () => {
+      service.deleteNote(context.notes[1].id);
+    });
   }, 15_000);
 
   it("keeps encrypted data unchanged when an incorrect password is used", async () => {
@@ -169,27 +170,40 @@ async function writePlaintextNotes(appDataDir: string, notes: NoteType[]): Promi
   await fs.promises.writeFile(path.join(appDataDir, "note-order.json"), JSON.stringify(notes.map((note) => note.id)), "utf-8");
 }
 
-async function waitForEncryptedNotes(context: TestContext, expectedNotes: NoteType[]): Promise<void> {
+async function persistAndVerifyEncryptedNotes(
+  context: TestContext,
+  expectedNotes: NoteType[],
+  persist: () => void
+): Promise<void> {
+  const manifestPath = path.join(context.appDataDir, "notes.manifest");
+  const previousManifest = await fs.promises.readFile(manifestPath, "utf-8");
+
+  persist();
+  await waitForManifestUpdate(manifestPath, previousManifest);
+
+  const restartedService = createService(context);
+  restartedService.applyEncryptionSetting(true);
+  await restartedService.unlockEncryption(password);
+
+  expect(serializeNotes(await restartedService.getNotes())).toEqual(serializeNotes(expectedNotes));
+}
+
+async function waitForManifestUpdate(manifestPath: string, previousManifest: string): Promise<void> {
   const timeoutAt = Date.now() + 12_000;
-  let lastError: unknown;
 
   while (Date.now() < timeoutAt) {
     try {
-      const service = createService(context);
-      service.applyEncryptionSetting(true);
-      await service.unlockEncryption(password);
-
-      if (JSON.stringify(serializeNotes(await service.getNotes())) === JSON.stringify(serializeNotes(expectedNotes))) {
+      if (await fs.promises.readFile(manifestPath, "utf-8") !== previousManifest) {
         return;
       }
-    } catch (error) {
-      lastError = error;
+    } catch {
+      // The atomic replacement may briefly leave no manifest to read.
     }
 
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
 
-  throw lastError ?? new Error("Encrypted note update did not persist before the timeout.");
+  throw new Error("Encrypted note update did not persist before the timeout.");
 }
 
 async function readTree(directory: string): Promise<string> {
