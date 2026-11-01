@@ -26,6 +26,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ### Security
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
 - Added scheduled encryption fuzz testing and downloadable reports to continuously validate encrypted-note data integrity
+- Added GitHub artifact attestations for release archives and platform installers to verify CI build provenance
 
 ## [v0.5.0-beta.1] - October 28, 2026 - Vault
 - Added an Electron-only lock screen with password unlock, native Lock Notes menu action, and keyboard shortcut support
