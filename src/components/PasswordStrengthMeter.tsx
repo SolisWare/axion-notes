@@ -89,7 +89,13 @@ function PasswordStrengthMeter(props: PasswordStrengthMeterProps) {
   const hint = passwordStrength ? passwordStrength.warning ?? passwordStrength.suggestions[0] ?? "" : "";
 
   return (
-    <div className={styles.passwordStrengthMeter} style={meterStyle}>
+    <div
+      aria-atomic="true"
+      aria-live="polite"
+      className={styles.passwordStrengthMeter}
+      role="status"
+      style={meterStyle}
+    >
       <div className={styles.passwordStrengthHeader}>
         <span>{t("passwordStrength")}</span>
         {passwordStrength && (
