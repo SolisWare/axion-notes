@@ -34,6 +34,7 @@ type NoteFormatToolbarProps = {
   formatState: RichTextFormatState;
   onFormatAction: (command: RichTextFormatAction) => void;
   className?: string;
+  pinned?: boolean;
   surfaceColor?: string;
   compactInlineStyles?: boolean;
   selectedFont?: NoteFontPreference;
@@ -70,9 +71,13 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
   const toolbarStyle = {
     "--note-format-toolbar-button-hover-background": appColors.SETTINGS_NAV_HOVER_BACKGROUND,
     "--note-format-toolbar-button-hover-text": appColors.SETTINGS_NAV_HOVER_TEXT,
-    "--note-format-toolbar-background": props.surfaceColor
+    "--note-format-toolbar-background": props.pinned
+      ? `color-mix(in srgb, ${props.surfaceColor ?? appColors.SETTINGS_CONTENT_BACKGROUND} 32%, ${appColors.SETTINGS_CONTENT_BACKGROUND})`
+      : props.surfaceColor
       ? `color-mix(in srgb, ${props.surfaceColor} 42%, rgba(255, 255, 255, 0.96))`
-      : undefined
+      : undefined,
+    "--note-format-toolbar-divider": `color-mix(in srgb, ${appColors.NOTE_TEXT} 20%, transparent)`,
+    "--note-format-toolbar-text": appColors.NOTE_TEXT
   } as CSSProperties;
 
   useEffect(() => {
@@ -119,11 +124,12 @@ function NoteFormatToolbar(props: NoteFormatToolbarProps) {
 
   return (
     <div
-      className={`${styles.toolbar} ${props.className ?? ""}`}
+      className={`${styles.toolbar} ${props.pinned ? styles.pinnedToolbar : ""} ${props.className ?? ""}`}
       ref={toolbarRef}
       role="toolbar"
       aria-label={t("format")}
       data-note-format-toolbar="true"
+      data-note-format-toolbar-presentation={props.pinned ? "pinned" : "default"}
       onMouseDown={(event) => event.preventDefault()}
       style={toolbarStyle}
     >

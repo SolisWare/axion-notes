@@ -23,6 +23,7 @@
   min-height: 100%;
   box-sizing: border-box;
   padding-left: 0.45em;
+  padding-top: var(--note-rich-text-content-top-inset, 0);
   outline: none;
   border: none;
   font-family: var(--note-rich-text-font-family);

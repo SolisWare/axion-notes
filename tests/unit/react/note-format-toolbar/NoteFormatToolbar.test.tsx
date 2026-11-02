@@ -84,6 +84,39 @@ describe("NoteFormatToolbar", () => {
       expect(screen.getByRole("button", { name: "Font" })).toHaveAttribute("aria-expanded", "false");
     });
 
+    it("uses the pinned presentation for the note-window toolbar", () => {
+      renderNoteFormatToolbar({ pinned: true });
+
+      expect(screen.getByRole("toolbar", { name: "Format" })).toHaveAttribute("data-note-format-toolbar-presentation", "pinned");
+    });
+
+    it("opens its font menus when pinned and formatting is available", async () => {
+      const user = userEvent.setup();
+
+      renderNoteFormatToolbar({ pinned: true });
+      await user.click(screen.getByRole("button", { name: "Font size" }));
+
+      expect(screen.getByRole("menu", { name: "Font size" })).toBeInTheDocument();
+    });
+
+    it("keeps its font controls disabled when the editor is unfocused", async () => {
+      const user = userEvent.setup();
+
+      renderNoteFormatToolbar({
+        pinned: true,
+        formatState: createFormatState({ canFormat: false })
+      });
+
+      const fontSizeButton = screen.getByRole("button", { name: "Font size" });
+      const fontButton = screen.getByRole("button", { name: "Font" });
+      expect(fontSizeButton).toBeDisabled();
+      expect(fontButton).toBeDisabled();
+
+      await user.click(fontSizeButton);
+
+      expect(screen.queryByRole("menu", { name: "Font size" })).not.toBeInTheDocument();
+    });
+
     it("disables every action when formatting is unavailable", () => {
       renderNoteFormatToolbar({ formatState: createFormatState({ canFormat: false }) });
 

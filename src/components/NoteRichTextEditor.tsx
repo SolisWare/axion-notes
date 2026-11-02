@@ -395,6 +395,7 @@ type NoteRichTextEditorProps = {
   theme?: SystemTheme;
   fontFamily?: string;
   fontSize?: NoteFontSize;
+  contentTopInset?: number;
   placeholder: string;
   content: string;
   richContent?: TiptapDocument;
@@ -796,6 +797,7 @@ function NoteRichTextEditor(props: NoteRichTextEditorProps) {
     "--note-rich-text-color": appColors.NOTE_TEXT,
     "--note-rich-text-font-family": props.fontFamily ?? NOTE_TEXTAREA_DEFAULT_FONT_FAMILY,
     "--note-rich-text-font-size": `${props.fontSize ?? DEFAULT_NOTE_CONTENT_FONT_SIZE}px`,
+    "--note-rich-text-content-top-inset": `${props.contentTopInset ?? 0}px`,
     "--note-rich-text-highlight-background": appColors.NOTE_HIGHLIGHT_BACKGROUND,
     "--note-rich-text-highlight-color": appColors.NOTE_HIGHLIGHT_TEXT,
     "--note-rich-text-inline-code-background": appColors.NOTE_INLINE_CODE_BACKGROUND,

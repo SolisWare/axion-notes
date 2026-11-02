@@ -193,6 +193,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     marginBottom: "4px",
     padding: "0 2px"
   },
+  noteTitleWrapperWithPinnedFormatToolbar: {
+    marginBottom: 0
+  },
   noteTitleInput: {
     display: "block",
     width: "100%",
@@ -220,6 +223,9 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
     height: 1,
     marginTop: 4,
     width: "100%"
+  },
+  noteTitleUnderlineWithPinnedFormatToolbar: {
+    marginTop: 12
   },
   noteContent: {
     position: "relative",
@@ -608,11 +614,21 @@ function Note(props: NoteProps) {
             />
           </div>
         )}
-        <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
+        <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false && !props.showFormatToolbar ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
           <div className={classes.noteBody}>
+            {props.showFormatToolbar && props.richTextEditorEnabled && (
+              <NoteFormatToolbar
+                theme={props.theme}
+                formatState={formatState}
+                pinned
+                surfaceColor={color}
+                onFormatAction={handleFormatAction}
+                selectedFont={props.noteFont}
+              />
+            )}
             {!isTitleHidden && (
               <div
-                className={classes.noteTitleWrapper}
+                className={`${classes.noteTitleWrapper} ${props.showFormatToolbar ? classes.noteTitleWrapperWithPinnedFormatToolbar : ""}`}
                 style={noteTitleWrapperStyle}
               >
                 <input
@@ -631,19 +647,10 @@ function Note(props: NoteProps) {
                   onChange={handleTitleChange}
                 />
                 <div
-                  className={classes.noteTitleUnderline}
+                  className={`${classes.noteTitleUnderline} ${props.showFormatToolbar ? classes.noteTitleUnderlineWithPinnedFormatToolbar : ""}`}
                   style={{ backgroundColor: appColors.NOTE_TITLE_UNDERLINE }}
                 />
               </div>
-            )}
-            {props.showFormatToolbar && props.richTextEditorEnabled && (
-              <NoteFormatToolbar
-                theme={props.theme}
-                formatState={formatState}
-                surfaceColor={color}
-                onFormatAction={handleFormatAction}
-                selectedFont={props.noteFont}
-              />
             )}
             <div className={classes.noteContent}>
               {!props.showFormatToolbar && props.richTextEditorEnabled && props.showFloatingFormatToolbar !== false && (
@@ -659,6 +666,7 @@ function Note(props: NoteProps) {
                   theme={props.theme}
                   fontFamily={noteFontFamily}
                   fontSize={props.contentFontSize}
+                  contentTopInset={props.showFormatToolbar ? 16 : undefined}
                   placeholder={t("typeHere")}
                   content={note.content}
                   richContent={note.richContent}
