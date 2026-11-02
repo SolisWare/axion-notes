@@ -23,9 +23,7 @@ export const storageApi = {
 
   getNotes: async (): Promise<NoteType[]> => {
     try {
-      const notes = await receive<NoteType[]>(channels.storage.getNotes);
-      console.log(`Loaded ${notes.length} notes`);
-      return notes;
+      return await receive<NoteType[]>(channels.storage.getNotes);
     } catch (err) {
       console.error('Failed to load notes:', (err as Error).message);
       return [];
@@ -34,9 +32,7 @@ export const storageApi = {
 
   getNotesWithAccessState: async (): Promise<NotesWithAccessState> => {
     try {
-      const state = await receive<NotesWithAccessState>(channels.storage.getNotesWithAccessState);
-      console.log(`Loaded ${state.notes.length} notes`);
-      return state;
+      return await receive<NotesWithAccessState>(channels.storage.getNotesWithAccessState);
     } catch (err) {
       console.error('Failed to load notes:', (err as Error).message);
       return {
