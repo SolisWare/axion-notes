@@ -133,7 +133,7 @@ function Editor(props: EditorProps) {
               <label className={styles.settingsSectionTitle} htmlFor="note-title-font">
                 {t("titleFont")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("titleFontDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("titleFontHelp")}</p>
             </div>
             <div className={styles.noteFontControls}>
               <select
@@ -173,7 +173,7 @@ function Editor(props: EditorProps) {
               <label className={styles.settingsSectionTitle} htmlFor="note-title-font-size">
                 {t("titleFontSize")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("titleFontSizeDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("titleFontSizeHelp")}</p>
             </div>
             <select
               className={styles.settingsSelect}
@@ -196,7 +196,7 @@ function Editor(props: EditorProps) {
               <label className={styles.settingsSectionTitle} id="editor-note-text-title" htmlFor="note-font">
                 {t("contentFont")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("contentFontDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("contentFontHelp")}</p>
             </div>
             <div className={styles.noteFontControls}>
               <select
@@ -236,7 +236,7 @@ function Editor(props: EditorProps) {
               <label className={styles.settingsSectionTitle} htmlFor="note-content-font-size">
                 {t("contentFontSize")}
               </label>
-              <p className={styles.settingsSectionDescription}>{t("contentFontSizeDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("contentFontSizeHelp")}</p>
             </div>
             <select
               className={styles.settingsSelect}

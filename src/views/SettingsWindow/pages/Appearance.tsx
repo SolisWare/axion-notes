@@ -122,7 +122,7 @@ function Appearance(props: AppearanceProps) {
           <div className={`${styles.settingsRow} ${styles.noteFontRow}`}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle} id="show-note-titles-title">{t("showTitles")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("showTitlesDescription")}</p>
+              <p className={styles.settingsSectionDescription}>{t("showTitlesHelp")}</p>
             </div>
             <label className={styles.switchControl}>
               <input
