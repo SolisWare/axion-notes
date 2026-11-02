@@ -11,6 +11,7 @@ import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { PasswordCrackTimeEstimate } from "../../../../src/security/PasswordCrackTimeEstimate";
 import { PasswordStrengthLevel } from "../../../../src/security/PasswordStrengthLevel";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
@@ -19,7 +20,13 @@ import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiM
 
 const { estimatePasswordStrength, translate } = vi.hoisted(() => ({
   estimatePasswordStrength: vi.fn(),
-  translate: vi.fn((key: string) => key)
+  translate: vi.fn((key: string, values?: Record<string, string>) => {
+    if (key === "estimatedResistance") {
+      return `Estimated resistance: ${values?.estimate}`;
+    }
+
+    return key;
+  })
 }));
 
 vi.mock("react-i18next", () => ({
@@ -32,14 +39,60 @@ vi.mock("../../../../src/security/passwordStrength", () => ({
   estimatePasswordStrength
 }));
 
-vi.mock("../../../../src/components/PasswordStrengthMeter", () => ({
-  default: () => <div data-testid="password-strength-meter" />
-}));
-
 describe("Security password dialog integration", () => {
   beforeEach(() => {
-    estimatePasswordStrength.mockReturnValue({ level: PasswordStrengthLevel.STRONG });
+    estimatePasswordStrength.mockReturnValue({
+      level: PasswordStrengthLevel.STRONG,
+      score: 3,
+      estimatedCrackTime: PasswordCrackTimeEstimate.YEARS,
+      suggestions: ["Use a longer password"]
+    });
     translate.mockClear();
+  });
+
+  it("updates the real strength meter while setting a lock password", async () => {
+    const user = userEvent.setup();
+    installDesktopApiMock({
+      security: {
+        hasPassword: vi.fn().mockResolvedValue(false)
+      }
+    });
+
+    renderSecurity();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "notesLock" }));
+    await screen.findByRole("dialog", { name: "setLockPassword" });
+    expect(screen.getByRole("status")).toHaveTextContent("enterPasswordToEstimateStrength");
+
+    await user.type(screen.getByLabelText("newPassword"), "strong-password");
+
+    expect(screen.getByRole("status")).toHaveTextContent("strong");
+    expect(screen.getByRole("status")).toHaveTextContent("Estimated resistance: time.years");
+    expect(screen.getByRole("status")).toHaveTextContent("Use a longer password");
+
+    await user.type(screen.getByLabelText("confirmPassword"), "strong-password");
+
+    expect(screen.getByRole("status")).toHaveTextContent("strong");
+  });
+
+  it("does not populate the strength meter from the current password in the change-password flow", async () => {
+    const user = userEvent.setup();
+    const appSettings = {
+      ...defaultAppSettings,
+      lockScreenEnabled: true
+    };
+
+    renderSecurity({ appSettings });
+
+    await user.click(screen.getByRole("button", { name: "changePassword" }));
+    await screen.findByRole("dialog", { name: "changePassword" });
+    await user.type(screen.getByLabelText("currentPassword"), "current-password");
+
+    expect(screen.getByRole("status")).toHaveTextContent("enterPasswordToEstimateStrength");
+
+    await user.type(screen.getByLabelText("newPassword"), "strong-password");
+
+    expect(screen.getByRole("status")).toHaveTextContent("strong");
   });
 
   it("sets a password and enables the lock screen when no password exists", async () => {
