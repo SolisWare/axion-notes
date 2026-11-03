@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { Dialog, DialogContent } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { AppSettings } from "../settings/AppSettings";
 import { SystemTheme } from "../theme/SystemTheme";
 import NoteWindow from "../views/NoteWindow/NoteWindow";
@@ -20,15 +21,19 @@ type WebNoteWindowDialogProps = {
 };
 
 function WebNoteWindowDialog(props: WebNoteWindowDialogProps) {
+  const { t } = useTranslation();
   const shouldRenderNoteWindow = props.open && props.noteId !== null;
 
   return (
     <Dialog
-      open={props.open}
+      open={shouldRenderNoteWindow}
       onClose={props.onClose}
       maxWidth={false}
       disableRestoreFocus
       PaperProps={{
+        "aria-label": t("note"),
+        "aria-labelledby": undefined,
+        "aria-modal": true,
         className: styles.dialogPaper
       }}
     >
