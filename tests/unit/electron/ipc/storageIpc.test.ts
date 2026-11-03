@@ -46,7 +46,8 @@ describe("storage IPC lock boundary", () => {
       deleteAllNotes: vi.fn()
     };
     registerStorageIpc({
-      appDataDir: "/private/notes",
+    appBackupDir: "/private/backup",
+    appDataDir: "/private/notes",
       lockStateService: lockStateService as unknown as LockStateService,
       noteService: noteService as unknown as NoteService
     });
@@ -57,6 +58,7 @@ describe("storage IPC lock boundary", () => {
       notes: []
     });
     await expect(invoke(channels.storage.getNotesFolderLocation, createEvent())).resolves.toBe("");
+    await expect(invoke(channels.storage.getBackupFolderLocation, createEvent())).resolves.toBe("");
 
     emit(channels.storage.setNote, createEvent(), note);
     emit(channels.storage.setNoteOrder, createEvent(), [note.id]);
@@ -68,6 +70,27 @@ describe("storage IPC lock boundary", () => {
     expect(noteService.setNoteOrder).not.toHaveBeenCalled();
     expect(noteService.deleteNote).not.toHaveBeenCalled();
     expect(noteService.deleteAllNotes).not.toHaveBeenCalled();
+  });
+
+  it("returns the managed backup folder while unlocked", async () => {
+    const lockStateService = {
+      getIsLocked: vi.fn(() => false)
+    };
+    const noteService = {
+      getNotes: vi.fn(async () => []),
+      setNote: vi.fn(),
+      setNoteOrder: vi.fn(),
+      deleteNote: vi.fn(),
+      deleteAllNotes: vi.fn()
+    };
+    registerStorageIpc({
+      appBackupDir: "/private/backup",
+      appDataDir: "/private/notes",
+      lockStateService: lockStateService as unknown as LockStateService,
+      noteService: noteService as unknown as NoteService
+    });
+
+    await expect(invoke(channels.storage.getBackupFolderLocation, createEvent())).resolves.toBe("/private/backup");
   });
 });
 

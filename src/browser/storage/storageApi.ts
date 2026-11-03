@@ -67,6 +67,10 @@ export const storageApi = {
     return i18n.t("localStorage");
   },
 
+  getBackupFolderLocation: async (): Promise<string> => {
+    return "";
+  },
+
   deleteNote: (noteId: string) => {
     try {
       deleteNote(noteId);

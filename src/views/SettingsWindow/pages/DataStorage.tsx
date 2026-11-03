@@ -11,6 +11,7 @@ import styles from "./SettingsPages.module.css";
 function DataStorage() {
   const { t } = useTranslation();
   const [notesLocation, setNotesFolderLocation] = useState("");
+  const [backupLocation, setBackupFolderLocation] = useState("");
   const [passwordEncryptionDataLocation, setSecurityFolderLocation] = useState("");
   const [settingsLocation, setSettingsFolderLocation] = useState("");
 
@@ -19,6 +20,12 @@ function DataStorage() {
       .then(setNotesFolderLocation)
       .catch((err: Error) => {
         console.error("Failed to load notes folder location:", err.message);
+      });
+
+    window.api.storage.getBackupFolderLocation()
+      .then(setBackupFolderLocation)
+      .catch((err: Error) => {
+        console.error("Failed to load backup folder location:", err.message);
       });
 
     window.api.settings.getSettingsFolderLocation()
@@ -54,6 +61,12 @@ function DataStorage() {
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t("passwordEncryptionDataLocation")}</h3>
               <p className={styles.settingsSectionDescription}>{passwordEncryptionDataLocation}</p>
+            </div>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle}>{t("backupLocation")}</h3>
+              <p className={styles.settingsSectionDescription}>{backupLocation}</p>
             </div>
           </div>
         </div>

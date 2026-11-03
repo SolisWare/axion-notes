@@ -30,6 +30,7 @@ export interface IElectronAPI {
   storage: {
     getNotes: () => Promise<NoteType[]>;
     getNotesWithAccessState: () => Promise<NotesWithAccessState>;
+    getBackupFolderLocation: () => Promise<string>;
     getNotesFolderLocation: () => Promise<string>;
     setNote: (note: NoteType) => void;
     setNoteOrder: (noteIds: string[]) => void;

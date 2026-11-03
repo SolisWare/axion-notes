@@ -19,6 +19,7 @@ import { NoteService } from "../storage/NoteService";
 import { SettingsService } from "../storage/SettingsService";
 
 type IpcHandlerOptions = {
+  appBackupDir: string;
   appDataDir: string;
   appSecurityDir: string;
   mainWindowStateFilePath: string;
@@ -53,6 +54,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   setStorageMigrationActive(options.noteService.getIsStorageMigrationInProgress());
   options.noteService.onStorageMigrationStateChange(setStorageMigrationActive);
   registerStorageIpc({
+    appBackupDir: options.appBackupDir,
     appDataDir: options.appDataDir,
     lockStateService: options.lockStateService,
     noteService: options.noteService

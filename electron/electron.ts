@@ -42,6 +42,7 @@ if (process.env.AXION_NOTES_E2E_USER_DATA_DIR) {
 
 const appDir = path.join(app.getPath("userData"));
 const appDataDir = path.join(appDir, 'data');
+const appBackupDir = path.join(appDir, 'backup');
 const appSecurityDir = path.join(appDir, 'security');
 const appSettingsDir = path.join(appDir, 'settings');
 const appSettingsFilePath = path.join(appSettingsDir, 'app-settings.json');
@@ -173,6 +174,7 @@ app.on("ready", async () => {
   const splashWindow = createSplashWindow();
 
   registerIpcHandlers({
+    appBackupDir,
     appDataDir,
     appSecurityDir,
     lockStateService,

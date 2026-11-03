@@ -34,6 +34,7 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
         status: NoteAccessStatus.AVAILABLE,
         notes: []
       }),
+      getBackupFolderLocation: vi.fn().mockResolvedValue(""),
       getNotesFolderLocation: vi.fn().mockResolvedValue(""),
       setNote: vi.fn(),
       setNoteOrder: vi.fn(),

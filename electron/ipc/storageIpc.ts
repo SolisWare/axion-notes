@@ -15,6 +15,7 @@ import { NoteService } from "../storage/NoteService";
 import { protectedHandle, protectedOn } from "./protectedIpc";
 
 type StorageIpcOptions = {
+  appBackupDir: string;
   appDataDir: string;
   lockStateService: LockStateService;
   noteService: NoteService;
@@ -63,6 +64,10 @@ export function registerStorageIpc(options: StorageIpcOptions): void {
 
   protectedHandle<string, []>(channels.storage.getNotesFolderLocation, { ...options, fallback: "" }, () => {
     return options.appDataDir;
+  });
+
+  protectedHandle<string, []>(channels.storage.getBackupFolderLocation, { ...options, fallback: "" }, () => {
+    return options.appBackupDir;
   });
 
   protectedOn<[string]>(channels.storage.deleteNote, options, (_, noteId) => {

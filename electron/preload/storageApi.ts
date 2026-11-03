@@ -51,6 +51,15 @@ export const storageApi = {
     }
   },
 
+  getBackupFolderLocation: async (): Promise<string> => {
+    try {
+      return await receive<string>(channels.storage.getBackupFolderLocation);
+    } catch (err) {
+      console.error('Failed to load backup folder location:', (err as Error).message);
+      return "";
+    }
+  },
+
   deleteNote: (noteId: string) => {
     send(channels.storage.deleteNote, noteId);
   },

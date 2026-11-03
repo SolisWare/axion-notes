@@ -65,6 +65,7 @@ export const channels = {
     setNoteOrder: "storage.setNoteOrder",
     getNotes: "storage.getNotes",
     getNotesWithAccessState: "storage.getNotesWithAccessState",
+    getBackupFolderLocation: "storage.getBackupFolderLocation",
     getNotesFolderLocation: "storage.getNotesFolderLocation",
     deleteNote: "storage.deleteNote",
     deleteAllNotes: "storage.deleteAllNotes",
