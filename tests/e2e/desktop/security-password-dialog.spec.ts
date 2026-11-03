@@ -61,6 +61,27 @@ test.describe("Security password dialog", () => {
 
     await expect(desktopApp.page.getByText("You don't have any notes yet!")).toBeVisible();
   });
+
+  test("updates password strength feedback while configuring a lock password", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Security" }).click();
+    await settingsPage.locator('label:has(input[aria-labelledby="lock-screen-enabled-title"])').click();
+    await expect(settingsPage.getByRole("dialog", { name: "Set lock password" })).toBeVisible();
+
+    const passwordStrength = settingsPage.getByRole("status");
+    await expect(passwordStrength).toContainText("Enter a password to estimate its strength.");
+
+    await settingsPage.getByLabel("New password").fill(lockPassword);
+
+    await expect(passwordStrength).toContainText("Password strength");
+    await expect(passwordStrength).toContainText("Estimated resistance:");
+    await expect(passwordStrength).not.toContainText("Enter a password to estimate its strength.");
+  });
 });
 
 async function openSettings(desktopApp: TestElectronApp): Promise<Page> {
