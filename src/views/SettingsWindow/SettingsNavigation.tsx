@@ -11,6 +11,7 @@ import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import KeyboardAltOutlinedIcon from "@mui/icons-material/KeyboardAltOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import StorageOutlinedIcon from "@mui/icons-material/StorageOutlined";
+import BackupOutlinedIcon from "@mui/icons-material/BackupOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -23,6 +24,7 @@ export enum SettingsView {
   security = "security",
   shortcuts = "shortcuts",
   dataStorage = "dataStorage",
+  backups = "backups",
   license = "license",
   links = "links",
   about = "about"
@@ -57,7 +59,10 @@ export const settingsNavigationSections: SettingsNavigationSection[] = [
   {
     labelKey: "storage",
     items: [
-      { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> }
+      { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> },
+      ...(UserAgent.isElectron ? [
+        { id: SettingsView.backups, labelKey: "backups", icon: <BackupOutlinedIcon fontSize="small" /> }
+      ] : [])
     ]
   },
   {

@@ -20,6 +20,7 @@ import Editor from "./pages/Editor";
 import Security from "./pages/Security";
 import Shortcuts from "./pages/Shortcuts";
 import DataStorage from "./pages/DataStorage";
+import Backups from "./pages/Backups";
 import License from "./pages/License";
 import Links from "./pages/Links";
 import About from "./pages/About";
@@ -77,6 +78,9 @@ function SettingsWindow(props: SettingsWindowProps) {
       break;
     case SettingsView.dataStorage:
       page = <DataStorage />;
+      break;
+    case SettingsView.backups:
+      page = <Backups />;
       break;
     case SettingsView.license:
       page = <License theme={props.theme} />;
