@@ -16,6 +16,7 @@ export const channels = {
     createArchive: "backup.createArchive",
     getState: "backup.getState",
     initialize: "backup.initialize",
+    saveCopy: "backup.saveCopy",
     updateContentSelection: "backup.updateContentSelection"
   },
   menu: {

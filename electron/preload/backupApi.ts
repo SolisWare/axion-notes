@@ -7,6 +7,7 @@
 import { BackupState } from "../../src/types/BackupState";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupCreateResult } from "../../src/types/BackupCreateResult";
+import { BackupSaveResult } from "../../src/types/BackupSaveResult";
 import { channels } from "../ipc/channels";
 import { receive } from "./ipcHelpers";
 
@@ -21,6 +22,10 @@ export const backupApi = {
 
   initialize: async (): Promise<BackupState | undefined> => {
     return receive<BackupState | undefined>(channels.backup.initialize);
+  },
+
+  saveCopy: async (): Promise<BackupSaveResult> => {
+    return receive<BackupSaveResult>(channels.backup.saveCopy);
   },
 
   updateContentSelection: async (contentSelection: BackupContentSelection): Promise<BackupState | undefined> => {

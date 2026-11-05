@@ -8,6 +8,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import yazl from "yazl";
 import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
+import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
 import { BackupState } from "../../src/types/BackupState";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { NoteType } from "../../src/types/NoteType";
@@ -79,6 +80,21 @@ export class BackupArchiveService {
     } catch (err) {
       console.warn("Failed to create backup archive:", err);
       return { status: BackupCreateStatus.FAILED };
+    }
+  }
+
+  /**
+   * Copies the managed archive to a user-selected location.
+   */
+  public async saveCopy(destinationPath: string): Promise<BackupSaveResult> {
+    const archivePath = path.join(this.backupDirectory, BACKUP_ARCHIVE_FILE_NAME);
+
+    try {
+      await fs.promises.copyFile(archivePath, destinationPath);
+      return { status: BackupSaveStatus.SAVED };
+    } catch (err) {
+      console.warn("Failed to save a backup copy:", err);
+      return { status: BackupSaveStatus.FAILED };
     }
   }
 

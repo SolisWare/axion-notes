@@ -18,7 +18,17 @@ const { handlers } = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => unknown>()
 }));
 
+const { showSaveDialog } = vi.hoisted(() => ({
+  showSaveDialog: vi.fn()
+}));
+
 vi.mock("electron", () => ({
+  BrowserWindow: {
+    fromWebContents: vi.fn(() => undefined)
+  },
+  dialog: {
+    showSaveDialog
+  },
   ipcMain: {
     handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => handlers.set(channel, handler))
   }
@@ -27,6 +37,7 @@ vi.mock("electron", () => ({
 beforeEach(() => {
   handlers.clear();
   vi.restoreAllMocks();
+  showSaveDialog.mockReset();
 });
 
 describe("backup IPC lock boundary", () => {
@@ -37,7 +48,8 @@ describe("backup IPC lock boundary", () => {
       updateContentSelection: vi.fn()
     };
     const backupArchiveService = {
-      createArchive: vi.fn()
+      createArchive: vi.fn(),
+      saveCopy: vi.fn()
     };
     registerBackupIpc({
       backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
@@ -49,10 +61,12 @@ describe("backup IPC lock boundary", () => {
     await expect(invoke(channels.backup.initialize)).resolves.toBeUndefined();
     await expect(invoke(channels.backup.updateContentSelection, { appSettings: false, mainWindowState: false })).resolves.toBeUndefined();
     await expect(invoke(channels.backup.createArchive)).resolves.toEqual({ status: BackupCreateStatus.FAILED });
+    await expect(invoke(channels.backup.saveCopy)).resolves.toEqual({ status: "failed" });
     expect(backupService.getState).not.toHaveBeenCalled();
     expect(backupService.initialize).not.toHaveBeenCalled();
     expect(backupService.updateContentSelection).not.toHaveBeenCalled();
     expect(backupArchiveService.createArchive).not.toHaveBeenCalled();
+    expect(backupArchiveService.saveCopy).not.toHaveBeenCalled();
   });
 
   it("returns and initializes backup state while unlocked", async () => {
@@ -66,7 +80,8 @@ describe("backup IPC lock boundary", () => {
       }))
     };
     const backupArchiveService = {
-      createArchive: vi.fn(async () => ({ status: BackupCreateStatus.CREATED, state }))
+      createArchive: vi.fn(async () => ({ status: BackupCreateStatus.CREATED, state })),
+      saveCopy: vi.fn(async () => ({ status: "saved" }))
     };
     registerBackupIpc({
       backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
@@ -81,10 +96,13 @@ describe("backup IPC lock boundary", () => {
       contentSelection: { appSettings: false, mainWindowState: true }
     });
     await expect(invoke(channels.backup.createArchive, "backup password")).resolves.toEqual({ status: BackupCreateStatus.CREATED, state });
+    showSaveDialog.mockResolvedValue({ canceled: false, filePath: "/tmp/axion-notes-backup.zip" });
+    await expect(invoke(channels.backup.saveCopy)).resolves.toEqual({ status: "saved" });
     expect(backupService.getState).toHaveBeenCalledOnce();
     expect(backupService.initialize).toHaveBeenCalledOnce();
     expect(backupService.updateContentSelection).toHaveBeenCalledWith({ appSettings: false, mainWindowState: true });
     expect(backupArchiveService.createArchive).toHaveBeenCalledWith("backup password");
+    expect(backupArchiveService.saveCopy).toHaveBeenCalledWith("/tmp/axion-notes-backup.zip");
   });
 });
 

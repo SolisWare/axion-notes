@@ -22,6 +22,8 @@ const translations: Record<string, string> = {
   backupConfigurationCreated: "Backup configuration created",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
   backupCreated: "Backup created",
+  backupCopySaved: "Backup copy saved",
+  backupCopySaveFailed: "Couldn't save the backup copy. Try again.",
   backupSetupFailed: "Couldn't set up backups. Try again.",
   createBackup: "Create backup",
   createNewBackup: "Create new backup",
@@ -38,6 +40,8 @@ const translations: Record<string, string> = {
   mainWindowLayout: "Main-window layout",
   mainWindowLayoutHelp: "Main window size, position, and selected notes layout",
   save: "Save",
+  saveBackupCopy: "Save a copy…",
+  savingBackupCopy: "Saving copy...",
   saving: "Saving...",
   setUpBackups: "Set up backups",
   settingUpBackups: "Setting up..."
@@ -153,5 +157,27 @@ describe("Backups", () => {
     expect(await screen.findByRole("button", { name: "Create new backup" })).toBeInTheDocument();
     expect(screen.getByText("Last backup created")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Backup created");
+  });
+
+  it("saves a copy of an existing backup", async () => {
+    const user = userEvent.setup();
+    const desktopApi = installDesktopApiMock({
+      backup: {
+        getState: vi.fn().mockResolvedValue({
+          version: 1,
+          initializedAt: "2026-11-05T12:00:00.000Z",
+          contentSelection: { appSettings: true, mainWindowState: true },
+          lastBackupCreatedAt: "2026-11-05T12:30:00.000Z"
+        }),
+        saveCopy: vi.fn().mockResolvedValue({ status: "saved" })
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Save a copy…" }));
+
+    expect(desktopApi.backup.saveCopy).toHaveBeenCalledOnce();
+    expect(screen.getByRole("status")).toHaveTextContent("Backup copy saved");
   });
 });

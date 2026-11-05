@@ -14,6 +14,7 @@ import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppSettings } from "../../../settings/AppSettings";
 import { BackupContentSelection } from "../../../types/BackupContentSelection";
 import { BackupCreateStatus } from "../../../types/BackupCreateResult";
+import { BackupSaveStatus } from "../../../types/BackupSaveResult";
 import { BackupState } from "../../../types/BackupState";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import styles from "./SettingsPages.module.css";
@@ -32,7 +33,9 @@ function Backups(props: BackupsProps) {
   const [isOptionsDialogOpen, setOptionsDialogOpen] = useState(false);
   const [isBackupPasswordDialogOpen, setBackupPasswordDialogOpen] = useState(false);
   const [isCreatingBackup, setCreatingBackup] = useState(false);
+  const [isSavingBackupCopy, setSavingBackupCopy] = useState(false);
   const [hasBackupCreationError, setHasBackupCreationError] = useState(false);
+  const [hasBackupCopySaveError, setHasBackupCopySaveError] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
@@ -129,6 +132,26 @@ function Backups(props: BackupsProps) {
     return createBackup(values.currentPassword);
   };
 
+  const handleSaveCopy = async (): Promise<void> => {
+    setSavingBackupCopy(true);
+    setHasBackupCopySaveError(false);
+
+    try {
+      const result = await window.api.backup.saveCopy();
+
+      if (result.status === BackupSaveStatus.SAVED) {
+        setToastMessage(t("backupCopySaved"));
+      } else if (result.status === BackupSaveStatus.FAILED) {
+        setHasBackupCopySaveError(true);
+      }
+    } catch (err) {
+      console.error("Failed to save a backup copy:", (err as Error).message);
+      setHasBackupCopySaveError(true);
+    } finally {
+      setSavingBackupCopy(false);
+    }
+  };
+
   const isInitialized = backupState !== undefined;
   const lastBackupCreatedAt = backupState?.lastBackupCreatedAt;
   const lastBackupDate = lastBackupCreatedAt
@@ -162,7 +185,7 @@ function Backups(props: BackupsProps) {
                 {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
               </button>
             ) : (
-              <button className={styles.settingsButton} disabled={isCreatingBackup} type="button" onClick={() => void createBackup()}>
+              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void createBackup()}>
                 {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
               </button>
             )}
@@ -173,9 +196,17 @@ function Backups(props: BackupsProps) {
           {hasBackupCreationError && (
             <p className={styles.settingsSectionDescription} role="alert">{t("backupCreateFailed")}</p>
           )}
+          {hasBackupCopySaveError && (
+            <p className={styles.settingsSectionDescription} role="alert">{t("backupCopySaveFailed")}</p>
+          )}
         </div>
         {isInitialized && (
           <div className={styles.backupActions}>
+            {lastBackupCreatedAt && (
+              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void handleSaveCopy()}>
+                {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
+              </button>
+            )}
             <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
               {t("options")}
             </button>

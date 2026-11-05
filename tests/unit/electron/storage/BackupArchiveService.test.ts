@@ -83,6 +83,25 @@ describe("BackupArchiveService", () => {
     await expect(fs.promises.access(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))).resolves.toBeUndefined();
     expect(noteService.getNotesForBackup).toHaveBeenCalledTimes(2);
   });
+
+  it("saves a copy of the managed archive to the selected destination", async () => {
+    const { backupDirectory, service, stateStorage } = await createService(true);
+    const destinationPath = path.join(backupDirectory, "exported-backup.zip");
+    await stateStorage.setState({
+      version: 1,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: false,
+        mainWindowState: false
+      }
+    });
+    await service.createArchive();
+
+    await expect(service.saveCopy(destinationPath)).resolves.toEqual({ status: "saved" });
+    await expect(fs.promises.readFile(destinationPath)).resolves.toEqual(
+      await fs.promises.readFile(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))
+    );
+  });
 });
 
 async function createService(isEncryptionUnlocked: boolean): Promise<{
