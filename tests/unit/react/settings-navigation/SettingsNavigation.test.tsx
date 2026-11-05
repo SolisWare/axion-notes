@@ -12,11 +12,11 @@ vi.mock("../../../../src/utils/UserAgent", () => ({
   }
 }));
 
-import { SettingsView, settingsNavigationSections } from "../../../../src/views/SettingsWindow/SettingsNavigation";
+import { getSettingsNavigationSections, SettingsView } from "../../../../src/views/SettingsWindow/SettingsNavigation";
 
 describe("Settings navigation", () => {
   it("shows Backups alongside Data & storage in the desktop Storage section", () => {
-    const storageSection = settingsNavigationSections.find((section) => section.labelKey === "storage");
+    const storageSection = getSettingsNavigationSections().find((section) => section.labelKey === "storage");
 
     expect(storageSection?.items.map((item) => item.id)).toEqual([
       SettingsView.dataStorage,

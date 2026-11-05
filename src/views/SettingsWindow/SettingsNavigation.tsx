@@ -41,38 +41,40 @@ export type SettingsNavigationSection = {
   items: SettingsNavigationItem[];
 };
 
-export const settingsNavigationSections: SettingsNavigationSection[] = [
-  {
-    labelKey: "preferences",
-    items: [
-      { id: SettingsView.general, labelKey: "general", icon: <AppsOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.appearance, labelKey: "appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
-      { id: SettingsView.editor, labelKey: "editor", icon: <EditNoteOutlinedIcon fontSize="small" /> },
-      ...(UserAgent.isElectron ? [
-        { id: SettingsView.security, labelKey: "security", icon: <SecurityOutlinedIcon fontSize="small" /> }
-      ] : []),
-      ...(UserAgent.isElectron ? [
-        { id: SettingsView.shortcuts, labelKey: "shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
-      ] : [])
-    ]
-  },
-  {
-    labelKey: "storage",
-    items: [
-      { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> },
-      ...(UserAgent.isElectron ? [
-        { id: SettingsView.backups, labelKey: "backups", icon: <BackupOutlinedIcon fontSize="small" /> }
-      ] : [])
-    ]
-  },
-  {
-    labelKey: "info",
-    items: [
-      ...(!UserAgent.isElectron ? [
-        { id: SettingsView.license, labelKey: "license", icon: <ArticleOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.links, labelKey: "links", icon: <LinkOutlinedIcon fontSize="small" /> },
-        { id: SettingsView.about, labelKey: "about", icon: <InfoOutlinedIcon fontSize="small" /> }
-      ] : [])
-    ]
-  }
-];
+export function getSettingsNavigationSections(): SettingsNavigationSection[] {
+  return [
+    {
+      labelKey: "preferences",
+      items: [
+        { id: SettingsView.general, labelKey: "general", icon: <AppsOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.appearance, labelKey: "appearance", icon: <PaletteOutlinedIcon fontSize="small" /> },
+        { id: SettingsView.editor, labelKey: "editor", icon: <EditNoteOutlinedIcon fontSize="small" /> },
+        ...(UserAgent.isElectron ? [
+          { id: SettingsView.security, labelKey: "security", icon: <SecurityOutlinedIcon fontSize="small" /> }
+        ] : []),
+        ...(UserAgent.isElectron ? [
+          { id: SettingsView.shortcuts, labelKey: "shortcuts", icon: <KeyboardAltOutlinedIcon fontSize="small" /> }
+        ] : [])
+      ]
+    },
+    {
+      labelKey: "storage",
+      items: [
+        { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> },
+        ...(UserAgent.isElectron ? [
+          { id: SettingsView.backups, labelKey: "backups", icon: <BackupOutlinedIcon fontSize="small" /> }
+        ] : [])
+      ]
+    },
+    {
+      labelKey: "info",
+      items: [
+        ...(!UserAgent.isElectron ? [
+          { id: SettingsView.license, labelKey: "license", icon: <ArticleOutlinedIcon fontSize="small" /> },
+          { id: SettingsView.links, labelKey: "links", icon: <LinkOutlinedIcon fontSize="small" /> },
+          { id: SettingsView.about, labelKey: "about", icon: <InfoOutlinedIcon fontSize="small" /> }
+        ] : [])
+      ]
+    }
+  ];
+}

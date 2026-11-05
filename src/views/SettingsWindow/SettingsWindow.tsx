@@ -24,7 +24,7 @@ import Backups from "./pages/Backups";
 import License from "./pages/License";
 import Links from "./pages/Links";
 import About from "./pages/About";
-import { SettingsView, settingsNavigationSections } from "./SettingsNavigation";
+import { getSettingsNavigationSections, SettingsView } from "./SettingsNavigation";
 import styles from "./SettingsWindow.module.css";
 
 type SettingsWindowProps = {
@@ -57,7 +57,7 @@ function SettingsWindow(props: SettingsWindowProps) {
     "--settings-color-swatch-dot": props.theme === SystemTheme.DARK ? "#E6EEF4" : "#FFFFFF"
   } as CSSProperties;
 
-  const visibleNavigationSections = settingsNavigationSections.filter((section) => section.items.length > 0);
+  const visibleNavigationSections = getSettingsNavigationSections().filter((section) => section.items.length > 0);
   const selectedPageTitle = visibleNavigationSections
     .flatMap((section) => section.items)
     .find((item) => item.id === selectedPage)?.labelKey ?? "";
