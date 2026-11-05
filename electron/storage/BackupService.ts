@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { defaultBackupContentSelection } from "../../src/settings/defaultBackupContentSelection";
+import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupState } from "../../src/types/BackupState";
 import { BackupStateStorage } from "./BackupStateStorage";
 
@@ -43,5 +44,24 @@ export class BackupService {
 
     await this.backupStateStorage.setState(state);
     return state;
+  }
+
+  /**
+   * Replaces the optional content selection while preserving backup history.
+   */
+  public async updateContentSelection(contentSelection: BackupContentSelection): Promise<BackupState> {
+    const state = await this.getState();
+
+    if (!state) {
+      throw new Error("Backups have not been initialized.");
+    }
+
+    const updatedState: BackupState = {
+      ...state,
+      contentSelection: { ...contentSelection }
+    };
+    await this.backupStateStorage.setState(updatedState);
+
+    return updatedState;
   }
 }

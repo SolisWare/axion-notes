@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { BackupContentSelection } from "../../../../src/types/BackupContentSelection";
 import { BackupState } from "../../../../src/types/BackupState";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerBackupIpc } from "../../../../electron/ipc/backupIpc";
@@ -30,7 +31,8 @@ describe("backup IPC lock boundary", () => {
   it("does not expose or initialize backups while locked", async () => {
     const backupService = {
       getState: vi.fn(),
-      initialize: vi.fn()
+      initialize: vi.fn(),
+      updateContentSelection: vi.fn()
     };
     registerBackupIpc({
       backupService: backupService as unknown as BackupService,
@@ -39,15 +41,21 @@ describe("backup IPC lock boundary", () => {
 
     await expect(invoke(channels.backup.getState)).resolves.toBeUndefined();
     await expect(invoke(channels.backup.initialize)).resolves.toBeUndefined();
+    await expect(invoke(channels.backup.updateContentSelection, { appSettings: false, mainWindowState: false })).resolves.toBeUndefined();
     expect(backupService.getState).not.toHaveBeenCalled();
     expect(backupService.initialize).not.toHaveBeenCalled();
+    expect(backupService.updateContentSelection).not.toHaveBeenCalled();
   });
 
   it("returns and initializes backup state while unlocked", async () => {
     const state = createBackupState();
     const backupService = {
       getState: vi.fn(async () => state),
-      initialize: vi.fn(async () => state)
+      initialize: vi.fn(async () => state),
+      updateContentSelection: vi.fn(async (contentSelection: BackupContentSelection) => ({
+        ...state,
+        contentSelection
+      }))
     };
     registerBackupIpc({
       backupService: backupService as unknown as BackupService,
@@ -56,8 +64,13 @@ describe("backup IPC lock boundary", () => {
 
     await expect(invoke(channels.backup.getState)).resolves.toEqual(state);
     await expect(invoke(channels.backup.initialize)).resolves.toEqual(state);
+    await expect(invoke(channels.backup.updateContentSelection, { appSettings: false, mainWindowState: true })).resolves.toEqual({
+      ...state,
+      contentSelection: { appSettings: false, mainWindowState: true }
+    });
     expect(backupService.getState).toHaveBeenCalledOnce();
     expect(backupService.initialize).toHaveBeenCalledOnce();
+    expect(backupService.updateContentSelection).toHaveBeenCalledWith({ appSettings: false, mainWindowState: true });
   });
 });
 
@@ -72,12 +85,12 @@ function createBackupState(): BackupState {
   };
 }
 
-async function invoke(channel: string): Promise<unknown> {
+async function invoke(channel: string, ...args: unknown[]): Promise<unknown> {
   const handler = handlers.get(channel);
 
   if (!handler) {
     throw new Error(`No IPC handler registered for ${channel}.`);
   }
 
-  return handler({});
+  return handler({}, ...args);
 }

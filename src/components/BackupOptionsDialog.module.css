@@ -9,16 +9,96 @@
 }
 
 .paper {
-  min-width: 360px;
+  min-width: 440px;
   background: var(--backup-options-dialog-background) !important;
 }
 
 .title,
+.content,
 .actions {
   background: var(--backup-options-dialog-background) !important;
 }
 
 .title {
   color: var(--backup-options-dialog-title) !important;
+}
+
+.content {
+  padding-top: 4px !important;
+}
+
+.contentList {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--backup-options-dialog-divider);
+  border-radius: 6px;
+}
+
+.contentLegend {
+  padding: 0 5px;
+  color: var(--backup-options-dialog-title);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.contentOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 54px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--backup-options-dialog-divider);
+  color: var(--backup-options-dialog-text);
+  cursor: default;
+}
+
+.contentOption:last-child {
+  border-bottom: 0;
+}
+
+.contentOption input {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  margin: 2px 0 0;
+  accent-color: var(--backup-options-dialog-primary);
+}
+
+.contentOption input:disabled {
+  opacity: 0.7;
+}
+
+.contentOptionText {
+  min-width: 0;
+}
+
+.contentOptionTitle,
+.contentOptionDescription {
+  display: block;
+}
+
+.contentOptionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.contentOptionDescription {
+  margin-top: 1px;
+  color: var(--backup-options-dialog-muted-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.error {
+  margin: 10px 0 0;
+  color: var(--backup-options-dialog-error-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.cancelButton {
+  color: var(--backup-options-dialog-cancel-text) !important;
 }
 

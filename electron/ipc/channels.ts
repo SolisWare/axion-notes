@@ -14,7 +14,8 @@ export const channels = {
   },
   backup: {
     getState: "backup.getState",
-    initialize: "backup.initialize"
+    initialize: "backup.initialize",
+    updateContentSelection: "backup.updateContentSelection"
   },
   menu: {
     newNote: "menu.newNote",

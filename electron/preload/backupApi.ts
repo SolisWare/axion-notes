@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BackupState } from "../../src/types/BackupState";
+import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { channels } from "../ipc/channels";
 import { receive } from "./ipcHelpers";
 
@@ -15,5 +16,9 @@ export const backupApi = {
 
   initialize: async (): Promise<BackupState | undefined> => {
     return receive<BackupState | undefined>(channels.backup.initialize);
+  },
+
+  updateContentSelection: async (contentSelection: BackupContentSelection): Promise<BackupState | undefined> => {
+    return receive<BackupState | undefined>(channels.backup.updateContentSelection, contentSelection);
   }
 };

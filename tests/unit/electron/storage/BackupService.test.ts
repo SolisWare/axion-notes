@@ -62,6 +62,41 @@ describe("BackupService", () => {
 
     await expect(service.getState()).resolves.toBeUndefined();
   });
+
+  it("updates optional backup content while preserving setup and backup history", async () => {
+    const { service, storage } = await createService("2026-11-04T12:00:00.000Z");
+    const existingState: BackupState = {
+      version: 1,
+      initializedAt: "2026-11-03T12:00:00.000Z",
+      contentSelection: {
+        appSettings: true,
+        mainWindowState: true
+      },
+      lastBackupCreatedAt: "2026-11-03T12:30:00.000Z"
+    };
+    await storage.setState(existingState);
+
+    await expect(service.updateContentSelection({ appSettings: false, mainWindowState: true })).resolves.toEqual({
+      ...existingState,
+      contentSelection: {
+        appSettings: false,
+        mainWindowState: true
+      }
+    });
+    await expect(storage.getState()).resolves.toEqual({
+      ...existingState,
+      contentSelection: {
+        appSettings: false,
+        mainWindowState: true
+      }
+    });
+  });
+
+  it("rejects updates before backups have been initialized", async () => {
+    const { service } = await createService("2026-11-04T12:00:00.000Z");
+
+    await expect(service.updateContentSelection({ appSettings: false, mainWindowState: false })).rejects.toThrow("Backups have not been initialized.");
+  });
 });
 
 async function createService(timestamp: string): Promise<{ service: BackupService; storage: BackupStateStorage }> {

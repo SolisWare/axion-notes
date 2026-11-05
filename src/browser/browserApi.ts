@@ -47,7 +47,8 @@ export function installBrowserApi(): void {
     },
     backup: {
       getState: async () => undefined,
-      initialize: async () => undefined
+      initialize: async () => undefined,
+      updateContentSelection: async () => undefined
     },
     storage: storageApi,
     menu: {

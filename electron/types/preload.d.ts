@@ -19,6 +19,7 @@ import { LockState } from '../../src/types/LockState';
 import { UnlockResult } from '../../src/types/UnlockResult';
 import { EncryptionProgressEvent } from '../../src/types/EncryptionProgressEvent';
 import { BackupState } from '../../src/types/BackupState';
+import { BackupContentSelection } from '../../src/types/BackupContentSelection';
 
 export interface IElectronAPI {
   appWindow: {
@@ -31,6 +32,7 @@ export interface IElectronAPI {
   backup: {
     getState: () => Promise<BackupState | undefined>;
     initialize: () => Promise<BackupState | undefined>;
+    updateContentSelection: (contentSelection: BackupContentSelection) => Promise<BackupState | undefined>;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

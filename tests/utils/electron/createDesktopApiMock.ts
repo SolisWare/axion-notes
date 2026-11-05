@@ -30,7 +30,8 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
     },
     backup: {
       getState: vi.fn().mockResolvedValue(undefined),
-      initialize: vi.fn().mockResolvedValue(undefined)
+      initialize: vi.fn().mockResolvedValue(undefined),
+      updateContentSelection: vi.fn().mockResolvedValue(undefined)
     },
     storage: {
       getNotes: vi.fn().mockResolvedValue([]),

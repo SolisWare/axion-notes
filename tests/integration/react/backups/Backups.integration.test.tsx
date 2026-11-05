@@ -15,12 +15,24 @@ import SettingsWindow from "../../../../src/views/SettingsWindow/SettingsWindow"
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
 const translations: Record<string, string> = {
+  appPreferences: "App preferences",
+  appPreferencesHelp: "Theme, language, editor preferences, and other app settings",
   backups: "Backups",
   backupConfigurationCreated: "Backup configuration created",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
+  backupOptions: "Backup Options",
+  cancel: "Cancel",
   dataStorage: "Data & storage",
+  includedInBackups: "Included in backups",
+  mainWindowLayout: "Main-window layout",
+  mainWindowLayoutHelp: "Main window size, position, and selected notes layout",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
+  notesAndNoteOrder: "Notes and note order",
+  notesAndNoteOrderHelp: "Always included",
+  options: "Options...",
+  save: "Save",
+  saving: "Saving...",
   setUpBackups: "Set up backups",
   settingUpBackups: "Setting up...",
   storage: "Storage"
@@ -50,6 +62,14 @@ describe("Backups settings integration", () => {
             appSettings: true,
             mainWindowState: true
           }
+        }),
+        updateContentSelection: vi.fn().mockResolvedValue({
+          version: 1,
+          initializedAt: "2026-11-05T12:00:00.000Z",
+          contentSelection: {
+            appSettings: false,
+            mainWindowState: true
+          }
         })
       }
     });
@@ -68,5 +88,14 @@ describe("Backups settings integration", () => {
 
     expect(desktopApi.backup.initialize).toHaveBeenCalledOnce();
     expect(await screen.findByText("Backup configuration created")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Options..." }));
+    await user.click(screen.getByRole("checkbox", { name: "App preferences" }));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(desktopApi.backup.updateContentSelection).toHaveBeenCalledWith({
+      appSettings: false,
+      mainWindowState: true
+    });
   });
 });

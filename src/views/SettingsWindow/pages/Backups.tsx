@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
 import { SystemTheme } from "../../../theme/SystemTheme";
+import { BackupContentSelection } from "../../../types/BackupContentSelection";
 import { BackupState } from "../../../types/BackupState";
 import styles from "./SettingsPages.module.css";
 
@@ -67,6 +68,22 @@ function Backups(props: BackupsProps) {
     }
   };
 
+  const handleSaveOptions = async (contentSelection: BackupContentSelection): Promise<boolean> => {
+    try {
+      const state = await window.api.backup.updateContentSelection(contentSelection);
+
+      if (!state) {
+        return false;
+      }
+
+      setBackupState(state);
+      return true;
+    } catch (err) {
+      console.error("Failed to update backup options:", (err as Error).message);
+      return false;
+    }
+  };
+
   const isInitialized = backupState !== undefined;
 
   return (
@@ -104,7 +121,15 @@ function Backups(props: BackupsProps) {
           </div>
         )}
       </section>
-      <BackupOptionsDialog open={isOptionsDialogOpen} theme={props.theme} onClose={() => setOptionsDialogOpen(false)} />
+      {backupState && (
+        <BackupOptionsDialog
+          contentSelection={backupState.contentSelection}
+          open={isOptionsDialogOpen}
+          theme={props.theme}
+          onClose={() => setOptionsDialogOpen(false)}
+          onSave={handleSaveOptions}
+        />
+      )}
     </div>
   );
 }
