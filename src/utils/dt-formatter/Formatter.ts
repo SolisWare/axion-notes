@@ -47,12 +47,13 @@ export class Formatter {
     }
   }
   
-  public static getFormattedTimestamp(date: Date, format: TimeFormat = TimeFormat.Regular): string {
+  public static getFormattedTimestamp(date: Date, format: TimeFormat = TimeFormat.Regular, includeSeconds = false): string {
     let hours = date.getHours();
     let minutes = Formatter.leftpad(date.getMinutes());
+    const seconds = includeSeconds ? `:${Formatter.leftpad(date.getSeconds())}` : "";
 
     if (format === TimeFormat.Military) {
-      return `${hours}:${minutes}`;
+      return `${hours}:${minutes}${seconds}`;
     }
 
     let period = (hours > 12) ? "PM" : "AM";
@@ -63,7 +64,22 @@ export class Formatter {
       hours = 12;
     }
     
-    return `${hours}:${minutes} ${period}`;
+    return `${hours}:${minutes}${seconds} ${period}`;
+  }
+
+  /**
+   * Returns a date/time stamp that reflects the configured formats and can be
+   * used safely in a macOS or Windows file name.
+   */
+  public static getFormattedFileNameTimestamp(
+    date: Date,
+    dateFormat: DateFormat = DateFormat.MonthDayYearSlash,
+    timeFormat: TimeFormat = TimeFormat.Regular
+  ): string {
+    return `${Formatter.getFormattedDate(date, dateFormat)}_${Formatter.getFormattedTimestamp(date, timeFormat, true)}`
+      .split("")
+      .map((character) => (character === " " || character === "/" || character === ":" ? "-" : character))
+      .join("");
   }
   
   private static leftpad(number: number): string {

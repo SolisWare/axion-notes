@@ -4,7 +4,9 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DateFormat } from "../../../../src/utils/dt-formatter/DateFormat";
+import { TimeFormat } from "../../../../src/utils/dt-formatter/TimeFormat";
 import { BackupContentSelection } from "../../../../src/types/BackupContentSelection";
 import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
 import { BackupState } from "../../../../src/types/BackupState";
@@ -13,6 +15,7 @@ import { registerBackupIpc } from "../../../../electron/ipc/backupIpc";
 import { LockStateService } from "../../../../electron/security/LockStateService";
 import { BackupService } from "../../../../electron/storage/BackupService";
 import { BackupArchiveService } from "../../../../electron/storage/BackupArchiveService";
+import { SettingsService } from "../../../../electron/storage/SettingsService";
 
 const { handlers } = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => unknown>()
@@ -40,6 +43,10 @@ beforeEach(() => {
   showSaveDialog.mockReset();
 });
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe("backup IPC lock boundary", () => {
   it("does not expose or initialize backups while locked", async () => {
     const backupService = {
@@ -54,7 +61,8 @@ describe("backup IPC lock boundary", () => {
     registerBackupIpc({
       backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
       backupService: backupService as unknown as BackupService,
-      lockStateService: { getIsLocked: vi.fn(() => true) } as unknown as LockStateService
+      lockStateService: { getIsLocked: vi.fn(() => true) } as unknown as LockStateService,
+      settingsService: { getSettings: vi.fn() } as unknown as SettingsService
     });
 
     await expect(invoke(channels.backup.getState)).resolves.toBeUndefined();
@@ -86,7 +94,13 @@ describe("backup IPC lock boundary", () => {
     registerBackupIpc({
       backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
       backupService: backupService as unknown as BackupService,
-      lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService
+      lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService,
+      settingsService: {
+        getSettings: vi.fn(async () => ({
+          dateFormat: DateFormat.DayMonthYearDash,
+          timeFormat: TimeFormat.Military
+        }))
+      } as unknown as SettingsService
     });
 
     await expect(invoke(channels.backup.getState)).resolves.toEqual(state);
@@ -97,12 +111,17 @@ describe("backup IPC lock boundary", () => {
     });
     await expect(invoke(channels.backup.createArchive, "backup password")).resolves.toEqual({ status: BackupCreateStatus.CREATED, state });
     showSaveDialog.mockResolvedValue({ canceled: false, filePath: "/tmp/axion-notes-backup.zip" });
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 10, 5, 14, 13, 9));
     await expect(invoke(channels.backup.saveCopy)).resolves.toEqual({ status: "saved" });
     expect(backupService.getState).toHaveBeenCalledOnce();
     expect(backupService.initialize).toHaveBeenCalledOnce();
     expect(backupService.updateContentSelection).toHaveBeenCalledWith({ appSettings: false, mainWindowState: true });
     expect(backupArchiveService.createArchive).toHaveBeenCalledWith("backup password");
     expect(backupArchiveService.saveCopy).toHaveBeenCalledWith("/tmp/axion-notes-backup.zip");
+    expect(showSaveDialog).toHaveBeenCalledWith(expect.objectContaining({
+      defaultPath: "axion-notes-backup-05-11-2026_14-13-09.zip"
+    }));
   });
 });
 

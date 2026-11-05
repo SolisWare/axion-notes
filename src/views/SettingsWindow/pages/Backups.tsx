@@ -160,13 +160,12 @@ function Backups(props: BackupsProps) {
   const lastBackupTime = lastBackupCreatedAt
     ? Formatter.getFormattedTimestamp(Formatter.toDate(lastBackupCreatedAt), props.appSettings.timeFormat)
     : undefined;
-
   return (
     <div className={styles.backupsPage}>
       <section className={styles.settingsSection} aria-labelledby="backups-title">
         <h2 className={styles.settingsSubsectionHeader} id="backups-title">{t("backups")}</h2>
-        <div className={styles.settingsRows}>
-          <div className={styles.settingsRow}>
+        <div className={styles.backupCard}>
+          <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t(lastBackupCreatedAt ? "lastBackupCreated" : isInitialized ? "backupConfigurationCreated" : "noBackupCreated")}</h3>
               <p className={styles.settingsSectionDescription}>
@@ -174,6 +173,16 @@ function Backups(props: BackupsProps) {
                   ? t("lastBackupCreatedHelp", { date: lastBackupDate, time: lastBackupTime })
                   : t(isInitialized ? "backupConfigurationCreatedHelp" : "noBackupCreatedHelp")}
               </p>
+              {isInitialized && (
+                <div className={styles.backupIncludedContent}>
+                  <p className={styles.backupIncludedLabel}>{t("includedInBackups")}</p>
+                  <ul>
+                    <li>{t("notesAndNoteOrder")}</li>
+                    {backupState.contentSelection.appSettings && <li>{t("appPreferences")}</li>}
+                    {backupState.contentSelection.mainWindowState && <li>{t("mainWindowLayout")}</li>}
+                  </ul>
+                </div>
+              )}
             </div>
             {!isInitialized ? (
               <button
@@ -191,27 +200,27 @@ function Backups(props: BackupsProps) {
             )}
           </div>
           {hasInitializationError && (
-            <p className={styles.settingsSectionDescription} role="alert">{t("backupSetupFailed")}</p>
+            <p className={styles.backupError} role="alert">{t("backupSetupFailed")}</p>
           )}
           {hasBackupCreationError && (
-            <p className={styles.settingsSectionDescription} role="alert">{t("backupCreateFailed")}</p>
+            <p className={styles.backupError} role="alert">{t("backupCreateFailed")}</p>
           )}
           {hasBackupCopySaveError && (
-            <p className={styles.settingsSectionDescription} role="alert">{t("backupCopySaveFailed")}</p>
+            <p className={styles.backupError} role="alert">{t("backupCopySaveFailed")}</p>
+          )}
+          {isInitialized && (
+            <div className={styles.backupCardFooter}>
+              {lastBackupCreatedAt && (
+                <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void handleSaveCopy()}>
+                  {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
+                </button>
+              )}
+              <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
+                {t("options")}
+              </button>
+            </div>
           )}
         </div>
-        {isInitialized && (
-          <div className={styles.backupActions}>
-            {lastBackupCreatedAt && (
-              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void handleSaveCopy()}>
-                {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
-              </button>
-            )}
-            <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
-              {t("options")}
-            </button>
-          </div>
-        )}
       </section>
       {backupState && (
         <BackupOptionsDialog

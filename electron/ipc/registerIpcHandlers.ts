@@ -39,7 +39,8 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerBackupIpc({
     backupArchiveService: options.backupArchiveService,
     backupService: options.backupService,
-    lockStateService: options.lockStateService
+    lockStateService: options.lockStateService,
+    settingsService: options.settingsService
   });
   registerAppWindowIpc({
     lockStateService: options.lockStateService,

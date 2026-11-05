@@ -41,10 +41,64 @@
   color: var(--settings-nav-text);
 }
 
-.backupActions {
+.backupCard {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--settings-divider);
+  border-radius: 8px;
+  background: var(--settings-content-background);
+}
+
+.backupStatus {
+  width: 100%;
+  min-height: 68px;
   display: flex;
-  justify-content: flex-end;
-  margin-top: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  box-sizing: border-box;
+  padding: 14px 16px 13px 14px;
+}
+
+.backupIncludedContent {
+  margin: 7px 0 0;
+  padding: 0;
+  color: var(--settings-section-text);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.backupIncludedLabel {
+  margin: 0;
+}
+
+.backupIncludedContent ul {
+  margin: 2px 0 0 16px;
+  padding: 0;
+}
+
+.backupIncludedContent li + li {
+  margin-top: 1px;
+}
+
+.backupError {
+  margin: 0;
+  padding: 10px 14px;
+  border-top: 1px solid var(--settings-divider);
+  color: var(--settings-section-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.backupCardFooter {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-top: 1px solid var(--settings-divider);
 }
 
 .generalPage {

@@ -5,12 +5,15 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BrowserWindow, dialog } from "electron";
+import { AppSettings } from "../../src/settings/AppSettings";
 import { BackupState } from "../../src/types/BackupState";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
+import { Formatter } from "../../src/utils/dt-formatter/Formatter";
 import { BackupArchiveService, BACKUP_ARCHIVE_FILE_NAME } from "../storage/BackupArchiveService";
 import { BackupService } from "../storage/BackupService";
+import { SettingsService } from "../storage/SettingsService";
 import { LockStateService } from "../security/LockStateService";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
@@ -19,6 +22,7 @@ type BackupIpcOptions = {
   backupArchiveService: BackupArchiveService;
   backupService: BackupService;
   lockStateService: LockStateService;
+  settingsService: SettingsService;
 };
 
 export function registerBackupIpc(options: BackupIpcOptions): void {
@@ -27,8 +31,9 @@ export function registerBackupIpc(options: BackupIpcOptions): void {
   });
 
   protectedHandle<BackupSaveResult, []>(channels.backup.saveCopy, { ...options, fallback: { status: BackupSaveStatus.FAILED } }, async (event) => {
+    const settings = await options.settingsService.getSettings();
     const saveDialogOptions = {
-      defaultPath: BACKUP_ARCHIVE_FILE_NAME,
+      defaultPath: getDefaultBackupFileName(settings?.dateFormat, settings?.timeFormat),
       filters: [{ extensions: ["zip"], name: "ZIP archive" }]
     };
     const parentWindow = BrowserWindow.fromWebContents(event.sender);
@@ -64,4 +69,11 @@ export function registerBackupIpc(options: BackupIpcOptions): void {
       return undefined;
     }
   });
+}
+
+function getDefaultBackupFileName(dateFormat?: AppSettings["dateFormat"], timeFormat?: AppSettings["timeFormat"]): string {
+  const now = new Date();
+  const timestamp = Formatter.getFormattedFileNameTimestamp(now, dateFormat, timeFormat);
+
+  return BACKUP_ARCHIVE_FILE_NAME.replace(".zip", `-${timestamp}.zip`);
 }
