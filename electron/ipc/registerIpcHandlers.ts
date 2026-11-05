@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { registerAppWindowIpc } from "./appWindowIpc";
+import { registerBackupIpc } from "./backupIpc";
 import { applyMenuSettings, registerMenuIpc, setLockScreenActive, setSecureLockAvailable, setStorageMigrationActive } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
@@ -16,10 +17,12 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { NoteService } from "../storage/NoteService";
+import { BackupService } from "../storage/BackupService";
 import { SettingsService } from "../storage/SettingsService";
 
 type IpcHandlerOptions = {
   appBackupDir: string;
+  backupService: BackupService;
   appDataDir: string;
   appSecurityDir: string;
   mainWindowStateFilePath: string;
@@ -31,6 +34,10 @@ type IpcHandlerOptions = {
 };
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
+  registerBackupIpc({
+    backupService: options.backupService,
+    lockStateService: options.lockStateService
+  });
   registerAppWindowIpc({
     lockStateService: options.lockStateService,
     mainWindowStateFilePath: options.mainWindowStateFilePath,

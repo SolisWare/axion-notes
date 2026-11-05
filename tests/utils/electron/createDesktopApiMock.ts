@@ -28,6 +28,10 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
       setAlwaysOnTop: vi.fn(),
       setLayout: vi.fn()
     },
+    backup: {
+      getState: vi.fn().mockResolvedValue(undefined),
+      initialize: vi.fn().mockResolvedValue(undefined)
+    },
     storage: {
       getNotes: vi.fn().mockResolvedValue([]),
       getNotesWithAccessState: vi.fn().mockResolvedValue({
@@ -118,6 +122,10 @@ function mergeDesktopApiMock(defaults: IElectronAPI, overrides: DesktopApiMockOv
     appWindow: {
       ...defaults.appWindow,
       ...overrides.appWindow
+    },
+    backup: {
+      ...defaults.backup,
+      ...overrides.backup
     },
     storage: {
       ...defaults.storage,

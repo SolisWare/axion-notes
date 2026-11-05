@@ -18,6 +18,7 @@ import { RichTextFormatState } from '../../src/types/RichTextFormatState';
 import { LockState } from '../../src/types/LockState';
 import { UnlockResult } from '../../src/types/UnlockResult';
 import { EncryptionProgressEvent } from '../../src/types/EncryptionProgressEvent';
+import { BackupState } from '../../src/types/BackupState';
 
 export interface IElectronAPI {
   appWindow: {
@@ -26,6 +27,10 @@ export interface IElectronAPI {
     restart: () => void;
     setAlwaysOnTop: (enabled: boolean) => void;
     setLayout: (layout: NoteLayoutPreference) => void;
+  },
+  backup: {
+    getState: () => Promise<BackupState | undefined>;
+    initialize: () => Promise<BackupState | undefined>;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

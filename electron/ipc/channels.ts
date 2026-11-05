@@ -12,6 +12,10 @@ export const channels = {
     setAlwaysOnTop: "appWindow.setAlwaysOnTop",
     setLayout: "appWindow.setLayout"
   },
+  backup: {
+    getState: "backup.getState",
+    initialize: "backup.initialize"
+  },
   menu: {
     newNote: "menu.newNote",
     setNoteLayout: "menu.setNoteLayout",

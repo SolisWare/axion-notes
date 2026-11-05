@@ -45,6 +45,10 @@ export function installBrowserApi(): void {
       setAlwaysOnTop: noop,
       setLayout: noop
     },
+    backup: {
+      getState: async () => undefined,
+      initialize: async () => undefined
+    },
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,

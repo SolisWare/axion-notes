@@ -6,6 +6,7 @@
  */
 import { contextBridge } from "electron";
 import { appWindowApi } from "./appWindowApi";
+import { backupApi } from "./backupApi";
 import { menuApi } from "./menuApi";
 import { noteSortApi } from "./noteSortApi";
 import { noteWindowApi } from "./noteWindowApi";
@@ -21,6 +22,7 @@ import { versionApi } from "./versionApi";
 
 contextBridge.exposeInMainWorld('api', {
   appWindow: appWindowApi,
+  backup: backupApi,
   storage: storageApi,
   menu: menuApi,
   noteSort: noteSortApi,
