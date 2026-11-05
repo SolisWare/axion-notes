@@ -6,17 +6,24 @@
  */
 import { BackupState } from "../../src/types/BackupState";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
+import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
+import { BackupArchiveService } from "../storage/BackupArchiveService";
 import { BackupService } from "../storage/BackupService";
 import { LockStateService } from "../security/LockStateService";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
 type BackupIpcOptions = {
+  backupArchiveService: BackupArchiveService;
   backupService: BackupService;
   lockStateService: LockStateService;
 };
 
 export function registerBackupIpc(options: BackupIpcOptions): void {
+  protectedHandle<BackupCreateResult, [string?]>(channels.backup.createArchive, { ...options, fallback: { status: BackupCreateStatus.FAILED } }, async (_event, password) => {
+    return options.backupArchiveService.createArchive(password);
+  });
+
   protectedHandle<BackupState | undefined, []>(channels.backup.getState, { ...options, fallback: undefined }, async () => {
     return options.backupService.getState();
   });

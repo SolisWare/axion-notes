@@ -18,10 +18,12 @@ import { LockStateService } from "../security/LockStateService";
 import { PasswordService } from "../security/PasswordService";
 import { NoteService } from "../storage/NoteService";
 import { BackupService } from "../storage/BackupService";
+import { BackupArchiveService } from "../storage/BackupArchiveService";
 import { SettingsService } from "../storage/SettingsService";
 
 type IpcHandlerOptions = {
   appBackupDir: string;
+  backupArchiveService: BackupArchiveService;
   backupService: BackupService;
   appDataDir: string;
   appSecurityDir: string;
@@ -35,6 +37,7 @@ type IpcHandlerOptions = {
 
 export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerBackupIpc({
+    backupArchiveService: options.backupArchiveService,
     backupService: options.backupService,
     lockStateService: options.lockStateService
   });

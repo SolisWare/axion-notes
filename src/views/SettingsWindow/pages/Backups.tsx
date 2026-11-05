@@ -7,8 +7,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
+import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
+import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { BackupContentSelection } from "../../../types/BackupContentSelection";
+import { BackupCreateStatus } from "../../../types/BackupCreateResult";
 import { BackupState } from "../../../types/BackupState";
 import styles from "./SettingsPages.module.css";
 
@@ -23,6 +26,9 @@ function Backups(props: BackupsProps) {
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasInitializationError, setHasInitializationError] = useState(false);
   const [isOptionsDialogOpen, setOptionsDialogOpen] = useState(false);
+  const [isBackupPasswordDialogOpen, setBackupPasswordDialogOpen] = useState(false);
+  const [isCreatingBackup, setCreatingBackup] = useState(false);
+  const [hasBackupCreationError, setHasBackupCreationError] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -84,6 +90,39 @@ function Backups(props: BackupsProps) {
     }
   };
 
+  const createBackup = async (password?: string): Promise<boolean> => {
+    setCreatingBackup(true);
+    setHasBackupCreationError(false);
+
+    try {
+      const result = await window.api.backup.createArchive(password);
+
+      if (result.status === BackupCreateStatus.PASSWORD_REQUIRED) {
+        setBackupPasswordDialogOpen(true);
+        return false;
+      }
+
+      if (result.status !== BackupCreateStatus.CREATED || !result.state) {
+        setHasBackupCreationError(true);
+        return false;
+      }
+
+      setBackupState(result.state);
+      setBackupPasswordDialogOpen(false);
+      return true;
+    } catch (err) {
+      console.error("Failed to create backup:", (err as Error).message);
+      setHasBackupCreationError(true);
+      return false;
+    } finally {
+      setCreatingBackup(false);
+    }
+  };
+
+  const handleBackupPasswordSubmit = async (values: SecurityPasswordDialogValues): Promise<boolean> => {
+    return createBackup(values.currentPassword);
+  };
+
   const isInitialized = backupState !== undefined;
 
   return (
@@ -98,7 +137,7 @@ function Backups(props: BackupsProps) {
                 {t(isInitialized ? "backupConfigurationCreatedHelp" : "noBackupCreatedHelp")}
               </p>
             </div>
-            {!isInitialized && (
+            {!isInitialized ? (
               <button
                 className={styles.settingsButton}
                 disabled={isLoading || isInitializing}
@@ -107,10 +146,17 @@ function Backups(props: BackupsProps) {
               >
                 {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
               </button>
+            ) : (
+              <button className={styles.settingsButton} disabled={isCreatingBackup} type="button" onClick={() => void createBackup()}>
+                {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
+              </button>
             )}
           </div>
           {hasInitializationError && (
             <p className={styles.settingsSectionDescription} role="alert">{t("backupSetupFailed")}</p>
+          )}
+          {hasBackupCreationError && (
+            <p className={styles.settingsSectionDescription} role="alert">{t("backupCreateFailed")}</p>
           )}
         </div>
         {isInitialized && (
@@ -130,6 +176,20 @@ function Backups(props: BackupsProps) {
           onSave={handleSaveOptions}
         />
       )}
+      <SecurityPasswordDialog
+        mode={SecurityPasswordDialogMode.BACKUP}
+        open={isBackupPasswordDialogOpen}
+        theme={props.theme}
+        onCancel={() => setBackupPasswordDialogOpen(false)}
+        onSubmit={handleBackupPasswordSubmit}
+      />
+      <BlockingProgressDialog
+        open={isCreatingBackup}
+        status={t("creatingBackup")}
+        theme={props.theme}
+        title={t("createBackup")}
+        value={50}
+      />
     </div>
   );
 }

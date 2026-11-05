@@ -46,6 +46,7 @@ export function installBrowserApi(): void {
       setLayout: noop
     },
     backup: {
+      createArchive: async () => ({ status: "failed" as const }),
       getState: async () => undefined,
       initialize: async () => undefined,
       updateContentSelection: async () => undefined

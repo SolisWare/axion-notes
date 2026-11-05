@@ -301,6 +301,31 @@ export class NoteService {
   }
 
   /**
+   * Returns plaintext notes for a backup without changing the live encryption
+   * state. Encrypted notes require their encryption password when they are not
+   * already unlocked in memory.
+   */
+  public async getNotesForBackup(password?: string): Promise<NoteType[]> {
+    if (!this.notesEncryptionEnabled || this.masterKey) {
+      return this.getNotes();
+    }
+
+    if (!password) {
+      throw new Error("An encryption password is required for backup.");
+    }
+
+    const record = await this.readEncryptionRecord();
+    const masterKey = await this.encryptionKeyService.unlock(password, record);
+
+    try {
+      return await this.readEncryptedNotes(masterKey);
+    } finally {
+      masterKey.fill(0);
+      this.encryptedManifest = undefined;
+    }
+  }
+
+  /**
    * Stores a note and updates the in-memory cache.
    */
   public setNote(note: NoteType): void {

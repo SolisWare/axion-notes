@@ -19,6 +19,7 @@ import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import styles from "./SecurityPasswordDialog.module.css";
 
 export enum SecurityPasswordDialogMode {
+  BACKUP = "backup",
   SET = "set",
   ENABLE = "enable",
   DISABLE = "disable",
@@ -130,6 +131,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
   function getTitle(): string {
     switch (props.mode) {
+      case SecurityPasswordDialogMode.BACKUP:
+        return t("createBackup");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enableLockScreen");
       case SecurityPasswordDialogMode.DISABLE:
@@ -148,6 +151,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
   function getDescription(): string {
     switch (props.mode) {
+      case SecurityPasswordDialogMode.BACKUP:
+        return t("createBackupPasswordInstructions");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enableLockScreenPasswordInstructions");
       case SecurityPasswordDialogMode.DISABLE:
@@ -166,6 +171,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
 
   function getConfirmLabel(): string {
     switch (props.mode) {
+      case SecurityPasswordDialogMode.BACKUP:
+        return t("createBackup");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enable");
       case SecurityPasswordDialogMode.DISABLE:

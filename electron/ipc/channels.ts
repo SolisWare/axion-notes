@@ -13,6 +13,7 @@ export const channels = {
     setLayout: "appWindow.setLayout"
   },
   backup: {
+    createArchive: "backup.createArchive",
     getState: "backup.getState",
     initialize: "backup.initialize",
     updateContentSelection: "backup.updateContentSelection"

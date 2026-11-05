@@ -21,6 +21,9 @@ const translations: Record<string, string> = {
   backupConfigurationCreated: "Backup configuration created",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
   backupSetupFailed: "Couldn't set up backups. Try again.",
+  createBackup: "Create backup",
+  createNewBackup: "Create new backup",
+  creatingBackup: "Creating your backup archive...",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
   notesAndNoteOrder: "Notes and note order",
@@ -85,6 +88,7 @@ describe("Backups", () => {
     expect(await screen.findByText("Backup configuration created")).toBeInTheDocument();
     expect(screen.getByText("Notes and selected app data are ready to be included in your backup archive.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Set up backups" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create backup" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Options..." }));
 
     expect(screen.getByRole("dialog", { name: "Backup Options" })).toBeInTheDocument();
@@ -112,5 +116,36 @@ describe("Backups", () => {
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't set up backups. Try again.");
+  });
+
+  it("creates a backup using the saved content selection without reopening options", async () => {
+    const user = userEvent.setup();
+    const configuredState = {
+      version: 1 as const,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: true,
+        mainWindowState: true
+      }
+    };
+    const desktopApi = installDesktopApiMock({
+      backup: {
+        createArchive: vi.fn().mockResolvedValue({
+          status: "created",
+          state: {
+            ...configuredState,
+            lastBackupCreatedAt: "2026-11-05T12:30:00.000Z"
+          }
+        }),
+        getState: vi.fn().mockResolvedValue(configuredState)
+      }
+    });
+
+    render(<Backups theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Create backup" }));
+
+    expect(desktopApi.backup.createArchive).toHaveBeenCalledWith(undefined);
+    expect(await screen.findByRole("button", { name: "Create new backup" })).toBeInTheDocument();
   });
 });

@@ -34,6 +34,7 @@ import { LockStateService } from "./security/LockStateService";
 import { PasswordService } from "./security/PasswordService";
 import { NoteService } from "./storage/NoteService";
 import { BackupService } from "./storage/BackupService";
+import { BackupArchiveService } from "./storage/BackupArchiveService";
 import { BackupStateStorage } from "./storage/BackupStateStorage";
 import { registerStorageMigrationGuard } from "./storage/StorageMigrationGuard";
 import { SettingsService } from "./storage/SettingsService";
@@ -151,7 +152,9 @@ app.on("ready", async () => {
   const encryptionKeyService = new EncryptionKeyService(encryptionService);
   const lockMarkerService = new LockMarkerService(lockMarkerPath);
   const noteService = new NoteService(appDataDir, encryptionRecordPath, encryptionService, encryptionKeyService);
-  const backupService = new BackupService(new BackupStateStorage(appBackupDir));
+  const backupStateStorage = new BackupStateStorage(appBackupDir);
+  const backupService = new BackupService(backupStateStorage);
+  const backupArchiveService = new BackupArchiveService(appBackupDir, backupStateStorage, noteService, settingsService, mainWindowStateFilePath);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);
@@ -178,6 +181,7 @@ app.on("ready", async () => {
 
   registerIpcHandlers({
     appBackupDir,
+    backupArchiveService,
     backupService,
     appDataDir,
     appSecurityDir,

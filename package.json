@@ -121,7 +121,8 @@
     "react-autosave": "^0.4.4",
     "react-dom": "^18.2.0",
     "react-i18next": "15.5.0",
-    "react-router-dom": "^7.18.5"
+    "react-router-dom": "^7.18.5",
+    "yazl": "^3.3.1"
   },
   "devDependencies": {
     "@electron/remote": "^2.0.12",
@@ -133,6 +134,7 @@
     "@types/node": "^20.8.9",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
+    "@types/yazl": "^2.4.6",
     "@vitejs/plugin-react": "^6.1.2",
     "@vitest/coverage-v8": "^4.1.12",
     "concurrently": "^8.2.2",

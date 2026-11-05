@@ -29,6 +29,7 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
       setLayout: vi.fn()
     },
     backup: {
+      createArchive: vi.fn().mockResolvedValue({ status: "failed" }),
       getState: vi.fn().mockResolvedValue(undefined),
       initialize: vi.fn().mockResolvedValue(undefined),
       updateContentSelection: vi.fn().mockResolvedValue(undefined)

@@ -20,6 +20,7 @@ import { UnlockResult } from '../../src/types/UnlockResult';
 import { EncryptionProgressEvent } from '../../src/types/EncryptionProgressEvent';
 import { BackupState } from '../../src/types/BackupState';
 import { BackupContentSelection } from '../../src/types/BackupContentSelection';
+import { BackupCreateResult } from '../../src/types/BackupCreateResult';
 
 export interface IElectronAPI {
   appWindow: {
@@ -30,6 +31,7 @@ export interface IElectronAPI {
     setLayout: (layout: NoteLayoutPreference) => void;
   },
   backup: {
+    createArchive: (password?: string) => Promise<BackupCreateResult>;
     getState: () => Promise<BackupState | undefined>;
     initialize: () => Promise<BackupState | undefined>;
     updateContentSelection: (contentSelection: BackupContentSelection) => Promise<BackupState | undefined>;

@@ -6,11 +6,13 @@
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BackupContentSelection } from "../../../../src/types/BackupContentSelection";
+import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
 import { BackupState } from "../../../../src/types/BackupState";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerBackupIpc } from "../../../../electron/ipc/backupIpc";
 import { LockStateService } from "../../../../electron/security/LockStateService";
 import { BackupService } from "../../../../electron/storage/BackupService";
+import { BackupArchiveService } from "../../../../electron/storage/BackupArchiveService";
 
 const { handlers } = vi.hoisted(() => ({
   handlers: new Map<string, (...args: unknown[]) => unknown>()
@@ -34,7 +36,11 @@ describe("backup IPC lock boundary", () => {
       initialize: vi.fn(),
       updateContentSelection: vi.fn()
     };
+    const backupArchiveService = {
+      createArchive: vi.fn()
+    };
     registerBackupIpc({
+      backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
       backupService: backupService as unknown as BackupService,
       lockStateService: { getIsLocked: vi.fn(() => true) } as unknown as LockStateService
     });
@@ -42,9 +48,11 @@ describe("backup IPC lock boundary", () => {
     await expect(invoke(channels.backup.getState)).resolves.toBeUndefined();
     await expect(invoke(channels.backup.initialize)).resolves.toBeUndefined();
     await expect(invoke(channels.backup.updateContentSelection, { appSettings: false, mainWindowState: false })).resolves.toBeUndefined();
+    await expect(invoke(channels.backup.createArchive)).resolves.toEqual({ status: BackupCreateStatus.FAILED });
     expect(backupService.getState).not.toHaveBeenCalled();
     expect(backupService.initialize).not.toHaveBeenCalled();
     expect(backupService.updateContentSelection).not.toHaveBeenCalled();
+    expect(backupArchiveService.createArchive).not.toHaveBeenCalled();
   });
 
   it("returns and initializes backup state while unlocked", async () => {
@@ -57,7 +65,11 @@ describe("backup IPC lock boundary", () => {
         contentSelection
       }))
     };
+    const backupArchiveService = {
+      createArchive: vi.fn(async () => ({ status: BackupCreateStatus.CREATED, state }))
+    };
     registerBackupIpc({
+      backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
       backupService: backupService as unknown as BackupService,
       lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService
     });
@@ -68,9 +80,11 @@ describe("backup IPC lock boundary", () => {
       ...state,
       contentSelection: { appSettings: false, mainWindowState: true }
     });
+    await expect(invoke(channels.backup.createArchive, "backup password")).resolves.toEqual({ status: BackupCreateStatus.CREATED, state });
     expect(backupService.getState).toHaveBeenCalledOnce();
     expect(backupService.initialize).toHaveBeenCalledOnce();
     expect(backupService.updateContentSelection).toHaveBeenCalledWith({ appSettings: false, mainWindowState: true });
+    expect(backupArchiveService.createArchive).toHaveBeenCalledWith("backup password");
   });
 });
 
