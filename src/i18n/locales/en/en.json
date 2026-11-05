@@ -127,7 +127,7 @@
   "backups": "Backups",
   "backupOptions": "Backup Options",
   "backupOptionsSaveFailed": "Couldn't save backup options. Try again.",
-  "backupConfigurationCreated": "Backup configuration created",
+  "backupConfigurationCreated": "Ready to create a backup",
   "backupConfigurationCreatedHelp": "Notes and selected app data are ready to be included in your backup archive.",
   "backupCreated": "Backup created",
   "backupCopySaved": "Backup copy saved",

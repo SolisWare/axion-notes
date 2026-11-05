@@ -19,7 +19,7 @@ const translations: Record<string, string> = {
   backups: "Backups",
   backupOptions: "Backup Options",
   backupOptionsSaveFailed: "Couldn't save backup options. Try again.",
-  backupConfigurationCreated: "Backup configuration created",
+  backupConfigurationCreated: "Ready to create a backup",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
   backupCreated: "Backup created",
   backupCopySaved: "Backup copy saved",
@@ -65,7 +65,6 @@ describe("Backups", () => {
 
     render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
-    expect(screen.getByRole("heading", { name: "Backups" })).toBeInTheDocument();
     expect(await screen.findByText("No backup created yet")).toBeInTheDocument();
     expect(screen.getByText("Set up a local backup archive of your notes and selected app data.")).toBeInTheDocument();
   });
@@ -99,7 +98,7 @@ describe("Backups", () => {
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
     expect(desktopApi.backup.initialize).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Backup configuration created")).toBeInTheDocument();
+    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
     expect(screen.getByText("Notes and selected app data are ready to be included in your backup archive.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Set up backups" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create backup" })).toBeEnabled();

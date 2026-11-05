@@ -190,42 +190,21 @@ function Backups(props: BackupsProps) {
     : undefined;
   return (
     <div className={styles.backupsPage}>
-      <section className={styles.settingsSection} aria-labelledby="backups-title">
-        <h2 className={styles.settingsSubsectionHeader} id="backups-title">{t("backups")}</h2>
+      <section className={styles.settingsSection}>
         <div className={styles.backupCard}>
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t(lastBackupCreatedAt ? "lastBackupCreated" : isInitialized ? "backupConfigurationCreated" : "noBackupCreated")}</h3>
-              <p className={styles.settingsSectionDescription}>
-                {lastBackupDate && lastBackupTime
-                  ? t("lastBackupCreatedHelp", { date: lastBackupDate, time: lastBackupTime })
-                  : t(isInitialized ? "backupConfigurationCreatedHelp" : "noBackupCreatedHelp")}
-              </p>
-              {isInitialized && (
-                <div className={styles.backupIncludedContent}>
-                  <p className={styles.backupIncludedLabel}>{t("includedInBackups")}</p>
-                  <ul>
-                    <li>{t("notesAndNoteOrder")}</li>
-                    {backupState.contentSelection.appSettings && <li>{t("appPreferences")}</li>}
-                    {backupState.contentSelection.mainWindowState && <li>{t("mainWindowLayout")}</li>}
-                  </ul>
-                </div>
+              {lastBackupDate && lastBackupTime && (
+                <p className={styles.settingsSectionDescription}>{t("lastBackupCreatedHelp", { date: lastBackupDate, time: lastBackupTime })}</p>
+              )}
+              {!isInitialized && (
+                <p className={styles.settingsSectionDescription}>{t("noBackupCreatedHelp")}</p>
+              )}
+              {isInitialized && !lastBackupCreatedAt && (
+                <p className={styles.settingsSectionDescription}>{t("backupConfigurationCreatedHelp")}</p>
               )}
             </div>
-            {!isInitialized ? (
-              <button
-                className={styles.settingsButton}
-                disabled={isLoading || isInitializing}
-                type="button"
-                onClick={handleInitialize}
-              >
-                {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
-              </button>
-            ) : (
-              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void createBackup()}>
-                {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
-              </button>
-            )}
           </div>
           {hasInitializationError && (
             <p className={styles.backupError} role="alert">{t("backupSetupFailed")}</p>
@@ -239,24 +218,42 @@ function Backups(props: BackupsProps) {
           {hasBackupDeletionError && (
             <p className={styles.backupError} role="alert">{t("backupDeleteFailed")}</p>
           )}
-          {isInitialized && (
-            <div className={styles.backupCardFooter}>
-              {lastBackupCreatedAt && (
-                <div className={styles.backupArchiveActions}>
-                  <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void handleSaveCopy()}>
-                    {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
-                  </button>
-                  <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => setDeleteBackupDialogOpen(true)}>
-                    {t("deleteBackup")}
-                  </button>
-                </div>
-              )}
-              <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
-                {t("options")}
+          <div className={styles.backupCardActions}>
+            {!isInitialized ? (
+              <button
+                className={styles.settingsButton}
+                disabled={isLoading || isInitializing}
+                type="button"
+                onClick={handleInitialize}
+              >
+                {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
               </button>
-            </div>
-          )}
+            ) : (
+              <>
+                <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void createBackup()}>
+                  {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
+                </button>
+                {lastBackupCreatedAt && (
+                  <>
+                    <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void handleSaveCopy()}>
+                      {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
+                    </button>
+                    <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => setDeleteBackupDialogOpen(true)}>
+                      {t("deleteBackup")}
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
+        {isInitialized && (
+          <div className={styles.backupOptionsAction}>
+            <button className={`${styles.settingsButton} ${styles.backupOptionsButton}`} type="button" onClick={() => setOptionsDialogOpen(true)}>
+              {t("options")}
+            </button>
+          </div>
+        )}
       </section>
       {backupState && (
         <BackupOptionsDialog

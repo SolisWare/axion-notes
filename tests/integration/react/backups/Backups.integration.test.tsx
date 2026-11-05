@@ -18,7 +18,7 @@ const translations: Record<string, string> = {
   appPreferences: "App preferences",
   appPreferencesHelp: "Theme, language, editor preferences, and other app settings",
   backups: "Backups",
-  backupConfigurationCreated: "Backup configuration created",
+  backupConfigurationCreated: "Ready to create a backup",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
   backupOptions: "Backup Options",
   cancel: "Cancel",
@@ -87,7 +87,7 @@ describe("Backups settings integration", () => {
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
     expect(desktopApi.backup.initialize).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Backup configuration created")).toBeInTheDocument();
+    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Options..." }));
     await user.click(screen.getByRole("checkbox", { name: "App preferences" }));
