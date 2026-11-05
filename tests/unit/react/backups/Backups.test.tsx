@@ -10,6 +10,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import Backups from "../../../../src/views/SettingsWindow/pages/Backups";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
+import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
 const translations: Record<string, string> = {
@@ -20,10 +21,13 @@ const translations: Record<string, string> = {
   backupOptionsSaveFailed: "Couldn't save backup options. Try again.",
   backupConfigurationCreated: "Backup configuration created",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
+  backupCreated: "Backup created",
   backupSetupFailed: "Couldn't set up backups. Try again.",
   createBackup: "Create backup",
   createNewBackup: "Create new backup",
   creatingBackup: "Creating your backup archive...",
+  lastBackupCreated: "Last backup created",
+  lastBackupCreatedHelp: "{{date}} at {{time}}",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
   notesAndNoteOrder: "Notes and note order",
@@ -49,7 +53,7 @@ describe("Backups", () => {
   it("shows an accessible uninitialized backup state after loading", async () => {
     installDesktopApiMock();
 
-    render(<Backups theme={SystemTheme.LIGHT} />);
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     expect(screen.getByRole("heading", { name: "Backups" })).toBeInTheDocument();
     expect(await screen.findByText("No backup created yet")).toBeInTheDocument();
@@ -80,7 +84,7 @@ describe("Backups", () => {
       }
     });
 
-    render(<Backups theme={SystemTheme.LIGHT} />);
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
@@ -111,7 +115,7 @@ describe("Backups", () => {
       }
     });
 
-    render(<Backups theme={SystemTheme.LIGHT} />);
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
@@ -141,11 +145,13 @@ describe("Backups", () => {
       }
     });
 
-    render(<Backups theme={SystemTheme.LIGHT} />);
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Create backup" }));
 
     expect(desktopApi.backup.createArchive).toHaveBeenCalledWith(undefined);
     expect(await screen.findByRole("button", { name: "Create new backup" })).toBeInTheDocument();
+    expect(screen.getByText("Last backup created")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Backup created");
   });
 });

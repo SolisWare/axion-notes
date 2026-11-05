@@ -65,6 +65,24 @@ describe("BackupArchiveService", () => {
     await expect(service.createArchive()).resolves.toEqual({ status: BackupCreateStatus.PASSWORD_REQUIRED });
     expect(noteService.getNotesForBackup).not.toHaveBeenCalled();
   });
+
+  it("replaces the managed archive when a new backup is created", async () => {
+    const { backupDirectory, noteService, service, stateStorage } = await createService(true);
+    await stateStorage.setState({
+      version: 1,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: false,
+        mainWindowState: false
+      }
+    });
+
+    await expect(service.createArchive()).resolves.toMatchObject({ status: BackupCreateStatus.CREATED });
+    await expect(service.createArchive()).resolves.toMatchObject({ status: BackupCreateStatus.CREATED });
+
+    await expect(fs.promises.access(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))).resolves.toBeUndefined();
+    expect(noteService.getNotesForBackup).toHaveBeenCalledTimes(2);
+  });
 });
 
 async function createService(isEncryptionUnlocked: boolean): Promise<{

@@ -6,16 +6,20 @@
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import AppToast from "../../../components/AppToast";
 import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
 import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { SystemTheme } from "../../../theme/SystemTheme";
+import { AppSettings } from "../../../settings/AppSettings";
 import { BackupContentSelection } from "../../../types/BackupContentSelection";
 import { BackupCreateStatus } from "../../../types/BackupCreateResult";
 import { BackupState } from "../../../types/BackupState";
+import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import styles from "./SettingsPages.module.css";
 
 type BackupsProps = {
+  appSettings: AppSettings;
   theme: SystemTheme;
 };
 
@@ -29,6 +33,7 @@ function Backups(props: BackupsProps) {
   const [isBackupPasswordDialogOpen, setBackupPasswordDialogOpen] = useState(false);
   const [isCreatingBackup, setCreatingBackup] = useState(false);
   const [hasBackupCreationError, setHasBackupCreationError] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -109,6 +114,7 @@ function Backups(props: BackupsProps) {
 
       setBackupState(result.state);
       setBackupPasswordDialogOpen(false);
+      setToastMessage(t("backupCreated"));
       return true;
     } catch (err) {
       console.error("Failed to create backup:", (err as Error).message);
@@ -124,6 +130,13 @@ function Backups(props: BackupsProps) {
   };
 
   const isInitialized = backupState !== undefined;
+  const lastBackupCreatedAt = backupState?.lastBackupCreatedAt;
+  const lastBackupDate = lastBackupCreatedAt
+    ? Formatter.getFormattedDate(Formatter.toDate(lastBackupCreatedAt), props.appSettings.dateFormat)
+    : undefined;
+  const lastBackupTime = lastBackupCreatedAt
+    ? Formatter.getFormattedTimestamp(Formatter.toDate(lastBackupCreatedAt), props.appSettings.timeFormat)
+    : undefined;
 
   return (
     <div className={styles.backupsPage}>
@@ -132,9 +145,11 @@ function Backups(props: BackupsProps) {
         <div className={styles.settingsRows}>
           <div className={styles.settingsRow}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t(isInitialized ? "backupConfigurationCreated" : "noBackupCreated")}</h3>
+              <h3 className={styles.settingsSectionTitle}>{t(lastBackupCreatedAt ? "lastBackupCreated" : isInitialized ? "backupConfigurationCreated" : "noBackupCreated")}</h3>
               <p className={styles.settingsSectionDescription}>
-                {t(isInitialized ? "backupConfigurationCreatedHelp" : "noBackupCreatedHelp")}
+                {lastBackupDate && lastBackupTime
+                  ? t("lastBackupCreatedHelp", { date: lastBackupDate, time: lastBackupTime })
+                  : t(isInitialized ? "backupConfigurationCreatedHelp" : "noBackupCreatedHelp")}
               </p>
             </div>
             {!isInitialized ? (
@@ -190,6 +205,7 @@ function Backups(props: BackupsProps) {
         title={t("createBackup")}
         value={50}
       />
+      <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={props.theme} onClose={() => setToastMessage("")} />
     </div>
   );
 }
