@@ -41,6 +41,12 @@
   color: var(--settings-nav-text);
 }
 
+.backupActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
 .generalPage {
   min-height: 100%;
   box-sizing: border-box;

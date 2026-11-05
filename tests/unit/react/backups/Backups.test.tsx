@@ -9,15 +9,18 @@ import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import Backups from "../../../../src/views/SettingsWindow/pages/Backups";
+import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
 const translations: Record<string, string> = {
   backups: "Backups",
+  backupOptions: "Backup Options",
   backupConfigurationCreated: "Backup configuration created",
   backupConfigurationCreatedHelp: "Notes and selected app data are ready to be included in your backup archive.",
   backupSetupFailed: "Couldn't set up backups. Try again.",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
+  options: "Options...",
   setUpBackups: "Set up backups",
   settingUpBackups: "Setting up..."
 };
@@ -32,7 +35,7 @@ describe("Backups", () => {
   it("shows an accessible uninitialized backup state after loading", async () => {
     installDesktopApiMock();
 
-    render(<Backups />);
+    render(<Backups theme={SystemTheme.LIGHT} />);
 
     expect(screen.getByRole("heading", { name: "Backups" })).toBeInTheDocument();
     expect(await screen.findByText("No backup created yet")).toBeInTheDocument();
@@ -55,7 +58,7 @@ describe("Backups", () => {
       }
     });
 
-    render(<Backups />);
+    render(<Backups theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
@@ -63,6 +66,9 @@ describe("Backups", () => {
     expect(await screen.findByText("Backup configuration created")).toBeInTheDocument();
     expect(screen.getByText("Notes and selected app data are ready to be included in your backup archive.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Set up backups" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Options..." }));
+
+    expect(screen.getByRole("dialog", { name: "Backup Options" })).toBeInTheDocument();
   });
 
   it("shows initialization failures accessibly", async () => {
@@ -74,7 +80,7 @@ describe("Backups", () => {
       }
     });
 
-    render(<Backups />);
+    render(<Backups theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 

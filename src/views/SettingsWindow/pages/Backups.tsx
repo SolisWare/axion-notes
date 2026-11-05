@@ -6,15 +6,22 @@
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
+import { SystemTheme } from "../../../theme/SystemTheme";
 import { BackupState } from "../../../types/BackupState";
 import styles from "./SettingsPages.module.css";
 
-function Backups() {
+type BackupsProps = {
+  theme: SystemTheme;
+};
+
+function Backups(props: BackupsProps) {
   const { t } = useTranslation();
   const [backupState, setBackupState] = useState<BackupState | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasInitializationError, setHasInitializationError] = useState(false);
+  const [isOptionsDialogOpen, setOptionsDialogOpen] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -89,7 +96,15 @@ function Backups() {
             <p className={styles.settingsSectionDescription} role="alert">{t("backupSetupFailed")}</p>
           )}
         </div>
+        {isInitialized && (
+          <div className={styles.backupActions}>
+            <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
+              {t("options")}
+            </button>
+          </div>
+        )}
       </section>
+      <BackupOptionsDialog open={isOptionsDialogOpen} theme={props.theme} onClose={() => setOptionsDialogOpen(false)} />
     </div>
   );
 }

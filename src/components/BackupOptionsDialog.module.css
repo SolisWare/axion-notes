@@ -1,0 +1,24 @@
+/**
+ * Copyright (c) 2026 SolisWare.
+ *
+ * All rights reserved. Licensed under the MIT license.
+ * See the LICENSE.txt file in the project root directory for details.
+ */
+.backdrop {
+  background-color: var(--backup-options-dialog-backdrop) !important;
+}
+
+.paper {
+  min-width: 360px;
+  background: var(--backup-options-dialog-background) !important;
+}
+
+.title,
+.actions {
+  background: var(--backup-options-dialog-background) !important;
+}
+
+.title {
+  color: var(--backup-options-dialog-title) !important;
+}
+

@@ -80,7 +80,7 @@ function SettingsWindow(props: SettingsWindowProps) {
       page = <DataStorage />;
       break;
     case SettingsView.backups:
-      page = <Backups />;
+      page = <Backups theme={props.theme} />;
       break;
     case SettingsView.license:
       page = <License theme={props.theme} />;
