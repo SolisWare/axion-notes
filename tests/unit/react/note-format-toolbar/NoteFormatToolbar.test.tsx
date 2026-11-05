@@ -130,12 +130,14 @@ describe("NoteFormatToolbar", () => {
         formatState: createFormatState({
           isBoldActive: true,
           isChecklistActive: true,
+          isDashedListActive: true,
           isSuperscriptActive: true
         })
       });
 
       expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByRole("button", { name: "Checklist" })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getByRole("button", { name: "Dashed list" })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByRole("button", { name: "Superscript" })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByRole("button", { name: "Italic" })).toHaveAttribute("aria-pressed", "false");
     });

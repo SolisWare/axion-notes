@@ -13,6 +13,7 @@ import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import NoteFormatToolbar from "../../../../src/components/NoteFormatToolbar";
 import NoteRichTextEditor from "../../../../src/components/NoteRichTextEditor";
+import { TiptapDocument } from "../../../../src/types/NoteType";
 import { RichTextFormatAction } from "../../../../src/types/RichTextFormatCommand";
 import { getInactiveRichTextFormatState, RichTextFormatState } from "../../../../src/types/RichTextFormatState";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
@@ -73,6 +74,30 @@ describe("NoteFormatToolbar integration", () => {
     await expectRichContentToContain('"listMarkerType":"dash"');
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "formatting.dashedList" })).toHaveAttribute("aria-pressed", "true");
+    });
+  });
+
+  it("preserves a dashed list when saved rich content is loaded into a new editor", async () => {
+    const user = userEvent.setup();
+    const { unmount } = renderRichTextToolbar();
+
+    await selectEditorText(user);
+    await user.click(screen.getByRole("button", { name: "formatting.dashedList" }));
+    await expectRichContentToContain('"listMarkerType":"dash"');
+    const savedRichContent = JSON.parse(screen.getByRole("status", { name: "Rich content" }).textContent ?? "") as TiptapDocument;
+    unmount();
+
+    render(
+      <NoteRichTextEditor
+        content="Axion Notes"
+        placeholder="Type here"
+        richContent={savedRichContent}
+        theme={SystemTheme.LIGHT}
+      />
+    );
+
+    await waitFor(() => {
+      expect(document.querySelector(".ProseMirror ul[data-list-marker-type='dash']")).toHaveTextContent("Axion Notes");
     });
   });
 });
