@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -24,10 +24,16 @@ const translations: Record<string, string> = {
   backupCreated: "Backup created",
   backupCopySaved: "Backup copy saved",
   backupCopySaveFailed: "Couldn't save the backup copy. Try again.",
+  backupDeleted: "Backup deleted",
+  backupDeleteFailed: "Couldn't delete the backup. Try again.",
   backupSetupFailed: "Couldn't set up backups. Try again.",
   createBackup: "Create backup",
   createNewBackup: "Create new backup",
   creatingBackup: "Creating your backup archive...",
+  deletingBackup: "Deleting backup...",
+  deleteBackup: "Delete backup",
+  deleteBackupHeading: "Delete Backup",
+  deleteBackupWarning: "Delete the managed backup archive? This cannot be undone.",
   lastBackupCreated: "Last backup created",
   lastBackupCreatedHelp: "{{date}} at {{time}}",
   noBackupCreated: "No backup created yet",
@@ -179,5 +185,38 @@ describe("Backups", () => {
 
     expect(desktopApi.backup.saveCopy).toHaveBeenCalledOnce();
     expect(screen.getByRole("status")).toHaveTextContent("Backup copy saved");
+  });
+
+  it("deletes an existing backup after confirmation while retaining its configuration", async () => {
+    const user = userEvent.setup();
+    const configuredState = {
+      version: 1 as const,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: { appSettings: true, mainWindowState: true },
+      lastBackupCreatedAt: "2026-11-05T12:30:00.000Z"
+    };
+    const desktopApi = installDesktopApiMock({
+      backup: {
+        deleteArchive: vi.fn().mockResolvedValue({
+          status: "deleted",
+          state: {
+            version: configuredState.version,
+            initializedAt: configuredState.initializedAt,
+            contentSelection: configuredState.contentSelection
+          }
+        }),
+        getState: vi.fn().mockResolvedValue(configuredState)
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Delete backup" }));
+    const dialog = await screen.findByRole("dialog", { name: "Delete Backup" });
+    await user.click(within(dialog).getByRole("button", { name: "Delete backup" }));
+
+    expect(desktopApi.backup.deleteArchive).toHaveBeenCalledOnce();
+    expect(await screen.findByRole("button", { name: "Create backup" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Backup deleted");
   });
 });

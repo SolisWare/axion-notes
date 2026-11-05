@@ -14,6 +14,7 @@ export const channels = {
   },
   backup: {
     createArchive: "backup.createArchive",
+    deleteArchive: "backup.deleteArchive",
     getState: "backup.getState",
     initialize: "backup.initialize",
     saveCopy: "backup.saveCopy",

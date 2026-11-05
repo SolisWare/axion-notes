@@ -101,6 +101,12 @@
   border-top: 1px solid var(--settings-divider);
 }
 
+.backupArchiveActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .generalPage {
   min-height: 100%;
   box-sizing: border-box;

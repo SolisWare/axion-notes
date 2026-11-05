@@ -9,6 +9,7 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { BackupState } from "../../src/types/BackupState";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
+import { BackupDeleteResult, BackupDeleteStatus } from "../../src/types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
 import { Formatter } from "../../src/utils/dt-formatter/Formatter";
 import { BackupArchiveService, BACKUP_ARCHIVE_FILE_NAME } from "../storage/BackupArchiveService";
@@ -28,6 +29,10 @@ type BackupIpcOptions = {
 export function registerBackupIpc(options: BackupIpcOptions): void {
   protectedHandle<BackupCreateResult, [string?]>(channels.backup.createArchive, { ...options, fallback: { status: BackupCreateStatus.FAILED } }, async (_event, password) => {
     return options.backupArchiveService.createArchive(password);
+  });
+
+  protectedHandle<BackupDeleteResult, []>(channels.backup.deleteArchive, { ...options, fallback: { status: BackupDeleteStatus.FAILED } }, async () => {
+    return options.backupArchiveService.deleteArchive();
   });
 
   protectedHandle<BackupSaveResult, []>(channels.backup.saveCopy, { ...options, fallback: { status: BackupSaveStatus.FAILED } }, async (event) => {

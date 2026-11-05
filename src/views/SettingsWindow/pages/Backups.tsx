@@ -9,11 +9,13 @@ import { useTranslation } from "react-i18next";
 import AppToast from "../../../components/AppToast";
 import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
 import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import { AppSettings } from "../../../settings/AppSettings";
 import { BackupContentSelection } from "../../../types/BackupContentSelection";
 import { BackupCreateStatus } from "../../../types/BackupCreateResult";
+import { BackupDeleteStatus } from "../../../types/BackupDeleteResult";
 import { BackupSaveStatus } from "../../../types/BackupSaveResult";
 import { BackupState } from "../../../types/BackupState";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
@@ -34,8 +36,11 @@ function Backups(props: BackupsProps) {
   const [isBackupPasswordDialogOpen, setBackupPasswordDialogOpen] = useState(false);
   const [isCreatingBackup, setCreatingBackup] = useState(false);
   const [isSavingBackupCopy, setSavingBackupCopy] = useState(false);
+  const [isDeleteBackupDialogOpen, setDeleteBackupDialogOpen] = useState(false);
+  const [isDeletingBackup, setDeletingBackup] = useState(false);
   const [hasBackupCreationError, setHasBackupCreationError] = useState(false);
   const [hasBackupCopySaveError, setHasBackupCopySaveError] = useState(false);
+  const [hasBackupDeletionError, setHasBackupDeletionError] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   useEffect(() => {
@@ -152,6 +157,29 @@ function Backups(props: BackupsProps) {
     }
   };
 
+  const handleDeleteBackup = async (): Promise<void> => {
+    setDeletingBackup(true);
+    setHasBackupDeletionError(false);
+
+    try {
+      const result = await window.api.backup.deleteArchive();
+
+      if (result.status !== BackupDeleteStatus.DELETED || !result.state) {
+        setHasBackupDeletionError(true);
+        return;
+      }
+
+      setBackupState(result.state);
+      setDeleteBackupDialogOpen(false);
+      setToastMessage(t("backupDeleted"));
+    } catch (err) {
+      console.error("Failed to delete backup:", (err as Error).message);
+      setHasBackupDeletionError(true);
+    } finally {
+      setDeletingBackup(false);
+    }
+  };
+
   const isInitialized = backupState !== undefined;
   const lastBackupCreatedAt = backupState?.lastBackupCreatedAt;
   const lastBackupDate = lastBackupCreatedAt
@@ -194,7 +222,7 @@ function Backups(props: BackupsProps) {
                 {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
               </button>
             ) : (
-              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void createBackup()}>
+              <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void createBackup()}>
                 {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
               </button>
             )}
@@ -208,12 +236,20 @@ function Backups(props: BackupsProps) {
           {hasBackupCopySaveError && (
             <p className={styles.backupError} role="alert">{t("backupCopySaveFailed")}</p>
           )}
+          {hasBackupDeletionError && (
+            <p className={styles.backupError} role="alert">{t("backupDeleteFailed")}</p>
+          )}
           {isInitialized && (
             <div className={styles.backupCardFooter}>
               {lastBackupCreatedAt && (
-                <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy} type="button" onClick={() => void handleSaveCopy()}>
-                  {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
-                </button>
+                <div className={styles.backupArchiveActions}>
+                  <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void handleSaveCopy()}>
+                    {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
+                  </button>
+                  <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => setDeleteBackupDialogOpen(true)}>
+                    {t("deleteBackup")}
+                  </button>
+                </div>
               )}
               <button className={styles.settingsButton} type="button" onClick={() => setOptionsDialogOpen(true)}>
                 {t("options")}
@@ -237,6 +273,15 @@ function Backups(props: BackupsProps) {
         theme={props.theme}
         onCancel={() => setBackupPasswordDialogOpen(false)}
         onSubmit={handleBackupPasswordSubmit}
+      />
+      <ConfirmationDialog
+        confirmLabel={t(isDeletingBackup ? "deletingBackup" : "deleteBackup")}
+        message={t("deleteBackupWarning")}
+        open={isDeleteBackupDialogOpen}
+        theme={props.theme}
+        title={t("deleteBackupHeading")}
+        onCancel={() => setDeleteBackupDialogOpen(false)}
+        onConfirm={() => void handleDeleteBackup()}
       />
       <BlockingProgressDialog
         open={isCreatingBackup}

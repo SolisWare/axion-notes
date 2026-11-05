@@ -9,6 +9,7 @@ import { DateFormat } from "../../../../src/utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../../../../src/utils/dt-formatter/TimeFormat";
 import { BackupContentSelection } from "../../../../src/types/BackupContentSelection";
 import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
+import { BackupDeleteStatus } from "../../../../src/types/BackupDeleteResult";
 import { BackupState } from "../../../../src/types/BackupState";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerBackupIpc } from "../../../../electron/ipc/backupIpc";
@@ -56,6 +57,7 @@ describe("backup IPC lock boundary", () => {
     };
     const backupArchiveService = {
       createArchive: vi.fn(),
+      deleteArchive: vi.fn(),
       saveCopy: vi.fn()
     };
     registerBackupIpc({
@@ -69,11 +71,13 @@ describe("backup IPC lock boundary", () => {
     await expect(invoke(channels.backup.initialize)).resolves.toBeUndefined();
     await expect(invoke(channels.backup.updateContentSelection, { appSettings: false, mainWindowState: false })).resolves.toBeUndefined();
     await expect(invoke(channels.backup.createArchive)).resolves.toEqual({ status: BackupCreateStatus.FAILED });
+    await expect(invoke(channels.backup.deleteArchive)).resolves.toEqual({ status: BackupDeleteStatus.FAILED });
     await expect(invoke(channels.backup.saveCopy)).resolves.toEqual({ status: "failed" });
     expect(backupService.getState).not.toHaveBeenCalled();
     expect(backupService.initialize).not.toHaveBeenCalled();
     expect(backupService.updateContentSelection).not.toHaveBeenCalled();
     expect(backupArchiveService.createArchive).not.toHaveBeenCalled();
+    expect(backupArchiveService.deleteArchive).not.toHaveBeenCalled();
     expect(backupArchiveService.saveCopy).not.toHaveBeenCalled();
   });
 
@@ -89,6 +93,7 @@ describe("backup IPC lock boundary", () => {
     };
     const backupArchiveService = {
       createArchive: vi.fn(async () => ({ status: BackupCreateStatus.CREATED, state })),
+      deleteArchive: vi.fn(async () => ({ status: BackupDeleteStatus.DELETED, state })),
       saveCopy: vi.fn(async () => ({ status: "saved" }))
     };
     registerBackupIpc({
@@ -110,6 +115,7 @@ describe("backup IPC lock boundary", () => {
       contentSelection: { appSettings: false, mainWindowState: true }
     });
     await expect(invoke(channels.backup.createArchive, "backup password")).resolves.toEqual({ status: BackupCreateStatus.CREATED, state });
+    await expect(invoke(channels.backup.deleteArchive)).resolves.toEqual({ status: BackupDeleteStatus.DELETED, state });
     showSaveDialog.mockResolvedValue({ canceled: false, filePath: "/tmp/axion-notes-backup.zip" });
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 10, 5, 14, 13, 9));
@@ -118,6 +124,7 @@ describe("backup IPC lock boundary", () => {
     expect(backupService.initialize).toHaveBeenCalledOnce();
     expect(backupService.updateContentSelection).toHaveBeenCalledWith({ appSettings: false, mainWindowState: true });
     expect(backupArchiveService.createArchive).toHaveBeenCalledWith("backup password");
+    expect(backupArchiveService.deleteArchive).toHaveBeenCalledOnce();
     expect(backupArchiveService.saveCopy).toHaveBeenCalledWith("/tmp/axion-notes-backup.zip");
     expect(showSaveDialog).toHaveBeenCalledWith(expect.objectContaining({
       defaultPath: "axion-notes-backup-05-11-2026_14-13-09.zip"

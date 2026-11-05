@@ -7,6 +7,7 @@
 import { BackupState } from "../../src/types/BackupState";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupCreateResult } from "../../src/types/BackupCreateResult";
+import { BackupDeleteResult } from "../../src/types/BackupDeleteResult";
 import { BackupSaveResult } from "../../src/types/BackupSaveResult";
 import { channels } from "../ipc/channels";
 import { receive } from "./ipcHelpers";
@@ -14,6 +15,10 @@ import { receive } from "./ipcHelpers";
 export const backupApi = {
   createArchive: async (password?: string): Promise<BackupCreateResult> => {
     return receive<BackupCreateResult>(channels.backup.createArchive, password);
+  },
+
+  deleteArchive: async (): Promise<BackupDeleteResult> => {
+    return receive<BackupDeleteResult>(channels.backup.deleteArchive);
   },
 
   getState: async (): Promise<BackupState | undefined> => {

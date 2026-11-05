@@ -8,6 +8,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import yazl from "yazl";
 import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
+import { BackupDeleteResult, BackupDeleteStatus } from "../../src/types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
 import { BackupState } from "../../src/types/BackupState";
 import { AppSettings } from "../../src/settings/AppSettings";
@@ -95,6 +96,31 @@ export class BackupArchiveService {
     } catch (err) {
       console.warn("Failed to save a backup copy:", err);
       return { status: BackupSaveStatus.FAILED };
+    }
+  }
+
+  /**
+   * Removes the managed archive while retaining backup configuration.
+   */
+  public async deleteArchive(): Promise<BackupDeleteResult> {
+    const state = await this.backupStateStorage.getState();
+
+    if (!state?.lastBackupCreatedAt) {
+      return { status: BackupDeleteStatus.FAILED };
+    }
+
+    try {
+      await fs.promises.rm(path.join(this.backupDirectory, BACKUP_ARCHIVE_FILE_NAME), { force: true });
+      const { lastBackupCreatedAt: _lastBackupCreatedAt, ...updatedState } = state;
+      await this.backupStateStorage.setState(updatedState);
+
+      return {
+        status: BackupDeleteStatus.DELETED,
+        state: updatedState
+      };
+    } catch (err) {
+      console.warn("Failed to delete backup archive:", err);
+      return { status: BackupDeleteStatus.FAILED };
     }
   }
 

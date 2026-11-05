@@ -9,6 +9,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
+import { BackupDeleteStatus } from "../../../../src/types/BackupDeleteResult";
 import { BackupArchiveService, BACKUP_ARCHIVE_FILE_NAME } from "../../../../electron/storage/BackupArchiveService";
 import { BackupStateStorage } from "../../../../electron/storage/BackupStateStorage";
 import { NoteService } from "../../../../electron/storage/NoteService";
@@ -101,6 +102,40 @@ describe("BackupArchiveService", () => {
     await expect(fs.promises.readFile(destinationPath)).resolves.toEqual(
       await fs.promises.readFile(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))
     );
+  });
+
+  it("deletes the managed archive while retaining its configuration", async () => {
+    const { backupDirectory, service, stateStorage } = await createService(true);
+    await stateStorage.setState({
+      version: 1,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: true,
+        mainWindowState: false
+      }
+    });
+    await service.createArchive();
+
+    await expect(service.deleteArchive()).resolves.toEqual({
+      status: BackupDeleteStatus.DELETED,
+      state: {
+        version: 1,
+        initializedAt: "2026-11-05T12:00:00.000Z",
+        contentSelection: {
+          appSettings: true,
+          mainWindowState: false
+        }
+      }
+    });
+    await expect(fs.promises.access(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(stateStorage.getState()).resolves.toEqual({
+      version: 1,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: true,
+        mainWindowState: false
+      }
+    });
   });
 });
 

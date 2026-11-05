@@ -47,6 +47,7 @@ export function installBrowserApi(): void {
     },
     backup: {
       createArchive: async () => ({ status: "failed" as const }),
+      deleteArchive: async () => ({ status: "failed" as const }),
       getState: async () => undefined,
       initialize: async () => undefined,
       saveCopy: async () => ({ status: "failed" as const }),
