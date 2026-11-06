@@ -37,11 +37,13 @@ function DataStorage() {
         console.error("Failed to load settings folder location:", err.message);
       });
 
-    window.api.security.getSecurityFolderLocation()
-      .then(setSecurityFolderLocation)
-      .catch((err: Error) => {
-        console.error("Failed to load security folder location:", err.message);
-      });
+    if (UserAgent.isElectron) {
+      window.api.security.getSecurityFolderLocation()
+        .then(setSecurityFolderLocation)
+        .catch((err: Error) => {
+          console.error("Failed to load security folder location:", err.message);
+        });
+    }
   }, []);
 
   return (
@@ -60,12 +62,14 @@ function DataStorage() {
               <p className={styles.settingsSectionDescription}>{settingsLocation}</p>
             </div>
           </div>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("passwordEncryptionDataLocation")}</h3>
-              <p className={styles.settingsSectionDescription}>{passwordEncryptionDataLocation}</p>
+          {UserAgent.isElectron && (
+            <div className={styles.settingsRow}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle}>{t("passwordEncryptionDataLocation")}</h3>
+                <p className={styles.settingsSectionDescription}>{passwordEncryptionDataLocation}</p>
+              </div>
             </div>
-          </div>
+          )}
           {UserAgent.isElectron && (
             <div className={styles.settingsRow}>
               <div className={styles.settingsRowText}>

@@ -28,8 +28,11 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("DataStorage on web", () => {
-  it("does not show or request a managed backup folder", async () => {
+  it("does not show or request desktop-only storage locations", async () => {
     const browserApi = installDesktopApiMock({
+      security: {
+        getSecurityFolderLocation: vi.fn().mockResolvedValue("/private/security")
+      },
       storage: {
         getBackupFolderLocation: vi.fn().mockResolvedValue("/private/backup"),
         getNotesFolderLocation: vi.fn().mockResolvedValue("Browser local storage")
@@ -40,6 +43,8 @@ describe("DataStorage on web", () => {
 
     expect(await screen.findByText("Browser local storage")).toBeInTheDocument();
     expect(screen.queryByText("Backup location")).not.toBeInTheDocument();
+    expect(screen.queryByText("Password encryption data location")).not.toBeInTheDocument();
     expect(browserApi.storage.getBackupFolderLocation).not.toHaveBeenCalled();
+    expect(browserApi.security.getSecurityFolderLocation).not.toHaveBeenCalled();
   });
 });
