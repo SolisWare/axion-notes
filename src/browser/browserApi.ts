@@ -10,6 +10,7 @@ import { AppVersionConfig } from "../utils/app-version/AppVersionConfig";
 import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
 import { type UnlockResult } from "../types/UnlockResult";
 import { UserAgent } from "../utils/UserAgent";
+import { browserBackupApi } from "./backup/browserBackupApi";
 import { settingsApi } from "./storage/settingsApi";
 import { storageApi } from "./storage/storageApi";
 
@@ -45,14 +46,7 @@ export function installBrowserApi(): void {
       setAlwaysOnTop: noop,
       setLayout: noop
     },
-    backup: {
-      createArchive: async () => ({ status: "failed" as const }),
-      deleteArchive: async () => ({ status: "failed" as const }),
-      getState: async () => undefined,
-      initialize: async () => undefined,
-      saveCopy: async () => ({ status: "failed" as const }),
-      updateContentSelection: async () => undefined
-    },
+    backup: browserBackupApi,
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,
