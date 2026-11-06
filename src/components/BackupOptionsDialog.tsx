@@ -15,6 +15,7 @@ import styles from "./BackupOptionsDialog.module.css";
 type BackupOptionsDialogProps = {
   contentSelection: BackupContentSelection;
   open: boolean;
+  showMainWindowStateOption?: boolean;
   theme: SystemTheme;
   onClose: () => void;
   onSave: (contentSelection: BackupContentSelection) => Promise<boolean>;
@@ -124,13 +125,15 @@ function BackupOptionsDialog(props: BackupOptionsDialogProps) {
               <span className={styles.contentOptionDescription}>{t("appPreferencesHelp")}</span>
             </span>
           </label>
-          <label className={styles.contentOption}>
-            <input aria-label={t("mainWindowLayout")} checked={contentSelection.mainWindowState} type="checkbox" onChange={handleSelectionChange("mainWindowState")} />
-            <span className={styles.contentOptionText}>
-              <span className={styles.contentOptionTitle}>{t("mainWindowLayout")}</span>
-              <span className={styles.contentOptionDescription}>{t("mainWindowLayoutHelp")}</span>
-            </span>
-          </label>
+          {props.showMainWindowStateOption !== false && (
+            <label className={styles.contentOption}>
+              <input aria-label={t("mainWindowLayout")} checked={contentSelection.mainWindowState} type="checkbox" onChange={handleSelectionChange("mainWindowState")} />
+              <span className={styles.contentOptionText}>
+                <span className={styles.contentOptionTitle}>{t("mainWindowLayout")}</span>
+                <span className={styles.contentOptionDescription}>{t("mainWindowLayoutHelp")}</span>
+              </span>
+            </label>
+          )}
         </fieldset>
         {hasSaveError && <p className={styles.error} role="alert">{t("backupOptionsSaveFailed")}</p>}
       </DialogContent>

@@ -19,6 +19,7 @@ import { BackupDeleteStatus } from "../../../types/BackupDeleteResult";
 import { BackupSaveStatus } from "../../../types/BackupSaveResult";
 import { BackupState } from "../../../types/BackupState";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
+import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
 
 type BackupsProps = {
@@ -28,6 +29,7 @@ type BackupsProps = {
 
 function Backups(props: BackupsProps) {
   const { t } = useTranslation();
+  const isElectron = UserAgent.isElectron;
   const [backupState, setBackupState] = useState<BackupState | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -122,7 +124,7 @@ function Backups(props: BackupsProps) {
 
       setBackupState(result.state);
       setBackupPasswordDialogOpen(false);
-      setToastMessage(t("backupCreated"));
+      setToastMessage(t(isElectron ? "backupCreated" : "backupDownloadStarted"));
       return true;
     } catch (err) {
       console.error("Failed to create backup:", (err as Error).message);
@@ -194,12 +196,12 @@ function Backups(props: BackupsProps) {
         <div className={styles.backupCard}>
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t(lastBackupCreatedAt ? "lastBackupCreated" : isInitialized ? "backupConfigurationCreated" : "noBackupCreated")}</h3>
+              <h3 className={styles.settingsSectionTitle}>{t(lastBackupCreatedAt ? isElectron ? "lastBackupCreated" : "lastBackupDownloadStarted" : isInitialized ? "backupConfigurationCreated" : isElectron ? "noBackupCreated" : "noBackupDownloaded")}</h3>
               {lastBackupDate && lastBackupTime && (
                 <p className={styles.settingsSectionDescription}>{t("lastBackupCreatedHelp", { date: lastBackupDate, time: lastBackupTime })}</p>
               )}
               {!isInitialized && (
-                <p className={styles.settingsSectionDescription}>{t("noBackupCreatedHelp")}</p>
+                <p className={styles.settingsSectionDescription}>{t(isElectron ? "noBackupCreatedHelp" : "noBackupDownloadedHelp")}</p>
               )}
               {isInitialized && !lastBackupCreatedAt && (
                 <p className={styles.settingsSectionDescription}>{t("backupConfigurationCreatedHelp")}</p>
@@ -212,10 +214,10 @@ function Backups(props: BackupsProps) {
           {hasBackupCreationError && (
             <p className={styles.backupError} role="alert">{t("backupCreateFailed")}</p>
           )}
-          {hasBackupCopySaveError && (
+          {isElectron && hasBackupCopySaveError && (
             <p className={styles.backupError} role="alert">{t("backupCopySaveFailed")}</p>
           )}
-          {hasBackupDeletionError && (
+          {isElectron && hasBackupDeletionError && (
             <p className={styles.backupError} role="alert">{t("backupDeleteFailed")}</p>
           )}
           <div className={styles.backupCardActions}>
@@ -231,9 +233,9 @@ function Backups(props: BackupsProps) {
             ) : (
               <>
                 <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void createBackup()}>
-                  {t(backupState.lastBackupCreatedAt ? "createNewBackup" : "createBackup")}
+                  {t(backupState.lastBackupCreatedAt ? isElectron ? "createNewBackup" : "downloadNewBackup" : isElectron ? "createBackup" : "downloadBackup")}
                 </button>
-                {lastBackupCreatedAt && (
+                {isElectron && lastBackupCreatedAt && (
                   <>
                     <button className={styles.settingsButton} disabled={isCreatingBackup || isSavingBackupCopy || isDeletingBackup} type="button" onClick={() => void handleSaveCopy()}>
                       {t(isSavingBackupCopy ? "savingBackupCopy" : "saveBackupCopy")}
@@ -259,32 +261,37 @@ function Backups(props: BackupsProps) {
         <BackupOptionsDialog
           contentSelection={backupState.contentSelection}
           open={isOptionsDialogOpen}
+          showMainWindowStateOption={isElectron}
           theme={props.theme}
           onClose={() => setOptionsDialogOpen(false)}
           onSave={handleSaveOptions}
         />
       )}
-      <SecurityPasswordDialog
-        mode={SecurityPasswordDialogMode.BACKUP}
-        open={isBackupPasswordDialogOpen}
-        theme={props.theme}
-        onCancel={() => setBackupPasswordDialogOpen(false)}
-        onSubmit={handleBackupPasswordSubmit}
-      />
-      <ConfirmationDialog
-        confirmLabel={t(isDeletingBackup ? "deletingBackup" : "deleteBackup")}
-        message={t("deleteBackupWarning")}
-        open={isDeleteBackupDialogOpen}
-        theme={props.theme}
-        title={t("deleteBackupHeading")}
-        onCancel={() => setDeleteBackupDialogOpen(false)}
-        onConfirm={() => void handleDeleteBackup()}
-      />
+      {isElectron && (
+        <SecurityPasswordDialog
+          mode={SecurityPasswordDialogMode.BACKUP}
+          open={isBackupPasswordDialogOpen}
+          theme={props.theme}
+          onCancel={() => setBackupPasswordDialogOpen(false)}
+          onSubmit={handleBackupPasswordSubmit}
+        />
+      )}
+      {isElectron && (
+        <ConfirmationDialog
+          confirmLabel={t(isDeletingBackup ? "deletingBackup" : "deleteBackup")}
+          message={t("deleteBackupWarning")}
+          open={isDeleteBackupDialogOpen}
+          theme={props.theme}
+          title={t("deleteBackupHeading")}
+          onCancel={() => setDeleteBackupDialogOpen(false)}
+          onConfirm={() => void handleDeleteBackup()}
+        />
+      )}
       <BlockingProgressDialog
         open={isCreatingBackup}
-        status={t("creatingBackup")}
+        status={t(isElectron ? "creatingBackup" : "downloadingBackup")}
         theme={props.theme}
-        title={t("createBackup")}
+        title={t(isElectron ? "createBackup" : "downloadBackup")}
         value={50}
       />
       <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={props.theme} onClose={() => setToastMessage("")} />

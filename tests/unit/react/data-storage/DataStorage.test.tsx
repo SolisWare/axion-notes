@@ -10,6 +10,12 @@ import { describe, expect, it, vi } from "vitest";
 import DataStorage from "../../../../src/views/SettingsWindow/pages/DataStorage";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
+vi.mock("../../../../src/utils/UserAgent", () => ({
+  UserAgent: {
+    isElectron: true
+  }
+}));
+
 const translations: Record<string, string> = {
   backupLocation: "Backup location",
   notesLocation: "Notes location",

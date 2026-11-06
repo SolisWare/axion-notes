@@ -6,6 +6,7 @@
  */
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
 
 function DataStorage() {
@@ -22,11 +23,13 @@ function DataStorage() {
         console.error("Failed to load notes folder location:", err.message);
       });
 
-    window.api.storage.getBackupFolderLocation()
-      .then(setBackupFolderLocation)
-      .catch((err: Error) => {
-        console.error("Failed to load backup folder location:", err.message);
-      });
+    if (UserAgent.isElectron) {
+      window.api.storage.getBackupFolderLocation()
+        .then(setBackupFolderLocation)
+        .catch((err: Error) => {
+          console.error("Failed to load backup folder location:", err.message);
+        });
+    }
 
     window.api.settings.getSettingsFolderLocation()
       .then(setSettingsFolderLocation)
@@ -63,12 +66,14 @@ function DataStorage() {
               <p className={styles.settingsSectionDescription}>{passwordEncryptionDataLocation}</p>
             </div>
           </div>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("backupLocation")}</h3>
-              <p className={styles.settingsSectionDescription}>{backupLocation}</p>
+          {UserAgent.isElectron && (
+            <div className={styles.settingsRow}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle}>{t("backupLocation")}</h3>
+                <p className={styles.settingsSectionDescription}>{backupLocation}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </div>

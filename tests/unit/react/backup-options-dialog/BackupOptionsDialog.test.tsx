@@ -51,6 +51,12 @@ describe("BackupOptionsDialog", () => {
     expect(screen.getByRole("checkbox", { name: "Main-window layout" })).toBeChecked();
   });
 
+  it("omits the desktop-only main-window layout option when unavailable", () => {
+    renderBackupOptionsDialog({ showMainWindowStateOption: false });
+
+    expect(screen.queryByRole("checkbox", { name: "Main-window layout" })).not.toBeInTheDocument();
+  });
+
   it("saves the selected optional content and closes", async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();

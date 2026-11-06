@@ -61,9 +61,7 @@ export function getSettingsNavigationSections(): SettingsNavigationSection[] {
       labelKey: "storage",
       items: [
         { id: SettingsView.dataStorage, labelKey: "dataStorage", icon: <StorageOutlinedIcon fontSize="small" /> },
-        ...(UserAgent.isElectron ? [
-          { id: SettingsView.backups, labelKey: "backups", icon: <BackupOutlinedIcon fontSize="small" /> }
-        ] : [])
+        { id: SettingsView.backups, labelKey: "backups", icon: <BackupOutlinedIcon fontSize="small" /> }
       ]
     },
     {

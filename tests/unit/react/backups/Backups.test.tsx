@@ -13,6 +13,12 @@ import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
+vi.mock("../../../../src/utils/UserAgent", () => ({
+  UserAgent: {
+    isElectron: true
+  }
+}));
+
 const translations: Record<string, string> = {
   appPreferences: "App preferences",
   appPreferencesHelp: "Theme, language, editor preferences, and other app settings",
