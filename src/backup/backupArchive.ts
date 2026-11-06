@@ -23,7 +23,7 @@ export type BackupManifest = {
   contentSelection: BackupContentSelection;
 };
 
-type BackupArchiveContent = {
+export type BackupArchiveContent = {
   appSettings?: AppSettings;
   contentSelection: BackupContentSelection;
   createdAt: string;
