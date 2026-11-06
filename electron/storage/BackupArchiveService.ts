@@ -7,26 +7,18 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import yazl from "yazl";
+import { BACKUP_ARCHIVE_FILE_NAME, createBackupArchiveEntries } from "../../src/backup/backupArchive";
 import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCreateResult";
 import { BackupDeleteResult, BackupDeleteStatus } from "../../src/types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
 import { BackupState } from "../../src/types/BackupState";
-import { AppSettings } from "../../src/settings/AppSettings";
 import { NoteType } from "../../src/types/NoteType";
 import { readMainWindowState } from "../windows/mainWindowState";
 import { NoteService } from "./NoteService";
 import { SettingsService } from "./SettingsService";
 import { BackupStateStorage } from "./BackupStateStorage";
 
-export const BACKUP_ARCHIVE_FILE_NAME = "axion-notes-backup.zip";
-
-const BACKUP_MANIFEST_VERSION = 1;
-
-type BackupManifest = {
-  version: typeof BACKUP_MANIFEST_VERSION;
-  createdAt: string;
-  contentSelection: BackupState["contentSelection"];
-};
+export { BACKUP_ARCHIVE_FILE_NAME } from "../../src/backup/backupArchive";
 
 /**
  * Creates the managed plaintext backup archive in the Electron main process.
@@ -138,24 +130,20 @@ export class BackupArchiveService {
     });
 
     zip.outputStream.pipe(output);
-    this.addJson(zip, "manifest.json", {
-      version: BACKUP_MANIFEST_VERSION,
+    const appSettings = state.contentSelection.appSettings
+      ? await this.settingsService.getSettings()
+      : undefined;
+    const mainWindowState = state.contentSelection.mainWindowState
+      ? readMainWindowState(this.mainWindowStateFilePath)
+      : undefined;
+
+    createBackupArchiveEntries({
+      appSettings,
+      contentSelection: state.contentSelection,
       createdAt,
-      contentSelection: state.contentSelection
-    } satisfies BackupManifest);
-    this.addJson(zip, "notes.json", notes);
-    this.addJson(zip, "note-order.json", notes.map((note) => note.id));
-
-    if (state.contentSelection.appSettings) {
-      const settings = await this.settingsService.getSettings();
-      if (settings) {
-        this.addJson(zip, "app-preferences.json", this.getBackupPreferences(settings));
-      }
-    }
-
-    if (state.contentSelection.mainWindowState) {
-      this.addJson(zip, "main-window-state.json", readMainWindowState(this.mainWindowStateFilePath));
-    }
+      mainWindowState,
+      notes
+    }).forEach((entry) => this.addJson(zip, entry.fileName, entry.value));
 
     zip.end();
     await completion;
@@ -166,26 +154,4 @@ export class BackupArchiveService {
     zip.addBuffer(Buffer.from(`${JSON.stringify(value, null, 2)}\n`, "utf-8"), fileName, { compress: true });
   }
 
-  private getBackupPreferences(settings: AppSettings): Omit<AppSettings,
-    "bruteForceProtectionEnabled"
-    | "lockScreenContentProtectionEnabled"
-    | "lockScreenEnabled"
-    | "lockScreenIdleTimeout"
-    | "lockScreenOnSystemSleepEnabled"
-    | "lockScreenRequirePasswordDelay"
-    | "notesEncryptionEnabled"
-  > {
-    const {
-      bruteForceProtectionEnabled: _bruteForceProtectionEnabled,
-      lockScreenContentProtectionEnabled: _lockScreenContentProtectionEnabled,
-      lockScreenEnabled: _lockScreenEnabled,
-      lockScreenIdleTimeout: _lockScreenIdleTimeout,
-      lockScreenOnSystemSleepEnabled: _lockScreenOnSystemSleepEnabled,
-      lockScreenRequirePasswordDelay: _lockScreenRequirePasswordDelay,
-      notesEncryptionEnabled: _notesEncryptionEnabled,
-      ...preferences
-    } = settings;
-
-    return preferences;
-  }
 }
