@@ -79,6 +79,16 @@ test.describe("Web toolbar", () => {
       await expect(page.getByText("General").first()).toBeVisible();
     });
 
+    test("opens About from web Settings", async ({ page }) => {
+      await openNotesView(page);
+
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "About" }).click();
+
+      await expect(page.getByRole("heading", { name: "About", exact: true })).toBeVisible();
+      await expect(page.getByText(/Copyright © 2023-\d{4} SolisWare\./)).toBeVisible();
+    });
+
     test("shows the applied sort order after re-sorting from Settings", async ({ page }) => {
       await openNotesView(page);
 

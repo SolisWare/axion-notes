@@ -67,7 +67,7 @@ export class AppVersionResolver {
   }
 
   private static getResolvedBuildVersion(appVersionConfig: AppVersionConfig): number | undefined {
-    const githubRunNumber = process.env.GITHUB_RUN_NUMBER;
+    const githubRunNumber = typeof process === "undefined" ? undefined : process.env.GITHUB_RUN_NUMBER;
 
     if (githubRunNumber !== undefined && githubRunNumber.trim() !== "") {
       const parsedGithubRunNumber = Number.parseInt(githubRunNumber, 10);
