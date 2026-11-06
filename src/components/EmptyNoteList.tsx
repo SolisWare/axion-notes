@@ -7,6 +7,7 @@
 import { Theme, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import clsx from 'clsx';
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { getAppColors } from "../theme/AppColors";
 import { SystemTheme } from "../theme/SystemTheme";
@@ -41,6 +42,7 @@ const useStyles = makeStyles<Theme, AppColorStyleProps>((theme: Theme) => ({
  
 function EmptyNoteList(props: EmptyNoteListProps) {
   const { t } = useTranslation();
+  const titleId = useId();
   const appColors = getAppColors(props.theme);
   const classes = useStyles({ appColors });
   const isMac = window.api.os.isMac;
@@ -54,10 +56,10 @@ function EmptyNoteList(props: EmptyNoteListProps) {
   
   return (
     <div className={classes.wrapper}>
-      <div className={classes.content}>
-        <Typography className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{title}</Typography>
-        <Typography className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{message}</Typography>
-      </div>
+      <section aria-atomic="true" aria-labelledby={titleId} aria-live="polite" className={classes.content}>
+        <Typography component="h2" id={titleId} className={classes.text} style={{ color: appColors.DISABLED_TEXT }} fontSize="large">{title}</Typography>
+        <Typography component="p" className={clsx(classes.text, classes.text2)} style={{ color: appColors.DISABLED_TEXT }}>{message}</Typography>
+      </section>
     </div>
   );
 }

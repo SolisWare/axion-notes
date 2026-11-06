@@ -39,6 +39,21 @@ test.describe("Welcome screen", () => {
     await expect(desktopApp.page.getByRole("heading", { name: "Welcome to Axion Notes" })).not.toBeVisible();
   });
 
+  test("returns to the empty notes state after deleting the final note from the native menu", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await clickNativeMenuItem(desktopApp, "newNote");
+    await expect(desktopApp.page.getByPlaceholder("Title")).toBeVisible();
+
+    await clickNativeMenuItem(desktopApp, "deleteAllNotes");
+    await expect(desktopApp.page.getByRole("heading", { name: "Delete All Notes" })).toBeVisible();
+    await desktopApp.page.getByRole("button", { name: "Delete All" }).click();
+
+    await expect(desktopApp.page.getByRole("heading", { name: "You don't have any notes yet!" })).toBeVisible();
+  });
+
   test("shows the Welcome screen again on relaunch by default", async () => {
     desktopApp = await launchTestElectronApp();
     userDataDir = desktopApp.userDataDir;
@@ -87,3 +102,19 @@ test.describe("Welcome screen", () => {
     await expect(desktopApp.page.getByText("You don't have any notes yet!")).toBeVisible();
   });
 });
+
+async function clickNativeMenuItem(desktopApp: TestElectronApp, menuItemId: string): Promise<void> {
+  await expect.poll(() => desktopApp.app.evaluate(({ Menu }, id) => {
+    return Menu.getApplicationMenu()?.getMenuItemById(id)?.enabled ?? false;
+  }, menuItemId)).toBe(true);
+
+  await desktopApp.app.evaluate(({ Menu }, id) => {
+    const menuItem = Menu.getApplicationMenu()?.getMenuItemById(id);
+
+    if (!menuItem) {
+      throw new Error(`Could not find the ${id} menu item.`);
+    }
+
+    menuItem.click(undefined as never, undefined as never, undefined as never);
+  }, menuItemId);
+}
