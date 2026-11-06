@@ -6,11 +6,10 @@
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { assertBackupState, parseBackupState } from "../../src/backup/backupState";
 import { BackupState } from "../../src/types/BackupState";
 
 export const BACKUP_STATE_FILE_NAME = "backup-state.json";
-
-const BACKUP_STATE_VERSION = 1;
 
 /**
  * Persists the configuration and lifecycle information for the managed backup
@@ -46,7 +45,7 @@ export class BackupStateStorage {
    * partially written configuration file behind.
    */
   public async setState(state: BackupState): Promise<void> {
-    this.validateState(state);
+    assertBackupState(state);
 
     const stateFilePath = this.getStateFilePath();
     const temporaryFilePath = `${stateFilePath}.tmp`;
@@ -61,42 +60,6 @@ export class BackupStateStorage {
   }
 
   private parseState(content: string): BackupState {
-    let state: unknown;
-
-    try {
-      state = JSON.parse(content);
-    } catch {
-      throw new Error("Backup state is not valid JSON.");
-    }
-
-    this.validateState(state);
-    return state;
-  }
-
-  private validateState(state: unknown): asserts state is BackupState {
-    if (!this.isBackupState(state)) {
-      throw new Error("Backup state has an unsupported format.");
-    }
-  }
-
-  private isBackupState(state: unknown): state is BackupState {
-    if (!state || typeof state !== "object") {
-      return false;
-    }
-
-    const candidate = state as Partial<BackupState>;
-    const selection = candidate.contentSelection;
-
-    return candidate.version === BACKUP_STATE_VERSION
-      && this.isValidTimestamp(candidate.initializedAt)
-      && typeof selection === "object"
-      && selection !== null
-      && typeof selection.appSettings === "boolean"
-      && typeof selection.mainWindowState === "boolean"
-      && (candidate.lastBackupCreatedAt === undefined || this.isValidTimestamp(candidate.lastBackupCreatedAt));
-  }
-
-  private isValidTimestamp(value: unknown): value is string {
-    return typeof value === "string" && !Number.isNaN(Date.parse(value));
+    return parseBackupState(content);
   }
 }
