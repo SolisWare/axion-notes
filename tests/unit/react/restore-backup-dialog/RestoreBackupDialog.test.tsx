@@ -48,6 +48,8 @@ describe("RestoreBackupDialog", () => {
     expect(screen.getByText("Created 11/7/2026 at 12:00 AM")).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "Notes" })).toHaveTextContent("Current notes are kept only when you add the backup notes.");
     expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("Security and encryption settings are always kept.");
+    expect(screen.getByRole("radio", { name: "Add backup notes" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Keep current preferences" })).toBeChecked();
   });
 
   it("submits the selected notes and preferences modes", async () => {

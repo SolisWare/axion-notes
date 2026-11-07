@@ -35,7 +35,7 @@ describe("restorePlan", () => {
     });
   });
 
-  it("requires choices for a used destination and distinguishes identical from conflicting notes", () => {
+  it("preselects additive restore choices for a used destination and distinguishes identical from conflicting notes", () => {
     const archive = createArchive();
     const plan = createRestorePlan(archive, {
       currentNotes: [
@@ -49,8 +49,8 @@ describe("restorePlan", () => {
     expect(plan).toMatchObject({
       conflictingNotesCount: 1,
       currentNotesCount: 3,
-      defaultNotesMode: undefined,
-      defaultSettingsMode: undefined,
+      defaultNotesMode: RestoreNotesMode.ADD_TO_CURRENT,
+      defaultSettingsMode: RestoreSettingsMode.KEEP_CURRENT,
       hasBackupPreferences: false,
       identicalNotesCount: 1,
       incomingNotesCount: 2,
@@ -60,7 +60,7 @@ describe("restorePlan", () => {
     });
   });
 
-  it("requires a settings choice only when both settings and current notes exist", () => {
+  it("keeps current preferences by default when both settings and current notes exist", () => {
     const plan = createRestorePlan(createArchive({ appSettings: defaultAppSettings }), {
       currentNotes: [createNote("current-note", "Current note")],
       isNotesEncryptionEnabled: false
@@ -68,7 +68,7 @@ describe("restorePlan", () => {
 
     expect(plan.hasBackupPreferences).toBe(true);
     expect(plan.requiresSettingsModeSelection).toBe(true);
-    expect(plan.defaultSettingsMode).toBeUndefined();
+    expect(plan.defaultSettingsMode).toBe(RestoreSettingsMode.KEEP_CURRENT);
   });
 });
 
