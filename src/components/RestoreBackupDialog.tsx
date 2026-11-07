@@ -49,6 +49,7 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
   const preferencesGroupId = useId();
   const [notesMode, setNotesMode] = useState<RestoreNotesMode | undefined>(props.plan.defaultNotesMode);
   const [settingsMode, setSettingsMode] = useState<RestoreSettingsMode | undefined>(props.plan.defaultSettingsMode);
+  const canRestoreBackupPreferences = props.plan.hasBackupPreferences && props.plan.preferencesCanBeRestored;
   const createdAt = Formatter.toDate(props.plan.archiveCreatedAt);
   const rootStyle: RestoreBackupDialogCssProperties = {
     "--restore-backup-dialog-background": appColors.DIALOG_BACKGROUND,
@@ -111,14 +112,20 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
         <fieldset className={styles.optionGroup}>
           <legend className={styles.optionGroupTitle} id={preferencesGroupId}>{t("restoreBackupPreferencesTitle")}</legend>
           <p className={styles.optionGroupDescription}>
-            {t(props.plan.hasBackupPreferences ? "restoreBackupPreferencesHelp" : "restoreBackupNoPreferences")}
+            {t(props.plan.hasBackupPreferences
+              ? canRestoreBackupPreferences ? "restoreBackupPreferencesHelp" : "restoreBackupPreferencesUnavailable"
+              : "restoreBackupNoPreferences")}
           </p>
-          {props.plan.hasBackupPreferences && (
-            <RadioGroup aria-labelledby={preferencesGroupId} className={styles.radioGroup} value={settingsMode ?? ""} onChange={(event) => setSettingsMode(event.target.value as RestoreSettingsMode)}>
-              <FormControlLabel className={styles.radioOption} value={RestoreSettingsMode.KEEP_CURRENT} control={<Radio />} label={t("keepCurrentPreferences")} />
-              <FormControlLabel className={styles.radioOption} value={RestoreSettingsMode.RESTORE_BACKUP} control={<Radio />} label={t("restoreBackupPreferences")} />
-            </RadioGroup>
-          )}
+          <RadioGroup
+            aria-labelledby={preferencesGroupId}
+            className={styles.radioGroup}
+            disabled={!canRestoreBackupPreferences}
+            value={settingsMode ?? ""}
+            onChange={(event) => setSettingsMode(event.target.value as RestoreSettingsMode)}
+          >
+            <FormControlLabel className={styles.radioOption} disabled={!canRestoreBackupPreferences} value={RestoreSettingsMode.KEEP_CURRENT} control={<Radio />} label={t("keepCurrentPreferences")} />
+            <FormControlLabel className={styles.radioOption} disabled={!canRestoreBackupPreferences} value={RestoreSettingsMode.RESTORE_BACKUP} control={<Radio />} label={t("restoreBackupPreferences")} />
+          </RadioGroup>
         </fieldset>
       </DialogContent>
       <DialogActions className={styles.actions}>

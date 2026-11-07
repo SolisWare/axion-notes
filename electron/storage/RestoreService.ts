@@ -18,6 +18,7 @@ import { RestoreSettingsMode } from "../../src/types/RestoreSettingsMode";
 import { RestoreState } from "../../src/types/RestoreState";
 import { RestorePlan } from "../../src/types/RestorePlan";
 import { RestoreProgressEvent, RestoreProgressPhase } from "../../src/types/RestoreProgressEvent";
+import { BackupSource } from "../../src/types/BackupSource";
 import { readMainWindowState, replaceMainWindowState } from "../windows/mainWindowState";
 import { NoteService } from "./NoteService";
 import { RestoreStateStorage } from "./RestoreStateStorage";
@@ -49,12 +50,15 @@ export class RestoreService {
   public async applyRestore(archive: ValidatedBackupArchive, options: RestoreApplyOptions, onProgress?: RestoreProgressListener): Promise<RestoreState> {
     const currentNotes = await this.noteService.getNotesForBackup(options.password);
     const currentSettings = await this.settingsService.getSettings() ?? defaultAppSettings;
-    const shouldRestoreSettings = options.settingsMode === RestoreSettingsMode.RESTORE_BACKUP;
+    const shouldRestoreSettings = options.settingsMode === RestoreSettingsMode.RESTORE_BACKUP
+      && archive.appSettings !== undefined
+      && archive.source === BackupSource.DESKTOP;
+    const settingsMode = shouldRestoreSettings ? RestoreSettingsMode.RESTORE_BACKUP : RestoreSettingsMode.KEEP_CURRENT;
     const currentWindowState = shouldRestoreSettings && archive.mainWindowState
       ? this.readWindowState(this.mainWindowStateFilePath)
       : undefined;
     const nextNotes = prepareRestoredNotes(archive, currentNotes, options.notesMode, () => crypto.randomUUID()).notes;
-    const nextSettings = prepareRestoredSettings(currentSettings, archive.appSettings, options.settingsMode);
+    const nextSettings = prepareRestoredSettings(currentSettings, archive.appSettings, settingsMode);
     const state: RestoreState = {
       lastRestoredAt: this.getCurrentDate().toISOString(),
       version: 1
@@ -109,6 +113,7 @@ export class RestoreService {
 
     return createRestorePlan(archive, {
       currentNotes,
+      destination: BackupSource.DESKTOP,
       isNotesEncryptionEnabled: currentSettings.notesEncryptionEnabled
     });
   }

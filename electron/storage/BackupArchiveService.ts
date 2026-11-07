@@ -12,6 +12,7 @@ import { BackupCreateResult, BackupCreateStatus } from "../../src/types/BackupCr
 import { BackupDeleteResult, BackupDeleteStatus } from "../../src/types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../src/types/BackupSaveResult";
 import { BackupState } from "../../src/types/BackupState";
+import { BackupSource } from "../../src/types/BackupSource";
 import { NoteType } from "../../src/types/NoteType";
 import { readMainWindowState } from "../windows/mainWindowState";
 import { NoteService } from "./NoteService";
@@ -142,7 +143,8 @@ export class BackupArchiveService {
       contentSelection: state.contentSelection,
       createdAt,
       mainWindowState,
-      notes
+      notes,
+      source: BackupSource.DESKTOP
     }).forEach((entry) => this.addJson(zip, entry.fileName, entry.value));
 
     zip.end();

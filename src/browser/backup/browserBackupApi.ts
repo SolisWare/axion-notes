@@ -12,6 +12,7 @@ import { BackupCreateResult, BackupCreateStatus } from "../../types/BackupCreate
 import { BackupDeleteResult, BackupDeleteStatus } from "../../types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../types/BackupSaveResult";
 import { BackupState } from "../../types/BackupState";
+import { BackupSource } from "../../types/BackupSource";
 import { createBackupState, recordBackupCreated, updateBackupContentSelection } from "../../backup/backupState";
 import { getSettings } from "../storage/appSettingsStorage";
 import { getNotes } from "../storage/noteStorage";
@@ -53,7 +54,8 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
           appSettings: settings,
           contentSelection,
           createdAt,
-          notes
+          notes,
+          source: BackupSource.WEB
         });
 
         downloadArchive(archive, getDefaultBackupFileName(getCurrentDate(), settings?.dateFormat, settings?.timeFormat));

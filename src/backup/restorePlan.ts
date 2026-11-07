@@ -8,11 +8,13 @@ import { NoteType } from "../types/NoteType";
 import { RestoreNotesMode } from "../types/RestoreNotesMode";
 import { RestorePlan } from "../types/RestorePlan";
 import { RestoreSettingsMode } from "../types/RestoreSettingsMode";
+import { BackupSource } from "../types/BackupSource";
 import { ValidatedBackupArchive } from "./restoreArchive";
 import { areNotesEqual } from "./backupValidation";
 
 export type RestorePlanOptions = {
   currentNotes: readonly NoteType[];
+  destination: BackupSource;
   isNotesEncryptionEnabled: boolean;
 };
 
@@ -24,20 +26,23 @@ export function createRestorePlan(archive: ValidatedBackupArchive, options: Rest
   const { conflictingNotesCount, identicalNotesCount } = getNoteCollisionCounts(archive.notes, notesById);
   const hasCurrentNotes = options.currentNotes.length > 0;
   const hasBackupPreferences = archive.appSettings !== undefined;
+  const preferencesCanBeRestored = hasBackupPreferences && archive.source === options.destination;
 
   return {
     archiveCreatedAt: archive.createdAt,
+    backupSource: archive.source,
     conflictingNotesCount,
     currentNotesCount: options.currentNotes.length,
     defaultNotesMode: hasCurrentNotes ? RestoreNotesMode.ADD_TO_CURRENT : RestoreNotesMode.REPLACE_CURRENT,
-    defaultSettingsMode: hasCurrentNotes || !hasBackupPreferences ? RestoreSettingsMode.KEEP_CURRENT : RestoreSettingsMode.RESTORE_BACKUP,
+    defaultSettingsMode: hasCurrentNotes || !preferencesCanBeRestored ? RestoreSettingsMode.KEEP_CURRENT : RestoreSettingsMode.RESTORE_BACKUP,
     hasBackupPreferences,
+    preferencesCanBeRestored,
     hasMainWindowState: archive.mainWindowState !== undefined,
     identicalNotesCount,
     incomingNotesCount: archive.notes.length,
     requiresCurrentPassword: options.isNotesEncryptionEnabled,
     requiresNotesModeSelection: hasCurrentNotes,
-    requiresSettingsModeSelection: hasBackupPreferences && hasCurrentNotes
+    requiresSettingsModeSelection: preferencesCanBeRestored && hasCurrentNotes
   };
 }
 

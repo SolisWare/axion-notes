@@ -14,6 +14,7 @@ import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
+import { BackupSource } from "../../../../src/types/BackupSource";
 
 const translations: Record<string, string> = {
   addBackupNotes: "Add backup notes",
@@ -27,6 +28,7 @@ const translations: Record<string, string> = {
   restoreBackupNotesHelp: "Choose whether the backup replaces your current notes or is added alongside them. Current notes are kept only when you add the backup notes.",
   restoreBackupPreferences: "Restore backup preferences",
   restoreBackupPreferencesHelp: "Choose whether to keep this app's current preferences or replace them with the backup preferences. Security and encryption settings are always kept.",
+  restoreBackupPreferencesUnavailable: "Preferences from this backup cannot be restored here. Your current preferences will be kept.",
   restoreBackupPreferencesTitle: "Preferences",
   restoreBackupSummary: "This backup contains {{count}} notes."
 };
@@ -68,7 +70,22 @@ describe("RestoreBackupDialog", () => {
     renderRestoreBackupDialog({ plan: { ...defaultPlan, hasBackupPreferences: false } });
 
     expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("This backup does not include app preferences. Your current preferences will be kept.");
-    expect(screen.queryByRole("radio", { name: "Keep current preferences" })).not.toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: "Keep current preferences" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Restore backup preferences" })).toBeDisabled();
+  });
+
+  it("disables preference restoration for a backup from another platform", () => {
+    renderRestoreBackupDialog({
+      plan: {
+        ...defaultPlan,
+        backupSource: BackupSource.WEB,
+        preferencesCanBeRestored: false
+      }
+    });
+
+    expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("Preferences from this backup cannot be restored here. Your current preferences will be kept.");
+    expect(screen.getByRole("radio", { name: "Keep current preferences" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "Restore backup preferences" })).toBeDisabled();
   });
 
   it("requires explicit restore choices when the destination already contains notes", async () => {
@@ -102,11 +119,13 @@ describe("RestoreBackupDialog", () => {
 
 const defaultPlan = {
   archiveCreatedAt: "2026-11-07T12:00:00.000Z",
+  backupSource: BackupSource.DESKTOP,
   conflictingNotesCount: 0,
   currentNotesCount: 0,
   defaultNotesMode: RestoreNotesMode.ADD_TO_CURRENT,
   defaultSettingsMode: RestoreSettingsMode.KEEP_CURRENT,
   hasBackupPreferences: true,
+  preferencesCanBeRestored: true,
   hasMainWindowState: true,
   identicalNotesCount: 0,
   incomingNotesCount: 3,

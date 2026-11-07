@@ -15,6 +15,7 @@ import { RestoreChooseStatus } from "../../../../src/types/RestoreChooseResult";
 import { RestoreInspectStatus } from "../../../../src/types/RestoreInspectResult";
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
+import { BackupSource } from "../../../../src/types/BackupSource";
 
 afterEach(() => {
   localStorage.clear();
@@ -139,6 +140,25 @@ describe("browserRestoreApi", () => {
     ]);
     expect(localStorage.getItem("solisware.axion-notes.notes.backup")).toContain("Backup");
   });
+
+  it("keeps browser preferences when restoring notes from a desktop backup", async () => {
+    const archive = { ...createArchive(), source: BackupSource.DESKTOP };
+    const setSettings = vi.fn();
+    const restoreApi = createBrowserRestoreApi({
+      chooseArchive: async () => new Uint8Array([1]),
+      getSettings: async () => defaultAppSettings,
+      readArchive: () => archive,
+      setSettings
+    });
+
+    await restoreApi.chooseArchive();
+    await expect(restoreApi.apply("browser-selected-backup", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.RESTORE_BACKUP
+    })).resolves.toMatchObject({ status: RestoreApplyStatus.APPLIED });
+
+    expect(setSettings).not.toHaveBeenCalled();
+  });
 });
 
 function createArchive(): ValidatedBackupArchive {
@@ -147,7 +167,8 @@ function createArchive(): ValidatedBackupArchive {
     contentSelection: { appSettings: true, mainWindowState: false },
     createdAt: "2026-11-07T12:00:00.000Z",
     noteOrder: ["backup"],
-    notes: [createNote("backup", "Backup")]
+    notes: [createNote("backup", "Backup")],
+    source: BackupSource.WEB
   };
 }
 

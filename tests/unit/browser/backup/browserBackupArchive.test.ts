@@ -8,6 +8,7 @@ import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 import { createBrowserBackupArchive } from "../../../../src/browser/backup/browserBackupArchive";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
+import { BackupSource } from "../../../../src/types/BackupSource";
 
 describe("browserBackupArchive", () => {
   it("creates a ZIP using the shared backup archive contract", async () => {
@@ -18,6 +19,7 @@ describe("browserBackupArchive", () => {
         mainWindowState: false
       },
       createdAt: "2026-11-06T10:30:00.000Z",
+      source: BackupSource.WEB,
       notes: [{
         id: "note-1",
         bgcolor: "yellow",
@@ -40,7 +42,8 @@ describe("browserBackupArchive", () => {
       contentSelection: {
         appSettings: true,
         mainWindowState: false
-      }
+      },
+      source: BackupSource.WEB
     });
     expect(JSON.parse(strFromU8(files["notes.json"]))).toEqual([{
       id: "note-1",

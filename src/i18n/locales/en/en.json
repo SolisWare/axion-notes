@@ -191,6 +191,7 @@
   "restoreBackupPreferencesTitle": "Preferences",
   "restoreBackupPreferencesHelp": "Choose whether to keep this app's current preferences or replace them with the backup preferences. Security and encryption settings are always kept.",
   "restoreBackupNoPreferences": "This backup does not include app preferences. Your current preferences will be kept.",
+  "restoreBackupPreferencesUnavailable": "Preferences from this backup cannot be restored here. Your current preferences will be kept.",
   "replaceCurrentNotes": "Replace current notes",
   "addBackupNotes": "Add backup notes",
   "keepCurrentPreferences": "Keep current preferences",

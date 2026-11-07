@@ -14,6 +14,7 @@ import { NoteService } from "../../../../electron/storage/NoteService";
 import { SettingsService } from "../../../../electron/storage/SettingsService";
 import { RestoreStateStorage } from "../../../../electron/storage/RestoreStateStorage";
 import { RestoreProgressPhase } from "../../../../src/types/RestoreProgressEvent";
+import { BackupSource } from "../../../../src/types/BackupSource";
 
 describe("RestoreService", () => {
   it("replaces notes, preferences, layout, and restore history", async () => {
@@ -91,6 +92,27 @@ describe("RestoreService", () => {
     expect(context.settingsService.replaceSettings).not.toHaveBeenCalled();
     expect(writeWindowState).not.toHaveBeenCalled();
     expect(context.noteService.replaceNotes).toHaveBeenCalledWith([currentNotes[0], createNote("backup", "Backup")], undefined, expect.any(Function));
+  });
+
+  it("keeps desktop preferences when restoring notes from a web backup", async () => {
+    const context = createContext([createNote("current", "Current")]);
+    const service = new RestoreService(
+      context.noteService as unknown as NoteService,
+      context.settingsService as unknown as SettingsService,
+      context.restoreStateStorage as unknown as RestoreStateStorage,
+      "main-window-state.json"
+    );
+
+    await service.applyRestore(createArchive({
+      appSettings: { ...defaultAppSettings, showTitles: false },
+      source: BackupSource.WEB
+    }), {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.RESTORE_BACKUP
+    });
+
+    expect(context.settingsService.replaceSettings).not.toHaveBeenCalled();
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([createNote("backup", "Backup")], undefined, expect.any(Function));
   });
 
   it("rolls back window state, preferences, and notes when writing restore history fails", async () => {
@@ -199,6 +221,7 @@ function createArchive(overrides: Partial<ValidatedBackupArchive> = {}): Validat
     createdAt: "2026-11-07T12:00:00.000Z",
     noteOrder: ["backup"],
     notes: [createNote("backup", "Backup")],
+    source: BackupSource.DESKTOP,
     ...overrides
   };
 }

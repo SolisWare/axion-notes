@@ -6,14 +6,17 @@
  */
 import { RestoreNotesMode } from "./RestoreNotesMode";
 import { RestoreSettingsMode } from "./RestoreSettingsMode";
+import { BackupSource } from "./BackupSource";
 
 export type RestorePlan = {
   archiveCreatedAt: string;
+  backupSource: BackupSource;
   conflictingNotesCount: number;
   currentNotesCount: number;
   defaultNotesMode?: RestoreNotesMode;
   defaultSettingsMode?: RestoreSettingsMode;
   hasBackupPreferences: boolean;
+  preferencesCanBeRestored: boolean;
   hasMainWindowState: boolean;
   identicalNotesCount: number;
   incomingNotesCount: number;

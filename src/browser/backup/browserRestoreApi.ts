@@ -17,6 +17,7 @@ import { RestoreChooseResult, RestoreChooseStatus } from "../../types/RestoreCho
 import { RestoreInspectResult, RestoreInspectStatus } from "../../types/RestoreInspectResult";
 import { RestoreSettingsMode } from "../../types/RestoreSettingsMode";
 import { RestoreState } from "../../types/RestoreState";
+import { BackupSource } from "../../types/BackupSource";
 import { getSettings, setSettings } from "../storage/appSettingsStorage";
 import { getNotes } from "../storage/noteStorage";
 import { clearRestoreState, getRestoreState, setRestoreState } from "../storage/restoreStateStorage";
@@ -74,9 +75,12 @@ export function createBrowserRestoreApi(options: BrowserRestoreApiOptions = {}) 
         const [currentNotes, loadedSettings] = await Promise.all([loadNotes(), loadSettings()]);
         const currentRestoreState = loadRestoreState();
         const currentSettings = loadedSettings ?? defaultAppSettings;
-        const shouldRestoreSettings = restoreOptions.settingsMode === RestoreSettingsMode.RESTORE_BACKUP;
+        const shouldRestoreSettings = restoreOptions.settingsMode === RestoreSettingsMode.RESTORE_BACKUP
+          && archive.appSettings !== undefined
+          && archive.source === BackupSource.WEB;
+        const settingsMode = shouldRestoreSettings ? RestoreSettingsMode.RESTORE_BACKUP : RestoreSettingsMode.KEEP_CURRENT;
         const restoredNotes = prepareRestoredNotes(archive, currentNotes, restoreOptions.notesMode, createNoteId).notes;
-        const restoredSettings = prepareRestoredSettings(currentSettings, archive.appSettings, restoreOptions.settingsMode);
+        const restoredSettings = prepareRestoredSettings(currentSettings, archive.appSettings, settingsMode);
         const state: RestoreState = { lastRestoredAt: getCurrentDate().toISOString(), version: 1 };
         let shouldRestorePreviousNotes = false;
         let shouldRestorePreviousSettings = false;
@@ -139,6 +143,7 @@ export function createBrowserRestoreApi(options: BrowserRestoreApiOptions = {}) 
         return {
           plan: createRestorePlan(archive, {
             currentNotes,
+            destination: BackupSource.WEB,
             isNotesEncryptionEnabled: Boolean(settings?.notesEncryptionEnabled)
           }),
           status: RestoreInspectStatus.READY

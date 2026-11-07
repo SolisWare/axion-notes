@@ -20,6 +20,7 @@ import { isSupportedLanguageCode } from "../i18n/languageConfig";
 import { NoteColorKey } from "../theme/NoteColors";
 import { BackupContentSelection } from "../types/BackupContentSelection";
 import { NoteType } from "../types/NoteType";
+import { BackupSource } from "../types/BackupSource";
 import { BACKUP_MANIFEST_VERSION, BackupManifest, getBackupPreferences } from "./backupArchive";
 import { isValidTimestamp } from "./backupValidation";
 
@@ -47,6 +48,7 @@ export type ValidatedBackupArchive = {
   mainWindowState?: AppWindowState;
   noteOrder: string[];
   notes: NoteType[];
+  source: BackupSource;
 };
 
 /**
@@ -66,7 +68,8 @@ export function parseBackupArchive(files: readonly BackupArchiveFile[]): Validat
     createdAt: manifest.createdAt,
     mainWindowState,
     noteOrder,
-    notes
+    notes,
+    source: manifest.source ?? BackupSource.UNKNOWN
   };
 }
 
@@ -105,7 +108,9 @@ function parseManifest(content: string | undefined): BackupManifest {
     || manifest.version !== BACKUP_MANIFEST_VERSION
     || !isValidTimestamp(manifest.createdAt)
     || !isBackupContentSelection(manifest.contentSelection)
-    || !hasOnlyKeys(manifest, ["version", "createdAt", "contentSelection"])) {
+    || (manifest.source !== undefined && !isEnumValue(BackupSource, manifest.source))
+    || !hasOnlyAllowedKeys(manifest, ["version", "createdAt", "contentSelection", "source"])
+    || !["version", "createdAt", "contentSelection"].every((key) => Object.hasOwn(manifest, key))) {
     throw new Error("Backup archive manifest has an unsupported format.");
   }
 

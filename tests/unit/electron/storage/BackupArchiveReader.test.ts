@@ -16,6 +16,8 @@ import {
   MAX_BACKUP_ARCHIVE_ENTRIES
 } from "../../../../electron/storage/BackupArchiveReader";
 import { createBackupArchiveEntries } from "../../../../src/backup/backupArchive";
+import { createBrowserBackupArchive } from "../../../../src/browser/backup/browserBackupArchive";
+import { BackupSource } from "../../../../src/types/BackupSource";
 
 const directories: string[] = [];
 
@@ -34,12 +36,56 @@ describe("BackupArchiveReader", () => {
         createdOn: new Date("2026-11-07T10:00:00.000Z"),
         id: "note-1",
         lastModifiedOn: new Date("2026-11-07T11:00:00.000Z")
-      }]
+      }],
+      source: BackupSource.WEB
     }));
 
     await expect(new BackupArchiveReader().readArchive(archivePath)).resolves.toMatchObject({
       noteOrder: ["note-1"],
       notes: [{ content: "Restored note", id: "note-1" }]
+    });
+  });
+
+  it("reads a browser-created backup ZIP", async () => {
+    const bytes = await createBrowserBackupArchive({
+      contentSelection: { appSettings: false, mainWindowState: false },
+      createdAt: "2026-11-07T12:00:00.000Z",
+      notes: [{
+        bgcolor: "yellow",
+        content: "Restored browser note",
+        createdOn: new Date("2026-11-07T10:00:00.000Z"),
+        id: "browser-note",
+        lastModifiedOn: new Date("2026-11-07T11:00:00.000Z")
+      }],
+      source: BackupSource.WEB
+    });
+    const archivePath = await writeArchiveBytes(bytes);
+
+    await expect(new BackupArchiveReader().readArchive(archivePath)).resolves.toMatchObject({
+      noteOrder: ["browser-note"],
+      notes: [{ content: "Restored browser note", id: "browser-note" }],
+      source: BackupSource.WEB
+    });
+  });
+
+  it("accepts a source-less browser backup as a data-only archive", async () => {
+    const bytes = await createBrowserBackupArchive({
+      contentSelection: { appSettings: false, mainWindowState: false },
+      createdAt: "2026-11-07T12:00:00.000Z",
+      notes: [{
+        bgcolor: "yellow",
+        content: "Legacy browser note",
+        createdOn: new Date("2026-11-07T10:00:00.000Z"),
+        id: "legacy-browser-note",
+        lastModifiedOn: new Date("2026-11-07T11:00:00.000Z")
+      }]
+    });
+    const archivePath = await writeArchiveBytes(bytes);
+
+    await expect(new BackupArchiveReader().readArchive(archivePath)).resolves.toMatchObject({
+      noteOrder: ["legacy-browser-note"],
+      notes: [{ content: "Legacy browser note", id: "legacy-browser-note" }],
+      source: BackupSource.UNKNOWN
     });
   });
 
@@ -97,5 +143,13 @@ async function writeZip(entries: Array<{ fileName: string; value: unknown }>): P
   await completion;
 
   directories.push(directory);
+  return archivePath;
+}
+
+async function writeArchiveBytes(bytes: Uint8Array): Promise<string> {
+  const directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), "axion-notes-backup-reader-"));
+  const archivePath = path.join(directory, "backup.zip");
+  directories.push(directory);
+  await fs.promises.writeFile(archivePath, bytes);
   return archivePath;
 }

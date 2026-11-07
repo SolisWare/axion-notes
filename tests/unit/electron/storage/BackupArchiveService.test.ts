@@ -12,6 +12,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
 import { BackupDeleteStatus } from "../../../../src/types/BackupDeleteResult";
+import { BackupSource } from "../../../../src/types/BackupSource";
 import { BackupArchiveService, BACKUP_ARCHIVE_FILE_NAME } from "../../../../electron/storage/BackupArchiveService";
 import { BackupArchiveReader } from "../../../../electron/storage/BackupArchiveReader";
 import { BackupStateStorage } from "../../../../electron/storage/BackupStateStorage";
@@ -58,7 +59,8 @@ describe("BackupArchiveService", () => {
       contentSelection: {
         appSettings: false,
         mainWindowState: false
-      }
+      },
+      source: BackupSource.DESKTOP
     });
     expect(parseEntry(entries, "notes.json")).toEqual([{
       id: "note-1",

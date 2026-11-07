@@ -16,6 +16,7 @@ import { RestoreInspectStatus } from "../../../../src/types/RestoreInspectResult
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
 import { RestoreProgressPhase } from "../../../../src/types/RestoreProgressEvent";
+import { BackupSource } from "../../../../src/types/BackupSource";
 import { UserAgent } from "../../../../src/utils/UserAgent";
 import SettingsWindow from "../../../../src/views/SettingsWindow/SettingsWindow";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
@@ -291,11 +292,13 @@ async function openBackups(user: ReturnType<typeof userEvent.setup>): Promise<vo
 function createRestorePlan() {
   return {
     archiveCreatedAt: "2026-11-07T12:00:00.000Z",
+    backupSource: BackupSource.DESKTOP,
     conflictingNotesCount: 0,
     currentNotesCount: 0,
     defaultNotesMode: RestoreNotesMode.REPLACE_CURRENT,
     defaultSettingsMode: RestoreSettingsMode.RESTORE_BACKUP,
     hasBackupPreferences: true,
+    preferencesCanBeRestored: true,
     hasMainWindowState: false,
     identicalNotesCount: 0,
     incomingNotesCount: 2,

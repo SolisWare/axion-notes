@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { createBackupArchiveEntries, getBackupPreferences } from "../../../src/backup/backupArchive";
 import { defaultAppSettings } from "../../../src/settings/defaultSettings";
+import { BackupSource } from "../../../src/types/BackupSource";
 
 describe("backupArchive", () => {
   it("creates the core archive entries in their stable order", () => {
@@ -16,6 +17,7 @@ describe("backupArchive", () => {
         mainWindowState: false
       },
       createdAt: "2026-11-06T10:30:00.000Z",
+      source: BackupSource.DESKTOP,
       notes: [{
         id: "note-1",
         bgcolor: "yellow",
@@ -34,7 +36,8 @@ describe("backupArchive", () => {
           contentSelection: {
             appSettings: false,
             mainWindowState: false
-          }
+          },
+          source: BackupSource.DESKTOP
         }
       },
       {

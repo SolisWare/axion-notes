@@ -8,6 +8,7 @@ import { AppSettings } from "../settings/AppSettings";
 import { AppWindowState } from "../settings/AppWindowState";
 import { BackupContentSelection } from "../types/BackupContentSelection";
 import { NoteType } from "../types/NoteType";
+import { BackupSource } from "../types/BackupSource";
 
 export const BACKUP_ARCHIVE_FILE_NAME = "axion-notes-backup.zip";
 export const BACKUP_MANIFEST_VERSION = 1;
@@ -21,6 +22,7 @@ export type BackupManifest = {
   version: typeof BACKUP_MANIFEST_VERSION;
   createdAt: string;
   contentSelection: BackupContentSelection;
+  source?: BackupSource;
 };
 
 export type BackupArchiveContent = {
@@ -29,6 +31,7 @@ export type BackupArchiveContent = {
   createdAt: string;
   mainWindowState?: AppWindowState;
   notes: NoteType[];
+  source?: BackupSource;
 };
 
 /**
@@ -41,7 +44,8 @@ export function createBackupArchiveEntries(content: BackupArchiveContent): Backu
       value: {
         version: BACKUP_MANIFEST_VERSION,
         createdAt: content.createdAt,
-        contentSelection: content.contentSelection
+        contentSelection: content.contentSelection,
+        source: content.source ?? BackupSource.UNKNOWN
       } satisfies BackupManifest
     },
     { fileName: "notes.json", value: content.notes },
