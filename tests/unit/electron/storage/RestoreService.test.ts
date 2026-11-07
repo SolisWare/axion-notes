@@ -13,6 +13,7 @@ import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
 import { NoteService } from "../../../../electron/storage/NoteService";
 import { SettingsService } from "../../../../electron/storage/SettingsService";
 import { RestoreStateStorage } from "../../../../electron/storage/RestoreStateStorage";
+import { RestoreProgressPhase } from "../../../../src/types/RestoreProgressEvent";
 
 describe("RestoreService", () => {
   it("replaces notes, preferences, layout, and restore history", async () => {
@@ -39,7 +40,7 @@ describe("RestoreService", () => {
       settingsMode: RestoreSettingsMode.RESTORE_BACKUP
     })).resolves.toEqual({ lastRestoredAt: "2026-11-07T13:00:00.000Z", version: 1 });
 
-    expect(context.noteService.replaceNotes).toHaveBeenCalledWith(archive.notes, undefined);
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith(archive.notes, undefined, expect.any(Function));
     expect(context.settingsService.replaceSettings).toHaveBeenCalledWith(expect.objectContaining({ showTitles: false }));
     expect(writeWindowState).toHaveBeenCalledWith("main-window-state.json", archive.mainWindowState);
     expect(context.restoreStateStorage.setState).toHaveBeenCalledWith({ lastRestoredAt: "2026-11-07T13:00:00.000Z", version: 1 });
@@ -61,7 +62,7 @@ describe("RestoreService", () => {
       settingsMode: RestoreSettingsMode.RESTORE_BACKUP
     })).rejects.toThrow("write failed");
 
-    expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(1, [createNote("backup", "Backup")], undefined);
+    expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(1, [createNote("backup", "Backup")], undefined, expect.any(Function));
     expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(2, currentNotes, undefined);
   });
 
@@ -89,7 +90,7 @@ describe("RestoreService", () => {
 
     expect(context.settingsService.replaceSettings).not.toHaveBeenCalled();
     expect(writeWindowState).not.toHaveBeenCalled();
-    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([currentNotes[0], createNote("backup", "Backup")], undefined);
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([currentNotes[0], createNote("backup", "Backup")], undefined, expect.any(Function));
   });
 
   it("rolls back window state, preferences, and notes when writing restore history fails", async () => {
@@ -142,7 +143,37 @@ describe("RestoreService", () => {
     });
 
     expect(context.noteService.getNotesForBackup).toHaveBeenCalledWith("current password");
-    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([createNote("backup", "Backup")], "current password");
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([createNote("backup", "Backup")], "current password", expect.any(Function));
+  });
+
+  it("reports progress from writing notes through finalizing the restore", async () => {
+    const context = createContext([createNote("current", "Current")]);
+    context.noteService.replaceNotes.mockImplementation(async (_notes: unknown, _password: unknown, onProgress: (current: number, total: number) => void) => {
+      onProgress(0, 2);
+      onProgress(1, 2);
+      onProgress(2, 2);
+    });
+    const progress: Array<{ current?: number; phase: RestoreProgressPhase; progress: number; total?: number }> = [];
+    const service = new RestoreService(
+      context.noteService as unknown as NoteService,
+      context.settingsService as unknown as SettingsService,
+      context.restoreStateStorage as unknown as RestoreStateStorage,
+      "main-window-state.json"
+    );
+
+    await service.applyRestore(createArchive(), {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    }, (event) => progress.push(event));
+
+    expect(progress).toEqual([
+      { phase: RestoreProgressPhase.PREPARING, progress: 5 },
+      { current: 0, phase: RestoreProgressPhase.PROCESSING_NOTES, progress: 10, total: 2 },
+      { current: 1, phase: RestoreProgressPhase.PROCESSING_NOTES, progress: 42.5, total: 2 },
+      { current: 2, phase: RestoreProgressPhase.PROCESSING_NOTES, progress: 75, total: 2 },
+      { phase: RestoreProgressPhase.FINALIZING, progress: 96 },
+      { phase: RestoreProgressPhase.FINALIZING, progress: 100 }
+    ]);
   });
 });
 

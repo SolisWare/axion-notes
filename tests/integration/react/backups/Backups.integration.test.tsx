@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import "@testing-library/jest-dom/vitest";
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
@@ -15,6 +15,7 @@ import { RestoreChooseStatus } from "../../../../src/types/RestoreChooseResult";
 import { RestoreInspectStatus } from "../../../../src/types/RestoreInspectResult";
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
+import { RestoreProgressPhase } from "../../../../src/types/RestoreProgressEvent";
 import { UserAgent } from "../../../../src/utils/UserAgent";
 import SettingsWindow from "../../../../src/views/SettingsWindow/SettingsWindow";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
@@ -41,6 +42,12 @@ const translations: Record<string, string> = {
   options: "Options...",
   restore: "Restore",
   restoreBackup: "Restore backup…",
+  preparingRestore: "Preparing your backup restore...",
+  readingBackupArchive: "Reading your backup archive...",
+  restoringNotes: "Restoring note {{current}} of {{total}}...",
+  restoringBackupPreferences: "Restoring backup preferences...",
+  restoringWindowLayout: "Restoring the main window layout...",
+  finalizingRestore: "Finalizing the restore...",
   restoreBackupCreatedAt: "Created {{date}} at {{time}}",
   restoreBackupFailed: "Couldn't access the backup or write the restored data. Try again.",
   restoreBackupInvalidArchive: "The selected file is not a valid Axion Notes backup.",
@@ -166,6 +173,63 @@ describe("Backups settings integration", () => {
       settingsMode: RestoreSettingsMode.RESTORE_BACKUP
     });
     expect(desktopApi.appWindow.restart).toHaveBeenCalledOnce();
+  });
+
+  it("shows restore progress only after the restore begins writing data", async () => {
+    const user = userEvent.setup();
+    let completeRestore: (() => void) | undefined;
+    let reportProgress: ((progress: { current?: number; phase: RestoreProgressPhase; progress: number; total?: number }) => void) | undefined;
+    const desktopApi = installDesktopApiMock({
+      restore: {
+        apply: vi.fn().mockImplementation(() => new Promise((resolve) => {
+          completeRestore = () => resolve({
+            state: { lastRestoredAt: "2026-11-07T12:30:00.000Z", version: 1 },
+            status: RestoreApplyStatus.APPLIED
+          });
+        })),
+        chooseArchive: vi.fn().mockResolvedValue({
+          filePath: "/tmp/axion-notes-backup.zip",
+          status: RestoreChooseStatus.SELECTED
+        }),
+        inspect: vi.fn().mockResolvedValue({
+          plan: createRestorePlan(),
+          status: RestoreInspectStatus.READY
+        }),
+        onProgress: vi.fn((callback) => {
+          reportProgress = callback;
+          return vi.fn();
+        })
+      }
+    });
+    UserAgent.isElectron = true;
+
+    render(<SettingsWindow appSettings={defaultAppSettings} onAppSettingsChange={vi.fn()} theme={SystemTheme.LIGHT} />);
+
+    await openBackups(user);
+    await user.click(screen.getByRole("button", { name: "Restore backup…" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Restore backup…" })).getByRole("button", { name: "Restore backup…" }));
+    const confirmationMessage = await screen.findByText("Restore the selected backup?");
+    await user.click(within(confirmationMessage.closest("[role=dialog]")!).getByRole("button", { name: "Restore backup…" }));
+
+    await waitFor(() => expect(desktopApi.restore.apply).toHaveBeenCalledOnce());
+
+    if (!reportProgress) {
+      throw new Error("Restore progress listener was not registered.");
+    }
+
+    act(() => reportProgress!({ current: 1, phase: RestoreProgressPhase.PROCESSING_NOTES, progress: 43, total: 3 }));
+
+    const progressDialog = await screen.findByRole("dialog", { name: "Restore backup…" });
+    expect(progressDialog).toHaveTextContent("Restoring note 1 of 3...");
+    expect(within(progressDialog).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "43");
+
+    if (!completeRestore) {
+      throw new Error("Restore operation did not start.");
+    }
+
+    await act(async () => completeRestore!());
+
+    await waitFor(() => expect(desktopApi.appWindow.restart).toHaveBeenCalledOnce());
   });
 
   it("requests an encryption password only when archive inspection requires it", async () => {

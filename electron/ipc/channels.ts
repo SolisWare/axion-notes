@@ -24,7 +24,8 @@ export const channels = {
     apply: "restore.apply",
     chooseArchive: "restore.chooseArchive",
     getState: "restore.getState",
-    inspect: "restore.inspect"
+    inspect: "restore.inspect",
+    onProgress: "restore.onProgress"
   },
   menu: {
     newNote: "menu.newNote",

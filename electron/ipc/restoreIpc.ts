@@ -15,6 +15,7 @@ import { RestoreApplyResult, RestoreApplyStatus } from "../../src/types/RestoreA
 import { RestoreChooseResult, RestoreChooseStatus } from "../../src/types/RestoreChooseResult";
 import { RestoreInspectResult, RestoreInspectStatus } from "../../src/types/RestoreInspectResult";
 import { RestoreState } from "../../src/types/RestoreState";
+import { RestoreProgressEvent, RestoreProgressPhase } from "../../src/types/RestoreProgressEvent";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
@@ -47,19 +48,20 @@ export function registerRestoreIpc(options: RestoreIpcOptions): void {
     return { filePath: result.filePaths[0], status: RestoreChooseStatus.SELECTED };
   });
 
-  protectedHandle<RestoreApplyResult, [string, RestoreApplyOptions]>(channels.restore.apply, { ...options, fallback: { status: RestoreApplyStatus.FAILED } }, async (_event, archivePath, restoreOptions) => {
+  protectedHandle<RestoreApplyResult, [string, RestoreApplyOptions]>(channels.restore.apply, { ...options, fallback: { status: RestoreApplyStatus.FAILED } }, async (event, archivePath, restoreOptions) => {
     if (!options.noteService.isEncryptionUnlocked() && !restoreOptions.password) {
       return { status: RestoreApplyStatus.PASSWORD_REQUIRED };
     }
 
     try {
+      sendRestoreProgress(event, { phase: RestoreProgressPhase.READING_ARCHIVE, progress: 0 });
       const archive = await options.backupArchiveReader.readArchive(archivePath);
 
       if (!options.noteService.isEncryptionUnlocked() && !await options.noteService.verifyEncryptionPassword(restoreOptions.password!)) {
         return { status: RestoreApplyStatus.INVALID_PASSWORD };
       }
 
-      const state = await options.restoreService.applyRestore(archive, restoreOptions);
+      const state = await options.restoreService.applyRestore(archive, restoreOptions, (progress) => sendRestoreProgress(event, progress));
 
       return { state, status: RestoreApplyStatus.APPLIED };
     } catch (err) {
@@ -86,6 +88,12 @@ export function registerRestoreIpc(options: RestoreIpcOptions): void {
       return { status: getInspectFailureStatus(err) };
     }
   });
+}
+
+function sendRestoreProgress(event: Electron.IpcMainInvokeEvent, progress: RestoreProgressEvent): void {
+  if (event.sender && !event.sender.isDestroyed()) {
+    event.sender.send(channels.restore.onProgress, progress);
+  }
 }
 
 function getApplyFailureStatus(error: unknown): RestoreApplyStatus {

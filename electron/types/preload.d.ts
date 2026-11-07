@@ -28,6 +28,7 @@ import { RestoreChooseResult } from '../../src/types/RestoreChooseResult';
 import { RestoreInspectResult } from '../../src/types/RestoreInspectResult';
 import { RestoreApplyOptions } from '../../src/types/RestoreApplyOptions';
 import { RestoreState } from '../../src/types/RestoreState';
+import { RestoreProgressEvent } from '../../src/types/RestoreProgressEvent';
 
 export interface IElectronAPI {
   appWindow: {
@@ -50,6 +51,7 @@ export interface IElectronAPI {
     chooseArchive: () => Promise<RestoreChooseResult>;
     getState: () => Promise<RestoreState | undefined>;
     inspect: (archivePath: string, password?: string) => Promise<RestoreInspectResult>;
+    onProgress: (callback: (progress: RestoreProgressEvent) => void) => () => void;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

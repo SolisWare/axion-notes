@@ -26,6 +26,7 @@ import { RestoreNotesMode } from "../../../types/RestoreNotesMode";
 import { RestorePlan } from "../../../types/RestorePlan";
 import { RestoreSettingsMode } from "../../../types/RestoreSettingsMode";
 import { RestoreState } from "../../../types/RestoreState";
+import { RestoreProgressEvent, RestoreProgressPhase } from "../../../types/RestoreProgressEvent";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
@@ -59,6 +60,7 @@ function Backups(props: BackupsProps) {
   const [isRestoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [isRestorePasswordDialogOpen, setRestorePasswordDialogOpen] = useState(false);
   const [isRestoreConfirmationOpen, setRestoreConfirmationOpen] = useState(false);
+  const [restoreProgress, setRestoreProgress] = useState<RestoreProgressEvent>();
   const [restoreNotesMode, setRestoreNotesMode] = useState<RestoreNotesMode>(RestoreNotesMode.REPLACE_CURRENT);
   const [restoreSettingsMode, setRestoreSettingsMode] = useState<RestoreSettingsMode>(RestoreSettingsMode.KEEP_CURRENT);
   const [restoreErrorKey, setRestoreErrorKey] = useState<string>();
@@ -95,6 +97,14 @@ function Backups(props: BackupsProps) {
       isCurrent = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isElectron) {
+      return;
+    }
+
+    return window.api.restore.onProgress(setRestoreProgress);
+  }, [isElectron]);
 
   const handleInitialize = async (): Promise<void> => {
     setIsInitializing(true);
@@ -270,33 +280,39 @@ function Backups(props: BackupsProps) {
       return;
     }
 
-    const result = await window.api.restore.apply(restoreArchivePath, {
-      notesMode: restoreNotesMode,
-      password: restorePassword,
-      settingsMode: restoreSettingsMode
-    });
+    setRestoreConfirmationOpen(false);
 
-    if (result.status === RestoreApplyStatus.PASSWORD_REQUIRED || result.status === RestoreApplyStatus.INVALID_PASSWORD) {
-      setRestoreConfirmationOpen(false);
-      setRestorePassword(undefined);
-      setRestorePasswordDialogOpen(true);
-      return;
-    }
+    try {
+      const result = await window.api.restore.apply(restoreArchivePath, {
+        notesMode: restoreNotesMode,
+        password: restorePassword,
+        settingsMode: restoreSettingsMode
+      });
 
-    if (result.status === RestoreApplyStatus.INVALID_ARCHIVE) {
-      setRestoreConfirmationOpen(false);
-      setRestoreErrorKey("restoreBackupInvalidArchive");
-      return;
-    }
+      if (result.status === RestoreApplyStatus.PASSWORD_REQUIRED || result.status === RestoreApplyStatus.INVALID_PASSWORD) {
+        setRestorePassword(undefined);
+        setRestorePasswordDialogOpen(true);
+        return;
+      }
 
-    if (result.status !== RestoreApplyStatus.APPLIED) {
-      setRestoreConfirmationOpen(false);
+      if (result.status === RestoreApplyStatus.INVALID_ARCHIVE) {
+        setRestoreErrorKey("restoreBackupInvalidArchive");
+        return;
+      }
+
+      if (result.status !== RestoreApplyStatus.APPLIED) {
+        setRestoreErrorKey("restoreBackupFailed");
+        return;
+      }
+
+      setRestoreErrorKey(undefined);
+      window.api.appWindow.restart();
+    } catch (err) {
+      console.error("Failed to restore backup:", (err as Error).message);
       setRestoreErrorKey("restoreBackupFailed");
-      return;
+    } finally {
+      setRestoreProgress(undefined);
     }
-
-    setRestoreErrorKey(undefined);
-    window.api.appWindow.restart();
   };
 
   const isInitialized = backupState !== undefined;
@@ -471,9 +487,36 @@ function Backups(props: BackupsProps) {
         title={t(isElectron ? "createBackup" : "downloadBackup")}
         value={50}
       />
+      {restoreProgress && (
+        <BlockingProgressDialog
+          open
+          status={getRestoreProgressStatus(t, restoreProgress)}
+          theme={props.theme}
+          title={t("restoreBackup")}
+          value={restoreProgress.progress}
+        />
+      )}
       <AppToast message={toastMessage} open={Boolean(toastMessage)} theme={props.theme} onClose={() => setToastMessage("")} />
     </div>
   );
 }
 
 export default Backups;
+
+function getRestoreProgressStatus(translate: ReturnType<typeof useTranslation>["t"], progress: RestoreProgressEvent): string {
+  switch (progress.phase) {
+    case RestoreProgressPhase.READING_ARCHIVE:
+      return translate("readingBackupArchive");
+    case RestoreProgressPhase.PROCESSING_NOTES:
+      return translate("restoringNotes", { current: progress.current ?? 0, total: progress.total ?? 0 });
+    case RestoreProgressPhase.RESTORING_PREFERENCES:
+      return translate("restoringBackupPreferences");
+    case RestoreProgressPhase.RESTORING_WINDOW_STATE:
+      return translate("restoringWindowLayout");
+    case RestoreProgressPhase.FINALIZING:
+      return translate("finalizingRestore");
+    case RestoreProgressPhase.PREPARING:
+    default:
+      return translate("preparingRestore");
+  }
+}

@@ -129,6 +129,8 @@ export function createBrowserRestoreApi(options: BrowserRestoreApiOptions = {}) 
 
     getState: async (): Promise<RestoreState | undefined> => loadRestoreState(),
 
+    onProgress: (): (() => void) => () => undefined,
+
     inspect: async (archiveReference: string): Promise<RestoreInspectResult> => {
       try {
         const archive = getSelectedArchive(archiveReference, selectedArchiveBytes, readArchive);

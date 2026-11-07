@@ -17,6 +17,7 @@ import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
 import { RestoreSettingsMode } from "../../src/types/RestoreSettingsMode";
 import { RestoreState } from "../../src/types/RestoreState";
 import { RestorePlan } from "../../src/types/RestorePlan";
+import { RestoreProgressEvent, RestoreProgressPhase } from "../../src/types/RestoreProgressEvent";
 import { readMainWindowState, replaceMainWindowState } from "../windows/mainWindowState";
 import { NoteService } from "./NoteService";
 import { RestoreStateStorage } from "./RestoreStateStorage";
@@ -24,6 +25,7 @@ import { SettingsService } from "./SettingsService";
 
 type ReadWindowState = (filePath: string) => AppWindowState;
 type WriteWindowState = (filePath: string, state: AppWindowState) => Promise<void>;
+type RestoreProgressListener = (progress: RestoreProgressEvent) => void;
 
 /**
  * Applies a validated desktop backup while preserving destination security settings.
@@ -44,7 +46,7 @@ export class RestoreService {
   /**
    * Applies a validated archive and records its successful completion.
    */
-  public async applyRestore(archive: ValidatedBackupArchive, options: RestoreApplyOptions): Promise<RestoreState> {
+  public async applyRestore(archive: ValidatedBackupArchive, options: RestoreApplyOptions, onProgress?: RestoreProgressListener): Promise<RestoreState> {
     const currentNotes = await this.noteService.getNotesForBackup(options.password);
     const currentSettings = await this.settingsService.getSettings() ?? defaultAppSettings;
     const shouldRestoreSettings = options.settingsMode === RestoreSettingsMode.RESTORE_BACKUP;
@@ -62,20 +64,27 @@ export class RestoreService {
     let didRestoreWindowState = false;
 
     try {
+      this.emitProgress(onProgress, RestoreProgressPhase.PREPARING, 5);
       shouldRestorePreviousNotes = true;
-      await this.noteService.replaceNotes(nextNotes, options.password);
+      await this.noteService.replaceNotes(nextNotes, options.password, (current, total) => {
+        this.emitProgress(onProgress, RestoreProgressPhase.PROCESSING_NOTES, this.getNotesProgress(current, total), current, total);
+      });
 
       if (shouldRestoreSettings) {
+        this.emitProgress(onProgress, RestoreProgressPhase.RESTORING_PREFERENCES, 82);
         await this.settingsService.replaceSettings(nextSettings);
         didRestoreSettings = true;
       }
 
       if (shouldRestoreSettings && archive.mainWindowState) {
+        this.emitProgress(onProgress, RestoreProgressPhase.RESTORING_WINDOW_STATE, 90);
         await this.writeWindowState(this.mainWindowStateFilePath, archive.mainWindowState);
         didRestoreWindowState = true;
       }
 
+      this.emitProgress(onProgress, RestoreProgressPhase.FINALIZING, 96);
       await this.restoreStateStorage.setState(state);
+      this.emitProgress(onProgress, RestoreProgressPhase.FINALIZING, 100);
       return state;
     } catch (err) {
       await this.restorePreviousState({
@@ -134,6 +143,24 @@ export class RestoreService {
         console.error("Failed to roll back an interrupted restore:", rollbackError);
       }
     }
+  }
+
+  private emitProgress(
+    listener: RestoreProgressListener | undefined,
+    phase: RestoreProgressPhase,
+    progress: number,
+    current?: number,
+    total?: number
+  ): void {
+    listener?.({ current, phase, progress, total });
+  }
+
+  private getNotesProgress(current: number, total: number): number {
+    if (total === 0) {
+      return 75;
+    }
+
+    return 10 + (current / total) * 65;
   }
 
 }

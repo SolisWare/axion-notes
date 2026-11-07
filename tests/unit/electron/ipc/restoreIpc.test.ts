@@ -175,7 +175,44 @@ describe("restore IPC", () => {
     expect(noteService.verifyEncryptionPassword).toHaveBeenNthCalledWith(1, "correct-password");
     expect(noteService.verifyEncryptionPassword).toHaveBeenNthCalledWith(2, "correct-password");
     expect(restoreService.inspectRestore).toHaveBeenCalledWith(archive, "correct-password");
-    expect(restoreService.applyRestore).toHaveBeenCalledWith(archive, restoreOptions);
+    expect(restoreService.applyRestore).toHaveBeenCalledWith(archive, restoreOptions, expect.any(Function));
+  });
+
+  it("forwards restore progress to the calling renderer", async () => {
+    const archive = { notes: [] };
+    const send = vi.fn();
+    const restoreService = {
+      applyRestore: vi.fn().mockImplementation(async (_archive, _options, onProgress) => {
+        onProgress({ current: 1, phase: "processingNotes", progress: 43, total: 3 });
+        return { lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 };
+      }),
+      inspectRestore: vi.fn()
+    };
+    registerRestoreIpc({
+      backupArchiveReader: { readArchive: vi.fn().mockResolvedValue(archive) },
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreService
+    } as never);
+
+    await expect(invoke(channels.restore.apply, "/tmp/backup.zip", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    }, { sender: { isDestroyed: () => false, send } })).resolves.toEqual({
+      state: { lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 },
+      status: RestoreApplyStatus.APPLIED
+    });
+
+    expect(send).toHaveBeenNthCalledWith(1, channels.restore.onProgress, {
+      phase: "readingArchive",
+      progress: 0
+    });
+    expect(send).toHaveBeenNthCalledWith(2, channels.restore.onProgress, {
+      current: 1,
+      phase: "processingNotes",
+      progress: 43,
+      total: 3
+    });
   });
 
   it("reports an invalid archive separately from restore read or write failures", async () => {
@@ -201,5 +238,8 @@ async function invoke(channel: string, ...args: unknown[]): Promise<unknown> {
     throw new Error(`No IPC handler registered for ${channel}.`);
   }
 
-  return handler({}, ...args);
+  const event = args.at(-1);
+  const hasEvent = typeof event === "object" && event !== null && "sender" in event;
+
+  return handler(hasEvent ? args.pop() : {}, ...args);
 }

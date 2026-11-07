@@ -34,6 +34,7 @@ const CLEANING_UP_PROGRESS = 100;
 
 type PlaintextCacheStateListener = (hasPlaintextCache: boolean) => void;
 type EncryptionProgressListener = (progress: EncryptionProgressEvent) => void;
+type NoteProcessingProgressListener = (current: number, total: number) => void;
 type StorageMigrationStateListener = (isMigrationInProgress: boolean) => void;
 type RenamePath = (oldPath: string, newPath: string) => Promise<void>;
 
@@ -329,9 +330,9 @@ export class NoteService {
    * Replaces the complete note library after first writing and verifying a staged layout.
    * Encrypted libraries require their current password when they are locked.
    */
-  public async replaceNotes(notes: NoteType[], password?: string): Promise<void> {
+  public async replaceNotes(notes: NoteType[], password?: string, onProgress?: NoteProcessingProgressListener): Promise<void> {
     if (!this.notesEncryptionEnabled) {
-      await this.writePlaintextLayoutToStaging(notes);
+      await this.writePlaintextLayoutToStaging(notes, undefined, undefined, onProgress);
       await this.verifyPlaintextStaging(notes);
       await this.installPlaintextStaging();
       await this.verifyFinalPlaintextLayout(notes);
@@ -343,7 +344,7 @@ export class NoteService {
     const masterKey = this.masterKey ?? await this.getRestoreMasterKey(password);
 
     try {
-      await this.writeEncryptedLayoutToStaging(notes, masterKey);
+      await this.writeEncryptedLayoutToStaging(notes, masterKey, undefined, undefined, onProgress);
       await this.verifyEncryptedStaging(notes, masterKey);
       await this.installEncryptedStaging();
       await this.verifyFinalEncryptedLayout(notes, masterKey);
@@ -679,7 +680,8 @@ export class NoteService {
     notes: NoteType[],
     masterKey: Uint8Array,
     progressOperation?: EncryptionProgressOperation,
-    onProgress?: EncryptionProgressListener
+    onProgress?: EncryptionProgressListener,
+    onNotesProgress?: NoteProcessingProgressListener
   ): Promise<void> {
     const stagingDir = this.getEncryptionStagingDirPath();
     const stagingNotesDir = this.getEncryptedNotesDirPath(stagingDir);
@@ -689,6 +691,7 @@ export class NoteService {
     await fs.promises.mkdir(stagingNotesDir, { recursive: true });
 
     this.emitProcessingProgress(progressOperation, onProgress, 0, notes.length);
+    onNotesProgress?.(0, notes.length);
 
     for (const [index, note] of notes.entries()) {
       const fileName = manifest.files[note.id];
@@ -696,6 +699,7 @@ export class NoteService {
 
       await this.writeFileAtomic(path.join(stagingNotesDir, fileName), JSON.stringify(record));
       this.emitProcessingProgress(progressOperation, onProgress, index + 1, notes.length);
+      onNotesProgress?.(index + 1, notes.length);
     }
 
     await this.writeEncryptedManifest(manifest, masterKey, stagingDir);
@@ -704,7 +708,8 @@ export class NoteService {
   private async writePlaintextLayoutToStaging(
     notes: NoteType[],
     progressOperation?: EncryptionProgressOperation,
-    onProgress?: EncryptionProgressListener
+    onProgress?: EncryptionProgressListener,
+    onNotesProgress?: NoteProcessingProgressListener
   ): Promise<void> {
     const stagingDir = this.getDecryptionStagingDirPath();
 
@@ -712,10 +717,12 @@ export class NoteService {
     await fs.promises.mkdir(stagingDir, { recursive: true });
     await this.writeNoteOrder(notes.map((note) => note.id), stagingDir);
     this.emitProcessingProgress(progressOperation, onProgress, 0, notes.length);
+    onNotesProgress?.(0, notes.length);
 
     for (const [index, note] of notes.entries()) {
       await this.writeFileAtomic(path.join(stagingDir, `${note.id}.json`), JSON.stringify(note));
       this.emitProcessingProgress(progressOperation, onProgress, index + 1, notes.length);
+      onNotesProgress?.(index + 1, notes.length);
     }
   }
 

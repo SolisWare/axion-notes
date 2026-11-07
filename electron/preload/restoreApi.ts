@@ -9,8 +9,9 @@ import { RestoreApplyResult } from "../../src/types/RestoreApplyResult";
 import { RestoreChooseResult } from "../../src/types/RestoreChooseResult";
 import { RestoreInspectResult } from "../../src/types/RestoreInspectResult";
 import { RestoreState } from "../../src/types/RestoreState";
+import { RestoreProgressEvent } from "../../src/types/RestoreProgressEvent";
 import { channels } from "../ipc/channels";
-import { receive } from "./ipcHelpers";
+import { off, on, receive } from "./ipcHelpers";
 
 export const restoreApi = {
   apply: async (archivePath: string, options: RestoreApplyOptions): Promise<RestoreApplyResult> => {
@@ -27,5 +28,12 @@ export const restoreApi = {
 
   inspect: async (archivePath: string, password?: string): Promise<RestoreInspectResult> => {
     return receive<RestoreInspectResult>(channels.restore.inspect, archivePath, password);
+  },
+
+  onProgress: (callback: (progress: RestoreProgressEvent) => void): (() => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, progress: RestoreProgressEvent): void => callback(progress);
+    on<[RestoreProgressEvent]>(channels.restore.onProgress, listener);
+
+    return () => off<[RestoreProgressEvent]>(channels.restore.onProgress, listener);
   }
 };

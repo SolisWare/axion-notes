@@ -40,7 +40,8 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
       apply: vi.fn().mockResolvedValue({ status: "failed" }),
       chooseArchive: vi.fn().mockResolvedValue({ status: "cancelled" }),
       getState: vi.fn().mockResolvedValue(undefined),
-      inspect: vi.fn().mockResolvedValue({ status: "failed" })
+      inspect: vi.fn().mockResolvedValue({ status: "failed" }),
+      onProgress: vi.fn(() => unsubscribe)
     },
     storage: {
       getNotes: vi.fn().mockResolvedValue([]),
