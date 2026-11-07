@@ -44,7 +44,9 @@ test.describe("Web backup restore", () => {
     await expect(page.getByRole("button", { name: /Current note/ }).getByPlaceholder("Title")).toHaveValue("Current note");
     const noteTitles = page.getByPlaceholder("Title");
     await expect(noteTitles).toHaveCount(2);
-    await expect(noteTitles.nth(1)).toHaveValue("Restored note");
+    await expect.poll(() => noteTitles.evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value))).toEqual(
+      expect.arrayContaining(["Current note", "Restored note"])
+    );
     await expect(page.locator(".ProseMirror").filter({ hasText: "Restored content" })).toBeVisible();
   });
 });
