@@ -34,6 +34,21 @@ describe("NoteService encrypted storage", () => {
     expect(serializeNotes(await createService(context).getNotes())).toEqual(serializeNotes(replacementNotes));
   });
 
+  it("reports every write while replacing and persisting a medium-sized plaintext library", async () => {
+    const context = await createContext();
+    const replacementNotes = createNotesForRestore(128);
+    const progress: Array<{ current: number; total: number }> = [];
+    const service = createService(context);
+
+    await service.replaceNotes(replacementNotes, undefined, (current, total) => progress.push({ current, total }));
+
+    expect(progress).toHaveLength(129);
+    expect(progress[0]).toEqual({ current: 0, total: 128 });
+    expect(progress.at(-1)).toEqual({ current: 128, total: 128 });
+    expect(progress.map(({ current }) => current)).toEqual(Array.from({ length: 129 }, (_value, index) => index));
+    expect(serializeNotes(await createService(context).getNotes())).toEqual(serializeNotes(replacementNotes));
+  });
+
   it("encrypts a complete plaintext vault and restores it exactly after restart and unlock", async () => {
     const context = await createContext();
     const notes = createNotes();
@@ -124,6 +139,26 @@ describe("NoteService encrypted storage", () => {
     expect(serializeNotes(await unchangedService.getNotes())).toEqual(serializeNotes(context.notes));
 
     await service.replaceNotes(replacementNotes, password);
+
+    const restartedService = createService(context);
+    restartedService.applyEncryptionSetting(true);
+    await restartedService.unlockEncryption(password);
+    expect(serializeNotes(await restartedService.getNotes())).toEqual(serializeNotes(replacementNotes));
+  });
+
+  it("reports every write while restoring a medium-sized encrypted library", async () => {
+    const context = await createEncryptedContext();
+    const replacementNotes = createNotesForRestore(64);
+    const progress: Array<{ current: number; total: number }> = [];
+    const service = createService(context);
+    service.applyEncryptionSetting(true);
+
+    await service.replaceNotes(replacementNotes, password, (current, total) => progress.push({ current, total }));
+
+    expect(progress).toHaveLength(65);
+    expect(progress[0]).toEqual({ current: 0, total: 64 });
+    expect(progress.at(-1)).toEqual({ current: 64, total: 64 });
+    expect(progress.map(({ current }) => current)).toEqual(Array.from({ length: 65 }, (_value, index) => index));
 
     const restartedService = createService(context);
     restartedService.applyEncryptionSetting(true);
@@ -267,6 +302,19 @@ function createNotes(): NoteType[] {
       }
     }
   ];
+}
+
+function createNotesForRestore(count: number): NoteType[] {
+  return Array.from({ length: count }, (_value, index) => {
+    const noteNumber = index + 1;
+
+    return createNote(
+      `restored-note-${noteNumber}`,
+      `Restored note ${noteNumber}`,
+      `Restored content ${noteNumber}`,
+      new Date(Date.UTC(2026, 10, 7, 12, 0, noteNumber))
+    );
+  });
 }
 
 function createNote(id: string, title: string, content: string, createdOn: Date): NoteType {
