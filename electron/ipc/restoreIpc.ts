@@ -11,6 +11,7 @@ import { NoteService } from "../storage/NoteService";
 import { LockStateService } from "../security/LockStateService";
 import { RestoreApplyResult, RestoreApplyStatus } from "../../src/types/RestoreApplyResult";
 import { RestoreChooseResult, RestoreChooseStatus } from "../../src/types/RestoreChooseResult";
+import { RestoreInspectResult, RestoreInspectStatus } from "../../src/types/RestoreInspectResult";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
@@ -50,6 +51,21 @@ export function registerRestoreIpc(options: RestoreIpcOptions): void {
     } catch (err) {
       console.warn("Failed to restore backup:", err);
       return { status: RestoreApplyStatus.FAILED };
+    }
+  });
+
+  protectedHandle<RestoreInspectResult, [string, string?]>(channels.restore.inspect, { ...options, fallback: { status: RestoreInspectStatus.FAILED } }, async (_event, archivePath, password) => {
+    try {
+      const archive = await options.backupArchiveReader.readArchive(archivePath);
+
+      if (!options.noteService.isEncryptionUnlocked() && !password) {
+        return { status: RestoreInspectStatus.PASSWORD_REQUIRED };
+      }
+
+      return { plan: await options.restoreService.inspectRestore(archive, password), status: RestoreInspectStatus.READY };
+    } catch (err) {
+      console.warn("Failed to inspect backup for restore:", err);
+      return { status: RestoreInspectStatus.FAILED };
     }
   });
 }

@@ -7,6 +7,7 @@
 import { RestoreApplyOptions } from "../storage/RestoreService";
 import { RestoreApplyResult } from "../../src/types/RestoreApplyResult";
 import { RestoreChooseResult } from "../../src/types/RestoreChooseResult";
+import { RestoreInspectResult } from "../../src/types/RestoreInspectResult";
 import { channels } from "../ipc/channels";
 import { receive } from "./ipcHelpers";
 
@@ -17,5 +18,9 @@ export const restoreApi = {
 
   chooseArchive: async (): Promise<RestoreChooseResult> => {
     return receive<RestoreChooseResult>(channels.restore.chooseArchive);
+  },
+
+  inspect: async (archivePath: string, password?: string): Promise<RestoreInspectResult> => {
+    return receive<RestoreInspectResult>(channels.restore.inspect, archivePath, password);
   }
 };

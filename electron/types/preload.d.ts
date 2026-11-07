@@ -25,6 +25,7 @@ import { BackupDeleteResult } from '../../src/types/BackupDeleteResult';
 import { BackupSaveResult } from '../../src/types/BackupSaveResult';
 import { RestoreApplyResult } from '../../src/types/RestoreApplyResult';
 import { RestoreChooseResult } from '../../src/types/RestoreChooseResult';
+import { RestoreInspectResult } from '../../src/types/RestoreInspectResult';
 import { RestoreApplyOptions } from '../storage/RestoreService';
 
 export interface IElectronAPI {
@@ -46,6 +47,7 @@ export interface IElectronAPI {
   restore: {
     apply: (archivePath: string, options: RestoreApplyOptions) => Promise<RestoreApplyResult>;
     chooseArchive: () => Promise<RestoreChooseResult>;
+    inspect: (archivePath: string, password?: string) => Promise<RestoreInspectResult>;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

@@ -31,7 +31,10 @@ describe("restore IPC", () => {
   it("selects a user-chosen backup ZIP and applies a revalidated archive", async () => {
     const archive = { notes: [] };
     const backupArchiveReader = { readArchive: vi.fn().mockResolvedValue(archive) };
-    const restoreService = { applyRestore: vi.fn().mockResolvedValue({ lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 }) };
+    const restoreService = {
+      applyRestore: vi.fn().mockResolvedValue({ lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 }),
+      inspectRestore: vi.fn().mockResolvedValue({ incomingNotesCount: 1 })
+    };
     registerRestoreIpc({
       backupArchiveReader,
       lockStateService: { getIsLocked: vi.fn(() => false) },
@@ -41,6 +44,7 @@ describe("restore IPC", () => {
     showOpenDialog.mockResolvedValue({ canceled: false, filePaths: ["/tmp/backup.zip"] });
 
     await expect(invoke(channels.restore.chooseArchive)).resolves.toEqual({ filePath: "/tmp/backup.zip", status: RestoreChooseStatus.SELECTED });
+    await expect(invoke(channels.restore.inspect, "/tmp/backup.zip")).resolves.toEqual({ plan: { incomingNotesCount: 1 }, status: "ready" });
     await expect(invoke(channels.restore.apply, "/tmp/backup.zip", {
       notesMode: RestoreNotesMode.REPLACE_CURRENT,
       settingsMode: RestoreSettingsMode.KEEP_CURRENT
@@ -50,7 +54,7 @@ describe("restore IPC", () => {
 
   it("does not expose restore actions while the app is locked", async () => {
     const backupArchiveReader = { readArchive: vi.fn() };
-    const restoreService = { applyRestore: vi.fn() };
+    const restoreService = { applyRestore: vi.fn(), inspectRestore: vi.fn() };
     registerRestoreIpc({
       backupArchiveReader,
       lockStateService: { getIsLocked: vi.fn(() => true) },

@@ -8,6 +8,7 @@ import * as crypto from "node:crypto";
 import { ValidatedBackupArchive } from "../../src/backup/restoreArchive";
 import { prepareRestoredNotes } from "../../src/backup/restoreNotes";
 import { prepareRestoredSettings } from "../../src/backup/restoreSettings";
+import { createRestorePlan } from "../../src/backup/restorePlan";
 import { AppSettings } from "../../src/settings/AppSettings";
 import { AppWindowState } from "../../src/settings/AppWindowState";
 import { defaultAppSettings } from "../../src/settings/defaultSettings";
@@ -15,6 +16,7 @@ import { NoteType } from "../../src/types/NoteType";
 import { RestoreNotesMode } from "../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../src/types/RestoreSettingsMode";
 import { RestoreState } from "../../src/types/RestoreState";
+import { RestorePlan } from "../../src/types/RestorePlan";
 import { readMainWindowState, replaceMainWindowState } from "../windows/mainWindowState";
 import { NoteService } from "./NoteService";
 import { RestoreStateStorage } from "./RestoreStateStorage";
@@ -93,6 +95,19 @@ export class RestoreService {
       });
       throw err;
     }
+  }
+
+  /**
+   * Returns a non-destructive review plan for a validated archive.
+   */
+  public async inspectRestore(archive: ValidatedBackupArchive, password?: string): Promise<RestorePlan> {
+    const currentNotes = await this.noteService.getNotesForBackup(password);
+    const currentSettings = await this.settingsService.getSettings() ?? defaultAppSettings;
+
+    return createRestorePlan(archive, {
+      currentNotes,
+      isNotesEncryptionEnabled: currentSettings.notesEncryptionEnabled
+    });
   }
 
   private async restorePreviousState(options: {
