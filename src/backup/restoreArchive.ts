@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { AppThemePreference } from "../settings/AppThemePreference";
+import { AppSettings } from "../settings/AppSettings";
 import { AppWindowState } from "../settings/AppWindowState";
 import { defaultAppSettings } from "../settings/defaultSettings";
 import { NoteFontPreference } from "../settings/NoteFontPreference";
@@ -29,6 +30,7 @@ const appPreferencesFileName = "app-preferences.json";
 const mainWindowStateFileName = "main-window-state.json";
 const requiredFileNames = [manifestFileName, notesFileName, noteOrderFileName] as const;
 const allowedFileNames = new Set<string>([...requiredFileNames, appPreferencesFileName, mainWindowStateFileName]);
+const legacyBackupPreferenceKeys = ["noteContentFontSize", "noteTitleFont", "noteTitleFontSize", "showNoteTitles"] as const;
 const noteIdPattern = /^[A-Za-z0-9_-]{1,128}$/;
 
 export type BackupArchiveFile = {
@@ -166,7 +168,7 @@ function parseOptionalPreferences(contents: ReadonlyMap<string, string>, selecti
     throw new Error("Backup archive preferences have an unsupported format.");
   }
 
-  return preferences;
+  return getBackupPreferences({ ...defaultAppSettings, ...preferences } as AppSettings);
 }
 
 function parseOptionalMainWindowState(contents: ReadonlyMap<string, string>, selection: BackupContentSelection): AppWindowState | undefined {
@@ -216,7 +218,9 @@ function parseNote(value: unknown): NoteType {
 }
 
 function isBackupPreferences(value: unknown): value is BackupPreferences {
-  if (!isRecord(value) || !hasOnlyKeys(value, getBackupPreferenceKeys())) {
+  if (!isRecord(value)
+    || !hasOnlyAllowedKeys(value, [...getBackupPreferenceKeys(), ...legacyBackupPreferenceKeys])
+    || !getBackupPreferenceKeys().every((key) => Object.hasOwn(value, key))) {
     return false;
   }
 

@@ -9,6 +9,8 @@ import { RestoreState } from "./RestoreState";
 export enum RestoreApplyStatus {
   APPLIED = "applied",
   FAILED = "failed",
+  INVALID_ARCHIVE = "invalidArchive",
+  INVALID_PASSWORD = "invalidPassword",
   PASSWORD_REQUIRED = "passwordRequired"
 }
 

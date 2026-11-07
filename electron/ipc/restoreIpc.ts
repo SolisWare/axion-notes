@@ -7,7 +7,7 @@
 import { BrowserWindow, dialog, OpenDialogOptions } from "electron";
 import { RestoreService } from "../storage/RestoreService";
 import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
-import { BackupArchiveReader } from "../storage/BackupArchiveReader";
+import { BackupArchiveReadError, BackupArchiveReadFailure, BackupArchiveReader } from "../storage/BackupArchiveReader";
 import { NoteService } from "../storage/NoteService";
 import { LockStateService } from "../security/LockStateService";
 import { RestoreApplyResult, RestoreApplyStatus } from "../../src/types/RestoreApplyResult";
@@ -47,12 +47,17 @@ export function registerRestoreIpc(options: RestoreIpcOptions): void {
 
     try {
       const archive = await options.backupArchiveReader.readArchive(archivePath);
+
+      if (!options.noteService.isEncryptionUnlocked() && !await options.noteService.verifyEncryptionPassword(restoreOptions.password!)) {
+        return { status: RestoreApplyStatus.INVALID_PASSWORD };
+      }
+
       const state = await options.restoreService.applyRestore(archive, restoreOptions);
 
       return { state, status: RestoreApplyStatus.APPLIED };
     } catch (err) {
       console.warn("Failed to restore backup:", err);
-      return { status: RestoreApplyStatus.FAILED };
+      return { status: getApplyFailureStatus(err) };
     }
   });
 
@@ -64,10 +69,26 @@ export function registerRestoreIpc(options: RestoreIpcOptions): void {
         return { status: RestoreInspectStatus.PASSWORD_REQUIRED };
       }
 
+      if (!options.noteService.isEncryptionUnlocked() && !await options.noteService.verifyEncryptionPassword(password!)) {
+        return { status: RestoreInspectStatus.INVALID_PASSWORD };
+      }
+
       return { plan: await options.restoreService.inspectRestore(archive, password), status: RestoreInspectStatus.READY };
     } catch (err) {
       console.warn("Failed to inspect backup for restore:", err);
-      return { status: RestoreInspectStatus.FAILED };
+      return { status: getInspectFailureStatus(err) };
     }
   });
+}
+
+function getApplyFailureStatus(error: unknown): RestoreApplyStatus {
+  return error instanceof BackupArchiveReadError && error.failure === BackupArchiveReadFailure.INVALID_ARCHIVE
+    ? RestoreApplyStatus.INVALID_ARCHIVE
+    : RestoreApplyStatus.FAILED;
+}
+
+function getInspectFailureStatus(error: unknown): RestoreInspectStatus {
+  return error instanceof BackupArchiveReadError && error.failure === BackupArchiveReadFailure.INVALID_ARCHIVE
+    ? RestoreInspectStatus.INVALID_ARCHIVE
+    : RestoreInspectStatus.FAILED;
 }

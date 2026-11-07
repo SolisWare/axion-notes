@@ -13,6 +13,7 @@ import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
 import { BackupCreateStatus } from "../../../../src/types/BackupCreateResult";
 import { BackupDeleteStatus } from "../../../../src/types/BackupDeleteResult";
 import { BackupArchiveService, BACKUP_ARCHIVE_FILE_NAME } from "../../../../electron/storage/BackupArchiveService";
+import { BackupArchiveReader } from "../../../../electron/storage/BackupArchiveReader";
 import { BackupStateStorage } from "../../../../electron/storage/BackupStateStorage";
 import { NoteService } from "../../../../electron/storage/NoteService";
 import { SettingsService } from "../../../../electron/storage/SettingsService";
@@ -68,6 +69,31 @@ describe("BackupArchiveService", () => {
     }]);
     expect(parseEntry(entries, "note-order.json")).toEqual(["note-1"]);
     expect(noteService.getNotesForBackup).toHaveBeenCalledWith(undefined);
+  });
+
+  it("creates an archive that can be read back for restore", async () => {
+    const { backupDirectory, service, settingsService, stateStorage } = await createService(true);
+    settingsService.getSettings.mockResolvedValue({
+      ...defaultAppSettings,
+      noteContentFontSize: 14,
+      noteTitleFont: "system",
+      noteTitleFontSize: 16,
+      showNoteTitles: true
+    });
+    await stateStorage.setState({
+      version: 1,
+      initializedAt: "2026-11-05T12:00:00.000Z",
+      contentSelection: {
+        appSettings: true,
+        mainWindowState: true
+      }
+    });
+
+    await expect(service.createArchive()).resolves.toMatchObject({ status: BackupCreateStatus.CREATED });
+    await expect(new BackupArchiveReader().readArchive(path.join(backupDirectory, BACKUP_ARCHIVE_FILE_NAME))).resolves.toMatchObject({
+      noteOrder: ["note-1"],
+      notes: [{ content: "Backup content", id: "note-1" }]
+    });
   });
 
   it("archives selected app preferences and main-window state without security settings", async () => {
@@ -244,7 +270,7 @@ async function createService(isEncryptionUnlocked: boolean): Promise<{
     isEncryptionUnlocked: vi.fn(() => isEncryptionUnlocked)
   };
   const settingsService = {
-    getSettings: vi.fn()
+    getSettings: vi.fn().mockResolvedValue(defaultAppSettings)
   };
 
   return {

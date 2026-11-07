@@ -8,6 +8,8 @@ import { RestorePlan } from "./RestorePlan";
 
 export enum RestoreInspectStatus {
   FAILED = "failed",
+  INVALID_ARCHIVE = "invalidArchive",
+  INVALID_PASSWORD = "invalidPassword",
   PASSWORD_REQUIRED = "passwordRequired",
   READY = "ready"
 }

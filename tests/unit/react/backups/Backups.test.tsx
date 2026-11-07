@@ -51,6 +51,10 @@ const translations: Record<string, string> = {
   options: "Options...",
   restore: "Restore",
   restoreBackup: "Restore backup…",
+  restoreBackupFailed: "Couldn't access the backup or write the restored data. Try again.",
+  restoreBackupInvalidArchive: "The selected file is not a valid Axion Notes backup.",
+  restoreBackupPasswordInstructions: "Enter your encryption password to restore this backup.",
+  currentPassword: "Current password",
   cancel: "Cancel",
   includedInBackups: "Included in backups",
   mainWindowLayout: "Main-window layout",
@@ -144,6 +148,40 @@ describe("Backups", () => {
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't set up backups. Try again.");
+  });
+
+  it("explains when the selected file is not a valid backup", async () => {
+    const user = userEvent.setup();
+    installDesktopApiMock({
+      restore: {
+        chooseArchive: vi.fn().mockResolvedValue({ filePath: "/tmp/not-a-backup.zip", status: "selected" }),
+        inspect: vi.fn().mockResolvedValue({ status: "invalidArchive" })
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Restore backup…" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("The selected file is not a valid Axion Notes backup.");
+  });
+
+  it("requests the encryption password only when restore inspection requires one", async () => {
+    const user = userEvent.setup();
+    installDesktopApiMock({
+      restore: {
+        chooseArchive: vi.fn().mockResolvedValue({ filePath: "/tmp/backup.zip", status: "selected" }),
+        inspect: vi.fn().mockResolvedValue({ status: "passwordRequired" })
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Restore backup…" }));
+
+    const passwordDialog = await screen.findByRole("dialog", { name: "Restore backup…" });
+    expect(passwordDialog).toHaveAccessibleDescription("Enter your encryption password to restore this backup.");
+    expect(within(passwordDialog).getByLabelText("Current password")).toBeInTheDocument();
   });
 
   it("creates a backup using the saved content selection without reopening options", async () => {

@@ -52,12 +52,14 @@ function Backups(props: BackupsProps) {
   const [hasBackupDeletionError, setHasBackupDeletionError] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [restoreArchivePath, setRestoreArchivePath] = useState<string>();
+  const [restorePassword, setRestorePassword] = useState<string>();
   const [restorePlan, setRestorePlan] = useState<RestorePlan>();
   const [isRestoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [isRestorePasswordDialogOpen, setRestorePasswordDialogOpen] = useState(false);
   const [isRestoreConfirmationOpen, setRestoreConfirmationOpen] = useState(false);
   const [restoreNotesMode, setRestoreNotesMode] = useState(RestoreNotesMode.REPLACE_CURRENT);
   const [restoreSettingsMode, setRestoreSettingsMode] = useState(RestoreSettingsMode.KEEP_CURRENT);
-  const [hasRestoreError, setHasRestoreError] = useState(false);
+  const [restoreErrorKey, setRestoreErrorKey] = useState<string>();
 
   useEffect(() => {
     let isCurrent = true;
@@ -203,17 +205,53 @@ function Backups(props: BackupsProps) {
       return;
     }
 
-    const inspection = await window.api.restore.inspect(selection.filePath);
+    setRestoreArchivePath(selection.filePath);
+    setRestorePassword(undefined);
+    await inspectRestoreArchive(selection.filePath);
+  };
 
-    if (inspection.status !== RestoreInspectStatus.READY || !inspection.plan) {
-      setHasRestoreError(true);
-      return;
+  const inspectRestoreArchive = async (archivePath: string, password?: string): Promise<RestoreInspectStatus> => {
+    const inspection = await window.api.restore.inspect(archivePath, password);
+
+    switch (inspection.status) {
+      case RestoreInspectStatus.READY:
+        if (!inspection.plan) {
+          setRestoreErrorKey("restoreBackupFailed");
+          return RestoreInspectStatus.FAILED;
+        }
+
+        setRestoreErrorKey(undefined);
+        setRestorePassword(password);
+        setRestorePlan(inspection.plan);
+        setRestorePasswordDialogOpen(false);
+        setRestoreDialogOpen(true);
+        return RestoreInspectStatus.READY;
+      case RestoreInspectStatus.PASSWORD_REQUIRED:
+        setRestorePasswordDialogOpen(true);
+        return RestoreInspectStatus.PASSWORD_REQUIRED;
+      case RestoreInspectStatus.INVALID_ARCHIVE:
+        setRestorePasswordDialogOpen(false);
+        setRestoreErrorKey("restoreBackupInvalidArchive");
+        return RestoreInspectStatus.INVALID_ARCHIVE;
+      case RestoreInspectStatus.INVALID_PASSWORD:
+        return RestoreInspectStatus.INVALID_PASSWORD;
+      case RestoreInspectStatus.FAILED:
+      default:
+        setRestorePasswordDialogOpen(false);
+        setRestoreErrorKey("restoreBackupFailed");
+        return RestoreInspectStatus.FAILED;
+    }
+  };
+
+  const handleRestorePasswordSubmit = async (values: SecurityPasswordDialogValues): Promise<boolean> => {
+    if (!restoreArchivePath) {
+      setRestorePasswordDialogOpen(false);
+      setRestoreErrorKey("restoreBackupFailed");
+      return true;
     }
 
-    setHasRestoreError(false);
-    setRestoreArchivePath(selection.filePath);
-    setRestorePlan(inspection.plan);
-    setRestoreDialogOpen(true);
+    const status = await inspectRestoreArchive(restoreArchivePath, values.currentPassword);
+    return status !== RestoreInspectStatus.INVALID_PASSWORD;
   };
 
   const handleRestore = async (): Promise<void> => {
@@ -221,14 +259,32 @@ function Backups(props: BackupsProps) {
       return;
     }
 
-    const result = await window.api.restore.apply(restoreArchivePath, { notesMode: restoreNotesMode, settingsMode: restoreSettingsMode });
+    const result = await window.api.restore.apply(restoreArchivePath, {
+      notesMode: restoreNotesMode,
+      password: restorePassword,
+      settingsMode: restoreSettingsMode
+    });
 
-    if (result.status !== RestoreApplyStatus.APPLIED) {
-      setHasRestoreError(true);
+    if (result.status === RestoreApplyStatus.PASSWORD_REQUIRED || result.status === RestoreApplyStatus.INVALID_PASSWORD) {
+      setRestoreConfirmationOpen(false);
+      setRestorePassword(undefined);
+      setRestorePasswordDialogOpen(true);
       return;
     }
 
-    setHasRestoreError(false);
+    if (result.status === RestoreApplyStatus.INVALID_ARCHIVE) {
+      setRestoreConfirmationOpen(false);
+      setRestoreErrorKey("restoreBackupInvalidArchive");
+      return;
+    }
+
+    if (result.status !== RestoreApplyStatus.APPLIED) {
+      setRestoreConfirmationOpen(false);
+      setRestoreErrorKey("restoreBackupFailed");
+      return;
+    }
+
+    setRestoreErrorKey(undefined);
     window.api.appWindow.restart();
   };
 
@@ -305,8 +361,8 @@ function Backups(props: BackupsProps) {
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t("noBackupRestored")}</h3>
-              <p className={hasRestoreError ? styles.settingsSectionError : styles.settingsSectionDescription} role={hasRestoreError ? "alert" : undefined}>
-                {t(hasRestoreError ? "restoreBackupFailed" : "noBackupRestoredHelp")}
+              <p className={restoreErrorKey ? styles.settingsSectionError : styles.settingsSectionDescription} role={restoreErrorKey ? "alert" : undefined}>
+                {t(restoreErrorKey ?? "noBackupRestoredHelp")}
               </p>
             </div>
           </div>
@@ -364,6 +420,15 @@ function Backups(props: BackupsProps) {
           theme={props.theme}
           onCancel={() => setBackupPasswordDialogOpen(false)}
           onSubmit={handleBackupPasswordSubmit}
+        />
+      )}
+      {isElectron && (
+        <SecurityPasswordDialog
+          mode={SecurityPasswordDialogMode.RESTORE}
+          open={isRestorePasswordDialogOpen}
+          theme={props.theme}
+          onCancel={() => setRestorePasswordDialogOpen(false)}
+          onSubmit={handleRestorePasswordSubmit}
         />
       )}
       {isElectron && (

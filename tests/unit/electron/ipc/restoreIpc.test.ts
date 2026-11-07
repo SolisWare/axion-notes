@@ -7,23 +7,29 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerRestoreIpc } from "../../../../electron/ipc/restoreIpc";
+import { BackupArchiveReadError, BackupArchiveReadFailure } from "../../../../electron/storage/BackupArchiveReader";
 import { RestoreApplyStatus } from "../../../../src/types/RestoreApplyResult";
 import { RestoreChooseStatus } from "../../../../src/types/RestoreChooseResult";
+import { RestoreInspectStatus } from "../../../../src/types/RestoreInspectResult";
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
 
-const { handlers, showOpenDialog } = vi.hoisted(() => ({
+const { fromWebContents, handlers, showOpenDialog } = vi.hoisted(() => ({
+  fromWebContents: vi.fn(() => undefined),
   handlers: new Map<string, (...args: unknown[]) => unknown>(),
   showOpenDialog: vi.fn()
 }));
 
 vi.mock("electron", () => ({
+  BrowserWindow: { fromWebContents },
   dialog: { showOpenDialog },
   ipcMain: { handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => handlers.set(channel, handler)) }
 }));
 
 beforeEach(() => {
   handlers.clear();
+  fromWebContents.mockReset();
+  fromWebContents.mockReturnValue(undefined);
   showOpenDialog.mockReset();
 });
 
@@ -67,6 +73,40 @@ describe("restore IPC", () => {
       notesMode: RestoreNotesMode.REPLACE_CURRENT,
       settingsMode: RestoreSettingsMode.KEEP_CURRENT
     })).resolves.toEqual({ status: RestoreApplyStatus.FAILED });
+  });
+
+  it("requires a password only for a locked encrypted library", async () => {
+    const backupArchiveReader = { readArchive: vi.fn().mockResolvedValue({ notes: [] }) };
+    const restoreService = { applyRestore: vi.fn(), inspectRestore: vi.fn() };
+    const noteService = {
+      isEncryptionUnlocked: vi.fn(() => false),
+      verifyEncryptionPassword: vi.fn().mockResolvedValue(false)
+    };
+    registerRestoreIpc({
+      backupArchiveReader,
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService,
+      restoreService
+    } as never);
+
+    await expect(invoke(channels.restore.inspect, "/tmp/backup.zip")).resolves.toEqual({ status: RestoreInspectStatus.PASSWORD_REQUIRED });
+    await expect(invoke(channels.restore.inspect, "/tmp/backup.zip", "wrong-password")).resolves.toEqual({ status: RestoreInspectStatus.INVALID_PASSWORD });
+    expect(restoreService.inspectRestore).not.toHaveBeenCalled();
+  });
+
+  it("reports an invalid archive separately from restore read or write failures", async () => {
+    const invalidArchiveError = new BackupArchiveReadError(BackupArchiveReadFailure.INVALID_ARCHIVE, "Invalid archive");
+    const backupArchiveReader = { readArchive: vi.fn().mockRejectedValueOnce(invalidArchiveError).mockRejectedValueOnce(new Error("Disk error")) };
+    const restoreService = { applyRestore: vi.fn(), inspectRestore: vi.fn() };
+    registerRestoreIpc({
+      backupArchiveReader,
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreService
+    } as never);
+
+    await expect(invoke(channels.restore.inspect, "/tmp/invalid.zip")).resolves.toEqual({ status: RestoreInspectStatus.INVALID_ARCHIVE });
+    await expect(invoke(channels.restore.inspect, "/tmp/unreadable.zip")).resolves.toEqual({ status: RestoreInspectStatus.FAILED });
   });
 });
 

@@ -13,6 +13,19 @@ export const MAX_BACKUP_ARCHIVE_ENTRIES = 5;
 export const MAX_BACKUP_ARCHIVE_UNCOMPRESSED_BYTES = 50 * 1024 * 1024;
 export const MAX_BACKUP_ARCHIVE_ENTRY_BYTES = 20 * 1024 * 1024;
 
+export enum BackupArchiveReadFailure {
+  INVALID_ARCHIVE = "invalidArchive",
+  READ_FAILED = "readFailed"
+}
+
+export class BackupArchiveReadError extends Error {
+
+  public constructor(public readonly failure: BackupArchiveReadFailure, message: string) {
+    super(message);
+  }
+
+}
+
 /**
  * Reads and validates a user-selected backup ZIP archive in the Electron main process.
  */
@@ -22,8 +35,23 @@ export class BackupArchiveReader {
    * Opens the archive at the supplied path and returns its validated restore payload.
    */
   public async readArchive(archivePath: string): Promise<ValidatedBackupArchive> {
-    const files = await this.readFiles(archivePath);
-    return parseBackupArchive(files);
+    try {
+      const files = await this.readFiles(archivePath);
+      return parseBackupArchive(files);
+    } catch (err) {
+      if (err instanceof BackupArchiveReadError) {
+        throw err;
+      }
+
+      if (isFileSystemError(err)) {
+        throw new BackupArchiveReadError(BackupArchiveReadFailure.READ_FAILED, "Backup archive could not be read.");
+      }
+
+      throw new BackupArchiveReadError(
+        BackupArchiveReadFailure.INVALID_ARCHIVE,
+        err instanceof Error ? err.message : "Backup archive is invalid or unsupported."
+      );
+    }
   }
 
   private async readFiles(archivePath: string): Promise<BackupArchiveFile[]> {
@@ -140,4 +168,8 @@ export class BackupArchiveReader {
     }
   }
 
+}
+
+function isFileSystemError(error: unknown): error is NodeJS.ErrnoException {
+  return typeof error === "object" && error !== null && "code" in error && typeof error.code === "string";
 }

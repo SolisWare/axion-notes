@@ -97,6 +97,13 @@ describe("SecurityPasswordDialog", () => {
       newPassword: false
     },
     {
+      mode: SecurityPasswordDialogMode.RESTORE,
+      title: "restoreBackup",
+      confirmLabel: "restoreBackup",
+      currentPassword: true,
+      newPassword: false
+    },
+    {
       mode: SecurityPasswordDialogMode.CHANGE,
       title: "changePassword",
       confirmLabel: "changePassword",

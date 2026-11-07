@@ -20,6 +20,7 @@ import styles from "./SecurityPasswordDialog.module.css";
 
 export enum SecurityPasswordDialogMode {
   BACKUP = "backup",
+  RESTORE = "restore",
   SET = "set",
   ENABLE = "enable",
   DISABLE = "disable",
@@ -133,6 +134,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     switch (props.mode) {
       case SecurityPasswordDialogMode.BACKUP:
         return t("createBackup");
+      case SecurityPasswordDialogMode.RESTORE:
+        return t("restoreBackup");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enableLockScreen");
       case SecurityPasswordDialogMode.DISABLE:
@@ -153,6 +156,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     switch (props.mode) {
       case SecurityPasswordDialogMode.BACKUP:
         return t("createBackupPasswordInstructions");
+      case SecurityPasswordDialogMode.RESTORE:
+        return t("restoreBackupPasswordInstructions");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enableLockScreenPasswordInstructions");
       case SecurityPasswordDialogMode.DISABLE:
@@ -173,6 +178,8 @@ function SecurityPasswordDialog(props: SecurityPasswordDialogProps) {
     switch (props.mode) {
       case SecurityPasswordDialogMode.BACKUP:
         return t("createBackup");
+      case SecurityPasswordDialogMode.RESTORE:
+        return t("restoreBackup");
       case SecurityPasswordDialogMode.ENABLE:
         return t("enable");
       case SecurityPasswordDialogMode.DISABLE:

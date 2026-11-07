@@ -42,6 +42,34 @@ describe("restoreArchive", () => {
     });
   });
 
+  it("strips known legacy preference keys from an earlier backup writer", () => {
+    const archiveFiles = createArchiveFiles({
+      appSettings: defaultAppSettings,
+      contentSelection: { appSettings: true, mainWindowState: false }
+    });
+    const preferences = getFile(archiveFiles, "app-preferences.json");
+    preferences.content = JSON.stringify({
+      ...JSON.parse(preferences.content),
+      noteContentFontSize: 14,
+      noteTitleFont: "system",
+      noteTitleFontSize: 16,
+      showNoteTitles: true
+    });
+
+    const archive = parseBackupArchive(archiveFiles);
+
+    expect(archive.appSettings).toMatchObject({
+      contentFontSize: defaultAppSettings.contentFontSize,
+      showTitles: defaultAppSettings.showTitles,
+      titleFont: defaultAppSettings.titleFont,
+      titleFontSize: defaultAppSettings.titleFontSize
+    });
+    expect(archive.appSettings).not.toHaveProperty("noteContentFontSize");
+    expect(archive.appSettings).not.toHaveProperty("noteTitleFont");
+    expect(archive.appSettings).not.toHaveProperty("noteTitleFontSize");
+    expect(archive.appSettings).not.toHaveProperty("showNoteTitles");
+  });
+
   it("rejects missing, unknown, and duplicate archive entries", () => {
     const archive = createArchiveFiles();
 

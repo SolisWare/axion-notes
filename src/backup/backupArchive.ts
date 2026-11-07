@@ -77,16 +77,24 @@ export function getBackupPreferences(settings: AppSettings): Omit<AppSettings,
   | "lockScreenRequirePasswordDelay"
   | "notesEncryptionEnabled"
 > {
-  const {
-    bruteForceProtectionEnabled: _bruteForceProtectionEnabled,
-    lockScreenContentProtectionEnabled: _lockScreenContentProtectionEnabled,
-    lockScreenEnabled: _lockScreenEnabled,
-    lockScreenIdleTimeout: _lockScreenIdleTimeout,
-    lockScreenOnSystemSleepEnabled: _lockScreenOnSystemSleepEnabled,
-    lockScreenRequirePasswordDelay: _lockScreenRequirePasswordDelay,
-    notesEncryptionEnabled: _notesEncryptionEnabled,
-    ...preferences
-  } = settings;
-
-  return preferences;
+  return {
+    contentFontSize: settings.contentFontSize,
+    dateFormat: settings.dateFormat,
+    defaultNoteColor: settings.defaultNoteColor,
+    keepNotesMainWindowOnTop: settings.keepNotesMainWindowOnTop,
+    language: settings.language,
+    noteFont: settings.noteFont,
+    noteLayout: settings.noteLayout,
+    noteSize: settings.noteSize,
+    notesSortOrder: settings.notesSortOrder,
+    richTextEditorEnabled: settings.richTextEditorEnabled,
+    showFloatingFormatToolbar: settings.showFloatingFormatToolbar,
+    showNoteFooters: settings.showNoteFooters,
+    showTitles: settings.showTitles,
+    showWelcomeScreenOnLaunch: settings.showWelcomeScreenOnLaunch,
+    theme: settings.theme,
+    timeFormat: settings.timeFormat,
+    titleFont: settings.titleFont,
+    titleFontSize: settings.titleFontSize
+  };
 }
