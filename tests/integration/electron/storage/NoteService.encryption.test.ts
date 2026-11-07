@@ -22,6 +22,18 @@ afterEach(async () => {
 });
 
 describe("NoteService encrypted storage", () => {
+  it("replaces a plaintext note library through a verified staging layout", async () => {
+    const context = await createContext();
+    await writePlaintextNotes(context.appDataDir, createNotes());
+    const replacementNotes = [createNote("replacement", "Replacement", "Restored plaintext note", new Date("2026-11-07T12:00:00.000Z"))];
+    const service = createService(context);
+
+    await service.replaceNotes(replacementNotes);
+
+    expect(serializeNotes(await service.getNotes())).toEqual(serializeNotes(replacementNotes));
+    expect(serializeNotes(await createService(context).getNotes())).toEqual(serializeNotes(replacementNotes));
+  });
+
   it("encrypts a complete plaintext vault and restores it exactly after restart and unlock", async () => {
     const context = await createContext();
     const notes = createNotes();
@@ -95,6 +107,28 @@ describe("NoteService encrypted storage", () => {
     expect(await readTree(context.rootDir)).toBe(before);
     expect(service.hasPlaintextCache()).toBe(false);
     expect(await service.getNotes()).toEqual([]);
+  });
+
+  it("replaces a locked encrypted library only after its current password is supplied", async () => {
+    const context = await createEncryptedContext();
+    const service = createService(context);
+    service.applyEncryptionSetting(true);
+    const replacementNotes = [createNote("replacement", "Replacement", "Restored encrypted note", new Date("2026-11-07T12:00:00.000Z"))];
+
+    await expect(service.replaceNotes(replacementNotes)).rejects.toThrow("password is required for restore");
+    await expect(service.replaceNotes(replacementNotes, "wrong password")).rejects.toThrow();
+
+    const unchangedService = createService(context);
+    unchangedService.applyEncryptionSetting(true);
+    await unchangedService.unlockEncryption(password);
+    expect(serializeNotes(await unchangedService.getNotes())).toEqual(serializeNotes(context.notes));
+
+    await service.replaceNotes(replacementNotes, password);
+
+    const restartedService = createService(context);
+    restartedService.applyEncryptionSetting(true);
+    await restartedService.unlockEncryption(password);
+    expect(serializeNotes(await restartedService.getNotes())).toEqual(serializeNotes(replacementNotes));
   });
 
   it("retains encrypted notes when the encryption password changes", async () => {

@@ -326,6 +326,40 @@ export class NoteService {
   }
 
   /**
+   * Replaces the complete note library after first writing and verifying a staged layout.
+   * Encrypted libraries require their current password when they are locked.
+   */
+  public async replaceNotes(notes: NoteType[], password?: string): Promise<void> {
+    if (!this.notesEncryptionEnabled) {
+      await this.writePlaintextLayoutToStaging(notes);
+      await this.verifyPlaintextStaging(notes);
+      await this.installPlaintextStaging();
+      await this.verifyFinalPlaintextLayout(notes);
+      this.notes = [...notes];
+      return;
+    }
+
+    const isUnlocked = this.masterKey !== undefined;
+    const masterKey = this.masterKey ?? await this.getRestoreMasterKey(password);
+
+    try {
+      await this.writeEncryptedLayoutToStaging(notes, masterKey);
+      await this.verifyEncryptedStaging(notes, masterKey);
+      await this.installEncryptedStaging();
+      await this.verifyFinalEncryptedLayout(notes, masterKey);
+      this.notes = isUnlocked ? [...notes] : undefined;
+
+      if (!isUnlocked) {
+        this.encryptedManifest = undefined;
+      }
+    } finally {
+      if (!isUnlocked) {
+        masterKey.fill(0);
+      }
+    }
+  }
+
+  /**
    * Stores a note and updates the in-memory cache.
    */
   public setNote(note: NoteType): void {
@@ -999,6 +1033,14 @@ export class NoteService {
   private async readEncryptionRecord(): Promise<EncryptionRecord> {
     const content = await fs.promises.readFile(this.encryptionRecordPath, "utf-8");
     return JSON.parse(content) as EncryptionRecord;
+  }
+
+  private async getRestoreMasterKey(password: string | undefined): Promise<Uint8Array> {
+    if (!password) {
+      throw new Error("An encryption password is required for restore.");
+    }
+
+    return this.encryptionKeyService.unlock(password, await this.readEncryptionRecord());
   }
 
   private async writeEncryptionRecord(record: EncryptionRecord): Promise<void> {
