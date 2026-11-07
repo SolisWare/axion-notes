@@ -48,7 +48,7 @@ npm run test:e2e
 npm run build
 ```
 
-Encryption fuzz testing is also available:
+Encryption and backup-archive fuzz testing is also available:
 
 ```bash
 npm run test:fuzz

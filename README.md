@@ -60,6 +60,9 @@ Desktop users can protect their notes with a lock screen and configure a passwor
 
 <!-- Add a lock screen screenshot here: docs/images/lock-screen.png -->
 
+### Back Up And Restore
+Create plaintext backups of your notes and selected app preferences whenever you need them. The desktop app keeps a managed local backup and can save a copy wherever you choose; the web app downloads the archive directly. Restore lets you replace current notes or add backup notes alongside them, and choose whether to keep current preferences or restore the backup preferences. Lock-screen and encryption settings are never included in a backup or restored from one.
+
 ### Language Support
 Axion Notes can choose supported language, date, and time defaults from the OS or browser on first launch, then keeps those settings until you change them. English is the source locale, with Estonian, Polish, and Spanish translations currently available.
 
@@ -67,7 +70,7 @@ Axion Notes can choose supported language, date, and time defaults from the OS o
 Common note, selection, and formatting actions are available from the keyboard. The Shortcuts settings page groups commands by General, Note selection, Text formatting, and Lists so you can quickly check what is available.
 
 ### Suggested Next Features
-Some useful features being considered for future releases include note search, archiving, deleted-note recovery, import/export backups, note templates, keyboard navigation between notes, and reminders.
+Some useful features being considered for future releases include note search, archiving, deleted-note recovery, note templates, keyboard navigation between notes, and reminders.
 
 ## Getting Started
 
@@ -110,6 +113,9 @@ Yes. Axion Notes stores notes locally on your device, so the desktop app and bro
 
 ### Where are my notes stored?
 Axion Notes stores notes locally on the device or browser where you create them. The app does not require an account or remote service to save your notes.
+
+### How do I back up or restore my notes?
+Open **Settings → Backups**. On desktop, Axion Notes maintains one local backup archive and lets you save a copy to another location. In the web app, creating a backup downloads the archive. Select **Restore backup…** to add its notes to your current notes or replace them, then choose whether to keep or restore app preferences.
 
 ### Can I sync notes between devices?
 Not currently. Desktop and web notes are stored locally for now, so notes do not automatically sync between devices or browsers.

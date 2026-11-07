@@ -26,13 +26,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run encryption fuzz tests
+      - name: Run encryption and backup archive fuzz tests
         id: fuzz
         continue-on-error: true
         run: npm run test:fuzz
         env:
           AXION_NOTES_FUZZ_RUNS: 10000
           AXION_NOTES_FUZZ_STORAGE_RUNS: 200
+          AXION_NOTES_FUZZ_ARCHIVE_RUNS: 2000
 
       - name: Write fuzz test summary
         if: always()
@@ -42,7 +43,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: encryption-fuzz-report
+          name: security-and-backup-fuzz-report
           path: test-results/fuzz/
           retention-days: 30
 

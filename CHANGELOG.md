@@ -29,7 +29,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 
 ### Security
 - Reduced reported dependency vulnerabilities through ongoing dependency maintenance
-- Added scheduled encryption fuzz testing and downloadable reports to continuously validate encrypted-note data integrity
+- Added scheduled encryption and backup-archive fuzz testing with downloadable reports to continuously validate protected data and restore archives
 - Added GitHub artifact attestations for release archives and platform installers to verify CI build provenance
 
 ## [v0.5.0-beta.1] - October 28, 2026 - Vault
