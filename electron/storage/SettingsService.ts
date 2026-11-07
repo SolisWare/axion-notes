@@ -6,7 +6,7 @@
  */
 import * as path from "node:path";
 import { AppSettings } from "../../src/settings/AppSettings";
-import { getSettings, setSettings } from "./appSettingsStorage";
+import { getSettings, replaceSettings, setSettings } from "./appSettingsStorage";
 
 /**
  * Provides cached app settings access for the Electron main process.
@@ -53,6 +53,15 @@ export class SettingsService {
   public setSettings(settings: AppSettings): void {
     this.settings = settings;
     this.pendingSettingsWrite = this.pendingSettingsWrite.then(() => setSettings(this.appSettingsFilePath, settings));
+  }
+
+  /**
+   * Replaces settings atomically and waits until the new settings are durable.
+   */
+  public async replaceSettings(settings: AppSettings): Promise<void> {
+    await this.pendingSettingsWrite;
+    await replaceSettings(this.appSettingsFilePath, settings);
+    this.settings = settings;
   }
 
   /**

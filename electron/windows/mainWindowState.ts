@@ -6,6 +6,7 @@
  */
 import { BrowserWindow, screen } from "electron";
 import * as fs from "node:fs";
+import * as path from "node:path";
 import { defaultMainWindowGridBounds, defaultMainWindowListBounds } from "../../src/settings/defaultSettings";
 import { AppWindowBounds } from "../../src/settings/AppWindowBounds";
 import { AppWindowState } from "../../src/settings/AppWindowState";
@@ -37,6 +38,14 @@ export function readMainWindowState(mainWindowStateFilePath: string): AppWindowS
     console.warn("Failed to read main window state:", err);
     return getDefaultMainWindowState();
   }
+}
+
+export async function replaceMainWindowState(mainWindowStateFilePath: string, state: AppWindowState): Promise<void> {
+  const temporaryFilePath = `${mainWindowStateFilePath}.tmp`;
+
+  await fs.promises.mkdir(path.dirname(mainWindowStateFilePath), { recursive: true });
+  await fs.promises.writeFile(temporaryFilePath, `${JSON.stringify(state, null, 2)}\n`, "utf-8");
+  await fs.promises.rename(temporaryFilePath, mainWindowStateFilePath);
 }
 
 export function getMainWindowLaunchBounds(windowState: AppWindowState, layout: NoteLayoutPreference): AppWindowBounds {

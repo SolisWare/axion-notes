@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import * as fs from "node:fs";
+import * as path from "node:path";
 import { AppSettings } from "../../src/settings/AppSettings";
 
 export function getSettings(appSettingsFilePath: string): Promise<AppSettings | undefined> {
@@ -34,4 +35,12 @@ export async function setSettings(appSettingsFilePath: string, settings: AppSett
   } catch (err) {
     console.warn("Failed to write app settings:", err);
   }
+}
+
+export async function replaceSettings(appSettingsFilePath: string, settings: AppSettings): Promise<void> {
+  const temporaryFilePath = `${appSettingsFilePath}.tmp`;
+
+  await fs.promises.mkdir(path.dirname(appSettingsFilePath), { recursive: true });
+  await fs.promises.writeFile(temporaryFilePath, JSON.stringify(settings, null, 2), "utf-8");
+  await fs.promises.rename(temporaryFilePath, appSettingsFilePath);
 }
