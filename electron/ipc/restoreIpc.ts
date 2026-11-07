@@ -4,8 +4,9 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { dialog } from "electron";
-import { RestoreApplyOptions, RestoreService } from "../storage/RestoreService";
+import { BrowserWindow, dialog, OpenDialogOptions } from "electron";
+import { RestoreService } from "../storage/RestoreService";
+import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
 import { BackupArchiveReader } from "../storage/BackupArchiveReader";
 import { NoteService } from "../storage/NoteService";
 import { LockStateService } from "../security/LockStateService";
@@ -24,12 +25,13 @@ type RestoreIpcOptions = {
 
 export function registerRestoreIpc(options: RestoreIpcOptions): void {
   protectedHandle<RestoreChooseResult, []>(channels.restore.chooseArchive, { ...options, fallback: { status: RestoreChooseStatus.FAILED } }, async (event) => {
-    const result = await dialog.showOpenDialog({
-      defaultPath: undefined,
+    const dialogOptions: OpenDialogOptions = {
       filters: [{ extensions: ["zip"], name: "Axion Notes backup" }],
       properties: ["openFile"],
       title: "Restore backup"
-    });
+    };
+    const parentWindow = BrowserWindow.fromWebContents(event.sender);
+    const result = parentWindow ? await dialog.showOpenDialog(parentWindow, dialogOptions) : await dialog.showOpenDialog(dialogOptions);
 
     if (result.canceled || result.filePaths.length === 0) {
       return { status: RestoreChooseStatus.CANCELLED };

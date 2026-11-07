@@ -13,7 +13,7 @@ import { AppSettings } from "../../src/settings/AppSettings";
 import { AppWindowState } from "../../src/settings/AppWindowState";
 import { defaultAppSettings } from "../../src/settings/defaultSettings";
 import { NoteType } from "../../src/types/NoteType";
-import { RestoreNotesMode } from "../../src/types/RestoreNotesMode";
+import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
 import { RestoreSettingsMode } from "../../src/types/RestoreSettingsMode";
 import { RestoreState } from "../../src/types/RestoreState";
 import { RestorePlan } from "../../src/types/RestorePlan";
@@ -21,12 +21,6 @@ import { readMainWindowState, replaceMainWindowState } from "../windows/mainWind
 import { NoteService } from "./NoteService";
 import { RestoreStateStorage } from "./RestoreStateStorage";
 import { SettingsService } from "./SettingsService";
-
-export type RestoreApplyOptions = {
-  notesMode: RestoreNotesMode;
-  password?: string;
-  settingsMode: RestoreSettingsMode;
-};
 
 type ReadWindowState = (filePath: string) => AppWindowState;
 type WriteWindowState = (filePath: string, state: AppWindowState) => Promise<void>;

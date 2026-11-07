@@ -7,6 +7,7 @@
 import { NoteType } from "../types/NoteType";
 import { RestoreNotesMode } from "../types/RestoreNotesMode";
 import { ValidatedBackupArchive } from "./restoreArchive";
+import { areNotesEqual } from "./backupValidation";
 
 export type RestoreNotesResult = {
   notes: NoteType[];
@@ -108,6 +109,3 @@ function getUniqueNoteId(usedNoteIds: ReadonlySet<string>, createNoteId: () => s
   throw new Error("Could not create a unique note ID for the restored note.");
 }
 
-function areNotesEqual(first: NoteType, second: NoteType): boolean {
-  return JSON.stringify(first) === JSON.stringify(second);
-}

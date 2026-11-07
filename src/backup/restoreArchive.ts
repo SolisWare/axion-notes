@@ -20,6 +20,7 @@ import { NoteColorKey } from "../theme/NoteColors";
 import { BackupContentSelection } from "../types/BackupContentSelection";
 import { NoteType } from "../types/NoteType";
 import { BACKUP_MANIFEST_VERSION, BackupManifest, getBackupPreferences } from "./backupArchive";
+import { isValidTimestamp } from "./backupValidation";
 
 const manifestFileName = "manifest.json";
 const notesFileName = "notes.json";
@@ -292,9 +293,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isValidTimestamp(value: unknown): value is string {
-  return typeof value === "string" && !Number.isNaN(Date.parse(value));
-}
 
 function hasOnlyKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
   return hasOnlyAllowedKeys(value, keys)

@@ -9,6 +9,7 @@ import { RestoreNotesMode } from "../types/RestoreNotesMode";
 import { RestorePlan } from "../types/RestorePlan";
 import { RestoreSettingsMode } from "../types/RestoreSettingsMode";
 import { ValidatedBackupArchive } from "./restoreArchive";
+import { areNotesEqual } from "./backupValidation";
 
 export type RestorePlanOptions = {
   currentNotes: readonly NoteType[];
@@ -61,6 +62,3 @@ function getNoteCollisionCounts(incomingNotes: readonly NoteType[], currentNotes
   return { conflictingNotesCount, identicalNotesCount };
 }
 
-function areNotesEqual(first: NoteType, second: NoteType): boolean {
-  return JSON.stringify(first) === JSON.stringify(second);
-}

@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BackupState } from "../types/BackupState";
+import { isValidTimestamp } from "./backupValidation";
 
 export const BACKUP_STATE_VERSION = 1;
 
@@ -50,6 +51,3 @@ function isBackupState(state: unknown): state is BackupState {
     && (candidate.lastBackupCreatedAt === undefined || isValidTimestamp(candidate.lastBackupCreatedAt));
 }
 
-function isValidTimestamp(value: unknown): value is string {
-  return typeof value === "string" && !Number.isNaN(Date.parse(value));
-}

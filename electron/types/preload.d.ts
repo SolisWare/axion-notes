@@ -26,7 +26,7 @@ import { BackupSaveResult } from '../../src/types/BackupSaveResult';
 import { RestoreApplyResult } from '../../src/types/RestoreApplyResult';
 import { RestoreChooseResult } from '../../src/types/RestoreChooseResult';
 import { RestoreInspectResult } from '../../src/types/RestoreInspectResult';
-import { RestoreApplyOptions } from '../storage/RestoreService';
+import { RestoreApplyOptions } from '../../src/types/RestoreApplyOptions';
 
 export interface IElectronAPI {
   appWindow: {

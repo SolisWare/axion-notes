@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { RestoreApplyOptions } from "../storage/RestoreService";
+import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
 import { RestoreApplyResult } from "../../src/types/RestoreApplyResult";
 import { RestoreChooseResult } from "../../src/types/RestoreChooseResult";
 import { RestoreInspectResult } from "../../src/types/RestoreInspectResult";

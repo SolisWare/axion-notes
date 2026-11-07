@@ -5,6 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { RestoreState } from "../types/RestoreState";
+import { isValidTimestamp } from "./backupValidation";
 
 export const RESTORE_STATE_VERSION = 1;
 
@@ -46,6 +47,3 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isValidTimestamp(value: unknown): value is string {
-  return typeof value === "string" && !Number.isNaN(Date.parse(value));
-}
