@@ -81,17 +81,15 @@ function Backups(props: BackupsProps) {
         }
       });
 
-    if (isElectron) {
-      window.api.restore.getState()
-        .then((state) => {
-          if (isCurrent) {
-            setRestoreState(state);
-          }
-        })
-        .catch((err: Error) => {
-          console.error("Failed to load restore state:", err.message);
-        });
-    }
+    window.api.restore.getState()
+      .then((state) => {
+        if (isCurrent) {
+          setRestoreState(state);
+        }
+      })
+      .catch((err: Error) => {
+        console.error("Failed to load restore state:", err.message);
+      });
 
     return () => {
       isCurrent = false;
@@ -390,7 +388,7 @@ function Backups(props: BackupsProps) {
             </div>
           </div>
           <div className={styles.backupCardActions}>
-            <button className={styles.settingsButton} disabled={!isElectron} type="button" onClick={() => void handleChooseRestoreArchive()}>
+            <button className={styles.settingsButton} type="button" onClick={() => void handleChooseRestoreArchive()}>
               {t("restoreBackup")}
             </button>
           </div>

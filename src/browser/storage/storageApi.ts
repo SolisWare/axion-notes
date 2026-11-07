@@ -21,6 +21,20 @@ function notifyNotesChange(event: NotesChangeEvent): void {
   });
 }
 
+export function replaceBrowserNotes(notes: NoteType[]): void {
+  deleteAllNotes();
+  notifyNotesChange({ type: "deleteAllNotes" });
+
+  notes.forEach((note) => {
+    setNote(note);
+    notifyNotesChange({ type: "setNote", note });
+  });
+
+  const noteIds = notes.map((note) => note.id);
+  setNoteOrder(noteIds);
+  notifyNotesChange({ type: "setNoteOrder", noteIds });
+}
+
 export const storageApi = {
 
   setNote: (note: NoteType) => {

@@ -57,16 +57,19 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("Backups on web", () => {
-  it("shows the forthcoming restore control before backups are configured", async () => {
+  it("allows restoring a selected archive before backups are configured", async () => {
     installDesktopApiMock({
       backup: {
+        getState: vi.fn().mockResolvedValue(undefined)
+      },
+      restore: {
         getState: vi.fn().mockResolvedValue(undefined)
       }
     });
 
     render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
-    expect(await screen.findByRole("button", { name: "Restore backup…" })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "Restore backup…" })).toBeEnabled();
     expect(screen.getByRole("heading", { name: "Restore" })).toBeInTheDocument();
     expect(screen.getByText("No backup restored yet")).toBeInTheDocument();
   });
