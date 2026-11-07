@@ -59,8 +59,8 @@ function Backups(props: BackupsProps) {
   const [isRestoreDialogOpen, setRestoreDialogOpen] = useState(false);
   const [isRestorePasswordDialogOpen, setRestorePasswordDialogOpen] = useState(false);
   const [isRestoreConfirmationOpen, setRestoreConfirmationOpen] = useState(false);
-  const [restoreNotesMode, setRestoreNotesMode] = useState(RestoreNotesMode.REPLACE_CURRENT);
-  const [restoreSettingsMode, setRestoreSettingsMode] = useState(RestoreSettingsMode.KEEP_CURRENT);
+  const [restoreNotesMode, setRestoreNotesMode] = useState<RestoreNotesMode>(RestoreNotesMode.REPLACE_CURRENT);
+  const [restoreSettingsMode, setRestoreSettingsMode] = useState<RestoreSettingsMode>(RestoreSettingsMode.KEEP_CURRENT);
   const [restoreErrorKey, setRestoreErrorKey] = useState<string>();
 
   useEffect(() => {
@@ -233,7 +233,6 @@ function Backups(props: BackupsProps) {
           setRestoreErrorKey("restoreBackupFailed");
           return RestoreInspectStatus.FAILED;
         }
-
         setRestoreErrorKey(undefined);
         setRestorePassword(password);
         setRestorePlan(inspection.plan);
