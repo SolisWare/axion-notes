@@ -6,6 +6,7 @@
  */
 import { BrowserWindow, dialog, OpenDialogOptions } from "electron";
 import { RestoreService } from "../storage/RestoreService";
+import { RestoreStateStorage } from "../storage/RestoreStateStorage";
 import { RestoreApplyOptions } from "../../src/types/RestoreApplyOptions";
 import { BackupArchiveReadError, BackupArchiveReadFailure, BackupArchiveReader } from "../storage/BackupArchiveReader";
 import { NoteService } from "../storage/NoteService";
@@ -13,6 +14,7 @@ import { LockStateService } from "../security/LockStateService";
 import { RestoreApplyResult, RestoreApplyStatus } from "../../src/types/RestoreApplyResult";
 import { RestoreChooseResult, RestoreChooseStatus } from "../../src/types/RestoreChooseResult";
 import { RestoreInspectResult, RestoreInspectStatus } from "../../src/types/RestoreInspectResult";
+import { RestoreState } from "../../src/types/RestoreState";
 import { channels } from "./channels";
 import { protectedHandle } from "./protectedIpc";
 
@@ -20,10 +22,15 @@ type RestoreIpcOptions = {
   backupArchiveReader: BackupArchiveReader;
   lockStateService: LockStateService;
   noteService: NoteService;
+  restoreStateStorage: RestoreStateStorage;
   restoreService: RestoreService;
 };
 
 export function registerRestoreIpc(options: RestoreIpcOptions): void {
+  protectedHandle<RestoreState | undefined, []>(channels.restore.getState, { ...options, fallback: undefined }, async () => {
+    return options.restoreStateStorage.getState();
+  });
+
   protectedHandle<RestoreChooseResult, []>(channels.restore.chooseArchive, { ...options, fallback: { status: RestoreChooseStatus.FAILED } }, async (event) => {
     const dialogOptions: OpenDialogOptions = {
       filters: [{ extensions: ["zip"], name: "Axion Notes backup" }],

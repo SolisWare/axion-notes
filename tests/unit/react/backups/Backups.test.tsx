@@ -42,6 +42,8 @@ const translations: Record<string, string> = {
   deleteBackupWarning: "Delete the managed backup archive? This cannot be undone.",
   lastBackupCreated: "Last backup created",
   lastBackupCreatedHelp: "{{date}} at {{time}}",
+  lastBackupRestored: "Last backup restored",
+  lastBackupRestoredHelp: "{{date}} at {{time}}",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
   noBackupRestored: "No backup restored yet",
@@ -69,7 +71,11 @@ const translations: Record<string, string> = {
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => translations[key] ?? key
+    t: (key: string, values?: Record<string, string>) => {
+      const translation = translations[key] ?? key;
+
+      return Object.entries(values ?? {}).reduce((result, [name, value]) => result.replace(`{{${name}}}`, value), translation);
+    }
   })
 }));
 
@@ -86,6 +92,22 @@ describe("Backups", () => {
     expect(screen.getByText("No backup restored yet")).toBeInTheDocument();
     expect(screen.getByText("Choose a backup archive to restore its notes and selected app data.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Restore backup…" })).toBeEnabled();
+  });
+
+  it("shows the latest successful restore time", async () => {
+    installDesktopApiMock({
+      restore: {
+        getState: vi.fn().mockResolvedValue({
+          lastRestoredAt: "2026-11-07T12:00:00.000Z",
+          version: 1
+        })
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    expect(await screen.findByText("Last backup restored")).toBeInTheDocument();
+    expect(screen.getByText("11/7/2026 at 12:00 AM")).toBeInTheDocument();
   });
 
   it("initializes backups and shows the configured state", async () => {

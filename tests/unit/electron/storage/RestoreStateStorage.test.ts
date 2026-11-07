@@ -18,13 +18,13 @@ describe("RestoreStateStorage", () => {
   });
 
   it("returns no history before the first restore", async () => {
-    const storage = await createStorage();
+    const { storage } = await createStorage();
 
     await expect(storage.getState()).resolves.toBeUndefined();
   });
 
   it("writes and reads the latest restore history", async () => {
-    const storage = await createStorage();
+    const { storage } = await createStorage();
     const state = {
       lastRestoredAt: "2026-11-07T12:00:00.000Z",
       version: 1 as const
@@ -34,10 +34,34 @@ describe("RestoreStateStorage", () => {
 
     await expect(storage.getState()).resolves.toEqual(state);
   });
+
+  it("rejects malformed persisted restore history instead of reporting it as a successful restore", async () => {
+    const { backupDirectory, storage } = await createStorage();
+    const stateFilePath = path.join(backupDirectory, "restore-state.json");
+
+    await fs.promises.mkdir(path.dirname(stateFilePath), { recursive: true });
+    await fs.promises.writeFile(stateFilePath, "{not valid JSON", "utf-8");
+
+    await expect(storage.getState()).rejects.toThrow("Restore state is not valid JSON.");
+  });
+
+  it("does not write an unsupported restore history format", async () => {
+    const { storage } = await createStorage();
+
+    await expect(storage.setState({
+      lastRestoredAt: "not-a-timestamp",
+      version: 1
+    })).rejects.toThrow("Restore state has an unsupported format.");
+    await expect(storage.getState()).resolves.toBeUndefined();
+  });
 });
 
-async function createStorage(): Promise<RestoreStateStorage> {
+async function createStorage(): Promise<{ backupDirectory: string; storage: RestoreStateStorage }> {
   const directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), "axion-notes-restore-state-"));
+  const backupDirectory = path.join(directory, "backup");
   directories.push(directory);
-  return new RestoreStateStorage(path.join(directory, "backup"));
+  return {
+    backupDirectory,
+    storage: new RestoreStateStorage(backupDirectory)
+  };
 }

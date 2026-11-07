@@ -34,6 +34,42 @@ beforeEach(() => {
 });
 
 describe("restore IPC", () => {
+  it("returns the persisted restore state", async () => {
+    const restoreStateStorage = {
+      getState: vi.fn().mockResolvedValue({
+        lastRestoredAt: "2026-11-07T12:00:00.000Z",
+        version: 1
+      })
+    };
+    registerRestoreIpc({
+      backupArchiveReader: { readArchive: vi.fn() },
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreStateStorage,
+      restoreService: { applyRestore: vi.fn(), inspectRestore: vi.fn() }
+    } as never);
+
+    await expect(invoke(channels.restore.getState)).resolves.toEqual({
+      lastRestoredAt: "2026-11-07T12:00:00.000Z",
+      version: 1
+    });
+    expect(restoreStateStorage.getState).toHaveBeenCalledOnce();
+  });
+
+  it("does not expose restore history while the app is locked", async () => {
+    const restoreStateStorage = { getState: vi.fn() };
+    registerRestoreIpc({
+      backupArchiveReader: { readArchive: vi.fn() },
+      lockStateService: { getIsLocked: vi.fn(() => true) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreStateStorage,
+      restoreService: { applyRestore: vi.fn(), inspectRestore: vi.fn() }
+    } as never);
+
+    await expect(invoke(channels.restore.getState)).resolves.toBeUndefined();
+    expect(restoreStateStorage.getState).not.toHaveBeenCalled();
+  });
+
   it("selects a user-chosen backup ZIP and applies a revalidated archive", async () => {
     const archive = { notes: [] };
     const backupArchiveReader = { readArchive: vi.fn().mockResolvedValue(archive) };
@@ -91,7 +127,55 @@ describe("restore IPC", () => {
 
     await expect(invoke(channels.restore.inspect, "/tmp/backup.zip")).resolves.toEqual({ status: RestoreInspectStatus.PASSWORD_REQUIRED });
     await expect(invoke(channels.restore.inspect, "/tmp/backup.zip", "wrong-password")).resolves.toEqual({ status: RestoreInspectStatus.INVALID_PASSWORD });
+    await expect(invoke(channels.restore.apply, "/tmp/backup.zip", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    })).resolves.toEqual({ status: RestoreApplyStatus.PASSWORD_REQUIRED });
+    await expect(invoke(channels.restore.apply, "/tmp/backup.zip", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      password: "wrong-password",
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    })).resolves.toEqual({ status: RestoreApplyStatus.INVALID_PASSWORD });
     expect(restoreService.inspectRestore).not.toHaveBeenCalled();
+    expect(restoreService.applyRestore).not.toHaveBeenCalled();
+  });
+
+  it("verifies the supplied password and passes it into encrypted inspection and restore", async () => {
+    const archive = { notes: [] };
+    const backupArchiveReader = { readArchive: vi.fn().mockResolvedValue(archive) };
+    const restoreService = {
+      applyRestore: vi.fn().mockResolvedValue({ lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 }),
+      inspectRestore: vi.fn().mockResolvedValue({ incomingNotesCount: 1 })
+    };
+    const noteService = {
+      isEncryptionUnlocked: vi.fn(() => false),
+      verifyEncryptionPassword: vi.fn().mockResolvedValue(true)
+    };
+    registerRestoreIpc({
+      backupArchiveReader,
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService,
+      restoreService
+    } as never);
+    const restoreOptions = {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      password: "correct-password",
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    };
+
+    await expect(invoke(channels.restore.inspect, "/tmp/backup.zip", "correct-password")).resolves.toEqual({
+      plan: { incomingNotesCount: 1 },
+      status: RestoreInspectStatus.READY
+    });
+    await expect(invoke(channels.restore.apply, "/tmp/backup.zip", restoreOptions)).resolves.toEqual({
+      state: { lastRestoredAt: "2026-11-07T12:00:00.000Z", version: 1 },
+      status: RestoreApplyStatus.APPLIED
+    });
+
+    expect(noteService.verifyEncryptionPassword).toHaveBeenNthCalledWith(1, "correct-password");
+    expect(noteService.verifyEncryptionPassword).toHaveBeenNthCalledWith(2, "correct-password");
+    expect(restoreService.inspectRestore).toHaveBeenCalledWith(archive, "correct-password");
+    expect(restoreService.applyRestore).toHaveBeenCalledWith(archive, restoreOptions);
   });
 
   it("reports an invalid archive separately from restore read or write failures", async () => {

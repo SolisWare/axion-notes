@@ -249,6 +249,8 @@
   "keepWaiting": "Keep Waiting",
   "lastModified": "Last modified",
   "lastBackupCreated": "Last backup created",
+  "lastBackupRestored": "Last backup restored",
+  "lastBackupRestoredHelp": "{{date}} at {{time}}",
   "lastBackupCreatedHelp": "{{date}} at {{time}}",
   "lastBackupDownloadStarted": "Last backup download started",
   "lockNotes": "Lock notes",

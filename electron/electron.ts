@@ -159,7 +159,8 @@ app.on("ready", async () => {
   const backupService = new BackupService(backupStateStorage);
   const backupArchiveService = new BackupArchiveService(appBackupDir, backupStateStorage, noteService, settingsService, mainWindowStateFilePath);
   const backupArchiveReader = new BackupArchiveReader();
-  const restoreService = new RestoreService(noteService, settingsService, new RestoreStateStorage(appBackupDir), mainWindowStateFilePath);
+  const restoreStateStorage = new RestoreStateStorage(appBackupDir);
+  const restoreService = new RestoreService(noteService, settingsService, restoreStateStorage, mainWindowStateFilePath);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);
@@ -199,6 +200,7 @@ app.on("ready", async () => {
     },
     passwordService,
     restoreService,
+    restoreStateStorage,
     settingsService
   });
   createMainWindow({

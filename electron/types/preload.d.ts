@@ -27,6 +27,7 @@ import { RestoreApplyResult } from '../../src/types/RestoreApplyResult';
 import { RestoreChooseResult } from '../../src/types/RestoreChooseResult';
 import { RestoreInspectResult } from '../../src/types/RestoreInspectResult';
 import { RestoreApplyOptions } from '../../src/types/RestoreApplyOptions';
+import { RestoreState } from '../../src/types/RestoreState';
 
 export interface IElectronAPI {
   appWindow: {
@@ -47,6 +48,7 @@ export interface IElectronAPI {
   restore: {
     apply: (archivePath: string, options: RestoreApplyOptions) => Promise<RestoreApplyResult>;
     chooseArchive: () => Promise<RestoreChooseResult>;
+    getState: () => Promise<RestoreState | undefined>;
     inspect: (archivePath: string, password?: string) => Promise<RestoreInspectResult>;
   },
   storage: {

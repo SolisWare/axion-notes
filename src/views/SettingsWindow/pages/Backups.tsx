@@ -25,6 +25,7 @@ import { RestoreInspectStatus } from "../../../types/RestoreInspectResult";
 import { RestoreNotesMode } from "../../../types/RestoreNotesMode";
 import { RestorePlan } from "../../../types/RestorePlan";
 import { RestoreSettingsMode } from "../../../types/RestoreSettingsMode";
+import { RestoreState } from "../../../types/RestoreState";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
@@ -38,6 +39,7 @@ function Backups(props: BackupsProps) {
   const { t } = useTranslation();
   const isElectron = UserAgent.isElectron;
   const [backupState, setBackupState] = useState<BackupState | undefined>();
+  const [restoreState, setRestoreState] = useState<RestoreState | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasInitializationError, setHasInitializationError] = useState(false);
@@ -78,6 +80,18 @@ function Backups(props: BackupsProps) {
           setIsLoading(false);
         }
       });
+
+    if (isElectron) {
+      window.api.restore.getState()
+        .then((state) => {
+          if (isCurrent) {
+            setRestoreState(state);
+          }
+        })
+        .catch((err: Error) => {
+          console.error("Failed to load restore state:", err.message);
+        });
+    }
 
     return () => {
       isCurrent = false;
@@ -296,6 +310,13 @@ function Backups(props: BackupsProps) {
   const lastBackupTime = lastBackupCreatedAt
     ? Formatter.getFormattedTimestamp(Formatter.toDate(lastBackupCreatedAt), props.appSettings.timeFormat)
     : undefined;
+  const lastRestoredAt = restoreState?.lastRestoredAt;
+  const lastRestoreDate = lastRestoredAt
+    ? Formatter.getFormattedDate(Formatter.toDate(lastRestoredAt), props.appSettings.dateFormat)
+    : undefined;
+  const lastRestoreTime = lastRestoredAt
+    ? Formatter.getFormattedTimestamp(Formatter.toDate(lastRestoredAt), props.appSettings.timeFormat)
+    : undefined;
   return (
     <div className={styles.backupsPage}>
       <section className={styles.settingsSection}>
@@ -360,9 +381,12 @@ function Backups(props: BackupsProps) {
         <div className={styles.backupCard}>
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
-              <h3 className={styles.settingsSectionTitle}>{t("noBackupRestored")}</h3>
+              <h3 className={styles.settingsSectionTitle}>{t(lastRestoredAt ? "lastBackupRestored" : "noBackupRestored")}</h3>
               <p className={restoreErrorKey ? styles.settingsSectionError : styles.settingsSectionDescription} role={restoreErrorKey ? "alert" : undefined}>
-                {t(restoreErrorKey ?? "noBackupRestoredHelp")}
+                {t(restoreErrorKey ?? (lastRestoreDate && lastRestoreTime ? "lastBackupRestoredHelp" : "noBackupRestoredHelp"), {
+                  date: lastRestoreDate,
+                  time: lastRestoreTime
+                })}
               </p>
             </div>
           </div>

@@ -64,9 +64,89 @@ describe("RestoreService", () => {
     expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(1, [createNote("backup", "Backup")], undefined);
     expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(2, currentNotes, undefined);
   });
+
+  it("keeps current preferences and window state when the selected modes preserve them", async () => {
+    const currentNotes = [createNote("current", "Current")];
+    const context = createContext(currentNotes);
+    const writeWindowState = vi.fn();
+    const service = new RestoreService(
+      context.noteService as unknown as NoteService,
+      context.settingsService as unknown as SettingsService,
+      context.restoreStateStorage as unknown as RestoreStateStorage,
+      "main-window-state.json",
+      undefined,
+      undefined,
+      writeWindowState
+    );
+
+    await service.applyRestore(createArchive({
+      appSettings: { ...defaultAppSettings, showTitles: false },
+      mainWindowState: { bounds: { height: 800, width: 1200 }, isMaximized: true }
+    }), {
+      notesMode: RestoreNotesMode.ADD_TO_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    });
+
+    expect(context.settingsService.replaceSettings).not.toHaveBeenCalled();
+    expect(writeWindowState).not.toHaveBeenCalled();
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([currentNotes[0], createNote("backup", "Backup")], undefined);
+  });
+
+  it("rolls back window state, preferences, and notes when writing restore history fails", async () => {
+    const currentNotes = [createNote("current", "Current")];
+    const currentSettings = { ...defaultAppSettings, showTitles: true };
+    const currentWindowState = { bounds: { height: 600, width: 900 }, isMaximized: false };
+    const restoredWindowState = { bounds: { height: 800, width: 1200 }, isMaximized: true };
+    const context = createContext(currentNotes, currentSettings);
+    context.restoreStateStorage.setState.mockRejectedValueOnce(new Error("history write failed"));
+    const writeWindowState = vi.fn().mockResolvedValue(undefined);
+    const service = new RestoreService(
+      context.noteService as unknown as NoteService,
+      context.settingsService as unknown as SettingsService,
+      context.restoreStateStorage as unknown as RestoreStateStorage,
+      "main-window-state.json",
+      undefined,
+      vi.fn(() => currentWindowState),
+      writeWindowState
+    );
+
+    await expect(service.applyRestore(createArchive({
+      appSettings: { ...defaultAppSettings, showTitles: false },
+      mainWindowState: restoredWindowState
+    }), {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.RESTORE_BACKUP
+    })).rejects.toThrow("history write failed");
+
+    expect(writeWindowState).toHaveBeenNthCalledWith(1, "main-window-state.json", restoredWindowState);
+    expect(writeWindowState).toHaveBeenNthCalledWith(2, "main-window-state.json", currentWindowState);
+    expect(context.settingsService.replaceSettings).toHaveBeenNthCalledWith(1, expect.objectContaining({ showTitles: false }));
+    expect(context.settingsService.replaceSettings).toHaveBeenNthCalledWith(2, currentSettings);
+    expect(context.noteService.replaceNotes).toHaveBeenNthCalledWith(2, currentNotes, undefined);
+  });
+
+  it("uses the current encryption password for both inspection and replacement", async () => {
+    const context = createContext([createNote("current", "Current")]);
+    const service = new RestoreService(
+      context.noteService as unknown as NoteService,
+      context.settingsService as unknown as SettingsService,
+      context.restoreStateStorage as unknown as RestoreStateStorage,
+      "main-window-state.json"
+    );
+
+    await service.inspectRestore(createArchive(), "current password");
+    await service.applyRestore(createArchive(), {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      password: "current password",
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    });
+
+    expect(context.noteService.getNotesForBackup).toHaveBeenCalledWith("current password");
+    expect(context.noteService.replaceNotes).toHaveBeenCalledWith([createNote("backup", "Backup")], "current password");
+  });
 });
 
-function createContext(currentNotes: ReturnType<typeof createNote>[]) {
+function createContext(currentNotes: ReturnType<typeof createNote>[], currentSettings = defaultAppSettings) {
   return {
     noteService: {
       getNotesForBackup: vi.fn().mockResolvedValue(currentNotes),
@@ -76,7 +156,7 @@ function createContext(currentNotes: ReturnType<typeof createNote>[]) {
       setState: vi.fn().mockResolvedValue(undefined)
     },
     settingsService: {
-      getSettings: vi.fn().mockResolvedValue(defaultAppSettings),
+      getSettings: vi.fn().mockResolvedValue(currentSettings),
       replaceSettings: vi.fn().mockResolvedValue(undefined)
     }
   };

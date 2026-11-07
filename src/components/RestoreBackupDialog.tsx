@@ -47,8 +47,8 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
   const summaryId = useId();
   const notesGroupId = useId();
   const preferencesGroupId = useId();
-  const [notesMode, setNotesMode] = useState(props.plan.defaultNotesMode ?? RestoreNotesMode.ADD_TO_CURRENT);
-  const [settingsMode, setSettingsMode] = useState(props.plan.defaultSettingsMode ?? RestoreSettingsMode.KEEP_CURRENT);
+  const [notesMode, setNotesMode] = useState<RestoreNotesMode | undefined>(props.plan.defaultNotesMode);
+  const [settingsMode, setSettingsMode] = useState<RestoreSettingsMode | undefined>(props.plan.defaultSettingsMode);
   const createdAt = Formatter.toDate(props.plan.archiveCreatedAt);
   const rootStyle: RestoreBackupDialogCssProperties = {
     "--restore-backup-dialog-background": appColors.DIALOG_BACKGROUND,
@@ -63,8 +63,8 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
 
   useEffect(() => {
     if (props.open) {
-      setNotesMode(props.plan.defaultNotesMode ?? RestoreNotesMode.ADD_TO_CURRENT);
-      setSettingsMode(props.plan.defaultSettingsMode ?? RestoreSettingsMode.KEEP_CURRENT);
+      setNotesMode(props.plan.defaultNotesMode);
+      setSettingsMode(props.plan.defaultSettingsMode);
     }
   }, [props.open, props.plan]);
 
@@ -75,6 +75,8 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
 
     props.onCancel();
   };
+  const canRestore = (!props.plan.requiresNotesModeSelection || notesMode !== undefined)
+    && (!props.plan.requiresSettingsModeSelection || settingsMode !== undefined);
 
   return (
     <Dialog
@@ -100,7 +102,7 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
         <fieldset className={styles.optionGroup}>
           <legend className={styles.optionGroupTitle} id={notesGroupId}>{t("restoreBackupNotes")}</legend>
           <p className={styles.optionGroupDescription}>{t("restoreBackupNotesHelp")}</p>
-          <RadioGroup aria-labelledby={notesGroupId} className={styles.radioGroup} value={notesMode} onChange={(event) => setNotesMode(event.target.value as RestoreNotesMode)}>
+          <RadioGroup aria-labelledby={notesGroupId} className={styles.radioGroup} value={notesMode ?? ""} onChange={(event) => setNotesMode(event.target.value as RestoreNotesMode)}>
             <FormControlLabel className={styles.radioOption} value={RestoreNotesMode.REPLACE_CURRENT} control={<Radio />} label={t("replaceCurrentNotes")} />
             <FormControlLabel className={styles.radioOption} value={RestoreNotesMode.ADD_TO_CURRENT} control={<Radio />} label={t("addBackupNotes")} />
           </RadioGroup>
@@ -112,7 +114,7 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
             {t(props.plan.hasBackupPreferences ? "restoreBackupPreferencesHelp" : "restoreBackupNoPreferences")}
           </p>
           {props.plan.hasBackupPreferences && (
-            <RadioGroup aria-labelledby={preferencesGroupId} className={styles.radioGroup} value={settingsMode} onChange={(event) => setSettingsMode(event.target.value as RestoreSettingsMode)}>
+            <RadioGroup aria-labelledby={preferencesGroupId} className={styles.radioGroup} value={settingsMode ?? ""} onChange={(event) => setSettingsMode(event.target.value as RestoreSettingsMode)}>
               <FormControlLabel className={styles.radioOption} value={RestoreSettingsMode.KEEP_CURRENT} control={<Radio />} label={t("keepCurrentPreferences")} />
               <FormControlLabel className={styles.radioOption} value={RestoreSettingsMode.RESTORE_BACKUP} control={<Radio />} label={t("restoreBackupPreferences")} />
             </RadioGroup>
@@ -121,7 +123,7 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
       </DialogContent>
       <DialogActions className={styles.actions}>
         <Button autoFocus className={styles.cancelButton} onClick={props.onCancel}>{t("cancel")}</Button>
-        <Button color="error" variant="contained" onClick={() => props.onRestore(notesMode, settingsMode)}>{t("restoreBackup")}</Button>
+        <Button color="error" disabled={!canRestore} variant="contained" onClick={() => props.onRestore(notesMode ?? RestoreNotesMode.REPLACE_CURRENT, settingsMode ?? RestoreSettingsMode.KEEP_CURRENT)}>{t("restoreBackup")}</Button>
       </DialogActions>
     </Dialog>
   );

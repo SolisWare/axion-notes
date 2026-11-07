@@ -23,6 +23,7 @@ export const channels = {
   restore: {
     apply: "restore.apply",
     chooseArchive: "restore.chooseArchive",
+    getState: "restore.getState",
     inspect: "restore.inspect"
   },
   menu: {

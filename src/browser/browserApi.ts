@@ -11,6 +11,9 @@ import { AppVersionResolver } from "../utils/app-version/AppVersionResolver";
 import { type UnlockResult } from "../types/UnlockResult";
 import { UserAgent } from "../utils/UserAgent";
 import { browserBackupApi } from "./backup/browserBackupApi";
+import { RestoreApplyStatus } from "../types/RestoreApplyResult";
+import { RestoreChooseStatus } from "../types/RestoreChooseResult";
+import { RestoreInspectStatus } from "../types/RestoreInspectResult";
 import { settingsApi } from "./storage/settingsApi";
 import { storageApi } from "./storage/storageApi";
 
@@ -47,6 +50,12 @@ export function installBrowserApi(): void {
       setLayout: noop
     },
     backup: browserBackupApi,
+    restore: {
+      apply: async () => ({ status: RestoreApplyStatus.FAILED }),
+      chooseArchive: async () => ({ status: RestoreChooseStatus.FAILED }),
+      getState: async () => undefined,
+      inspect: async () => ({ status: RestoreInspectStatus.FAILED })
+    },
     storage: storageApi,
     menu: {
       onMenuNewNote: () => unsubscribe,

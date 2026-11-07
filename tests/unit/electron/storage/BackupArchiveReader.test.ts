@@ -9,7 +9,12 @@ import * as os from "node:os";
 import * as path from "node:path";
 import yazl from "yazl";
 import { afterEach, describe, expect, it } from "vitest";
-import { BackupArchiveReader, MAX_BACKUP_ARCHIVE_ENTRIES } from "../../../../electron/storage/BackupArchiveReader";
+import {
+  BackupArchiveReadError,
+  BackupArchiveReadFailure,
+  BackupArchiveReader,
+  MAX_BACKUP_ARCHIVE_ENTRIES
+} from "../../../../electron/storage/BackupArchiveReader";
 import { createBackupArchiveEntries } from "../../../../src/backup/backupArchive";
 
 const directories: string[] = [];
@@ -56,6 +61,23 @@ describe("BackupArchiveReader", () => {
     })));
 
     await expect(new BackupArchiveReader().readArchive(archivePath)).rejects.toThrow("contains too many files");
+  });
+
+  it("reports a corrupt ZIP as an invalid backup archive", async () => {
+    const directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), "axion-notes-backup-reader-"));
+    const archivePath = path.join(directory, "corrupt.zip");
+    directories.push(directory);
+    await fs.promises.writeFile(archivePath, "not a ZIP", "utf-8");
+
+    await expect(new BackupArchiveReader().readArchive(archivePath)).rejects.toMatchObject({
+      failure: BackupArchiveReadFailure.INVALID_ARCHIVE
+    } satisfies Partial<BackupArchiveReadError>);
+  });
+
+  it("distinguishes an unreadable archive path from an invalid archive", async () => {
+    await expect(new BackupArchiveReader().readArchive("/path/that/does/not/exist.zip")).rejects.toMatchObject({
+      failure: BackupArchiveReadFailure.READ_FAILED
+    } satisfies Partial<BackupArchiveReadError>);
   });
 });
 

@@ -68,6 +68,34 @@ describe("RestoreBackupDialog", () => {
     expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("This backup does not include app preferences. Your current preferences will be kept.");
     expect(screen.queryByRole("radio", { name: "Keep current preferences" })).not.toBeInTheDocument();
   });
+
+  it("requires explicit restore choices when the destination already contains notes", async () => {
+    const user = userEvent.setup();
+    const onRestore = vi.fn();
+    renderRestoreBackupDialog({
+      onRestore,
+      plan: {
+        ...defaultPlan,
+        defaultNotesMode: undefined,
+        defaultSettingsMode: undefined,
+        currentNotesCount: 2,
+        requiresNotesModeSelection: true,
+        requiresSettingsModeSelection: true
+      }
+    });
+
+    const restoreButton = screen.getByRole("button", { name: "Restore backup…" });
+    expect(restoreButton).toBeDisabled();
+
+    await user.click(screen.getByRole("radio", { name: "Add backup notes" }));
+    expect(restoreButton).toBeDisabled();
+
+    await user.click(screen.getByRole("radio", { name: "Keep current preferences" }));
+    expect(restoreButton).toBeEnabled();
+    await user.click(restoreButton);
+
+    expect(onRestore).toHaveBeenCalledWith(RestoreNotesMode.ADD_TO_CURRENT, RestoreSettingsMode.KEEP_CURRENT);
+  });
 });
 
 const defaultPlan = {

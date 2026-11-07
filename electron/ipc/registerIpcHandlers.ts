@@ -23,6 +23,7 @@ import { BackupArchiveService } from "../storage/BackupArchiveService";
 import { SettingsService } from "../storage/SettingsService";
 import { BackupArchiveReader } from "../storage/BackupArchiveReader";
 import { RestoreService } from "../storage/RestoreService";
+import { RestoreStateStorage } from "../storage/RestoreStateStorage";
 
 type IpcHandlerOptions = {
   appBackupDir: string;
@@ -37,6 +38,7 @@ type IpcHandlerOptions = {
   onSettingsChange?: (settings: AppSettings) => void;
   passwordService: PasswordService;
   restoreService: RestoreService;
+  restoreStateStorage: RestoreStateStorage;
   settingsService: SettingsService;
 };
 
@@ -51,6 +53,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     backupArchiveReader: options.backupArchiveReader,
     lockStateService: options.lockStateService,
     noteService: options.noteService,
+    restoreStateStorage: options.restoreStateStorage,
     restoreService: options.restoreService
   });
   registerAppWindowIpc({
