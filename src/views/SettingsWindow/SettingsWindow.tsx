@@ -54,6 +54,7 @@ function SettingsWindow(props: SettingsWindowProps) {
     "--settings-nav-selected-text": appColors.SETTINGS_NAV_SELECTED_TEXT,
     "--settings-nav-selected-background": appColors.SETTINGS_NAV_SELECTED_BACKGROUND,
     "--settings-nav-selected-border": appColors.SETTINGS_NAV_SELECTED_BORDER,
+    "--settings-error-text": appColors.ERROR,
     "--settings-color-swatch-dot": props.theme === SystemTheme.DARK ? "#E6EEF4" : "#FFFFFF"
   } as CSSProperties;
 

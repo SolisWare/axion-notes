@@ -57,9 +57,8 @@
 
 .backupError {
   margin: 0;
-  padding: 10px 14px;
-  border-top: 1px solid var(--settings-divider);
-  color: var(--settings-section-text);
+  padding: 6px 14px 0;
+  color: var(--settings-error-text);
   font-size: 12px;
   line-height: 16px;
 }
@@ -171,6 +170,13 @@
 .settingsSectionDescription {
   margin: 2px 0 0;
   color: var(--settings-section-text);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.settingsSectionError {
+  margin: 2px 0 0;
+  color: var(--settings-error-text);
   font-size: 12px;
   line-height: 16px;
 }

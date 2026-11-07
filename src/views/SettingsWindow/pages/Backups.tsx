@@ -197,7 +197,6 @@ function Backups(props: BackupsProps) {
   };
 
   const handleChooseRestoreArchive = async (): Promise<void> => {
-    setHasRestoreError(false);
     const selection = await window.api.restore.chooseArchive();
 
     if (selection.status !== RestoreChooseStatus.SELECTED || !selection.filePath) {
@@ -211,6 +210,7 @@ function Backups(props: BackupsProps) {
       return;
     }
 
+    setHasRestoreError(false);
     setRestoreArchivePath(selection.filePath);
     setRestorePlan(inspection.plan);
     setRestoreDialogOpen(true);
@@ -221,7 +221,6 @@ function Backups(props: BackupsProps) {
       return;
     }
 
-    setHasRestoreError(false);
     const result = await window.api.restore.apply(restoreArchivePath, { notesMode: restoreNotesMode, settingsMode: restoreSettingsMode });
 
     if (result.status !== RestoreApplyStatus.APPLIED) {
@@ -229,6 +228,7 @@ function Backups(props: BackupsProps) {
       return;
     }
 
+    setHasRestoreError(false);
     window.api.appWindow.restart();
   };
 
@@ -305,10 +305,11 @@ function Backups(props: BackupsProps) {
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
               <h3 className={styles.settingsSectionTitle}>{t("noBackupRestored")}</h3>
-              <p className={styles.settingsSectionDescription}>{t("noBackupRestoredHelp")}</p>
+              <p className={hasRestoreError ? styles.settingsSectionError : styles.settingsSectionDescription} role={hasRestoreError ? "alert" : undefined}>
+                {t(hasRestoreError ? "restoreBackupFailed" : "noBackupRestoredHelp")}
+              </p>
             </div>
           </div>
-          {hasRestoreError && <p className={styles.backupError} role="alert">{t("restoreBackupFailed")}</p>}
           <div className={styles.backupCardActions}>
             <button className={styles.settingsButton} disabled={!isElectron} type="button" onClick={() => void handleChooseRestoreArchive()}>
               {t("restoreBackup")}
