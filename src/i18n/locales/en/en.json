@@ -183,6 +183,8 @@
   "addBackupNotes": "Add backup notes",
   "keepCurrentPreferences": "Keep current preferences",
   "restoreBackupPreferences": "Restore backup preferences",
+  "restoreBackupWarning": "This replaces data according to the selected restore options. Axion Notes will restart when the restore is complete.",
+  "restoreBackupFailed": "Couldn't restore the backup. Try again.",
   "saveBackupCopy": "Save a copy…",
   "savingBackupCopy": "Saving copy...",
   "saving": "Saving...",

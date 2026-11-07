@@ -81,7 +81,7 @@ describe("Backups", () => {
     expect(screen.getByRole("heading", { name: "Restore" })).toBeInTheDocument();
     expect(screen.getByText("No backup restored yet")).toBeInTheDocument();
     expect(screen.getByText("Choose a backup archive to restore its notes and selected app data.")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Restore backup…" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Restore backup…" })).toBeEnabled();
   });
 
   it("initializes backups and shows the configured state", async () => {

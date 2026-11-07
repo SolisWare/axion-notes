@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AppToast from "../../../components/AppToast";
 import BackupOptionsDialog from "../../../components/BackupOptionsDialog";
+import RestoreBackupDialog from "../../../components/RestoreBackupDialog";
 import BlockingProgressDialog from "../../../components/BlockingProgressDialog";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 import SecurityPasswordDialog, { SecurityPasswordDialogMode, SecurityPasswordDialogValues } from "../../../components/SecurityPasswordDialog";
@@ -18,6 +19,12 @@ import { BackupCreateStatus } from "../../../types/BackupCreateResult";
 import { BackupDeleteStatus } from "../../../types/BackupDeleteResult";
 import { BackupSaveStatus } from "../../../types/BackupSaveResult";
 import { BackupState } from "../../../types/BackupState";
+import { RestoreApplyStatus } from "../../../types/RestoreApplyResult";
+import { RestoreChooseStatus } from "../../../types/RestoreChooseResult";
+import { RestoreInspectStatus } from "../../../types/RestoreInspectResult";
+import { RestoreNotesMode } from "../../../types/RestoreNotesMode";
+import { RestorePlan } from "../../../types/RestorePlan";
+import { RestoreSettingsMode } from "../../../types/RestoreSettingsMode";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import { UserAgent } from "../../../utils/UserAgent";
 import styles from "./SettingsPages.module.css";
@@ -44,6 +51,13 @@ function Backups(props: BackupsProps) {
   const [hasBackupCopySaveError, setHasBackupCopySaveError] = useState(false);
   const [hasBackupDeletionError, setHasBackupDeletionError] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [restoreArchivePath, setRestoreArchivePath] = useState<string>();
+  const [restorePlan, setRestorePlan] = useState<RestorePlan>();
+  const [isRestoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [isRestoreConfirmationOpen, setRestoreConfirmationOpen] = useState(false);
+  const [restoreNotesMode, setRestoreNotesMode] = useState(RestoreNotesMode.REPLACE_CURRENT);
+  const [restoreSettingsMode, setRestoreSettingsMode] = useState(RestoreSettingsMode.KEEP_CURRENT);
+  const [hasRestoreError, setHasRestoreError] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -182,6 +196,42 @@ function Backups(props: BackupsProps) {
     }
   };
 
+  const handleChooseRestoreArchive = async (): Promise<void> => {
+    setHasRestoreError(false);
+    const selection = await window.api.restore.chooseArchive();
+
+    if (selection.status !== RestoreChooseStatus.SELECTED || !selection.filePath) {
+      return;
+    }
+
+    const inspection = await window.api.restore.inspect(selection.filePath);
+
+    if (inspection.status !== RestoreInspectStatus.READY || !inspection.plan) {
+      setHasRestoreError(true);
+      return;
+    }
+
+    setRestoreArchivePath(selection.filePath);
+    setRestorePlan(inspection.plan);
+    setRestoreDialogOpen(true);
+  };
+
+  const handleRestore = async (): Promise<void> => {
+    if (!restoreArchivePath) {
+      return;
+    }
+
+    setHasRestoreError(false);
+    const result = await window.api.restore.apply(restoreArchivePath, { notesMode: restoreNotesMode, settingsMode: restoreSettingsMode });
+
+    if (result.status !== RestoreApplyStatus.APPLIED) {
+      setHasRestoreError(true);
+      return;
+    }
+
+    window.api.appWindow.restart();
+  };
+
   const isInitialized = backupState !== undefined;
   const lastBackupCreatedAt = backupState?.lastBackupCreatedAt;
   const lastBackupDate = lastBackupCreatedAt
@@ -258,8 +308,9 @@ function Backups(props: BackupsProps) {
               <p className={styles.settingsSectionDescription}>{t("noBackupRestoredHelp")}</p>
             </div>
           </div>
+          {hasRestoreError && <p className={styles.backupError} role="alert">{t("restoreBackupFailed")}</p>}
           <div className={styles.backupCardActions}>
-            <button className={styles.settingsButton} disabled type="button">
+            <button className={styles.settingsButton} disabled={!isElectron} type="button" onClick={() => void handleChooseRestoreArchive()}>
               {t("restoreBackup")}
             </button>
           </div>
@@ -282,6 +333,29 @@ function Backups(props: BackupsProps) {
           onSave={handleSaveOptions}
         />
       )}
+      {restorePlan && (
+        <RestoreBackupDialog
+          open={isRestoreDialogOpen}
+          plan={restorePlan}
+          theme={props.theme}
+          onCancel={() => setRestoreDialogOpen(false)}
+          onRestore={(notesMode, settingsMode) => {
+            setRestoreNotesMode(notesMode);
+            setRestoreSettingsMode(settingsMode);
+            setRestoreDialogOpen(false);
+            setRestoreConfirmationOpen(true);
+          }}
+        />
+      )}
+      <ConfirmationDialog
+        confirmLabel={t("restoreBackup")}
+        message={t("restoreBackupWarning")}
+        open={isRestoreConfirmationOpen}
+        theme={props.theme}
+        title={t("restoreBackup")}
+        onCancel={() => setRestoreConfirmationOpen(false)}
+        onConfirm={() => void handleRestore()}
+      />
       {isElectron && (
         <SecurityPasswordDialog
           mode={SecurityPasswordDialogMode.BACKUP}
