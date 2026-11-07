@@ -5,9 +5,41 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { BackupState } from "../types/BackupState";
+import { BackupContentSelection } from "../types/BackupContentSelection";
 import { isValidTimestamp } from "./backupValidation";
 
 export const BACKUP_STATE_VERSION = 1;
+
+/**
+ * Creates the initial persisted state for a configured backup destination.
+ */
+export function createBackupState(initializedAt: string, contentSelection: BackupContentSelection): BackupState {
+  return {
+    version: BACKUP_STATE_VERSION,
+    initializedAt,
+    contentSelection: { ...contentSelection }
+  };
+}
+
+/**
+ * Records an archive creation while retaining the existing configuration.
+ */
+export function recordBackupCreated(state: BackupState, lastBackupCreatedAt: string): BackupState {
+  return {
+    ...state,
+    lastBackupCreatedAt
+  };
+}
+
+/**
+ * Replaces optional archive content while retaining the backup lifecycle state.
+ */
+export function updateBackupContentSelection(state: BackupState, contentSelection: BackupContentSelection): BackupState {
+  return {
+    ...state,
+    contentSelection: { ...contentSelection }
+  };
+}
 
 /**
  * Parses and validates a serialized backup configuration.

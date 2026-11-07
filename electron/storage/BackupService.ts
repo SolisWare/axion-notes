@@ -7,6 +7,7 @@
 import { defaultBackupContentSelection } from "../../src/settings/defaultBackupContentSelection";
 import { BackupContentSelection } from "../../src/types/BackupContentSelection";
 import { BackupState } from "../../src/types/BackupState";
+import { createBackupState, updateBackupContentSelection } from "../../src/backup/backupState";
 import { BackupStateStorage } from "./BackupStateStorage";
 
 /**
@@ -36,11 +37,7 @@ export class BackupService {
       return existingState;
     }
 
-    const state: BackupState = {
-      version: 1,
-      initializedAt: this.getCurrentDate().toISOString(),
-      contentSelection: { ...defaultBackupContentSelection }
-    };
+    const state = createBackupState(this.getCurrentDate().toISOString(), defaultBackupContentSelection);
 
     await this.backupStateStorage.setState(state);
     return state;
@@ -56,10 +53,7 @@ export class BackupService {
       throw new Error("Backups have not been initialized.");
     }
 
-    const updatedState: BackupState = {
-      ...state,
-      contentSelection: { ...contentSelection }
-    };
+    const updatedState = updateBackupContentSelection(state, contentSelection);
     await this.backupStateStorage.setState(updatedState);
 
     return updatedState;

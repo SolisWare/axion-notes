@@ -12,6 +12,7 @@ import { BackupCreateResult, BackupCreateStatus } from "../../types/BackupCreate
 import { BackupDeleteResult, BackupDeleteStatus } from "../../types/BackupDeleteResult";
 import { BackupSaveResult, BackupSaveStatus } from "../../types/BackupSaveResult";
 import { BackupState } from "../../types/BackupState";
+import { createBackupState, recordBackupCreated, updateBackupContentSelection } from "../../backup/backupState";
 import { getSettings } from "../storage/appSettingsStorage";
 import { getNotes } from "../storage/noteStorage";
 import { getBackupState, setBackupState } from "../storage/backupStateStorage";
@@ -57,11 +58,7 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
 
         downloadArchive(archive, getDefaultBackupFileName(getCurrentDate(), settings?.dateFormat, settings?.timeFormat));
 
-        const updatedState: BackupState = {
-          ...state,
-          contentSelection,
-          lastBackupCreatedAt: createdAt
-        };
+        const updatedState = recordBackupCreated(updateBackupContentSelection(state, contentSelection), createdAt);
         setBackupState(updatedState);
 
         return {
@@ -79,28 +76,18 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
     getState: async (): Promise<BackupState | undefined> => {
       const state = getBackupState();
 
-      return state && {
-        ...state,
-        contentSelection: normalizeBrowserContentSelection(state.contentSelection)
-      };
+      return state && updateBackupContentSelection(state, normalizeBrowserContentSelection(state.contentSelection));
     },
 
     initialize: async (): Promise<BackupState | undefined> => {
       const existingState = getBackupState();
 
       if (existingState) {
-        return {
-          ...existingState,
-          contentSelection: normalizeBrowserContentSelection(existingState.contentSelection)
-        };
+        return updateBackupContentSelection(existingState, normalizeBrowserContentSelection(existingState.contentSelection));
       }
 
       try {
-        const state: BackupState = {
-          version: 1,
-          initializedAt: getCurrentDate().toISOString(),
-          contentSelection: normalizeBrowserContentSelection(defaultBackupContentSelection)
-        };
+        const state = createBackupState(getCurrentDate().toISOString(), normalizeBrowserContentSelection(defaultBackupContentSelection));
         setBackupState(state);
         return state;
       } catch (err) {
@@ -119,10 +106,7 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
       }
 
       try {
-        const updatedState: BackupState = {
-          ...state,
-          contentSelection: normalizeBrowserContentSelection(contentSelection)
-        };
+        const updatedState = updateBackupContentSelection(state, normalizeBrowserContentSelection(contentSelection));
         setBackupState(updatedState);
         return updatedState;
       } catch (err) {
