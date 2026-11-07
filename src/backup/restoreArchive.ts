@@ -210,7 +210,7 @@ function parseNote(value: unknown): NoteType {
     ...value,
     createdOn: new Date(value.createdOn),
     lastModifiedOn: new Date(value.lastModifiedOn),
-    pinnedOn: value.pinnedOn === undefined ? undefined : new Date(value.pinnedOn)
+    pinnedOn: typeof value.pinnedOn === "string" ? new Date(value.pinnedOn) : undefined
   } as NoteType;
 }
 
