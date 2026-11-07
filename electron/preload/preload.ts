@@ -12,6 +12,7 @@ import { noteSortApi } from "./noteSortApi";
 import { noteWindowApi } from "./noteWindowApi";
 import { osApi } from "./osApi";
 import { securityApi } from "./securityApi";
+import { restoreApi } from "./restoreApi";
 import { settingsApi } from "./settingsApi";
 import { storageApi } from "./storageApi";
 import { systemThemeApi } from "./systemThemeApi";
@@ -28,6 +29,7 @@ contextBridge.exposeInMainWorld('api', {
   noteSort: noteSortApi,
   noteWindow: noteWindowApi,
   security: securityApi,
+  restore: restoreApi,
   settings: settingsApi,
   version: versionApi,
   systemTheme: systemThemeApi,

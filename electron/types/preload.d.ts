@@ -23,6 +23,9 @@ import { BackupContentSelection } from '../../src/types/BackupContentSelection';
 import { BackupCreateResult } from '../../src/types/BackupCreateResult';
 import { BackupDeleteResult } from '../../src/types/BackupDeleteResult';
 import { BackupSaveResult } from '../../src/types/BackupSaveResult';
+import { RestoreApplyResult } from '../../src/types/RestoreApplyResult';
+import { RestoreChooseResult } from '../../src/types/RestoreChooseResult';
+import { RestoreApplyOptions } from '../storage/RestoreService';
 
 export interface IElectronAPI {
   appWindow: {
@@ -39,6 +42,10 @@ export interface IElectronAPI {
     initialize: () => Promise<BackupState | undefined>;
     saveCopy: () => Promise<BackupSaveResult>;
     updateContentSelection: (contentSelection: BackupContentSelection) => Promise<BackupState | undefined>;
+  },
+  restore: {
+    apply: (archivePath: string, options: RestoreApplyOptions) => Promise<RestoreApplyResult>;
+    chooseArchive: () => Promise<RestoreChooseResult>;
   },
   storage: {
     getNotes: () => Promise<NoteType[]>;

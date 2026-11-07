@@ -20,6 +20,10 @@ export const channels = {
     saveCopy: "backup.saveCopy",
     updateContentSelection: "backup.updateContentSelection"
   },
+  restore: {
+    apply: "restore.apply",
+    chooseArchive: "restore.chooseArchive"
+  },
   menu: {
     newNote: "menu.newNote",
     setNoteLayout: "menu.setNoteLayout",

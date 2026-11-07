@@ -11,6 +11,7 @@ import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
 import { registerSettingsIpc } from "./settingsIpc";
 import { registerSecurityIpc } from "./securityIpc";
+import { registerRestoreIpc } from "./restoreIpc";
 import { registerStorageIpc } from "./storageIpc";
 import { registerSystemThemeIpc } from "./systemThemeIpc";
 import { AppSettings } from "../../src/settings/AppSettings";
@@ -20,11 +21,14 @@ import { NoteService } from "../storage/NoteService";
 import { BackupService } from "../storage/BackupService";
 import { BackupArchiveService } from "../storage/BackupArchiveService";
 import { SettingsService } from "../storage/SettingsService";
+import { BackupArchiveReader } from "../storage/BackupArchiveReader";
+import { RestoreService } from "../storage/RestoreService";
 
 type IpcHandlerOptions = {
   appBackupDir: string;
   backupArchiveService: BackupArchiveService;
   backupService: BackupService;
+  backupArchiveReader: BackupArchiveReader;
   appDataDir: string;
   appSecurityDir: string;
   mainWindowStateFilePath: string;
@@ -32,6 +36,7 @@ type IpcHandlerOptions = {
   noteService: NoteService;
   onSettingsChange?: (settings: AppSettings) => void;
   passwordService: PasswordService;
+  restoreService: RestoreService;
   settingsService: SettingsService;
 };
 
@@ -41,6 +46,12 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     backupService: options.backupService,
     lockStateService: options.lockStateService,
     settingsService: options.settingsService
+  });
+  registerRestoreIpc({
+    backupArchiveReader: options.backupArchiveReader,
+    lockStateService: options.lockStateService,
+    noteService: options.noteService,
+    restoreService: options.restoreService
   });
   registerAppWindowIpc({
     lockStateService: options.lockStateService,

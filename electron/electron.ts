@@ -36,6 +36,9 @@ import { NoteService } from "./storage/NoteService";
 import { BackupService } from "./storage/BackupService";
 import { BackupArchiveService } from "./storage/BackupArchiveService";
 import { BackupStateStorage } from "./storage/BackupStateStorage";
+import { BackupArchiveReader } from "./storage/BackupArchiveReader";
+import { RestoreService } from "./storage/RestoreService";
+import { RestoreStateStorage } from "./storage/RestoreStateStorage";
 import { registerStorageMigrationGuard } from "./storage/StorageMigrationGuard";
 import { SettingsService } from "./storage/SettingsService";
 
@@ -155,6 +158,8 @@ app.on("ready", async () => {
   const backupStateStorage = new BackupStateStorage(appBackupDir);
   const backupService = new BackupService(backupStateStorage);
   const backupArchiveService = new BackupArchiveService(appBackupDir, backupStateStorage, noteService, settingsService, mainWindowStateFilePath);
+  const backupArchiveReader = new BackupArchiveReader();
+  const restoreService = new RestoreService(noteService, settingsService, new RestoreStateStorage(appBackupDir), mainWindowStateFilePath);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);
@@ -182,6 +187,7 @@ app.on("ready", async () => {
   registerIpcHandlers({
     appBackupDir,
     backupArchiveService,
+    backupArchiveReader,
     backupService,
     appDataDir,
     appSecurityDir,
@@ -192,6 +198,7 @@ app.on("ready", async () => {
       currentSettings = settings;
     },
     passwordService,
+    restoreService,
     settingsService
   });
   createMainWindow({
