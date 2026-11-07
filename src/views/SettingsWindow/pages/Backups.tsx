@@ -193,6 +193,7 @@ function Backups(props: BackupsProps) {
   return (
     <div className={styles.backupsPage}>
       <section className={styles.settingsSection}>
+        <h2 className={styles.settingsSubsectionHeader}>{t("backups")}</h2>
         <div className={styles.backupCard}>
           <div className={styles.backupStatus}>
             <div className={styles.settingsRowText}>
@@ -247,6 +248,20 @@ function Backups(props: BackupsProps) {
                 )}
               </>
             )}
+          </div>
+        </div>
+        <h2 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderSpaced}`}>{t("restore")}</h2>
+        <div className={styles.backupCard}>
+          <div className={styles.backupStatus}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle}>{t("noBackupRestored")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("noBackupRestoredHelp")}</p>
+            </div>
+          </div>
+          <div className={styles.backupCardActions}>
+            <button className={styles.settingsButton} disabled type="button">
+              {t("restoreBackup")}
+            </button>
           </div>
         </div>
         {isInitialized && (

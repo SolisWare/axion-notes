@@ -44,9 +44,13 @@ const translations: Record<string, string> = {
   lastBackupCreatedHelp: "{{date}} at {{time}}",
   noBackupCreated: "No backup created yet",
   noBackupCreatedHelp: "Set up a local backup archive of your notes and selected app data.",
+  noBackupRestored: "No backup restored yet",
+  noBackupRestoredHelp: "Choose a backup archive to restore its notes and selected app data.",
   notesAndNoteOrder: "Notes and note order",
   notesAndNoteOrderHelp: "Always included",
   options: "Options...",
+  restore: "Restore",
+  restoreBackup: "Restore backup…",
   cancel: "Cancel",
   includedInBackups: "Included in backups",
   mainWindowLayout: "Main-window layout",
@@ -73,6 +77,11 @@ describe("Backups", () => {
 
     expect(await screen.findByText("No backup created yet")).toBeInTheDocument();
     expect(screen.getByText("Set up a local backup archive of your notes and selected app data.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Backups" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Restore" })).toBeInTheDocument();
+    expect(screen.getByText("No backup restored yet")).toBeInTheDocument();
+    expect(screen.getByText("Choose a backup archive to restore its notes and selected app data.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Restore backup…" })).toBeDisabled();
   });
 
   it("initializes backups and shows the configured state", async () => {

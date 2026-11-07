@@ -37,9 +37,13 @@ const translations: Record<string, string> = {
   lastBackupDownloadStarted: "Last backup download started",
   noBackupDownloaded: "No backup downloaded yet",
   noBackupDownloadedHelp: "Set up a backup download of your notes and selected app data.",
+  noBackupRestored: "No backup restored yet",
+  noBackupRestoredHelp: "Choose a backup archive to restore its notes and selected app data.",
   notesAndNoteOrder: "Notes and note order",
   notesAndNoteOrderHelp: "Always included",
   options: "Options...",
+  restore: "Restore",
+  restoreBackup: "Restore backup…",
   save: "Save",
   saving: "Saving...",
   setUpBackups: "Set up backups",
@@ -53,6 +57,20 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("Backups on web", () => {
+  it("shows the forthcoming restore control before backups are configured", async () => {
+    installDesktopApiMock({
+      backup: {
+        getState: vi.fn().mockResolvedValue(undefined)
+      }
+    });
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    expect(await screen.findByRole("button", { name: "Restore backup…" })).toBeDisabled();
+    expect(screen.getByRole("heading", { name: "Restore" })).toBeInTheDocument();
+    expect(screen.getByText("No backup restored yet")).toBeInTheDocument();
+  });
+
   it("creates a download and omits desktop-only managed archive controls", async () => {
     const user = userEvent.setup();
     const browserApi = installDesktopApiMock({
