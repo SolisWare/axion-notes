@@ -4,7 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBrowserRestoreApi } from "../../../../src/browser/backup/browserRestoreApi";
 import { getBackupPreferences } from "../../../../src/backup/backupArchive";
 import { ValidatedBackupArchive } from "../../../../src/backup/restoreArchive";
@@ -15,6 +15,11 @@ import { RestoreChooseStatus } from "../../../../src/types/RestoreChooseResult";
 import { RestoreInspectStatus } from "../../../../src/types/RestoreInspectResult";
 import { RestoreNotesMode } from "../../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../../src/types/RestoreSettingsMode";
+
+afterEach(() => {
+  localStorage.clear();
+  vi.restoreAllMocks();
+});
 
 describe("browserRestoreApi", () => {
   it("inspects and applies a selected archive while restoring requested preferences", async () => {
@@ -102,6 +107,37 @@ describe("browserRestoreApi", () => {
     expect(replaceNotes).toHaveBeenNthCalledWith(2, currentNotes);
     expect(setSettings).toHaveBeenNthCalledWith(1, expect.objectContaining({ theme: AppThemePreference.DARK }));
     expect(setSettings).toHaveBeenNthCalledWith(2, defaultAppSettings);
+  });
+
+  it("does not persist desktop-only main-window layout data in browser Local Storage", async () => {
+    const archive: ValidatedBackupArchive = {
+      ...createArchive(),
+      appSettings: undefined,
+      contentSelection: { appSettings: false, mainWindowState: true },
+      mainWindowState: {
+        bounds: { height: 500, width: 700, x: 10, y: 20 },
+        isMaximized: true
+      }
+    };
+    const restoreApi = createBrowserRestoreApi({
+      chooseArchive: async () => new Uint8Array([1]),
+      getCurrentDate: () => new Date("2026-11-07T12:30:00.000Z"),
+      readArchive: () => archive
+    });
+
+    await restoreApi.chooseArchive();
+
+    await expect(restoreApi.apply("browser-selected-backup", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    })).resolves.toMatchObject({ status: RestoreApplyStatus.APPLIED });
+
+    expect(Object.keys(localStorage).sort()).toEqual([
+      "solisware.axion-notes.notes.backup",
+      "solisware.axion-notes.notes.index",
+      "solisware.axion-notes.restore-state"
+    ]);
+    expect(localStorage.getItem("solisware.axion-notes.notes.backup")).toContain("Backup");
   });
 });
 
