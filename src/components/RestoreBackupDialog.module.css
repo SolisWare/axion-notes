@@ -1,0 +1,94 @@
+/**
+ * Copyright (c) 2026 SolisWare.
+ *
+ * All rights reserved. Licensed under the MIT license.
+ * See the LICENSE.txt file in the project root directory for details.
+ */
+.backdrop {
+  background-color: var(--restore-backup-dialog-backdrop) !important;
+}
+
+.paper {
+  width: min(580px, calc(100vw - 40px));
+  min-height: 470px;
+  max-height: calc(100vh - 24px) !important;
+  margin: 12px !important;
+  background: var(--restore-backup-dialog-background) !important;
+}
+
+.title,
+.content,
+.actions {
+  background: var(--restore-backup-dialog-background) !important;
+}
+
+.title {
+  padding-bottom: 8px !important;
+  color: var(--restore-backup-dialog-title) !important;
+}
+
+.content {
+  padding-top: 0 !important;
+}
+
+.summary,
+.createdAt,
+.optionGroupDescription {
+  color: var(--restore-backup-dialog-muted-text);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.summary {
+  margin: 0;
+}
+
+.createdAt {
+  margin: 2px 0 0;
+}
+
+.optionGroup {
+  margin: 18px 0 0;
+  padding: 12px 14px 10px;
+  border: 1px solid var(--restore-backup-dialog-divider);
+  border-radius: 6px;
+}
+
+.optionGroupTitle {
+  padding: 0 5px;
+  color: var(--restore-backup-dialog-title);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.optionGroupDescription {
+  margin: 0;
+}
+
+.radioGroup {
+  margin-top: 8px;
+}
+
+.radioOption {
+  min-height: 29px;
+  margin: 0 !important;
+  color: var(--restore-backup-dialog-text);
+  gap: 0;
+}
+
+.radioOption :global(.MuiRadio-root) {
+  color: var(--restore-backup-dialog-muted-text);
+  padding: 2px 4px 2px 0;
+}
+
+.radioOption :global(.MuiRadio-root.Mui-checked) {
+  color: var(--restore-backup-dialog-primary);
+}
+
+.radioOption :global(.MuiFormControlLabel-label) {
+  font-size: 13px;
+}
+
+.cancelButton {
+  color: var(--restore-backup-dialog-cancel-text) !important;
+}

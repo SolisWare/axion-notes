@@ -392,6 +392,7 @@ function Backups(props: BackupsProps) {
       )}
       {restorePlan && (
         <RestoreBackupDialog
+          appSettings={props.appSettings}
           open={isRestoreDialogOpen}
           plan={restorePlan}
           theme={props.theme}
