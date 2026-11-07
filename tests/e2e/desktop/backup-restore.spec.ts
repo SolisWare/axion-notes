@@ -65,7 +65,9 @@ test.describe("Backup restore", () => {
     await settingsPage.getByRole("button", { name: "Restore backup…" }).click();
 
     const reviewDialog = await settingsPage.getByRole("dialog", { name: "Restore backup…" });
-    await expect(reviewDialog.getByRole("button", { name: "Restore backup…" })).toBeDisabled();
+    await expect(reviewDialog.getByRole("radio", { name: "Add backup notes" })).toBeChecked();
+    await expect(reviewDialog.getByRole("radio", { name: "Keep current preferences" })).toBeChecked();
+    await expect(reviewDialog.getByRole("button", { name: "Restore backup…" })).toBeEnabled();
     await reviewDialog.getByRole("radio", { name: "Replace current notes" }).check();
     await reviewDialog.getByRole("radio", { name: "Restore backup preferences" }).check();
     await reviewDialog.getByRole("button", { name: "Restore backup…" }).click();
