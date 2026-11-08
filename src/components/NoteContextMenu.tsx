@@ -5,7 +5,7 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { Divider } from "@mui/material";
-import { CSSProperties, PointerEvent, useLayoutEffect, useRef, useState } from "react";
+import { CSSProperties, KeyboardEvent as ReactKeyboardEvent, PointerEvent, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RichTextFormatAction, RichTextFormatCommand } from "../types/RichTextFormatCommand";
 import { RichTextFormatState } from "../types/RichTextFormatState";
@@ -72,7 +72,7 @@ type SubmenuAim = {
   opensLeft: boolean;
 };
 
-function updateSubmenuDirection(event: PointerEvent<HTMLDivElement>): SubmenuAim | null {
+function updateSubmenuDirection(event: { currentTarget: HTMLDivElement }): SubmenuAim | null {
   const menuItem = event.currentTarget;
   const submenu = menuItem.querySelector(`:scope > .${styles.noteContextMenuSubmenu}`) as HTMLDivElement | null;
 
@@ -202,7 +202,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
     "--note-context-menu-label-text": appColors.DIALOG_TEXT
   } as CSSProperties;
 
-  const openSubmenu = (submenuId: SubmenuId, event: PointerEvent<HTMLDivElement>) => {
+  const openSubmenu = (submenuId: SubmenuId, event: { currentTarget: HTMLDivElement }) => {
     const closeTimer = submenuCloseTimersRef.current[submenuId];
 
     if (closeTimer !== undefined) {
@@ -313,7 +313,7 @@ function NoteContextMenu(props: NoteContextMenuProps) {
     closeSubmenusWithAim("fontSize", "font");
   };
 
-  const openChildSubmenu = (submenuId: "fontSize" | "font", event: PointerEvent<HTMLDivElement>) => {
+  const openChildSubmenu = (submenuId: "fontSize" | "font", event: { currentTarget: HTMLDivElement }) => {
     const otherSubmenuId = submenuId === "fontSize" ? "font" : "fontSize";
     const otherSubmenuAim = submenuAimsRef.current[otherSubmenuId];
 
@@ -364,6 +364,10 @@ function NoteContextMenu(props: NoteContextMenuProps) {
   }, [props.position]);
 
   useLayoutEffect(() => {
+    menuRef.current?.focus();
+  }, []);
+
+  useLayoutEffect(() => {
     const submenuCloseTimers = submenuCloseTimersRef.current;
 
     return () => {
@@ -375,14 +379,76 @@ function NoteContextMenu(props: NoteContextMenuProps) {
     };
   }, []);
 
+  const handleMenuKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const menuItem = event.target instanceof Element
+      ? event.target.closest<HTMLElement>("[role='menuitem']")
+      : null;
+
+    const menu = menuItem?.closest<HTMLElement>("[role='menu']")
+      ?? (event.currentTarget.matches("[role='menu']") ? event.currentTarget : null);
+    const menuItems = menu
+      ? Array.from(menu.querySelectorAll<HTMLElement>(":scope > [role='menuitem']:not([aria-disabled='true'])"))
+      : [];
+
+    if ((event.key === "ArrowDown" || event.key === "ArrowUp") && menuItems.length > 0) {
+      event.preventDefault();
+
+      const currentIndex = menuItem ? menuItems.indexOf(menuItem) : -1;
+      const nextIndex = event.key === "ArrowDown"
+        ? (currentIndex + 1) % menuItems.length
+        : (currentIndex - 1 + menuItems.length) % menuItems.length;
+
+      menuItems[nextIndex].focus();
+      return;
+    }
+
+    if (!menuItem || menuItem.getAttribute("aria-disabled") === "true") {
+      return;
+    }
+
+    if (event.key === "ArrowRight" && menuItem.dataset.submenuTrigger === "true") {
+      event.preventDefault();
+      menuItem.click();
+      return;
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      menuItem.click();
+    }
+  };
+
+  const handleColorKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>, colorKey: NoteColorKey) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+      return;
+    }
+
+    event.preventDefault();
+
+    const currentIndex = noteColorKeys.indexOf(colorKey);
+    const nextIndex = event.key === "ArrowRight"
+      ? (currentIndex + 1) % noteColorKeys.length
+      : (currentIndex - 1 + noteColorKeys.length) % noteColorKeys.length;
+    const nextColorKey = noteColorKeys[nextIndex];
+    const nextColorButton = menuRef.current?.querySelector<HTMLButtonElement>(`[data-note-color='${nextColorKey}']`);
+
+    nextColorButton?.focus();
+    props.onNoteColorChange(nextColorKey);
+  };
+
   return (
     <div
+      aria-label={t("note")}
+      aria-orientation="vertical"
       className={styles.noteContextMenu}
       data-note-context-menu="true"
       data-submenu-aim-active={isSubmenuAimActive}
       ref={menuRef}
+      role="menu"
       style={menuStyle}
+      tabIndex={-1}
       onContextMenu={(event) => event.preventDefault()}
+      onKeyDown={handleMenuKeyDown}
       onMouseDown={(event) => event.preventDefault()}
       onPointerMove={(event) => {
         pointerPathRef.current = {
@@ -403,6 +469,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       {props.onTogglePin && (
         <div
           className={styles.noteContextMenuItem}
+          role="menuitem"
+          tabIndex={0}
           onClick={props.onTogglePin}
           onPointerEnter={closeAllSubmenusWithAim}
         >
@@ -414,6 +482,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       {props.onSelectNote && (
         <div
           className={styles.noteContextMenuItem}
+          role="menuitem"
+          tabIndex={0}
           onClick={props.onSelectNote}
           onPointerEnter={closeAllSubmenusWithAim}
         >
@@ -432,6 +502,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           )}
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onOpenNoteWindow}
             onPointerEnter={closeAllSubmenusWithAim}
           >
@@ -440,6 +512,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           {props.onToggleFold && (
             <div
               className={styles.noteContextMenuItem}
+              role="menuitem"
+              tabIndex={0}
               onClick={props.onToggleFold}
               onPointerEnter={closeAllSubmenusWithAim}
             >
@@ -455,6 +529,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         <>
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onToggleFold}
             onPointerEnter={closeAllSubmenusWithAim}
           >
@@ -469,6 +545,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         <>
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onMoveNoteToTop}
             onPointerEnter={closeAllSubmenusWithAim}
           >
@@ -476,6 +554,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           </div>
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onMoveNoteToBottom}
             onPointerEnter={closeAllSubmenusWithAim}
           >
@@ -487,7 +567,14 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       {props.showFormatActions !== false && (
         <div
           className={`${styles.noteContextMenuItem} ${!isFormattingEnabled ? styles.noteContextMenuItemDisabled : ""}`}
+          aria-disabled={!isFormattingEnabled}
+          aria-expanded={openSubmenus.includes("format")}
+          aria-haspopup="menu"
           data-submenu-open={openSubmenus.includes("format")}
+          data-submenu-trigger="true"
+          role="menuitem"
+          tabIndex={isFormattingEnabled ? 0 : -1}
+          onClick={(event) => openSubmenu("format", event)}
           onPointerEnter={(event) => openSubmenu("format", event)}
           onPointerLeave={() => closeSubmenu("format")}
         >
@@ -497,12 +584,16 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
           {isFormattingEnabled && (
             <div
+              aria-label={t("format")}
               className={styles.noteContextMenuSubmenu}
               onPointerEnter={(event) => openSubmenu("format", event)}
               onPointerLeave={() => closeSubmenu("format")}
+              role="menu"
             >
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isBoldActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.BOLD)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -510,6 +601,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isItalicActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.ITALIC)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -517,6 +610,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isUnderlineActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.UNDERLINE)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -524,6 +619,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isStrikethroughActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.STRIKETHROUGH)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -531,6 +628,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isHighlightActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.HIGHLIGHT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -538,6 +637,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isInlineCodeActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.INLINE_CODE)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -546,6 +647,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isSuperscriptActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUPERSCRIPT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -553,6 +656,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isSubscriptActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.SUBSCRIPT)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -561,6 +666,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isBulletListActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.BULLET_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -568,6 +675,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isDashedListActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.DASHED_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -575,6 +684,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isNumberedListActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.NUMBERED_LIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -582,6 +693,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={`${styles.noteContextMenuItem} ${props.formatState?.isChecklistActive ? styles.noteContextMenuItemActive : ""}`}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.CHECKLIST)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -590,7 +703,13 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={styles.noteContextMenuItem}
+                aria-expanded={openSubmenus.includes("fontSize")}
+                aria-haspopup="menu"
                 data-submenu-open={openSubmenus.includes("fontSize")}
+                data-submenu-trigger="true"
+                role="menuitem"
+                tabIndex={0}
+                onClick={(event) => openChildSubmenu("fontSize", event)}
                 onPointerEnter={(event) => openChildSubmenu("fontSize", event)}
               >
                 <span className={styles.noteContextMenuItemText}>
@@ -598,13 +717,17 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
+                  aria-label={t("formatting.fontSize")}
                   className={`${styles.noteContextMenuSubmenu} ${styles.noteContextMenuFontSizeSubmenu}`}
                   onPointerEnter={(event) => openSubmenu("fontSize", event)}
+                  role="menu"
                 >
                   {NOTE_CONTENT_FONT_SIZE_OPTIONS.map((fontSize) => (
                     <div
                       className={`${styles.noteContextMenuItem} ${!props.formatState?.isFontSizeMixed && activeFontSize === fontSize ? styles.noteContextMenuItemActive : ""}`}
                       key={fontSize}
+                      role="menuitem"
+                      tabIndex={0}
                       onClick={() => props.onFormatAction?.({
                         command: RichTextFormatCommand.FONT_SIZE,
                         fontSize
@@ -617,7 +740,13 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               </div>
               <div
                 className={styles.noteContextMenuItem}
+                aria-expanded={openSubmenus.includes("font")}
+                aria-haspopup="menu"
                 data-submenu-open={openSubmenus.includes("font")}
+                data-submenu-trigger="true"
+                role="menuitem"
+                tabIndex={0}
+                onClick={(event) => openChildSubmenu("font", event)}
                 onPointerEnter={(event) => openChildSubmenu("font", event)}
               >
                 <span className={styles.noteContextMenuItemText}>
@@ -625,8 +754,10 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 </span>
                 <span className={styles.noteContextMenuSubmenuArrow} aria-hidden="true">›</span>
                 <div
+                  aria-label={t("formatting.font")}
                   className={styles.noteContextMenuSubmenu}
                   onPointerEnter={(event) => openSubmenu("font", event)}
+                  role="menu"
                 >
                   {NOTE_FONT_CATEGORIES.map((fontCategory) => (
                     <div className={styles.noteContextMenuFontCategory} key={fontCategory}>
@@ -639,6 +770,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                           <div
                             className={`${styles.noteContextMenuItem} ${!props.formatState?.isFontMixed && activeFont === fontOption.value ? styles.noteContextMenuItemActive : ""}`}
                             key={fontOption.value}
+                            role="menuitem"
+                            tabIndex={0}
                             onClick={() => props.onFormatAction?.({
                               command: RichTextFormatCommand.FONT_FAMILY,
                               noteFont: fontOption.value
@@ -654,6 +787,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
               <Divider className={styles.noteContextMenuDivider} />
               <div
                 className={styles.noteContextMenuItem}
+                role="menuitem"
+                tabIndex={0}
                 onClick={() => props.onFormatAction?.(RichTextFormatCommand.CLEAR_FORMATTING)}
                 onPointerEnter={closeChildSubmenusWithAim}
               >
@@ -665,6 +800,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       )}
       <div
         className={styles.noteContextMenuItem}
+        role="menuitem"
+        tabIndex={0}
         onClick={props.onDuplicateNote}
         onPointerEnter={closeAllSubmenusWithAim}
       >
@@ -674,6 +811,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
         <>
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onToggleTitleVisibility}
             onPointerEnter={closeAllSubmenusWithAim}
           >
@@ -702,11 +841,13 @@ function NoteContextMenu(props: NoteContextMenuProps) {
                 aria-checked={isSelected}
                 aria-label={t(`noteColors.${colorKey}`)}
                 className={styles.noteContextColorButton}
+                data-note-color={colorKey}
                 key={colorKey}
                 role="radio"
                 title={t(`noteColors.${colorKey}`)}
                 type="button"
                 onClick={() => props.onNoteColorChange(colorKey)}
+                onKeyDown={(event) => handleColorKeyDown(event, colorKey)}
                 onMouseEnter={() => setHoveredNoteColor(colorKey)}
               >
                 <span
@@ -737,6 +878,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
       <Divider className={styles.noteContextMenuDivider} />
       <div
         className={styles.noteContextMenuItem}
+        role="menuitem"
+        tabIndex={0}
         onClick={props.onDeleteNote}
         onPointerEnter={closeAllSubmenusWithAim}
       >
@@ -747,6 +890,8 @@ function NoteContextMenu(props: NoteContextMenuProps) {
           <Divider className={styles.noteContextMenuDivider} />
           <div
             className={styles.noteContextMenuItem}
+            role="menuitem"
+            tabIndex={0}
             onClick={props.onCloseWindow}
             onPointerEnter={closeAllSubmenusWithAim}
           >
