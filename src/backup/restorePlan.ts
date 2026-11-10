@@ -5,14 +5,17 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { NoteType } from "../types/NoteType";
+import { AppSettings } from "../settings/AppSettings";
 import { RestoreNotesMode } from "../types/RestoreNotesMode";
 import { RestorePlan } from "../types/RestorePlan";
 import { RestoreSettingsMode } from "../types/RestoreSettingsMode";
 import { BackupSource } from "../types/BackupSource";
+import { areBackupPreferencesEqual, getBackupPreferences } from "./backupArchive";
 import { ValidatedBackupArchive } from "./restoreArchive";
 import { areNotesEqual } from "./backupValidation";
 
 export type RestorePlanOptions = {
+  currentSettings: AppSettings;
   currentNotes: readonly NoteType[];
   destination: BackupSource;
   isNotesEncryptionEnabled: boolean;
@@ -25,24 +28,31 @@ export function createRestorePlan(archive: ValidatedBackupArchive, options: Rest
   const notesById = new Map(options.currentNotes.map((note) => [note.id, note]));
   const { conflictingNotesCount, identicalNotesCount } = getNoteCollisionCounts(archive.notes, notesById);
   const hasCurrentNotes = options.currentNotes.length > 0;
+  const hasNotesConflict = hasCurrentNotes && (
+    conflictingNotesCount > 0 || identicalNotesCount !== options.currentNotes.length
+  );
   const hasBackupPreferences = archive.appSettings !== undefined;
   const preferencesCanBeRestored = hasBackupPreferences && archive.source === options.destination;
+  const hasPreferencesConflict = preferencesCanBeRestored
+    && !areBackupPreferencesEqual(archive.appSettings!, getBackupPreferences(options.currentSettings));
 
   return {
     archiveCreatedAt: archive.createdAt,
     backupSource: archive.source,
     conflictingNotesCount,
     currentNotesCount: options.currentNotes.length,
-    defaultNotesMode: hasCurrentNotes ? RestoreNotesMode.ADD_TO_CURRENT : RestoreNotesMode.REPLACE_CURRENT,
-    defaultSettingsMode: hasCurrentNotes || !preferencesCanBeRestored ? RestoreSettingsMode.KEEP_CURRENT : RestoreSettingsMode.RESTORE_BACKUP,
+    defaultNotesMode: hasNotesConflict ? RestoreNotesMode.ADD_TO_CURRENT : RestoreNotesMode.REPLACE_CURRENT,
+    defaultSettingsMode: hasPreferencesConflict ? RestoreSettingsMode.KEEP_CURRENT : preferencesCanBeRestored ? RestoreSettingsMode.RESTORE_BACKUP : RestoreSettingsMode.KEEP_CURRENT,
     hasBackupPreferences,
+    hasNotesConflict,
+    hasPreferencesConflict,
     preferencesCanBeRestored,
     hasMainWindowState: archive.mainWindowState !== undefined,
     identicalNotesCount,
     incomingNotesCount: archive.notes.length,
     requiresCurrentPassword: options.isNotesEncryptionEnabled,
-    requiresNotesModeSelection: hasCurrentNotes,
-    requiresSettingsModeSelection: preferencesCanBeRestored && hasCurrentNotes
+    requiresNotesModeSelection: hasNotesConflict,
+    requiresSettingsModeSelection: hasPreferencesConflict
   };
 }
 

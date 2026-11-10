@@ -10,12 +10,14 @@ import { ValidatedBackupArchive } from "../../../src/backup/restoreArchive";
 import { RestoreNotesMode } from "../../../src/types/RestoreNotesMode";
 import { RestoreSettingsMode } from "../../../src/types/RestoreSettingsMode";
 import { BackupSource } from "../../../src/types/BackupSource";
+import { getBackupPreferences } from "../../../src/backup/backupArchive";
 import { defaultAppSettings } from "../../../src/settings/defaultSettings";
 import { NoteType } from "../../../src/types/NoteType";
 
 describe("restorePlan", () => {
   it("preselects replacement and backup preferences for an empty destination", () => {
-    const plan = createRestorePlan(createArchive({ appSettings: defaultAppSettings }), {
+    const plan = createRestorePlan(createArchive({ appSettings: getBackupPreferences(defaultAppSettings) }), {
+      currentSettings: defaultAppSettings,
       currentNotes: [],
       destination: BackupSource.DESKTOP,
       isNotesEncryptionEnabled: false
@@ -29,6 +31,8 @@ describe("restorePlan", () => {
       defaultNotesMode: RestoreNotesMode.REPLACE_CURRENT,
       defaultSettingsMode: RestoreSettingsMode.RESTORE_BACKUP,
       hasBackupPreferences: true,
+      hasNotesConflict: false,
+      hasPreferencesConflict: false,
       preferencesCanBeRestored: true,
       hasMainWindowState: false,
       identicalNotesCount: 0,
@@ -42,6 +46,7 @@ describe("restorePlan", () => {
   it("preselects additive restore choices for a used destination and distinguishes identical from conflicting notes", () => {
     const archive = createArchive();
     const plan = createRestorePlan(archive, {
+      currentSettings: defaultAppSettings,
       currentNotes: [
         archive.notes[0],
         { ...archive.notes[1], content: "Current version" },
@@ -57,6 +62,7 @@ describe("restorePlan", () => {
       defaultNotesMode: RestoreNotesMode.ADD_TO_CURRENT,
       defaultSettingsMode: RestoreSettingsMode.KEEP_CURRENT,
       hasBackupPreferences: false,
+      hasNotesConflict: true,
       identicalNotesCount: 1,
       incomingNotesCount: 2,
       requiresCurrentPassword: true,
@@ -65,8 +71,11 @@ describe("restorePlan", () => {
     });
   });
 
-  it("keeps current preferences by default when both settings and current notes exist", () => {
-    const plan = createRestorePlan(createArchive({ appSettings: defaultAppSettings }), {
+  it("requires a preference choice only when backup preferences differ from the installed app", () => {
+    const plan = createRestorePlan(createArchive({
+      appSettings: getBackupPreferences({ ...defaultAppSettings, showTitles: false })
+    }), {
+      currentSettings: defaultAppSettings,
       currentNotes: [createNote("current-note", "Current note")],
       destination: BackupSource.DESKTOP,
       isNotesEncryptionEnabled: false
@@ -77,17 +86,38 @@ describe("restorePlan", () => {
     expect(plan.defaultSettingsMode).toBe(RestoreSettingsMode.KEEP_CURRENT);
   });
 
+  it("does not require merge choices when the installed notes and preferences already match the backup", () => {
+    const archive = createArchive({ appSettings: getBackupPreferences(defaultAppSettings) });
+    const plan = createRestorePlan(archive, {
+      currentSettings: defaultAppSettings,
+      currentNotes: archive.notes,
+      destination: BackupSource.DESKTOP,
+      isNotesEncryptionEnabled: false
+    });
+
+    expect(plan).toMatchObject({
+      defaultNotesMode: RestoreNotesMode.REPLACE_CURRENT,
+      defaultSettingsMode: RestoreSettingsMode.RESTORE_BACKUP,
+      hasNotesConflict: false,
+      hasPreferencesConflict: false,
+      requiresNotesModeSelection: false,
+      requiresSettingsModeSelection: false
+    });
+  });
+
   it("keeps preferences when a backup was created on a different platform", () => {
     const plan = createRestorePlan(createArchive({
-      appSettings: defaultAppSettings,
+      appSettings: getBackupPreferences(defaultAppSettings),
       source: BackupSource.WEB
     }), {
+      currentSettings: defaultAppSettings,
       currentNotes: [],
       destination: BackupSource.DESKTOP,
       isNotesEncryptionEnabled: false
     });
 
     expect(plan.hasBackupPreferences).toBe(true);
+    expect(plan.hasPreferencesConflict).toBe(false);
     expect(plan.preferencesCanBeRestored).toBe(false);
     expect(plan.defaultSettingsMode).toBe(RestoreSettingsMode.KEEP_CURRENT);
     expect(plan.requiresSettingsModeSelection).toBe(false);

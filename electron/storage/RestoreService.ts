@@ -112,6 +112,7 @@ export class RestoreService {
     const currentSettings = await this.settingsService.getSettings() ?? defaultAppSettings;
 
     return createRestorePlan(archive, {
+      currentSettings,
       currentNotes,
       destination: BackupSource.DESKTOP,
       isNotesEncryptionEnabled: currentSettings.notesEncryptionEnabled

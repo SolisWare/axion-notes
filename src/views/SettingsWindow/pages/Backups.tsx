@@ -245,7 +245,13 @@ function Backups(props: BackupsProps) {
         setRestorePassword(password);
         setRestorePlan(inspection.plan);
         setRestorePasswordDialogOpen(false);
-        setRestoreDialogOpen(true);
+        if (inspection.plan.requiresNotesModeSelection || inspection.plan.requiresSettingsModeSelection) {
+          setRestoreDialogOpen(true);
+        } else {
+          setRestoreNotesMode(inspection.plan.defaultNotesMode ?? RestoreNotesMode.REPLACE_CURRENT);
+          setRestoreSettingsMode(inspection.plan.defaultSettingsMode ?? RestoreSettingsMode.KEEP_CURRENT);
+          setRestoreConfirmationOpen(true);
+        }
         return RestoreInspectStatus.READY;
       case RestoreInspectStatus.PASSWORD_REQUIRED:
         setRestorePasswordDialogOpen(true);

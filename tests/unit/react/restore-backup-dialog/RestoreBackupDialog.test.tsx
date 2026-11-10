@@ -70,6 +70,7 @@ describe("RestoreBackupDialog", () => {
     renderRestoreBackupDialog({ plan: { ...defaultPlan, hasBackupPreferences: false } });
 
     expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("This backup does not include app preferences. Your current preferences will be kept.");
+    expect(screen.getByRole("group", { name: "Preferences" })).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("radio", { name: "Keep current preferences" })).toBeDisabled();
     expect(screen.getByRole("radio", { name: "Restore backup preferences" })).toBeDisabled();
   });
@@ -125,6 +126,8 @@ const defaultPlan = {
   defaultNotesMode: RestoreNotesMode.ADD_TO_CURRENT,
   defaultSettingsMode: RestoreSettingsMode.KEEP_CURRENT,
   hasBackupPreferences: true,
+  hasNotesConflict: false,
+  hasPreferencesConflict: false,
   preferencesCanBeRestored: true,
   hasMainWindowState: true,
   identicalNotesCount: 0,

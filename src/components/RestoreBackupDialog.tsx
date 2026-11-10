@@ -109,7 +109,11 @@ function RestoreBackupDialog(props: RestoreBackupDialogProps) {
           </RadioGroup>
         </fieldset>
 
-        <fieldset className={styles.optionGroup}>
+        <fieldset
+          aria-disabled={!canRestoreBackupPreferences}
+          className={`${styles.optionGroup} ${!canRestoreBackupPreferences ? styles.optionGroupDisabled : ""}`}
+          disabled={!canRestoreBackupPreferences}
+        >
           <legend className={styles.optionGroupTitle} id={preferencesGroupId}>{t("restoreBackupPreferencesTitle")}</legend>
           <p className={styles.optionGroupDescription}>
             {t(props.plan.hasBackupPreferences

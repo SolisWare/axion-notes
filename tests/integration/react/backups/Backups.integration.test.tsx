@@ -176,6 +176,50 @@ describe("Backups settings integration", () => {
     expect(desktopApi.appWindow.restart).toHaveBeenCalledOnce();
   });
 
+  it("skips restore choices when the selected backup has no conflicts", async () => {
+    const user = userEvent.setup();
+    const desktopApi = installDesktopApiMock({
+      restore: {
+        apply: vi.fn().mockResolvedValue({
+          state: { lastRestoredAt: "2026-11-07T12:30:00.000Z", version: 1 },
+          status: RestoreApplyStatus.APPLIED
+        }),
+        chooseArchive: vi.fn().mockResolvedValue({
+          filePath: "/tmp/axion-notes-backup.zip",
+          status: RestoreChooseStatus.SELECTED
+        }),
+        inspect: vi.fn().mockResolvedValue({
+          plan: {
+            ...createRestorePlan(),
+            currentNotesCount: 0,
+            defaultNotesMode: RestoreNotesMode.REPLACE_CURRENT,
+            hasNotesConflict: false,
+            hasPreferencesConflict: false,
+            requiresNotesModeSelection: false,
+            requiresSettingsModeSelection: false
+          },
+          status: RestoreInspectStatus.READY
+        })
+      }
+    });
+    UserAgent.isElectron = true;
+
+    render(<SettingsWindow appSettings={defaultAppSettings} onAppSettingsChange={vi.fn()} theme={SystemTheme.LIGHT} />);
+
+    await openBackups(user);
+    await user.click(screen.getByRole("button", { name: "Restore backup…" }));
+
+    const confirmationMessage = await screen.findByText("Restore the selected backup?");
+    expect(screen.queryByText("This backup contains 2 notes.")).not.toBeInTheDocument();
+    await user.click(within(confirmationMessage.closest("[role=dialog]")!).getByRole("button", { name: "Restore backup…" }));
+
+    expect(desktopApi.restore.apply).toHaveBeenCalledWith("/tmp/axion-notes-backup.zip", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      password: undefined,
+      settingsMode: RestoreSettingsMode.RESTORE_BACKUP
+    });
+  });
+
   it("shows restore progress only after the restore begins writing data", async () => {
     const user = userEvent.setup();
     let completeRestore: (() => void) | undefined;
@@ -294,16 +338,18 @@ function createRestorePlan() {
     archiveCreatedAt: "2026-11-07T12:00:00.000Z",
     backupSource: BackupSource.DESKTOP,
     conflictingNotesCount: 0,
-    currentNotesCount: 0,
+    currentNotesCount: 2,
     defaultNotesMode: RestoreNotesMode.REPLACE_CURRENT,
     defaultSettingsMode: RestoreSettingsMode.RESTORE_BACKUP,
     hasBackupPreferences: true,
+    hasNotesConflict: true,
+    hasPreferencesConflict: true,
     preferencesCanBeRestored: true,
     hasMainWindowState: false,
     identicalNotesCount: 0,
     incomingNotesCount: 2,
     requiresCurrentPassword: false,
-    requiresNotesModeSelection: false,
-    requiresSettingsModeSelection: false
+    requiresNotesModeSelection: true,
+    requiresSettingsModeSelection: true
   };
 }

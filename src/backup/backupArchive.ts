@@ -102,3 +102,13 @@ export function getBackupPreferences(settings: AppSettings): Omit<AppSettings,
     titleFontSize: settings.titleFontSize
   };
 }
+
+/**
+ * Determines whether two backup-safe preference sets have identical values.
+ */
+export function areBackupPreferencesEqual(
+  first: ReturnType<typeof getBackupPreferences>,
+  second: ReturnType<typeof getBackupPreferences>
+): boolean {
+  return JSON.stringify(first) === JSON.stringify(second);
+}

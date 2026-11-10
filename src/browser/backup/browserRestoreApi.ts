@@ -142,6 +142,7 @@ export function createBrowserRestoreApi(options: BrowserRestoreApiOptions = {}) 
 
         return {
           plan: createRestorePlan(archive, {
+            currentSettings: settings ?? defaultAppSettings,
             currentNotes,
             destination: BackupSource.WEB,
             isNotesEncryptionEnabled: Boolean(settings?.notesEncryptionEnabled)

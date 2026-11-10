@@ -16,6 +16,8 @@ export type RestorePlan = {
   defaultNotesMode?: RestoreNotesMode;
   defaultSettingsMode?: RestoreSettingsMode;
   hasBackupPreferences: boolean;
+  hasNotesConflict: boolean;
+  hasPreferencesConflict: boolean;
   preferencesCanBeRestored: boolean;
   hasMainWindowState: boolean;
   identicalNotesCount: number;

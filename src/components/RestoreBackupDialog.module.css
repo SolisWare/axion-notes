@@ -54,6 +54,10 @@
   border-radius: 6px;
 }
 
+.optionGroupDisabled {
+  opacity: 0.48;
+}
+
 .optionGroupTitle {
   padding: 0 5px;
   color: var(--restore-backup-dialog-title);
