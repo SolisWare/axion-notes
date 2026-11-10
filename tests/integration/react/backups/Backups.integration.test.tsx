@@ -87,20 +87,12 @@ afterEach(() => {
 });
 
 describe("Backups settings integration", () => {
-  it("initializes backups from the desktop settings window", async () => {
+  it("initializes backups with the content selection confirmed from the desktop settings window", async () => {
     const user = userEvent.setup();
     const desktopApi = installDesktopApiMock({
       backup: {
         getState: vi.fn().mockResolvedValue(undefined),
         initialize: vi.fn().mockResolvedValue({
-          version: 1,
-          initializedAt: "2026-11-05T12:00:00.000Z",
-          contentSelection: {
-            appSettings: true,
-            mainWindowState: true
-          }
-        }),
-        updateContentSelection: vi.fn().mockResolvedValue({
           version: 1,
           initializedAt: "2026-11-05T12:00:00.000Z",
           contentSelection: {
@@ -123,17 +115,16 @@ describe("Backups settings integration", () => {
     await user.click(screen.getByRole("button", { name: "Backups" }));
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
-    expect(desktopApi.backup.initialize).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
+    const optionsDialog = await screen.findByRole("dialog", { name: "Backup Options" });
+    expect(desktopApi.backup.initialize).not.toHaveBeenCalled();
+    await user.click(within(optionsDialog).getByRole("checkbox", { name: "App preferences" }));
+    await user.click(within(optionsDialog).getByRole("button", { name: "Save" }));
 
-    await user.click(screen.getByRole("button", { name: "Options..." }));
-    await user.click(screen.getByRole("checkbox", { name: "App preferences" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
-
-    expect(desktopApi.backup.updateContentSelection).toHaveBeenCalledWith({
+    expect(desktopApi.backup.initialize).toHaveBeenCalledWith({
       appSettings: false,
       mainWindowState: true
     });
+    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
   });
 
   it("reviews a selected backup, confirms its restore, and restarts after applying it", async () => {

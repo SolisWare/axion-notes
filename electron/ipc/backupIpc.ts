@@ -56,9 +56,9 @@ export function registerBackupIpc(options: BackupIpcOptions): void {
     return options.backupService.getState();
   });
 
-  protectedHandle<BackupState | undefined, []>(channels.backup.initialize, { ...options, fallback: undefined }, async () => {
+  protectedHandle<BackupState | undefined, [BackupContentSelection?]>(channels.backup.initialize, { ...options, fallback: undefined }, async (_event, contentSelection) => {
     try {
-      return await options.backupService.initialize();
+      return await options.backupService.initialize(contentSelection);
     } catch (err) {
       console.warn("Failed to initialize backups:", err);
       return undefined;

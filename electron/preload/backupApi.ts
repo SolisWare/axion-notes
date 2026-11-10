@@ -25,8 +25,8 @@ export const backupApi = {
     return receive<BackupState | undefined>(channels.backup.getState);
   },
 
-  initialize: async (): Promise<BackupState | undefined> => {
-    return receive<BackupState | undefined>(channels.backup.initialize);
+  initialize: async (contentSelection?: BackupContentSelection): Promise<BackupState | undefined> => {
+    return receive<BackupState | undefined>(channels.backup.initialize, contentSelection);
   },
 
   saveCopy: async (): Promise<BackupSaveResult> => {

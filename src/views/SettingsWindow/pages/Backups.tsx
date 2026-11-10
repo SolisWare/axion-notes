@@ -29,6 +29,7 @@ import { RestoreState } from "../../../types/RestoreState";
 import { RestoreProgressEvent, RestoreProgressPhase } from "../../../types/RestoreProgressEvent";
 import { Formatter } from "../../../utils/dt-formatter/Formatter";
 import { UserAgent } from "../../../utils/UserAgent";
+import { defaultBackupContentSelection } from "../../../settings/defaultBackupContentSelection";
 import styles from "./SettingsPages.module.css";
 
 type BackupsProps = {
@@ -106,28 +107,39 @@ function Backups(props: BackupsProps) {
     return window.api.restore.onProgress(setRestoreProgress);
   }, [isElectron]);
 
-  const handleInitialize = async (): Promise<void> => {
+  const handleOpenInitialOptions = (): void => {
+    setHasInitializationError(false);
+    setOptionsDialogOpen(true);
+  };
+
+  const handleInitialize = async (contentSelection: BackupContentSelection): Promise<boolean> => {
     setIsInitializing(true);
     setHasInitializationError(false);
 
     try {
-      const state = await window.api.backup.initialize();
+      const state = await window.api.backup.initialize(contentSelection);
 
       if (!state) {
         setHasInitializationError(true);
-        return;
+        return false;
       }
 
       setBackupState(state);
+      return true;
     } catch (err) {
       console.error("Failed to initialize backups:", (err as Error).message);
       setHasInitializationError(true);
+      return false;
     } finally {
       setIsInitializing(false);
     }
   };
 
   const handleSaveOptions = async (contentSelection: BackupContentSelection): Promise<boolean> => {
+    if (!backupState) {
+      return handleInitialize(contentSelection);
+    }
+
     try {
       const state = await window.api.backup.updateContentSelection(contentSelection);
 
@@ -373,7 +385,7 @@ function Backups(props: BackupsProps) {
                 className={styles.settingsButton}
                 disabled={isLoading || isInitializing}
                 type="button"
-                onClick={handleInitialize}
+                onClick={handleOpenInitialOptions}
               >
                 {t(isInitializing ? "settingUpBackups" : "setUpBackups")}
               </button>
@@ -423,16 +435,14 @@ function Backups(props: BackupsProps) {
           </div>
         )}
       </section>
-      {backupState && (
-        <BackupOptionsDialog
-          contentSelection={backupState.contentSelection}
-          open={isOptionsDialogOpen}
-          showMainWindowStateOption={isElectron}
-          theme={props.theme}
-          onClose={() => setOptionsDialogOpen(false)}
-          onSave={handleSaveOptions}
-        />
-      )}
+      <BackupOptionsDialog
+        contentSelection={backupState?.contentSelection ?? defaultBackupContentSelection}
+        open={isOptionsDialogOpen}
+        showMainWindowStateOption={isElectron}
+        theme={props.theme}
+        onClose={() => setOptionsDialogOpen(false)}
+        onSave={handleSaveOptions}
+      />
       {restorePlan && (
         <RestoreBackupDialog
           appSettings={props.appSettings}

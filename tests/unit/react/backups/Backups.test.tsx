@@ -110,20 +110,12 @@ describe("Backups", () => {
     expect(screen.getByText("11/7/2026 at 12:00 AM")).toBeInTheDocument();
   });
 
-  it("initializes backups and shows the configured state", async () => {
+  it("opens setup options with defaults and initializes only after they are saved", async () => {
     const user = userEvent.setup();
     const desktopApi = installDesktopApiMock({
       backup: {
         getState: vi.fn().mockResolvedValue(undefined),
         initialize: vi.fn().mockResolvedValue({
-          version: 1,
-          initializedAt: "2026-11-05T12:00:00.000Z",
-          contentSelection: {
-            appSettings: true,
-            mainWindowState: true
-          }
-        }),
-        updateContentSelection: vi.fn().mockResolvedValue({
           version: 1,
           initializedAt: "2026-11-05T12:00:00.000Z",
           contentSelection: {
@@ -138,25 +130,38 @@ describe("Backups", () => {
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
 
-    expect(desktopApi.backup.initialize).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
-    expect(screen.getByText("Notes and selected app data are ready to be included in your backup archive.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Set up backups" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Create backup" })).toBeEnabled();
-    await user.click(screen.getByRole("button", { name: "Options..." }));
+    const optionsDialog = await screen.findByRole("dialog", { name: "Backup Options" });
+    expect(desktopApi.backup.initialize).not.toHaveBeenCalled();
+    expect(within(optionsDialog).getByRole("checkbox", { name: "App preferences" })).toBeChecked();
+    expect(within(optionsDialog).getByRole("checkbox", { name: "Main-window layout" })).toBeChecked();
+    await user.click(within(optionsDialog).getByRole("checkbox", { name: "App preferences" }));
+    await user.click(within(optionsDialog).getByRole("button", { name: "Save" }));
 
-    expect(screen.getByRole("dialog", { name: "Backup Options" })).toBeInTheDocument();
-    await user.click(screen.getByRole("checkbox", { name: "App preferences" }));
-    await user.click(screen.getByRole("button", { name: "Save" }));
-
-    expect(desktopApi.backup.updateContentSelection).toHaveBeenCalledWith({
+    expect(desktopApi.backup.initialize).toHaveBeenCalledWith({
       appSettings: false,
       mainWindowState: true
     });
+    expect(await screen.findByText("Ready to create a backup")).toBeInTheDocument();
+    expect(screen.getByText("Notes and selected app data are ready to be included in your backup archive.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Set up backups" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Create backup" })).toBeEnabled();
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Backup Options" })).not.toBeInTheDocument());
   });
 
-  it("shows initialization failures accessibly", async () => {
+  it("does not initialize backups when first-time setup options are cancelled", async () => {
+    const user = userEvent.setup();
+    const desktopApi = installDesktopApiMock();
+
+    render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
+
+    await user.click(await screen.findByRole("button", { name: "Set up backups" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Backup Options" })).getByRole("button", { name: "Cancel" }));
+
+    expect(desktopApi.backup.initialize).not.toHaveBeenCalled();
+    expect(screen.getByText("No backup created yet")).toBeInTheDocument();
+  });
+
+  it("shows initial setup save failures accessibly", async () => {
     const user = userEvent.setup();
     installDesktopApiMock({
       backup: {
@@ -168,8 +173,9 @@ describe("Backups", () => {
     render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     await user.click(await screen.findByRole("button", { name: "Set up backups" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Backup Options" })).getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't set up backups. Try again.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't save backup options. Try again.");
   });
 
   it("explains when the selected file is not a valid backup", async () => {

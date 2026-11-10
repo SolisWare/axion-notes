@@ -40,6 +40,18 @@ describe("BackupService", () => {
     });
   });
 
+  it("initializes backup state with the content selection confirmed during setup", async () => {
+    const { service, storage } = await createService("2026-11-04T12:00:00.000Z");
+    const contentSelection = { appSettings: false, mainWindowState: true };
+
+    await expect(service.initialize(contentSelection)).resolves.toEqual({
+      version: 1,
+      initializedAt: "2026-11-04T12:00:00.000Z",
+      contentSelection
+    });
+    await expect(storage.getState()).resolves.toMatchObject({ contentSelection });
+  });
+
   it("preserves existing backup selections and history when setup is repeated", async () => {
     const { service, storage } = await createService("2026-11-04T12:00:00.000Z");
     const existingState: BackupState = {

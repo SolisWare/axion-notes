@@ -81,7 +81,7 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
       return state && updateBackupContentSelection(state, normalizeBrowserContentSelection(state.contentSelection));
     },
 
-    initialize: async (): Promise<BackupState | undefined> => {
+    initialize: async (contentSelection = defaultBackupContentSelection): Promise<BackupState | undefined> => {
       const existingState = getBackupState();
 
       if (existingState) {
@@ -89,7 +89,7 @@ export function createBrowserBackupApi(options: BrowserBackupApiOptions = {}) {
       }
 
       try {
-        const state = createBackupState(getCurrentDate().toISOString(), normalizeBrowserContentSelection(defaultBackupContentSelection));
+        const state = createBackupState(getCurrentDate().toISOString(), normalizeBrowserContentSelection(contentSelection));
         setBackupState(state);
         return state;
       } catch (err) {

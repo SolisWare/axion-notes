@@ -42,7 +42,7 @@ export interface IElectronAPI {
     createArchive: (password?: string) => Promise<BackupCreateResult>;
     deleteArchive: () => Promise<BackupDeleteResult>;
     getState: () => Promise<BackupState | undefined>;
-    initialize: () => Promise<BackupState | undefined>;
+    initialize: (contentSelection?: BackupContentSelection) => Promise<BackupState | undefined>;
     saveCopy: () => Promise<BackupSaveResult>;
     updateContentSelection: (contentSelection: BackupContentSelection) => Promise<BackupState | undefined>;
   },

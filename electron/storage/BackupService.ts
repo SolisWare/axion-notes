@@ -27,17 +27,17 @@ export class BackupService {
   }
 
   /**
-   * Initializes managed backups with the default optional content selection.
+   * Initializes managed backups with the selected optional content.
    * Repeating setup preserves the existing configuration and backup history.
    */
-  public async initialize(): Promise<BackupState> {
+  public async initialize(contentSelection: BackupContentSelection = defaultBackupContentSelection): Promise<BackupState> {
     const existingState = await this.getState();
 
     if (existingState) {
       return existingState;
     }
 
-    const state = createBackupState(this.getCurrentDate().toISOString(), defaultBackupContentSelection);
+    const state = createBackupState(this.getCurrentDate().toISOString(), contentSelection);
 
     await this.backupStateStorage.setState(state);
     return state;
