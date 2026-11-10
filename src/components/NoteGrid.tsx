@@ -50,29 +50,21 @@ export type NoteGridProps = {
 
 const NOTE_GRID_GAP = 25;
 const NOTE_GRID_HORIZONTAL_PADDING = 60;
-const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable='true']";
+const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable]";
 
-function isFocusedEditableTarget(target: EventTarget | null): boolean {
+function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) {
     return false;
   }
 
-  const editableTarget = target.closest(NOTE_EDITABLE_SELECTOR);
-
-  if (!(editableTarget instanceof HTMLElement)) {
-    return false;
-  }
-
-  const activeElement = editableTarget.ownerDocument.activeElement;
-
-  return activeElement === editableTarget || editableTarget.contains(activeElement);
+  return target.closest(NOTE_EDITABLE_SELECTOR) !== null;
 }
 
 class NotePointerSensor extends PointerSensor {
   static activators = [{
     eventName: "onPointerDown" as const,
     handler: ({ nativeEvent: event }: ReactPointerEvent, { onActivation }: PointerSensorOptions) => {
-      if (!event.isPrimary || event.button !== 0 || isFocusedEditableTarget(event.target)) {
+      if (!event.isPrimary || event.button !== 0 || isEditableTarget(event.target)) {
         return false;
       }
 

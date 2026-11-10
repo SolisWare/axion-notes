@@ -56,4 +56,49 @@ test.describe("Note", () => {
       title: "Saved title"
     });
   });
+
+  test("does not reorder notes when selecting text in a focused rich-text editor", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await desktopApp.page.evaluate(async () => {
+      await window.api.storage.setNote({
+        id: "first-note",
+        bgcolor: "yellow",
+        content: "First selectable note text",
+        title: "First note",
+        createdOn: new Date("2026-11-08T12:00:00.000Z"),
+        lastModifiedOn: new Date("2026-11-08T12:00:00.000Z")
+      });
+      await window.api.storage.setNote({
+        id: "second-note",
+        bgcolor: "blue",
+        content: "Second selectable note text",
+        title: "Second note",
+        createdOn: new Date("2026-11-08T12:00:00.000Z"),
+        lastModifiedOn: new Date("2026-11-08T12:00:00.000Z")
+      });
+    });
+    await desktopApp.page.reload();
+
+    const editors = desktopApp.page.locator(".ProseMirror");
+    await expect(editors).toHaveCount(2);
+    const firstEditor = await editors.nth(0).boundingBox();
+    const secondEditor = await editors.nth(1).boundingBox();
+
+    if (!firstEditor || !secondEditor) {
+      throw new Error("Could not measure the note editors.");
+    }
+
+    await desktopApp.page.mouse.move(secondEditor.x + 12, secondEditor.y + 12);
+    await desktopApp.page.mouse.down();
+    await desktopApp.page.mouse.move(firstEditor.x + 12, firstEditor.y + 12, { steps: 12 });
+    await desktopApp.page.mouse.up();
+
+    await expect.poll(async () => desktopApp!.page.evaluate(async () => (await window.api.storage.getNotes()).map((note) => note.id))).toEqual([
+      "first-note",
+      "second-note"
+    ]);
+  });
 });
