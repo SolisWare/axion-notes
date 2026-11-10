@@ -105,6 +105,23 @@ describe("restorePlan", () => {
     });
   });
 
+  it("requires a note choice when otherwise identical notes are in a different order", () => {
+    const archive = createArchive({ appSettings: getBackupPreferences(defaultAppSettings) });
+    const plan = createRestorePlan(archive, {
+      currentSettings: defaultAppSettings,
+      currentNotes: [...archive.notes].reverse(),
+      destination: BackupSource.DESKTOP,
+      isNotesEncryptionEnabled: false
+    });
+
+    expect(plan).toMatchObject({
+      conflictingNotesCount: 0,
+      hasNotesConflict: true,
+      identicalNotesCount: 2,
+      requiresNotesModeSelection: true
+    });
+  });
+
   it("keeps preferences when a backup was created on a different platform", () => {
     const plan = createRestorePlan(createArchive({
       appSettings: getBackupPreferences(defaultAppSettings),

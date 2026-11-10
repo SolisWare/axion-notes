@@ -120,6 +120,18 @@ describe("BackupArchiveReader", () => {
     } satisfies Partial<BackupArchiveReadError>);
   });
 
+  it("rejects a valid ZIP with malformed notes before returning any restore content", async () => {
+    const archivePath = await writeZip([
+      { fileName: "manifest.json", value: { contentSelection: { appSettings: false, mainWindowState: false }, createdAt: "2026-11-07T12:00:00.000Z", version: 1 } },
+      { fileName: "notes.json", value: [{ id: "valid-note" }, { bgcolor: "yellow", content: "Missing timestamps", id: "invalid-note" }] },
+      { fileName: "note-order.json", value: ["valid-note", "invalid-note"] }
+    ]);
+
+    await expect(new BackupArchiveReader().readArchive(archivePath)).rejects.toMatchObject({
+      failure: BackupArchiveReadFailure.INVALID_ARCHIVE
+    } satisfies Partial<BackupArchiveReadError>);
+  });
+
   it("distinguishes an unreadable archive path from an invalid archive", async () => {
     await expect(new BackupArchiveReader().readArchive("/path/that/does/not/exist.zip")).rejects.toMatchObject({
       failure: BackupArchiveReadFailure.READ_FAILED

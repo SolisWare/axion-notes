@@ -66,7 +66,7 @@ test.describe("Backup restore", () => {
 
     const reviewDialog = await settingsPage.getByRole("dialog", { name: "Restore backup…" });
     await expect(reviewDialog.getByRole("radio", { name: "Add backup notes" })).toBeChecked();
-    await expect(reviewDialog.getByRole("radio", { name: "Keep current preferences" })).toBeChecked();
+    await expect(reviewDialog.getByRole("radio", { name: "Restore backup preferences" })).toBeChecked();
     await expect(reviewDialog.getByRole("button", { name: "Restore backup…" })).toBeEnabled();
     await reviewDialog.getByRole("radio", { name: "Replace current notes" }).check();
     await reviewDialog.getByRole("radio", { name: "Restore backup preferences" }).check();
@@ -81,6 +81,61 @@ test.describe("Backup restore", () => {
       version: 1
     });
   });
+
+  test("skips merge choices when the selected backup already matches the app", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await setNote(desktopApp.page, archivedNote);
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Backups" }).click();
+    await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+    await settingsPage.getByRole("button", { name: "Create backup" }).click();
+    await expect(settingsPage.getByRole("status")).toHaveText("Backup created");
+
+    await configureRestoreArchive(desktopApp, path.join(userDataDir, "backup", backupFileName));
+    await preventRestartForInspection(desktopApp);
+    await settingsPage.getByRole("button", { name: "Restore backup…" }).click();
+
+    const confirmationDialog = await settingsPage.getByRole("dialog", { name: "Restore backup…" });
+    await expect(confirmationDialog).toHaveAccessibleDescription("This replaces data according to the selected restore options. Axion Notes will restart when the restore is complete.");
+    await expect(settingsPage.getByText("This backup contains 1 notes.")).toHaveCount(0);
+    await confirmationDialog.getByRole("button", { name: "Restore backup…" }).click();
+
+    await expectNotes(desktopApp.page, [archivedNote]);
+  });
+
+  test("adds a distinct copy when a backup note conflicts with a current note", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await setNote(desktopApp.page, archivedNote);
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Backups" }).click();
+    await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+    await settingsPage.getByRole("button", { name: "Create backup" }).click();
+    await expect(settingsPage.getByRole("status")).toHaveText("Backup created");
+
+    await setNote(desktopApp.page, { ...archivedNote, content: "This is the current version of the note." });
+    await configureRestoreArchive(desktopApp, path.join(userDataDir, "backup", backupFileName));
+    await preventRestartForInspection(desktopApp);
+    await settingsPage.getByRole("button", { name: "Restore backup…" }).click();
+
+    const reviewDialog = await settingsPage.getByRole("dialog", { name: "Restore backup…" });
+    await expect(reviewDialog.getByRole("radio", { name: "Add backup notes" })).toBeChecked();
+    await reviewDialog.getByRole("button", { name: "Restore backup…" }).click();
+    await settingsPage.getByRole("dialog", { name: "Restore backup…" }).getByRole("button", { name: "Restore backup…" }).click();
+
+    await expect.poll(async () => getStoredNotes(desktopApp!.page)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ content: archivedNote.content, title: archivedNote.title }),
+      expect.objectContaining({ content: "This is the current version of the note.", id: archivedNote.id, title: archivedNote.title })
+    ]));
+    await expect.poll(async () => (await getStoredNotes(desktopApp!.page)).length).toBe(2);
+  });
 });
 
 async function setNote(page: Page, note: NoteType): Promise<void> {
@@ -90,13 +145,15 @@ async function setNote(page: Page, note: NoteType): Promise<void> {
 }
 
 async function expectNotes(page: Page, expectedNotes: NoteType[]): Promise<void> {
-  await expect.poll(async () => page.evaluate(async () => {
-    return (await window.api.storage.getNotes()).map((note) => ({
-      content: note.content,
-      id: note.id,
-      title: note.title
-    }));
-  })).toEqual(expectedNotes.map((note) => ({
+  await expect.poll(async () => getStoredNotes(page)).toEqual(expectedNotes.map((note) => ({
+    content: note.content,
+    id: note.id,
+    title: note.title
+  })));
+}
+
+async function getStoredNotes(page: Page): Promise<Array<Pick<NoteType, "content" | "id" | "title">>> {
+  return page.evaluate(async () => (await window.api.storage.getNotes()).map((note) => ({
     content: note.content,
     id: note.id,
     title: note.title

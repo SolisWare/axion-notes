@@ -29,7 +29,9 @@ export function createRestorePlan(archive: ValidatedBackupArchive, options: Rest
   const { conflictingNotesCount, identicalNotesCount } = getNoteCollisionCounts(archive.notes, notesById);
   const hasCurrentNotes = options.currentNotes.length > 0;
   const hasNotesConflict = hasCurrentNotes && (
-    conflictingNotesCount > 0 || identicalNotesCount !== options.currentNotes.length
+    conflictingNotesCount > 0
+    || identicalNotesCount !== options.currentNotes.length
+    || !areNoteOrdersEqual(options.currentNotes, archive.noteOrder)
   );
   const hasBackupPreferences = archive.appSettings !== undefined;
   const preferencesCanBeRestored = hasBackupPreferences && archive.source === options.destination;
@@ -75,5 +77,10 @@ function getNoteCollisionCounts(incomingNotes: readonly NoteType[], currentNotes
   }
 
   return { conflictingNotesCount, identicalNotesCount };
+}
+
+function areNoteOrdersEqual(currentNotes: readonly NoteType[], incomingNoteOrder: readonly string[]): boolean {
+  return currentNotes.length === incomingNoteOrder.length
+    && currentNotes.every((note, index) => note.id === incomingNoteOrder[index]);
 }
 
