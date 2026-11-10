@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     boxSizing: "border-box",
     padding: "30px 30px",
     display: "flex",
-    justifyContent: "center"
+    justifyContent: "flex-start"
   },
   noteGrid: {
     display: "grid",

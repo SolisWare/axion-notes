@@ -105,6 +105,7 @@ test.describe("Backup restore", () => {
     await confirmationDialog.getByRole("button", { name: "Restore backup…" }).click();
 
     await expectNotes(desktopApp.page, [archivedNote]);
+    await expect.poll(async () => (await desktopApp!.page.getByPlaceholder("Title").first().boundingBox())?.x).toBeLessThanOrEqual(40);
   });
 
   test("adds a distinct copy when a backup note conflicts with a current note", async () => {
