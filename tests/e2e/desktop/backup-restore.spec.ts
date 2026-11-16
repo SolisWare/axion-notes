@@ -51,7 +51,7 @@ test.describe("Backup restore", () => {
 
     const settingsPage = await openSettings(desktopApp);
     await settingsPage.getByRole("button", { name: "Backups" }).click();
-    await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+    await setUpBackups(settingsPage);
     await settingsPage.getByRole("button", { name: "Create backup" }).click();
     await expect(settingsPage.getByRole("status")).toHaveText("Backup created");
 
@@ -91,7 +91,7 @@ test.describe("Backup restore", () => {
 
     const settingsPage = await openSettings(desktopApp);
     await settingsPage.getByRole("button", { name: "Backups" }).click();
-    await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+    await setUpBackups(settingsPage);
     await settingsPage.getByRole("button", { name: "Create backup" }).click();
     await expect(settingsPage.getByRole("status")).toHaveText("Backup created");
 
@@ -117,7 +117,7 @@ test.describe("Backup restore", () => {
 
     const settingsPage = await openSettings(desktopApp);
     await settingsPage.getByRole("button", { name: "Backups" }).click();
-    await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+    await setUpBackups(settingsPage);
     await settingsPage.getByRole("button", { name: "Create backup" }).click();
     await expect(settingsPage.getByRole("status")).toHaveText("Backup created");
 
@@ -177,6 +177,16 @@ async function openSettings(desktopApp: TestElectronApp): Promise<Page> {
   const settingsPage = await settingsPagePromise;
   await settingsPage.waitForLoadState("domcontentloaded");
   return settingsPage;
+}
+
+async function setUpBackups(settingsPage: Page): Promise<void> {
+  await settingsPage.getByRole("button", { name: "Set up backups" }).click();
+
+  const optionsDialog = settingsPage.getByRole("dialog", { name: "Backup Options" });
+  await expect(optionsDialog.getByRole("checkbox", { name: "App preferences" })).toBeChecked();
+  await expect(optionsDialog.getByRole("checkbox", { name: "Main-window layout" })).toBeChecked();
+  await optionsDialog.getByRole("button", { name: "Save" }).click();
+  await expect(optionsDialog).toBeHidden();
 }
 
 async function configureRestoreArchive(desktopApp: TestElectronApp, archivePath: string): Promise<void> {
