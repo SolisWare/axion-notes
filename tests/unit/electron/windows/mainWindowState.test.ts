@@ -10,7 +10,8 @@ import * as path from "node:path";
 import { BrowserWindow } from "electron";
 import { afterEach, describe, expect, it } from "vitest";
 import { AppWindowState } from "../../../../src/settings/AppWindowState";
-import { readMainWindowState, saveMainWindowStateOnClose, suppressMainWindowStateSaveOnClose } from "../../../../electron/windows/mainWindowState";
+import { NoteLayoutPreference } from "../../../../src/settings/NoteLayoutPreference";
+import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose, suppressMainWindowStateSaveOnClose } from "../../../../electron/windows/mainWindowState";
 
 const temporaryDirectories: string[] = [];
 
@@ -19,6 +20,21 @@ afterEach(async () => {
 });
 
 describe("mainWindowState", () => {
+  it("saves current normal bounds and position for the next normal launch", async () => {
+    const stateFilePath = await writeMainWindowState({
+      bounds: { height: 500, width: 700, x: 10, y: 20 },
+      isMaximized: false
+    });
+    const currentBounds = { height: 740, width: 1180, x: 222, y: 111 };
+    const window = createWindow(currentBounds, false);
+
+    saveMainWindowStateOnClose(window, stateFilePath);
+
+    const savedState = readMainWindowState(stateFilePath);
+    expect(savedState).toEqual({ bounds: currentBounds, isMaximized: false });
+    expect(getMainWindowLaunchBounds(savedState, NoteLayoutPreference.GRID)).toEqual(currentBounds);
+  });
+
   it("retains restored normal bounds and position when the pre-restore window closes", async () => {
     const restoredState: AppWindowState = {
       bounds: { height: 740, width: 1180, x: 222, y: 111 },
