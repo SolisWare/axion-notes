@@ -137,7 +137,24 @@ jobs:
 
   test-e2e-desktop:
     needs: build
-    runs-on: ubuntu-latest
+    name: Desktop E2E (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Ubuntu
+            runner: ubuntu-latest
+            shell: bash
+            test_command: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+          - platform: macOS
+            runner: macos-latest
+            shell: bash
+            test_command: ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+          - platform: Windows
+            runner: windows-latest
+            shell: pwsh
+            test_command: .\node_modules\.bin\playwright.cmd test --project=desktop --pass-with-no-tests --reporter=list,json
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -158,7 +175,8 @@ jobs:
           path: build/
 
       - name: Run desktop E2E tests
-        run: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+        run: ${{ matrix.test_command }}
+        shell: ${{ matrix.shell }}
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-desktop-report.json
 
