@@ -145,16 +145,10 @@ jobs:
         include:
           - platform: Ubuntu
             runner: ubuntu-latest
-            shell: bash
-            test_command: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
           - platform: macOS
             runner: macos-latest
-            shell: bash
-            test_command: ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
           - platform: Windows
             runner: windows-latest
-            shell: pwsh
-            test_command: .\node_modules\.bin\playwright.cmd test --project=desktop --pass-with-no-tests --reporter=list,json
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -174,9 +168,24 @@ jobs:
           name: build
           path: build/
 
-      - name: Run desktop E2E tests
-        run: ${{ matrix.test_command }}
-        shell: ${{ matrix.shell }}
+      - name: Run desktop E2E tests on Ubuntu
+        if: matrix.platform == 'Ubuntu'
+        run: xvfb-run --auto-servernum ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+        shell: bash
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-desktop-report.json
+
+      - name: Run desktop E2E tests on macOS
+        if: matrix.platform == 'macOS'
+        run: ./node_modules/.bin/playwright test --project=desktop --pass-with-no-tests --reporter=list,json
+        shell: bash
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-desktop-report.json
+
+      - name: Run desktop E2E tests on Windows
+        if: matrix.platform == 'Windows'
+        run: .\node_modules\.bin\playwright.cmd test --project=desktop --pass-with-no-tests --reporter=list,json
+        shell: pwsh
         env:
           PLAYWRIGHT_JSON_OUTPUT_NAME: playwright-desktop-report.json
 
