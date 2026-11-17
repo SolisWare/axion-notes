@@ -11,6 +11,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added Grid view and List view options to the desktop View menu
 - Added non-custom note sorting options to the desktop Edit menu
 - Added contextual re-sort confirmations that show the active note sort order
+- Added a restart prompt after changing the application language so the new language can be applied immediately or on the next launch
 - Added local plaintext backup archives for notes, app preferences, and main-window layout, with export-copy and deletion controls
 - Added backup restore with archive validation, note replacement or merge choices, and optional preference restoration
 - Added Vitest V8 coverage reports for unit and integration tests
@@ -25,6 +26,10 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 ### Fixed
 - Fixed the lock-screen Unlock button so translated labels expand without wrapping
 - Fixed encrypted note writes so rapid updates, reordering, and deletion cannot use stale manifest state
+- Fixed settings descriptions that displayed translation keys instead of their localized text
+- Fixed dashed-list formatting controls so they reflect the selected note content
+- Fixed partial grid rows so notes remain left-aligned instead of centering unexpectedly
+- Prevented accidental note dragging while selecting editable note text
 - Removed note-loading debug logs and the Electron development security warning by defining a restrictive renderer content security policy
 
 ### Security
