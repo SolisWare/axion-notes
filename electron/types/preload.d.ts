@@ -29,12 +29,13 @@ import { RestoreInspectResult } from '../../src/types/RestoreInspectResult';
 import { RestoreApplyOptions } from '../../src/types/RestoreApplyOptions';
 import { RestoreState } from '../../src/types/RestoreState';
 import { RestoreProgressEvent } from '../../src/types/RestoreProgressEvent';
+import { AppRestartOptions } from '../../src/types/AppRestartOptions';
 
 export interface IElectronAPI {
   appWindow: {
     close: () => void;
     readyToShow: () => void;
-    restart: () => void;
+    restart: (options?: AppRestartOptions) => void;
     setAlwaysOnTop: (enabled: boolean) => void;
     setLayout: (layout: NoteLayoutPreference) => void;
   },

@@ -324,7 +324,10 @@ function Backups(props: BackupsProps) {
       }
 
       setRestoreErrorKey(undefined);
-      window.api.appWindow.restart();
+      window.api.appWindow.restart({
+        preserveMainWindowState: restoreSettingsMode === RestoreSettingsMode.RESTORE_BACKUP
+          && restorePlan?.hasMainWindowState === true
+      });
     } catch (err) {
       console.error("Failed to restore backup:", (err as Error).message);
       setRestoreErrorKey("restoreBackupFailed");

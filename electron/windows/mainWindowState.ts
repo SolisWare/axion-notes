@@ -12,7 +12,17 @@ import { AppWindowBounds } from "../../src/settings/AppWindowBounds";
 import { AppWindowState } from "../../src/settings/AppWindowState";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 
+const windowsWithSuppressedStateSave = new WeakSet<BrowserWindow>();
+
+export function suppressMainWindowStateSaveOnClose(window: BrowserWindow): void {
+  windowsWithSuppressedStateSave.add(window);
+}
+
 export function saveMainWindowStateOnClose(window: BrowserWindow, mainWindowStateFilePath: string): void {
+  if (windowsWithSuppressedStateSave.delete(window)) {
+    return;
+  }
+
   if (!window.isResizable()) {
     saveMainWindowPositionState(window, mainWindowStateFilePath);
     return;

@@ -6,6 +6,7 @@
  */
 import { channels } from "../ipc/channels";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
+import { AppRestartOptions } from "../../src/types/AppRestartOptions";
 import { send } from "./ipcHelpers";
 
 export const appWindowApi = {
@@ -15,8 +16,8 @@ export const appWindowApi = {
   readyToShow: () => {
     send(channels.appWindow.readyToShow);
   },
-  restart: () => {
-    send(channels.appWindow.restart);
+  restart: (options?: AppRestartOptions) => {
+    send(channels.appWindow.restart, options);
   },
   setAlwaysOnTop: (enabled: boolean) => {
     send(channels.appWindow.setAlwaysOnTop, enabled);

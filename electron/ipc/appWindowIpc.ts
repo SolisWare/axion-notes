@@ -8,7 +8,8 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import { NoteLayoutPreference } from "../../src/settings/NoteLayoutPreference";
 import { LockStateService } from "../security/LockStateService";
 import { SettingsService } from "../storage/SettingsService";
-import { applyMainWindowLayout } from "../windows/mainWindowState";
+import { applyMainWindowLayout, suppressMainWindowStateSaveOnClose } from "../windows/mainWindowState";
+import { AppRestartOptions } from "../../src/types/AppRestartOptions";
 import { channels } from "./channels";
 import { protectedOn } from "./protectedIpc";
 
@@ -23,8 +24,17 @@ export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
     BrowserWindow.fromWebContents(event.sender)?.close();
   });
 
-  protectedOn<[]>(channels.appWindow.restart, options, async () => {
+  protectedOn<[AppRestartOptions?]>(channels.appWindow.restart, options, async (event, restartOptions) => {
     await options.settingsService.waitForPendingSettingsWrite();
+
+    if (restartOptions?.preserveMainWindowState) {
+      const window = BrowserWindow.fromWebContents(event.sender);
+
+      if (window) {
+        suppressMainWindowStateSaveOnClose(window);
+      }
+    }
+
     app.relaunch();
     app.exit(0);
   });

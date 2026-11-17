@@ -140,7 +140,7 @@ describe("Backups settings integration", () => {
           status: RestoreChooseStatus.SELECTED
         }),
         inspect: vi.fn().mockResolvedValue({
-          plan: createRestorePlan(),
+          plan: { ...createRestorePlan(), hasMainWindowState: true },
           status: RestoreInspectStatus.READY
         })
       }
@@ -164,7 +164,7 @@ describe("Backups settings integration", () => {
       password: undefined,
       settingsMode: RestoreSettingsMode.RESTORE_BACKUP
     });
-    expect(desktopApi.appWindow.restart).toHaveBeenCalledOnce();
+    expect(desktopApi.appWindow.restart).toHaveBeenCalledWith({ preserveMainWindowState: true });
   });
 
   it("skips restore choices when the selected backup has no conflicts", async () => {
