@@ -7,13 +7,19 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { BrowserWindow } from "electron";
-import { afterEach, describe, expect, it } from "vitest";
+import type { BrowserWindow } from "electron";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { AppWindowState } from "../../../../src/settings/AppWindowState";
 import { NoteLayoutPreference } from "../../../../src/settings/NoteLayoutPreference";
 import { getMainWindowLaunchBounds, readMainWindowState, saveMainWindowStateOnClose, suppressMainWindowStateSaveOnClose } from "../../../../electron/windows/mainWindowState";
 
 const temporaryDirectories: string[] = [];
+
+vi.mock("electron", () => ({
+  screen: {
+    getAllDisplays: () => [{ bounds: { height: 1_080, width: 1_920, x: 0, y: 0 } }]
+  }
+}));
 
 afterEach(async () => {
   await Promise.all(temporaryDirectories.splice(0).map((directory) => fs.promises.rm(directory, { force: true, recursive: true })));
