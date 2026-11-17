@@ -5,7 +5,10 @@
  * See the LICENSE.txt file in the project root directory for details.
  */
 import { expect, Page, test } from "@playwright/test";
+import * as fs from "node:fs";
 import path from "node:path";
+import { createBrowserBackupArchive } from "../../../src/browser/backup/browserBackupArchive";
+import { BackupSource } from "../../../src/types/BackupSource";
 import { NoteType } from "../../../src/types/NoteType";
 import { launchTestElectronApp, removeTestUserDataDir, TestElectronApp } from "../../utils/e2e/electronApp";
 
@@ -80,6 +83,28 @@ test.describe("Backup restore", () => {
       lastRestoredAt: expect.any(String),
       version: 1
     });
+  });
+
+  test("restores an external backup without configuring backup creation", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Backups" }).click();
+    await expect(settingsPage.getByRole("button", { name: "Set up backups" })).toBeVisible();
+
+    const archivePath = await writeExternalBackupArchive(userDataDir);
+    await configureRestoreArchive(desktopApp, archivePath);
+    await preventRestartForInspection(desktopApp);
+    await settingsPage.getByRole("button", { name: "Restore backup…" }).click();
+
+    const confirmationDialog = await settingsPage.getByRole("dialog", { name: "Restore backup…" });
+    await confirmationDialog.getByRole("button", { name: "Restore backup…" }).click();
+
+    await expectNotes(desktopApp.page, [archivedNote]);
+    await expect.poll(() => settingsPage.evaluate(async () => window.api.backup.getState())).toBeUndefined();
   });
 
   test("skips merge choices when the selected backup already matches the app", async () => {
@@ -187,6 +212,19 @@ async function setUpBackups(settingsPage: Page): Promise<void> {
   await expect(optionsDialog.getByRole("checkbox", { name: "Main-window layout" })).toBeChecked();
   await optionsDialog.getByRole("button", { name: "Save" }).click();
   await expect(optionsDialog).toBeHidden();
+}
+
+async function writeExternalBackupArchive(userDataDir: string): Promise<string> {
+  const archivePath = path.join(userDataDir, "external-axion-notes-backup.zip");
+  const archive = await createBrowserBackupArchive({
+    contentSelection: { appSettings: false, mainWindowState: false },
+    createdAt: "2026-11-07T12:00:00.000Z",
+    notes: [archivedNote],
+    source: BackupSource.DESKTOP
+  });
+
+  await fs.promises.writeFile(archivePath, archive);
+  return archivePath;
 }
 
 async function configureRestoreArchive(desktopApp: TestElectronApp, archivePath: string): Promise<void> {
