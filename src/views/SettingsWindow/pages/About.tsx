@@ -71,7 +71,7 @@ function About(props: AboutProps) {
             {t("version", { version: getVersionLabel() })}
           </Typography>
           <Typography className={classes.text} variant="body2">
-            Copyright © 2023-2026 SolisWare.
+            Copyright © 2023-{new Date().getFullYear()} SolisWare.
           </Typography>
           <Typography className={classes.text} variant="body2">
             {t("rightsReserved")}

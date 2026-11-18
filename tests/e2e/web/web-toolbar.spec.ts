@@ -86,7 +86,9 @@ test.describe("Web toolbar", () => {
       await page.getByRole("button", { name: "About" }).click();
 
       await expect(page.getByRole("heading", { name: "About", exact: true })).toBeVisible();
+      await expect(page.getByText(/^Version \d+\.\d+\.\d+(?:-[\w.-]+)?(?: \([^)]+\))?$/)).toBeVisible();
       await expect(page.getByText(/Copyright © 2023-\d{4} SolisWare\./)).toBeVisible();
+      await expect(page.getByText("All rights reserved.")).toBeVisible();
     });
 
     test("shows the applied sort order after re-sorting from Settings", async ({ page }) => {
