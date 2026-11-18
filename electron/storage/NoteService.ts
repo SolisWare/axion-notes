@@ -52,6 +52,7 @@ export class NoteService {
   private encryptionRecord: EncryptionRecord | undefined;
   private encryptedManifest: EncryptedNoteManifest | undefined;
   private encryptedWriteQueue: Promise<void> = Promise.resolve();
+  private plaintextWriteQueue: Promise<void> = Promise.resolve();
   private masterKey: Uint8Array | undefined;
   private storageMigrationInProgress = false;
   private readonly plaintextCacheStateListeners = new Set<PlaintextCacheStateListener>();
@@ -367,7 +368,7 @@ export class NoteService {
     if (this.notesEncryptionEnabled) {
       this.enqueueEncryptedWrite(() => this.writeEncryptedNote(note));
     } else {
-      this.writePlaintextNote(note);
+      this.enqueuePlaintextWrite(() => this.writePlaintextNote(note));
     }
 
     if (!this.notes) {
@@ -393,7 +394,7 @@ export class NoteService {
     if (this.notesEncryptionEnabled) {
       this.enqueueEncryptedWrite(() => this.writeEncryptedNoteOrder(noteIds));
     } else {
-      void this.writeNoteOrder(noteIds);
+      this.enqueuePlaintextWrite(() => this.writeNoteOrder(noteIds));
     }
 
     if (!this.notes) {
@@ -412,12 +413,7 @@ export class NoteService {
     if (this.notesEncryptionEnabled) {
       this.enqueueEncryptedWrite(() => this.deleteEncryptedNote(noteId));
     } else {
-      fs.promises.unlink(this.getPlaintextNoteFilePath(noteId)).catch((err) => {
-        if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
-          console.error(err);
-        }
-      });
-      void this.writeNoteOrder(this.readNoteOrder().filter((storedNoteId) => storedNoteId !== noteId));
+      this.enqueuePlaintextWrite(() => this.deletePlaintextNote(noteId));
     }
 
     this.notes = this.notes?.filter((note) => note.id !== noteId);
@@ -430,11 +426,7 @@ export class NoteService {
     if (this.notesEncryptionEnabled) {
       this.enqueueEncryptedWrite(() => this.deleteAllEncryptedNotes());
     } else {
-      fs.promises.readdir(this.appDataDir)
-        .then((files) => Promise.all(files
-          .filter((file) => file === NOTE_ORDER_FILE_NAME || file.endsWith(".json"))
-          .map((file) => fs.promises.unlink(path.join(this.appDataDir, file)))))
-        .catch((err) => console.error(err));
+      this.enqueuePlaintextWrite(() => this.deleteAllPlaintextNotes());
     }
 
     this.notes = [];
@@ -585,21 +577,49 @@ export class NoteService {
   }
 
   private enqueueEncryptedWrite(write: () => Promise<void>): void {
-    const nextWrite = this.encryptedWriteQueue.then(write);
+    this.encryptedWriteQueue = this.enqueueWrite(this.encryptedWriteQueue, write);
+  }
 
-    this.encryptedWriteQueue = nextWrite.catch((err) => {
+  private enqueuePlaintextWrite(write: () => Promise<void>): void {
+    this.plaintextWriteQueue = this.enqueueWrite(this.plaintextWriteQueue, write);
+  }
+
+  private enqueueWrite(queue: Promise<void>, write: () => Promise<void>): Promise<void> {
+    const nextWrite = queue.then(write);
+
+    return nextWrite.catch((err) => {
       console.error(err);
     });
   }
 
-  private writePlaintextNote(note: NoteType): void {
+  private async writePlaintextNote(note: NoteType): Promise<void> {
     const noteOrder = this.readNoteOrder();
 
     if (!noteOrder.includes(note.id)) {
-      void this.writeNoteOrder([...noteOrder, note.id]);
+      await this.writeNoteOrder([...noteOrder, note.id]);
     }
 
-    this.writeFileAtomic(this.getPlaintextNoteFilePath(note.id), JSON.stringify(note)).catch((err) => console.error(err));
+    await this.writeFileAtomic(this.getPlaintextNoteFilePath(note.id), JSON.stringify(note));
+  }
+
+  private async deletePlaintextNote(noteId: string): Promise<void> {
+    try {
+      await fs.promises.unlink(this.getPlaintextNoteFilePath(noteId));
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+        throw err;
+      }
+    }
+
+    await this.writeNoteOrder(this.readNoteOrder().filter((storedNoteId) => storedNoteId !== noteId));
+  }
+
+  private async deleteAllPlaintextNotes(): Promise<void> {
+    const files = await this.readDirectoryFiles(this.appDataDir);
+
+    await Promise.all(files
+      .filter((file) => file === NOTE_ORDER_FILE_NAME || file.endsWith(".json"))
+      .map((file) => fs.promises.unlink(path.join(this.appDataDir, file))));
   }
 
   private async writeEncryptedNote(note: NoteType): Promise<void> {
