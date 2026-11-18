@@ -230,6 +230,7 @@ function LockScreen(props: LockScreenProps) {
                   type={isPasswordVisible ? "text" : "password"}
                   value={password}
                   placeholder={t("enterPassword")}
+                  aria-label={t("enterPassword")}
                   autoComplete="current-password"
                   disabled={isCooldownActive}
                   aria-invalid={Boolean(displayMessage)}
