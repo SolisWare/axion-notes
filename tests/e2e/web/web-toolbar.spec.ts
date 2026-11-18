@@ -112,6 +112,19 @@ test.describe("Web toolbar", () => {
       await expect(showTitles).not.toBeChecked();
     });
 
+    test("navigates every web Settings page", async ({ page }) => {
+      await openNotesView(page);
+      await page.getByRole("button", { name: "Settings" }).click();
+
+      for (const pageName of ["Appearance", "Editor", "Data & storage", "Backups", "License", "Links", "About"]) {
+        const pageButton = page.getByRole("button", { name: pageName, exact: true });
+        await pageButton.click();
+
+        await expect(page.getByRole("heading", { level: 1, name: pageName })).toBeVisible();
+        await expect(pageButton).toHaveAttribute("aria-current", "page");
+      }
+    });
+
     test("shows the applied sort order after re-sorting from Settings", async ({ page }) => {
       await openNotesView(page);
 

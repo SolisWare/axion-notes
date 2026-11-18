@@ -16,11 +16,24 @@ import { UserAgent } from "../../../../src/utils/UserAgent";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
 
 const translations: Record<string, string> = {
+  about: "About",
+  appearance: "Appearance",
+  backups: "Backups",
   cancel: "Cancel",
+  dataStorage: "Data & storage",
+  editor: "Editor",
+  general: "General",
+  info: "Info",
   later: "Later",
+  license: "License",
+  links: "Links",
+  preferences: "Preferences",
   restartNow: "Restart Now",
   restartToApplyLanguage: "Restart Axion Notes now to apply your language change?",
-  restartToApplyLanguageTitle: "Restart to apply language"
+  restartToApplyLanguageTitle: "Restart to apply language",
+  security: "Security",
+  shortcuts: "Shortcuts",
+  storage: "Storage"
 };
 
 vi.mock("react-i18next", () => ({
@@ -93,6 +106,48 @@ describe("SettingsWindow", () => {
     await user.selectOptions(screen.getByLabelText("language"), "en");
 
     expect(screen.queryByRole("dialog", { name: "Restart to apply language" })).not.toBeInTheDocument();
+  });
+
+  it("navigates every browser settings page and exposes the active page to assistive technology", async () => {
+    const user = userEvent.setup();
+    UserAgent.isElectron = false;
+    installDesktopApiMock();
+
+    render(<SettingsWindow appSettings={defaultAppSettings} onAppSettingsChange={vi.fn()} theme={SystemTheme.LIGHT} embedded />);
+
+    const pages = ["Appearance", "Editor", "Data & storage", "Backups", "License", "Links", "About"];
+    expect(screen.getByRole("button", { name: "General" })).toHaveAttribute("aria-current", "page");
+
+    for (const pageName of pages) {
+      const pageButton = screen.getByRole("button", { name: pageName });
+      await user.click(pageButton);
+
+      expect(screen.getByRole("heading", { level: 1, name: pageName })).toBeVisible();
+      expect(pageButton).toHaveAttribute("aria-current", "page");
+    }
+
+    expect(screen.queryByRole("button", { name: "Security" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Shortcuts" })).not.toBeInTheDocument();
+  });
+
+  it("shows desktop-only settings pages and excludes browser-only information pages", async () => {
+    const user = userEvent.setup();
+    UserAgent.isElectron = true;
+    installDesktopApiMock();
+
+    render(<SettingsWindow appSettings={defaultAppSettings} onAppSettingsChange={vi.fn()} theme={SystemTheme.DARK} />);
+
+    await user.click(screen.getByRole("button", { name: "Security" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Security" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Security" })).toHaveAttribute("aria-current", "page");
+
+    await user.click(screen.getByRole("button", { name: "Shortcuts" }));
+    expect(screen.getByRole("heading", { level: 1, name: "Shortcuts" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Shortcuts" })).toHaveAttribute("aria-current", "page");
+
+    expect(screen.queryByRole("button", { name: "About" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "License" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Links" })).not.toBeInTheDocument();
   });
 });
 

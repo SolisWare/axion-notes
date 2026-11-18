@@ -114,6 +114,7 @@ function SettingsWindow(props: SettingsWindowProps) {
               </h2>
               {section.items.map((item) => (
                 <button
+                  aria-current={selectedPage === item.id ? "page" : undefined}
                   className={clsx(styles.navItem, selectedPage === item.id && styles.navItemActive)}
                   key={item.id}
                   type="button"
