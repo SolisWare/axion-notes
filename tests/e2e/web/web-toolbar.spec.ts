@@ -91,6 +91,27 @@ test.describe("Web toolbar", () => {
       await expect(page.getByText("All rights reserved.")).toBeVisible();
     });
 
+    test("applies appearance preferences from web Settings", async ({ page }) => {
+      await openNotesView(page);
+
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "Appearance" }).click();
+
+      await expect(page.getByRole("heading", { name: "Appearance", exact: true })).toBeVisible();
+
+      const darkTheme = page.getByRole("radio", { name: "Dark" });
+      await darkTheme.check({ force: true });
+      await expect(darkTheme).toBeChecked();
+
+      const greenNoteColor = page.getByRole("radio", { name: "Green" });
+      await greenNoteColor.check({ force: true });
+      await expect(greenNoteColor).toBeChecked();
+
+      const showTitles = page.getByRole("checkbox", { name: "Show note titles" });
+      await showTitles.uncheck({ force: true });
+      await expect(showTitles).not.toBeChecked();
+    });
+
     test("shows the applied sort order after re-sorting from Settings", async ({ page }) => {
       await openNotesView(page);
 

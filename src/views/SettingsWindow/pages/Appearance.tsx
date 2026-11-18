@@ -209,6 +209,7 @@ function Appearance(props: AppearanceProps) {
               <legend className={styles.visuallyHidden}>{t("newNoteDefaultColor")}</legend>
               <label className={styles.colorSwatchOption}>
                 <input
+                  aria-label={t("noteColors.auto")}
                   checked={props.appSettings.defaultNoteColor === NoteColorPreference.AUTO}
                   className={styles.colorSwatchInput}
                   type="radio"
@@ -226,6 +227,7 @@ function Appearance(props: AppearanceProps) {
               {noteColorKeys.map((colorKey) => (
                 <label className={styles.colorSwatchOption} key={colorKey}>
                   <input
+                    aria-label={t(`noteColors.${colorKey}`)}
                     checked={props.appSettings.defaultNoteColor === colorKey}
                     className={styles.colorSwatchInput}
                     type="radio"
