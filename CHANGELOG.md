@@ -24,6 +24,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Refreshed the dedicated note-window formatting toolbar with a pinned full-width editor layout
 
 ### Fixed
+- Fixed noon timestamps being displayed as AM instead of PM
 - Fixed the lock-screen Unlock button so translated labels expand without wrapping
 - Fixed encrypted note writes so rapid updates, reordering, and deletion cannot use stale manifest state
 - Fixed settings descriptions that displayed translation keys instead of their localized text

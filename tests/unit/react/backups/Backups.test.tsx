@@ -107,7 +107,7 @@ describe("Backups", () => {
     render(<Backups appSettings={defaultAppSettings} theme={SystemTheme.LIGHT} />);
 
     expect(await screen.findByText("Last backup restored")).toBeInTheDocument();
-    expect(screen.getByText("11/7/2026 at 12:00 AM")).toBeInTheDocument();
+    expect(screen.getByText("11/7/2026 at 12:00 PM")).toBeInTheDocument();
   });
 
   it("opens setup options with defaults and initializes only after they are saved", async () => {

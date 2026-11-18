@@ -56,7 +56,7 @@ export class Formatter {
       return `${hours}:${minutes}${seconds}`;
     }
 
-    let period = (hours > 12) ? "PM" : "AM";
+    let period = (hours >= 12) ? "PM" : "AM";
     
     if (hours > 12) {
       hours -= 12;

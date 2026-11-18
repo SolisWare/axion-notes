@@ -47,7 +47,7 @@ describe("RestoreBackupDialog", () => {
     renderRestoreBackupDialog();
 
     expect(screen.getByRole("dialog", { name: "Restore backup…" })).toHaveAccessibleDescription("This backup contains 3 notes.");
-    expect(screen.getByText("Created 11/7/2026 at 12:00 AM")).toBeInTheDocument();
+    expect(screen.getByText("Created 11/7/2026 at 12:00 PM")).toBeInTheDocument();
     expect(screen.getByRole("group", { name: "Notes" })).toHaveTextContent("Current notes are kept only when you add the backup notes.");
     expect(screen.getByRole("group", { name: "Preferences" })).toHaveTextContent("Security and encryption settings are always kept.");
     expect(screen.getByRole("radio", { name: "Add backup notes" })).toBeChecked();
