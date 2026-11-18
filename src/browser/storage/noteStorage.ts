@@ -83,8 +83,13 @@ export function deleteNote(noteId: string): void {
 }
 
 export function deleteAllNotes(): void {
-  readNoteIds().forEach((noteId) => {
-    localStorage.removeItem(getNoteKey(noteId));
-  });
+  for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+    const key = localStorage.key(index);
+
+    if (key?.startsWith(`${noteKeyPrefix}.`)) {
+      localStorage.removeItem(key);
+    }
+  }
+
   localStorage.removeItem(noteIndexKey);
 }

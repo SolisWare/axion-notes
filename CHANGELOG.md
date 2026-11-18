@@ -30,6 +30,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Fixed dashed-list formatting controls so they reflect the selected note content
 - Fixed partial grid rows so notes remain left-aligned instead of centering unexpectedly
 - Prevented accidental note dragging while selecting editable note text
+- Fixed Delete All in the web app so orphaned note records are removed even when the saved note index is incomplete or corrupt
 - Removed note-loading debug logs and the Electron development security warning by defining a restrictive renderer content security policy
 
 ### Security
