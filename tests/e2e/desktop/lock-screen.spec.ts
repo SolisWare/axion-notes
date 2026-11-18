@@ -7,6 +7,8 @@
  * @author Michael Polowczuk
  */
 import { expect, test } from "@playwright/test";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { launchTestElectronApp, removeTestUserDataDir, TestElectronApp } from "../../utils/e2e/electronApp";
 
 test.describe("Lock screen", () => {
@@ -79,5 +81,33 @@ test.describe("Lock screen", () => {
     expect(layout.contentFits).toBe(true);
     expect(layout.hasHorizontalOverflow).toBe(false);
     expect(layout.whiteSpace).toBe("nowrap");
+  });
+
+  test("requires unlocking after settings are removed when the lock marker remains", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.evaluate(async () => {
+      const settings = await window.api.settings.getSettings();
+
+      if (!settings) {
+        throw new Error("Could not load application settings.");
+      }
+
+      await window.api.settings.setSettings({
+        ...settings,
+        lockScreenEnabled: true
+      });
+      await window.api.security.setPassword("test password");
+    });
+    await expect.poll(() => fs.access(path.join(userDataDir!, ".lock")).then(() => true).catch(() => false)).toBe(true);
+
+    await desktopApp.close();
+    desktopApp = undefined;
+    await fs.rm(path.join(userDataDir, "settings", "app-settings.json"));
+
+    desktopApp = await launchTestElectronApp(userDataDir);
+
+    await expect(desktopApp.page.getByRole("heading", { name: "Your notes are locked" })).toBeVisible();
   });
 });
