@@ -26,6 +26,17 @@ const sortOrderLabelKeys: Record<NoteSortOrder, string> = {
 };
 
 describe("getNotesResortedMessage", () => {
+  it("keeps the complete persisted sort-order contract stable", () => {
+    expect(Object.values(NoteSortOrder)).toEqual([
+      "custom",
+      "dateCreatedAsc",
+      "dateCreatedDesc",
+      "lastModified",
+      "titleAsc",
+      "titleDesc"
+    ]);
+  });
+
   it.each(Object.values(NoteSortOrder))("formats the active %s sort order", (sortOrder) => {
     const translate = vi.fn((key: string, values?: Record<string, string>) => {
       if (key === "notesResortedBy") {
@@ -41,5 +52,9 @@ describe("getNotesResortedMessage", () => {
     expect(getNotesResortedMessage(translate, sortOrder as NoteSortOrder))
       .toBe(`Notes re-sorted by ${sortOrderLabels[sortOrder as NoteSortOrder]}`);
     expect(translate).toHaveBeenCalledWith(sortOrderLabelKeys[sortOrder as NoteSortOrder]);
+    expect(translate).toHaveBeenLastCalledWith("notesResortedBy", {
+      sortOrder: sortOrderLabels[sortOrder as NoteSortOrder]
+    });
+    expect(translate).toHaveBeenCalledTimes(2);
   });
 });
