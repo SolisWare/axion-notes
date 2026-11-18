@@ -112,6 +112,28 @@ test.describe("Web toolbar", () => {
       await expect(showTitles).not.toBeChecked();
     });
 
+    test("applies editor preferences and confirms before disabling rich text", async ({ page }) => {
+      await openNotesView(page);
+
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "Editor" }).click();
+
+      const titleFont = page.getByRole("combobox", { name: "Title font", exact: true });
+      await titleFont.selectOption("lora");
+      await expect(titleFont).toHaveValue("lora");
+
+      const contentFontSize = page.getByRole("combobox", { name: "Content font size", exact: true });
+      await contentFontSize.selectOption("20");
+      await expect(contentFontSize).toHaveValue("20");
+
+      await page.getByRole("checkbox", { name: "Rich Text Editor" }).click({ force: true });
+      const confirmationDialog = page.getByRole("dialog", { name: "Turn Off Rich Text Editor?" });
+      await expect(confirmationDialog).toBeVisible();
+      await confirmationDialog.getByRole("button", { name: "Cancel" }).click();
+      await expect(confirmationDialog).not.toBeVisible();
+      await expect(page.getByRole("checkbox", { name: "Rich Text Editor" })).toBeChecked();
+    });
+
     test("navigates every web Settings page", async ({ page }) => {
       await openNotesView(page);
       await page.getByRole("button", { name: "Settings" }).click();
