@@ -56,6 +56,7 @@ test.describe("Security password dialog", () => {
     });
 
     await expect(desktopApp.page.getByRole("heading", { name: "Your notes are locked" })).toBeVisible();
+    await expect.poll(() => settingsPage.isClosed()).toBe(true);
     await desktopApp.page.locator("#unlock-password").fill(lockPassword);
     await desktopApp.page.getByRole("button", { name: "Unlock notes" }).click();
 
