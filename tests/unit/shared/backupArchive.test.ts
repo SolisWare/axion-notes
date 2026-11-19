@@ -84,6 +84,7 @@ describe("backupArchive", () => {
       "main-window-state.json"
     ]);
     expect(entries.find((entry) => entry.fileName === "app-preferences.json")?.value).toEqual(getBackupPreferences(settings));
+    expect(getBackupPreferences(settings)).toHaveProperty("dragAndDropSortingEnabled", true);
     expect(getBackupPreferences(settings)).not.toHaveProperty("bruteForceProtectionEnabled");
     expect(getBackupPreferences(settings)).not.toHaveProperty("lockScreenContentProtectionEnabled");
     expect(getBackupPreferences(settings)).not.toHaveProperty("lockScreenEnabled");

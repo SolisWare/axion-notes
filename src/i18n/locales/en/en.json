@@ -410,6 +410,8 @@
   "settingsLocation": "Settings folder location",
   "showFloatingFormatToolbar": "Show floating format toolbar",
   "showFloatingFormatToolbarHelp": "Shows formatting buttons while editing note content.",
+  "dragAndDropSortingEnabled": "Allow drag-and-drop note sorting",
+  "dragAndDropSortingEnabledHelp": "Shows the drag handle and lets you manually reorder notes.",
   "showNoteFooters": "Show note footers",
   "showNoteFootersHelp": "Shows/hides note footer sections.",
   "showTitles": "Show note titles",

@@ -814,7 +814,7 @@ function MainWindow(props: MainWindowProps) {
                    contentFontSize={appSettings.contentFontSize} titleFontSize={appSettings.titleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showTitles={appSettings.showTitles} showNoteFooters={appSettings.showNoteFooters}
-                   showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
+                   showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} dragAndDropSortingEnabled={appSettings.dragAndDropSortingEnabled} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
                    isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}
@@ -827,7 +827,7 @@ function MainWindow(props: MainWindowProps) {
                    contentFontSize={appSettings.contentFontSize} titleFontSize={appSettings.titleFontSize}
                    richTextEditorEnabled={appSettings.richTextEditorEnabled}
                    noteLayout={appSettings.noteLayout} noteSize={appSettings.noteSize} showTitles={appSettings.showTitles} showNoteFooters={appSettings.showNoteFooters}
-                   showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
+                   showFloatingFormatToolbar={appSettings.showFloatingFormatToolbar} dragAndDropSortingEnabled={appSettings.dragAndDropSortingEnabled} handleDeleteNoteButton={handleDeleteNote} handleDuplicateNote={handleDuplicateNote}
                    handleOpenNoteWindow={handleOpenNoteWindow} handleMoveNoteToBottom={handleMoveNoteToBottom} handleMoveNoteToTop={handleMoveNoteToTop}
                    handleNoteSave={handleSaveNote} handleNoteReorder={handleNoteReorder} handleToggleNotePin={handleToggleNotePin}
                    isSelectionMode={isSelectionMode} selectedNoteIds={selectedNoteIds} onEnterSelectionMode={handleEnterSelectionMode}

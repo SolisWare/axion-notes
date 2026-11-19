@@ -14,6 +14,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added a restart prompt after changing the application language so the new language can be applied immediately or on the next launch
 - Added local plaintext backup archives for notes, app preferences, and main-window layout, with export-copy and deletion controls
 - Added backup restore with archive validation, note replacement or merge choices, and optional preference restoration
+- Added an Appearance setting to disable drag-and-drop note sorting while preserving note layout
 - Added Vitest V8 coverage reports for unit and integration tests
 - Expanded automated test coverage across the app, desktop, encrypted storage, and security flows
 

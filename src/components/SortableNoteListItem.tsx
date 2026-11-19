@@ -13,6 +13,7 @@ type SortableNoteListItemProps = {
   children: ReactNode;
   id: string;
   isFolded: boolean;
+  disabled?: boolean;
 };
 
 function SortableNoteListItem(props: SortableNoteListItemProps) {
@@ -23,7 +24,7 @@ function SortableNoteListItem(props: SortableNoteListItemProps) {
     transform,
     transition,
     isDragging
-  } = useSortable({ id: props.id });
+  } = useSortable({ id: props.id, disabled: props.disabled });
 
   return (
     <div

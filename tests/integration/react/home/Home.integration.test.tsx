@@ -98,6 +98,7 @@ function createHomeProps(overrides?: Partial<Parameters<typeof Home>[0]>) {
     showTitles: true,
     showNoteFooters: false,
     showFloatingFormatToolbar: false,
+    dragAndDropSortingEnabled: defaultAppSettings.dragAndDropSortingEnabled,
     handleDeleteNoteButton: vi.fn(),
     handleDuplicateNote: vi.fn(),
     handleMoveNoteToBottom: vi.fn(),

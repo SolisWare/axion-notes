@@ -73,6 +73,13 @@ function Appearance(props: AppearanceProps) {
     });
   }
 
+  function handleDragAndDropSortingEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      dragAndDropSortingEnabled: event.target.checked
+    });
+  }
+
   return (
     <div className={styles.appearancePage}>
       <section className={styles.settingsSection} aria-labelledby="appearance-theme-title">
@@ -155,6 +162,25 @@ function Appearance(props: AppearanceProps) {
                 <span className={styles.switchThumb} />
               </span>
               <span className={styles.visuallyHidden}>{t("showNoteFooters")}</span>
+            </label>
+          </div>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <h3 className={styles.settingsSectionTitle} id="drag-and-drop-sorting-enabled-title">{t("dragAndDropSortingEnabled")}</h3>
+              <p className={styles.settingsSectionDescription}>{t("dragAndDropSortingEnabledHelp")}</p>
+            </div>
+            <label className={styles.switchControl}>
+              <input
+                aria-labelledby="drag-and-drop-sorting-enabled-title"
+                checked={props.appSettings.dragAndDropSortingEnabled}
+                className={styles.switchInput}
+                type="checkbox"
+                onChange={handleDragAndDropSortingEnabledChange}
+              />
+              <span className={styles.switchTrack} aria-hidden="true">
+                <span className={styles.switchThumb} />
+              </span>
+              <span className={styles.visuallyHidden}>{t("dragAndDropSortingEnabled")}</span>
             </label>
           </div>
           <Tooltip

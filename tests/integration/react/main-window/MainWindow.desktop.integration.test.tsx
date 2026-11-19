@@ -52,6 +52,7 @@ const firstNote = createNote({ id: "first", title: "First", createdOn: new Date(
 const secondNote = createNote({ id: "second", title: "Second", createdOn: new Date("2026-01-02T00:00:00.000Z") });
 
 type HomeProps = {
+  dragAndDropSortingEnabled: boolean;
   notes: NoteType[];
   isLocked: boolean;
   isSelectionMode: boolean;
@@ -269,6 +270,17 @@ describe("MainWindow desktop integration", () => {
       expect(desktopApi.storage.setNote).toHaveBeenCalledWith(expect.objectContaining({ id: firstNote.id, isTitleHidden: true }));
       expect(desktopApi.storage.setNote).toHaveBeenCalledWith(expect.objectContaining({ id: secondNote.id, isTitleHidden: true }));
     });
+  });
+
+  it("passes the drag-and-drop sorting preference through to the active note board", async () => {
+    const { rerender } = renderMainWindow({
+      appSettings: { ...defaultAppSettings, dragAndDropSortingEnabled: false }
+    });
+    await waitFor(() => expect(lastHomeProps().notes).toHaveLength(2));
+    expect(lastHomeProps().dragAndDropSortingEnabled).toBe(false);
+
+    rerenderMainWindow(rerender, { ...defaultAppSettings, dragAndDropSortingEnabled: true });
+    await waitFor(() => expect(lastHomeProps().dragAndDropSortingEnabled).toBe(true));
   });
 
   it("supports keyboard selection shortcuts and preserves their two-step Escape behavior", async () => {

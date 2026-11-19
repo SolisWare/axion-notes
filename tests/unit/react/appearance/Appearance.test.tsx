@@ -18,6 +18,8 @@ import { SystemTheme } from "../../../../src/theme/SystemTheme";
 
 const translations: Record<string, string> = {
   applicationTheme: "Application theme",
+  dragAndDropSortingEnabled: "Allow drag-and-drop note sorting",
+  dragAndDropSortingEnabledHelp: "Show a drag handle and reorder notes",
   newNoteDefaultColor: "New note default color",
   noteSize: "Note size",
   "noteColors.auto": "Auto",
@@ -63,6 +65,7 @@ describe("Appearance", () => {
     expect(screen.getByRole("combobox", { name: "Note size" })).toHaveValue(NoteSizePreference.DEFAULT);
     expect(screen.getByRole("checkbox", { name: "Show titles" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Show note footers" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Show floating formatting toolbar" })).toBeChecked();
   });
 
@@ -75,6 +78,7 @@ describe("Appearance", () => {
     fireEvent.change(screen.getByRole("combobox", { name: "Note size" }), { target: { value: NoteSizePreference.LARGE } });
     fireEvent.click(screen.getByRole("checkbox", { name: "Show titles" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Show note footers" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Show floating formatting toolbar" }));
 
     expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, theme: AppThemePreference.DARK });
@@ -82,6 +86,7 @@ describe("Appearance", () => {
     expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, noteSize: NoteSizePreference.LARGE });
     expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, showTitles: false });
     expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, showNoteFooters: false });
+    expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, dragAndDropSortingEnabled: false });
     expect(onAppSettingsChange).toHaveBeenCalledWith({ ...defaultAppSettings, showFloatingFormatToolbar: false });
   });
 

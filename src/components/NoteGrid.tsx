@@ -32,6 +32,7 @@ export type NoteGridProps = {
   showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
+  dragAndDropSortingEnabled: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -52,6 +53,10 @@ const NOTE_GRID_GAP = 25;
 const NOTE_GRID_HORIZONTAL_PADDING = 60;
 const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable]";
 
+type NotePointerSensorOptions = PointerSensorOptions & {
+  enabled?: boolean;
+};
+
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) {
     return false;
@@ -63,8 +68,8 @@ function isEditableTarget(target: EventTarget | null): boolean {
 class NotePointerSensor extends PointerSensor {
   static activators = [{
     eventName: "onPointerDown" as const,
-    handler: ({ nativeEvent: event }: ReactPointerEvent, { onActivation }: PointerSensorOptions) => {
-      if (!event.isPrimary || event.button !== 0 || isEditableTarget(event.target)) {
+    handler: ({ nativeEvent: event }: ReactPointerEvent, { enabled, onActivation }: NotePointerSensorOptions) => {
+      if (enabled === false || !event.isPrimary || event.button !== 0 || isEditableTarget(event.target)) {
         return false;
       }
 
@@ -98,7 +103,8 @@ function NoteGrid (props: NoteGridProps) {
   const sensors = useSensors(useSensor(NotePointerSensor, {
     activationConstraint: {
       distance: 8
-    }
+    },
+    enabled: props.dragAndDropSortingEnabled
   }));
 
   const noteSizeDefinition = getNoteSizeDefinition(props.noteSize);
@@ -129,7 +135,7 @@ function NoteGrid (props: NoteGridProps) {
   }, [noteSizeDefinition.width]);
   
   function handleDragEnd(event: DragEndEvent) {
-    if (!event.over || event.active.id === event.over.id) {
+    if (props.dragAndDropSortingEnabled === false || !event.over || event.active.id === event.over.id) {
       return;
     }
 
@@ -162,6 +168,7 @@ function NoteGrid (props: NoteGridProps) {
                 showTitles={props.showTitles}
                 showNoteFooters={props.showNoteFooters}
                 showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+                dragAndDropSortingEnabled={props.dragAndDropSortingEnabled}
                 handleNoteSave={props.handleNoteSave}
                 handleDeleteNoteButton={props.handleDeleteNoteButton}
                 handleDuplicateNote={props.handleDuplicateNote}

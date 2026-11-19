@@ -57,6 +57,7 @@ type NoteProps = {
   onDeselectSelection?: (noteId: string) => void;
   onToggleSelection?: (noteId: string) => void;
   showDragIndicator?: boolean;
+  reserveDragIndicatorSpace?: boolean;
   showMoveContextActions?: boolean;
   showOpenNoteWindowContextAction?: boolean;
   showTitleVisibilityContextAction?: boolean;
@@ -597,12 +598,13 @@ function Note(props: NoteProps) {
         </span>
       )}
       <div className={classes.noteInnerContainer} style={{backgroundColor: color}}>
-        {props.showDragIndicator !== false && (
+        {(props.showDragIndicator !== false || props.reserveDragIndicatorSpace === true) && (
           <div
             className={classes.noteDragIndicatorRow}
             aria-hidden="true"
-            onClick={props.handleToggleNoteFold ? handleNoteDragIndicatorRowClick : undefined}
-            onDoubleClick={props.handleOpenNoteWindow && !props.handleToggleNoteFold ? handleNoteDragIndicatorRowDoubleClick : undefined}
+            onClick={props.showDragIndicator !== false && props.handleToggleNoteFold ? handleNoteDragIndicatorRowClick : undefined}
+            onDoubleClick={props.showDragIndicator !== false && props.handleOpenNoteWindow && !props.handleToggleNoteFold ? handleNoteDragIndicatorRowDoubleClick : undefined}
+            style={props.showDragIndicator === false ? { visibility: "hidden" } : undefined}
           >
             <div
               className={classes.noteDragIndicator}
@@ -614,7 +616,7 @@ function Note(props: NoteProps) {
             />
           </div>
         )}
-        <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false && !props.showFormatToolbar ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
+        <div className={`${classes.noteContentWrapper} ${props.showDragIndicator === false && !props.reserveDragIndicatorSpace && !props.showFormatToolbar ? classes.noteContentWrapperWithoutDragIndicator : ""}`}>
           <div className={classes.noteBody}>
             {props.showFormatToolbar && props.richTextEditorEnabled && (
               <NoteFormatToolbar

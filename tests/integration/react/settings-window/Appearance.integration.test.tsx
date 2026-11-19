@@ -20,6 +20,8 @@ const translations: Record<string, string> = {
   about: "About",
   appearance: "Appearance",
   applicationTheme: "Application theme",
+  dragAndDropSortingEnabled: "Allow drag-and-drop note sorting",
+  dragAndDropSortingEnabledHelp: "Show a drag handle and reorder notes",
   backups: "Backups",
   dataStorage: "Data & storage",
   editor: "Editor",
@@ -77,11 +79,13 @@ describe("SettingsWindow Appearance integration", () => {
     fireEvent.click(screen.getByRole("radio", { name: "Dark" }));
     fireEvent.click(screen.getByRole("radio", { name: "Green" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Show titles" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" }));
 
     expect(screen.getByRole("heading", { name: "Appearance" })).toBeVisible();
     expect(screen.getByRole("radio", { name: "Dark" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "Green" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Show titles" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" })).not.toBeChecked();
   });
 });
 

@@ -43,4 +43,5 @@ export type AppSettings = {
   showNoteFooters: boolean;
   noteLayout: NoteLayoutPreference;
   showFloatingFormatToolbar: boolean;
+  dragAndDropSortingEnabled: boolean;
 };

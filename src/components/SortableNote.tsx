@@ -29,6 +29,7 @@ type SortableNoteProps = {
   showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
+  dragAndDropSortingEnabled: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -52,7 +53,7 @@ function SortableNote(props: SortableNoteProps) {
     transform,
     transition,
     isDragging
-  } = useSortable({ id: props.note.id });
+  } = useSortable({ id: props.note.id, disabled: props.dragAndDropSortingEnabled === false });
 
   return (
     <div
@@ -80,6 +81,8 @@ function SortableNote(props: SortableNoteProps) {
         showTitles={props.showTitles}
         showNoteFooters={props.showNoteFooters}
         showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+        showDragIndicator={props.dragAndDropSortingEnabled !== false}
+        reserveDragIndicatorSpace
         handleNoteSave={props.handleNoteSave}
         handleDeleteNoteButton={props.handleDeleteNoteButton}
         handleDuplicateNote={props.handleDuplicateNote}

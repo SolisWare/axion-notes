@@ -34,7 +34,10 @@ describe("restoreArchive", () => {
       }
     }));
 
-    expect(archive.appSettings).toMatchObject({ language: defaultAppSettings.language });
+    expect(archive.appSettings).toMatchObject({
+      dragAndDropSortingEnabled: true,
+      language: defaultAppSettings.language
+    });
     expect(archive.appSettings).not.toHaveProperty("notesEncryptionEnabled");
     expect(archive.mainWindowState).toEqual({
       bounds: { height: 800, width: 1250, x: 40, y: 50 },
@@ -125,6 +128,17 @@ describe("restoreArchive", () => {
     });
 
     expect(() => parseBackupArchive(preferencesArchive)).toThrow("preferences have an unsupported format");
+
+    const invalidSortingPreferenceArchive = createArchiveFiles({
+      appSettings: defaultAppSettings,
+      contentSelection: { appSettings: true, mainWindowState: false }
+    });
+    getFile(invalidSortingPreferenceArchive, "app-preferences.json").content = JSON.stringify({
+      ...JSON.parse(getFile(invalidSortingPreferenceArchive, "app-preferences.json").content),
+      dragAndDropSortingEnabled: "disabled"
+    });
+
+    expect(() => parseBackupArchive(invalidSortingPreferenceArchive)).toThrow("preferences have an unsupported format");
 
     const windowStateArchive = createArchiveFiles({
       contentSelection: { appSettings: false, mainWindowState: true },

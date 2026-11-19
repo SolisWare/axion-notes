@@ -44,7 +44,8 @@ export const defaultAppSettings: AppSettings = {
   showTitles: true,
   showNoteFooters: true,
   noteLayout: NoteLayoutPreference.GRID,
-  showFloatingFormatToolbar: true
+  showFloatingFormatToolbar: true,
+  dragAndDropSortingEnabled: true
 };
 
 export const defaultMainWindowGridBounds: AppWindowBounds = {

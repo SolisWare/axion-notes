@@ -244,6 +244,7 @@ function isBackupPreferences(value: unknown): value is BackupPreferences {
     && NOTE_CONTENT_FONT_SIZE_OPTIONS.includes(value.contentFontSize as never)
     && NOTE_TITLE_FONT_SIZE_OPTIONS.includes(value.titleFontSize as never)
     && isEnumValue(NoteSizePreference, value.noteSize)
+    && typeof value.dragAndDropSortingEnabled === "boolean"
     && typeof value.showTitles === "boolean"
     && typeof value.showNoteFooters === "boolean"
     && isEnumValue(NoteLayoutPreference, value.noteLayout)

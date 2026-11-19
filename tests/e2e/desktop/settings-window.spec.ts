@@ -38,6 +38,40 @@ test.describe("Settings window", () => {
 
     await expect(settingsPage.getByRole("button", { name: "About" })).toHaveCount(0);
   });
+
+  test("disables drag-and-drop sorting from Appearance without moving the note layout", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await desktopApp.page.getByRole("button", { name: "Get Started" }).click();
+    await desktopApp.page.evaluate(async () => {
+      await window.api.storage.setNote({
+        bgcolor: "yellow",
+        content: "Drag sorting preference test",
+        createdOn: new Date("2026-11-19T00:00:00.000Z"),
+        id: "drag-sorting-note",
+        lastModifiedOn: new Date("2026-11-19T00:00:00.000Z"),
+        title: "Drag sorting preference"
+      });
+    });
+    await desktopApp.page.reload();
+    const title = desktopApp.page.getByPlaceholder("Title");
+    await expect(title).toBeVisible();
+    const note = title.locator("xpath=ancestor::div[contains(@class, 'MuiPaper-root')]");
+    const dragIndicator = note.locator("div[aria-hidden='true']").first();
+    await expect(dragIndicator).toBeVisible();
+    const titleBeforeDisablingSorting = await title.boundingBox();
+
+    const settingsPage = await openSettings(desktopApp);
+    await settingsPage.getByRole("button", { name: "Appearance" }).click();
+    const dragAndDropSorting = settingsPage.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" });
+    await dragAndDropSorting.uncheck({ force: true });
+    await expect(dragAndDropSorting).not.toBeChecked();
+
+    await expect(dragIndicator).toBeHidden();
+    expect((await title.boundingBox())?.y).toBe(titleBeforeDisablingSorting?.y);
+    await expect.poll(async () => (await desktopApp!.page.evaluate(() => window.api.settings.getSettings()))?.dragAndDropSortingEnabled).toBe(false);
+  });
 });
 
 async function openSettings(desktopApp: TestElectronApp) {

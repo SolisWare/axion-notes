@@ -22,6 +22,7 @@ type DragEndHandler = (event: { active: { id: string }; over: { id: string } | n
 type DndContextProps = {
   children: ReactNode;
   onDragEnd: DragEndHandler;
+  sensors: unknown[];
 };
 
 type NoteProps = {
@@ -43,10 +44,12 @@ type ContextMenuProps = {
   onToggleTitleVisibility: () => void;
 };
 
-const { captureDndContextProps, captureNoteProps, captureContextMenuProps } = vi.hoisted(() => ({
+const { captureDndContextProps, captureNoteProps, captureContextMenuProps, useSensor, useSensors } = vi.hoisted(() => ({
   captureDndContextProps: vi.fn(),
   captureNoteProps: vi.fn(),
-  captureContextMenuProps: vi.fn()
+  captureContextMenuProps: vi.fn(),
+  useSensor: vi.fn(),
+  useSensors: vi.fn()
 }));
 
 vi.mock("@dnd-kit/core", () => ({
@@ -56,8 +59,8 @@ vi.mock("@dnd-kit/core", () => ({
     return <div data-testid="dnd-context">{children}</div>;
   },
   PointerSensor: class {},
-  useSensor: vi.fn(() => ({})),
-  useSensors: vi.fn(() => [])
+  useSensor,
+  useSensors
 }));
 vi.mock("@dnd-kit/sortable", () => ({
   SortableContext: ({ children }: { children: ReactNode }) => <>{children}</>,
@@ -94,6 +97,8 @@ describe("NoteList", () => {
     captureDndContextProps.mockClear();
     captureNoteProps.mockClear();
     captureContextMenuProps.mockClear();
+    useSensor.mockImplementation((_sensor, options) => ({ options, sensor: "pointer" }));
+    useSensors.mockImplementation((...sensors) => sensors);
   });
 
   afterEach(() => {
@@ -152,6 +157,18 @@ describe("NoteList", () => {
     act(() => onDragEnd({ active: { id: foldedNote.id }, over: { id: foldedNote.id } }));
     act(() => onDragEnd({ active: { id: foldedNote.id }, over: null }));
     expect(props.handleNoteReorder).toHaveBeenCalledOnce();
+  });
+
+  it("hides drag affordances while preserving their layout space and disables sorting when manual sorting is off", () => {
+    const props = createProps({ dragAndDropSortingEnabled: false, notes: [foldedNote, expandedNote] });
+    const { container } = render(<NoteList {...props} />);
+
+    expect(container.querySelector("div[aria-hidden='true']")).toHaveStyle({ visibility: "hidden" });
+    expect(lastDndContextProps().sensors).toEqual([expect.objectContaining({ sensor: "pointer" })]);
+    expect(useSensor).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ enabled: false }));
+
+    act(() => lastDndContextProps().onDragEnd({ active: { id: foldedNote.id }, over: { id: expandedNote.id } }));
+    expect(props.handleNoteReorder).not.toHaveBeenCalled();
   });
 
   it("routes expanded-note saves and folding through the list state", () => {
@@ -245,6 +262,7 @@ function createProps(overrides: Partial<ComponentProps<typeof NoteList>> = {}) {
     richTextEditorEnabled: true,
     selectedNoteIds: new Set<string>(),
     showFloatingFormatToolbar: false,
+    dragAndDropSortingEnabled: true,
     showNoteFooters: true,
     showTitles: true,
     theme: SystemTheme.LIGHT,
@@ -277,8 +295,8 @@ function getDragIndicatorRow(container: HTMLElement): HTMLElement {
   return dragIndicatorRow;
 }
 
-function lastDndContextProps(): Pick<DndContextProps, "onDragEnd"> {
-  return captureDndContextProps.mock.calls.at(-1)?.[0] as Pick<DndContextProps, "onDragEnd">;
+function lastDndContextProps(): Pick<DndContextProps, "onDragEnd" | "sensors"> {
+  return captureDndContextProps.mock.calls.at(-1)?.[0] as Pick<DndContextProps, "onDragEnd" | "sensors">;
 }
 
 function lastNoteProps(): NoteProps {

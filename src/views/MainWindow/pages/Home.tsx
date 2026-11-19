@@ -33,6 +33,7 @@ type HomeProps = {
   showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
+  dragAndDropSortingEnabled: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -76,6 +77,7 @@ function Home(props: HomeProps) {
           showTitles={props.showTitles}
           showNoteFooters={props.showNoteFooters}
           showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+          dragAndDropSortingEnabled={props.dragAndDropSortingEnabled}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
           handleOpenNoteWindow={props.handleOpenNoteWindow}
@@ -106,6 +108,7 @@ function Home(props: HomeProps) {
           showTitles={props.showTitles}
           showNoteFooters={props.showNoteFooters}
           showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+          dragAndDropSortingEnabled={props.dragAndDropSortingEnabled}
           handleDeleteNoteButton={props.handleDeleteNoteButton}
           handleDuplicateNote={props.handleDuplicateNote}
           handleOpenNoteWindow={props.handleOpenNoteWindow}

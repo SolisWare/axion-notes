@@ -285,6 +285,20 @@ describe("Note", () => {
     expect(onSelectSelection).toHaveBeenCalledWith("note-1");
   });
 
+  it("keeps the drag-indicator row in the layout but inert when manual sorting is disabled", () => {
+    const handleToggleNoteFold = vi.fn();
+    const { container } = renderNote({
+      handleToggleNoteFold,
+      reserveDragIndicatorSpace: true,
+      showDragIndicator: false
+    });
+    const dragIndicator = container.querySelector('[aria-hidden="true"]') as HTMLElement;
+
+    expect(dragIndicator).toHaveStyle({ visibility: "hidden" });
+    fireEvent.click(dragIndicator);
+    expect(handleToggleNoteFold).not.toHaveBeenCalled();
+  });
+
   it("uses the drag indicator to fold once and open a note window on double click", () => {
     const handleOpenNoteWindow = vi.fn();
     const handleNoteSave = vi.fn();

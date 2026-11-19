@@ -56,7 +56,7 @@ describe("SortableNoteListItem", () => {
     renderSortableNoteListItem();
 
     const item = screen.getByTestId("sortable-note");
-    expect(useSortable).toHaveBeenCalledWith({ id: "note-1" });
+    expect(useSortable).toHaveBeenCalledWith({ disabled: undefined, id: "note-1" });
     expect(item).toHaveAttribute("data-sortable-id", "note-1");
     expect(item).toHaveAttribute("aria-describedby", "drag-instructions");
     expect(item).toHaveTextContent("Note content");
@@ -100,11 +100,17 @@ describe("SortableNoteListItem", () => {
     expect(item.style.transition).toBe("");
     expect(item.style.zIndex).toBe("");
   });
+
+  it("disables the sortable behavior when manual note sorting is unavailable", () => {
+    renderSortableNoteListItem({ disabled: true });
+
+    expect(useSortable).toHaveBeenCalledWith({ disabled: true, id: "note-1" });
+  });
 });
 
-function renderSortableNoteListItem({ isFolded = false }: { isFolded?: boolean } = {}) {
+function renderSortableNoteListItem({ disabled, isFolded = false }: { disabled?: boolean; isFolded?: boolean } = {}) {
   return render(
-    <SortableNoteListItem id="note-1" isFolded={isFolded}>
+    <SortableNoteListItem disabled={disabled} id="note-1" isFolded={isFolded}>
       <span>Note content</span>
     </SortableNoteListItem>
   );

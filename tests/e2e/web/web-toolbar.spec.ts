@@ -110,6 +110,51 @@ test.describe("Web toolbar", () => {
       const showTitles = page.getByRole("checkbox", { name: "Show note titles" });
       await showTitles.uncheck({ force: true });
       await expect(showTitles).not.toBeChecked();
+
+      const dragAndDropSorting = page.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" });
+      await dragAndDropSorting.uncheck({ force: true });
+      await expect(dragAndDropSorting).not.toBeChecked();
+
+      await page.getByRole("button", { name: "Close" }).click();
+      await page.getByRole("button", { name: "New note" }).click();
+      await expect(page.locator("div[class*='noteDragIndicatorRow']")).toBeHidden();
+    });
+
+    test("persists disabled manual sorting and prevents notes from being reordered", async ({ page }) => {
+      await openNotesView(page);
+      await addNoteFromToolbar(page);
+      await page.getByPlaceholder("Title").fill("First note");
+      await addNoteFromToolbar(page);
+      await page.getByPlaceholder("Title").first().fill("Second note");
+
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "Appearance" }).click();
+      await page.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" }).uncheck({ force: true });
+      await page.getByRole("button", { name: "Close" }).click();
+
+      const titles = page.getByPlaceholder("Title");
+      await expect(titles).toHaveCount(2);
+      const firstNote = titles.nth(0).locator("xpath=ancestor::div[contains(@class, 'MuiPaper-root')]");
+      const secondNote = titles.nth(1).locator("xpath=ancestor::div[contains(@class, 'MuiPaper-root')]");
+      const firstBox = await firstNote.boundingBox();
+      const secondBox = await secondNote.boundingBox();
+
+      if (!firstBox || !secondBox) {
+        throw new Error("Could not measure the notes.");
+      }
+
+      await page.mouse.move(firstBox.x + 12, firstBox.y + 12);
+      await page.mouse.down();
+      await page.mouse.move(secondBox.x + 12, secondBox.y + 12, { steps: 8 });
+      await page.mouse.up();
+
+      await expect(titles.nth(0)).toHaveValue("Second note");
+      await expect(titles.nth(1)).toHaveValue("First note");
+
+      await page.reload();
+      await page.getByRole("button", { name: "Settings" }).click();
+      await page.getByRole("button", { name: "Appearance" }).click();
+      await expect(page.getByRole("checkbox", { name: "Allow drag-and-drop note sorting" })).not.toBeChecked();
     });
 
     test("applies editor preferences and confirms before disabling rich text", async ({ page }) => {
@@ -213,7 +258,7 @@ async function openNotesView(page: Page) {
 
 async function addNoteFromToolbar(page: Page) {
   await page.getByRole("button", { name: "New note" }).click();
-  await expect(page.getByPlaceholder("Title")).toBeVisible();
+  await expect(page.getByPlaceholder("Title").last()).toBeVisible();
 }
 
 async function deleteAllNotesFromToolbar(page: Page) {

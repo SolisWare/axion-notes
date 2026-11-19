@@ -37,6 +37,7 @@ type NoteListProps = {
   showTitles: boolean;
   showNoteFooters: boolean;
   showFloatingFormatToolbar: boolean;
+  dragAndDropSortingEnabled: boolean;
   handleDeleteNoteButton: (noteId: string) => void;
   handleDuplicateNote: (note: NoteType) => void;
   handleOpenNoteWindow?: (noteId: string) => void;
@@ -66,6 +67,10 @@ type DragIndicatorClick = {
 const NOTE_EDITABLE_SELECTOR = "input, textarea, [contenteditable='true']";
 const DRAG_INDICATOR_CLICK_DELAY = 220;
 
+type NoteListPointerSensorOptions = PointerSensorOptions & {
+  enabled?: boolean;
+};
+
 function isFocusedEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) {
     return false;
@@ -85,8 +90,8 @@ function isFocusedEditableTarget(target: EventTarget | null): boolean {
 class NoteListPointerSensor extends PointerSensor {
   static activators = [{
     eventName: "onPointerDown" as const,
-    handler: ({ nativeEvent: event }: ReactPointerEvent, { onActivation }: PointerSensorOptions) => {
-      if (!event.isPrimary || event.button !== 0 || isFocusedEditableTarget(event.target)) {
+    handler: ({ nativeEvent: event }: ReactPointerEvent, { enabled, onActivation }: NoteListPointerSensorOptions) => {
+      if (enabled === false || !event.isPrimary || event.button !== 0 || isFocusedEditableTarget(event.target)) {
         return false;
       }
 
@@ -125,7 +130,8 @@ function NoteList(props: NoteListProps) {
   const sensors = useSensors(useSensor(NoteListPointerSensor, {
     activationConstraint: {
       distance: 8
-    }
+    },
+    enabled: props.dragAndDropSortingEnabled
   }));
   
   const appColors = getAppColors(props.theme);
@@ -209,7 +215,7 @@ function NoteList(props: NoteListProps) {
   }
 
   function handleDragEnd(event: DragEndEvent) {
-    if (!event.over || event.active.id === event.over.id) {
+    if (props.dragAndDropSortingEnabled === false || !event.over || event.active.id === event.over.id) {
       return;
     }
 
@@ -390,6 +396,7 @@ function NoteList(props: NoteListProps) {
                   <SortableNoteListItem
                     id={note.id}
                     isFolded={isFolded}
+                    disabled={props.dragAndDropSortingEnabled === false}
                     key={note.id}
                   >
                     <div
@@ -434,9 +441,12 @@ function NoteList(props: NoteListProps) {
                         </button>
                       )}
                       <div
-                        className={styles.foldedNoteDragIndicatorRow}
                         aria-hidden="true"
-                        onClick={(event) => handleFoldedNoteDragIndicatorRowSelectionClick(event, note)}
+                        className={styles.foldedNoteDragIndicatorRow}
+                        onClick={props.dragAndDropSortingEnabled !== false
+                          ? (event) => handleFoldedNoteDragIndicatorRowSelectionClick(event, note)
+                          : undefined}
+                        style={props.dragAndDropSortingEnabled === false ? { visibility: "hidden" } : undefined}
                       >
                         <div className={styles.foldedNoteDragIndicator} />
                       </div>
@@ -470,6 +480,7 @@ function NoteList(props: NoteListProps) {
                 <SortableNoteListItem
                   id={note.id}
                   isFolded={isFolded}
+                  disabled={props.dragAndDropSortingEnabled === false}
                   key={note.id}
                 >
                   <div
@@ -490,6 +501,8 @@ function NoteList(props: NoteListProps) {
                       showTitles={props.showTitles}
                       showNoteFooters={props.showNoteFooters}
                       showFloatingFormatToolbar={props.showFloatingFormatToolbar}
+                      showDragIndicator={props.dragAndDropSortingEnabled !== false}
+                      reserveDragIndicatorSpace
                       initiallyShowDragIndicator={initialDragIndicatorNoteId === note.id}
                       handleDeleteNoteButton={props.handleDeleteNoteButton}
                       handleDuplicateNote={props.handleDuplicateNote}
