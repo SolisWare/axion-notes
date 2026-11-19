@@ -22,7 +22,13 @@ export default defineConfig({
       ],
       provider: "v8",
       reporter: ["text", "html", "lcov"],
-      reportsDirectory: "test-results/coverage"
+      reportsDirectory: "test-results/coverage",
+      watermarks: {
+        branches: [60, 75],
+        functions: [60, 75],
+        lines: [60, 75],
+        statements: [60, 75]
+      }
     },
     css: true,
     environment: "jsdom",
