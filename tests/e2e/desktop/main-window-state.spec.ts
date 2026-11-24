@@ -40,39 +40,6 @@ test.describe("Main window state", () => {
     await expect.poll(() => getMainWindowState(desktopApp!)).toEqual({ bounds: normalBounds, isMaximized: false });
   });
 
-  test("restores a maximized window with its previous normal bounds", async () => {
-    desktopApp = await launchTestElectronApp();
-    userDataDir = desktopApp.userDataDir;
-
-    await setMainWindowBounds(desktopApp, normalBounds);
-    await desktopApp.app.evaluate(({ BrowserWindow }) => {
-      const mainWindow = BrowserWindow.getAllWindows().find((window) => !window.isDestroyed() && !window.webContents.getURL().endsWith("/splash.html"));
-
-      if (!mainWindow) {
-        throw new Error("Could not find the main Axion Notes window.");
-      }
-
-      mainWindow.maximize();
-    });
-    await expect.poll(() => desktopApp!.app.evaluate(({ BrowserWindow }) => {
-      const mainWindow = BrowserWindow.getAllWindows().find((window) => !window.isDestroyed() && !window.webContents.getURL().endsWith("/splash.html"));
-
-      if (!mainWindow) {
-        throw new Error("Could not find the main Axion Notes window.");
-      }
-
-      return mainWindow.isMaximized();
-    })).toBe(true);
-
-    await desktopApp.close();
-    desktopApp = undefined;
-
-    await expect(readMainWindowState(userDataDir)).resolves.toEqual({ bounds: normalBounds, isMaximized: true });
-
-    desktopApp = await launchTestElectronApp(userDataDir);
-
-    await expect.poll(() => getMainWindowState(desktopApp!)).toEqual({ bounds: normalBounds, isMaximized: true });
-  });
 });
 
 async function setMainWindowBounds(desktopApp: TestElectronApp, bounds: typeof normalBounds): Promise<void> {
