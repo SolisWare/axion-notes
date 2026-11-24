@@ -41,6 +41,8 @@ vi.mock("electron", () => {
     readonly events = new Map<string, (...args: unknown[]) => void>();
     readonly webContents = {
       closeDevTools: vi.fn(),
+      getURL: vi.fn(() => ""),
+      loadURL: vi.fn(async () => undefined),
       on: vi.fn((event: string, listener: (...args: unknown[]) => void) => this.events.set(`web:${event}`, listener)),
       setWindowOpenHandler: vi.fn()
     };

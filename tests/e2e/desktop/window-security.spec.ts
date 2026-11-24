@@ -21,7 +21,7 @@ test.describe("Window security", () => {
     }
   });
 
-  test("denies external popups while handing safe links to the shell", async () => {
+  test("denies external popups and restores the app after rejected top-level navigation", async () => {
     desktopApp = await launchTestElectronApp();
     userDataDir = desktopApp.userDataDir;
     const originalUrl = desktopApp.page.url();
@@ -36,13 +36,31 @@ test.describe("Window security", () => {
     await desktopApp.page.evaluate(() => window.open("https://example.com/popup"));
     await expect.poll(() => getOpenedExternalUrls(desktopApp!)).toEqual(["https://example.com/popup"]);
     expect(desktopApp.app.windows()).toHaveLength(1);
-    await expect(desktopApp.page).toHaveURL(originalUrl);
+    await expect.poll(() => getMainWindowUrl(desktopApp!)).toBe(originalUrl);
 
+    await desktopApp.page.evaluate(() => window.location.assign("https://example.com/navigation"));
+    await expect.poll(() => getOpenedExternalUrls(desktopApp!)).toEqual([
+      "https://example.com/popup",
+      "https://example.com/navigation"
+    ]);
+    await expect.poll(() => getMainWindowUrl(desktopApp!)).toBe(originalUrl);
   });
 });
 
 async function getOpenedExternalUrls(desktopApp: TestElectronApp): Promise<string[]> {
   return desktopApp.app.evaluate(() => {
     return (globalThis as typeof globalThis & { openedExternalUrls?: string[] }).openedExternalUrls ?? [];
+  });
+}
+
+async function getMainWindowUrl(desktopApp: TestElectronApp): Promise<string> {
+  return desktopApp.app.evaluate(({ BrowserWindow }) => {
+    const mainWindow = BrowserWindow.getAllWindows().find((window) => !window.isDestroyed() && !window.webContents.getURL().endsWith("/splash.html"));
+
+    if (!mainWindow) {
+      throw new Error("Could not find the main Axion Notes window.");
+    }
+
+    return mainWindow.webContents.getURL();
   });
 }

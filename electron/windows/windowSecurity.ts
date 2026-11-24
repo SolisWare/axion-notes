@@ -11,6 +11,7 @@ import { isDev } from "../utils/isDev";
 import { getDevToolsWebPreferences } from "../utils/devTools";
 
 const DEV_SERVER_ORIGIN = "http://localhost:3000";
+const NAVIGATION_RESTORE_DELAY_MS = 50;
 const SAFE_EXTERNAL_PROTOCOLS = new Set(["https:", "http:", "mailto:"]);
 
 type NavigationGuardOptions = {
@@ -34,6 +35,8 @@ export function getAppIndexFilePath(): string {
 }
 
 export function registerWindowNavigationGuards(window: BrowserWindow, options: NavigationGuardOptions = {}): void {
+  let lastAllowedNavigationUrl = getAllowedNavigationUrl(window.webContents.getURL(), options);
+
   window.webContents.setWindowOpenHandler(({ url }) => {
     openExternalUrlIfSafe(url);
 
@@ -42,11 +45,25 @@ export function registerWindowNavigationGuards(window: BrowserWindow, options: N
 
   window.webContents.on("will-navigate", (event, url) => {
     if (isAllowedAppNavigation(url, options)) {
+      lastAllowedNavigationUrl = url;
       return;
     }
 
     event.preventDefault();
     openExternalUrlIfSafe(url);
+    restoreAllowedNavigationIfNeeded(window, options, lastAllowedNavigationUrl);
+  });
+
+  window.webContents.on("did-navigate", (_event, url) => {
+    lastAllowedNavigationUrl = getAllowedNavigationUrl(url, options) ?? lastAllowedNavigationUrl;
+  });
+
+  window.webContents.on("did-navigate-in-page", (_event, url) => {
+    lastAllowedNavigationUrl = getAllowedNavigationUrl(url, options) ?? lastAllowedNavigationUrl;
+  });
+
+  window.webContents.on("did-finish-load", () => {
+    lastAllowedNavigationUrl = getAllowedNavigationUrl(window.webContents.getURL(), options) ?? lastAllowedNavigationUrl;
   });
 }
 
@@ -70,6 +87,22 @@ function isAllowedAppNavigation(url: string, options: NavigationGuardOptions): b
   } catch {
     return false;
   }
+}
+
+function getAllowedNavigationUrl(url: string, options: NavigationGuardOptions): string | undefined {
+  return isAllowedAppNavigation(url, options) ? url : undefined;
+}
+
+function restoreAllowedNavigationIfNeeded(window: BrowserWindow, options: NavigationGuardOptions, lastAllowedNavigationUrl: string | undefined): void {
+  setTimeout(() => {
+    if (!lastAllowedNavigationUrl || isAllowedAppNavigation(window.webContents.getURL(), options)) {
+      return;
+    }
+
+    window.webContents.loadURL(lastAllowedNavigationUrl).catch((err) => {
+      console.warn("Failed to restore the previous app navigation:", err);
+    });
+  }, NAVIGATION_RESTORE_DELAY_MS);
 }
 
 function openExternalUrlIfSafe(url: string): void {
