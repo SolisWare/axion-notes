@@ -39,6 +39,21 @@ test.describe("Settings window", () => {
     await expect(settingsPage.getByRole("button", { name: "About" })).toHaveCount(0);
   });
 
+  test("reuses the existing Settings window instead of opening a duplicate", async () => {
+    desktopApp = await launchTestElectronApp();
+    userDataDir = desktopApp.userDataDir;
+
+    const settingsPage = await openSettings(desktopApp);
+    await expect(settingsPage.getByRole("heading", { level: 1, name: "General" })).toBeVisible();
+
+    await clickSettingsMenuItem(desktopApp);
+
+    await expect.poll(() => desktopApp!.app.evaluate(({ BrowserWindow }) => {
+      return BrowserWindow.getAllWindows().filter((window) => !window.isDestroyed() && window.webContents.getURL().includes("#/settings")).length;
+    })).toBe(1);
+    await expect(settingsPage.getByRole("heading", { level: 1, name: "General" })).toBeVisible();
+  });
+
   test("disables drag-and-drop sorting from Appearance without moving the note layout", async () => {
     desktopApp = await launchTestElectronApp();
     userDataDir = desktopApp.userDataDir;
@@ -76,6 +91,15 @@ test.describe("Settings window", () => {
 
 async function openSettings(desktopApp: TestElectronApp) {
   const settingsPagePromise = desktopApp.app.waitForEvent("window");
+  await clickSettingsMenuItem(desktopApp);
+
+  const settingsPage = await settingsPagePromise;
+  await settingsPage.waitForLoadState("domcontentloaded");
+
+  return settingsPage;
+}
+
+async function clickSettingsMenuItem(desktopApp: TestElectronApp): Promise<void> {
   await desktopApp.app.evaluate(({ Menu }) => {
     const settingsMenuItem = Menu.getApplicationMenu()?.getMenuItemById("settings");
 
@@ -85,9 +109,4 @@ async function openSettings(desktopApp: TestElectronApp) {
 
     settingsMenuItem.click(undefined as never, undefined as never, undefined as never);
   });
-
-  const settingsPage = await settingsPagePromise;
-  await settingsPage.waitForLoadState("domcontentloaded");
-
-  return settingsPage;
 }
