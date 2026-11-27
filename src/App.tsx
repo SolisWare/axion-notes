@@ -150,17 +150,38 @@ function App() {
       return;
     }
 
+    const isNoteCopyTarget = (target: EventTarget | null): boolean => {
+      const copyTarget = target instanceof Element ? target : document.activeElement;
+
+      return copyTarget instanceof Element && copyTarget.closest("[data-note-copy-source]") !== null;
+    };
+
+    const trackNoteCopy = () => queueMicrotask(() => window.api.clipboard.trackNoteCopy());
     const handleNoteCopy = (event: ClipboardEvent) => {
-      if (!(event.target instanceof Element) || !event.target.closest("[data-note-copy-source]")) {
+      if (!isNoteCopyTarget(event.target)) {
         return;
       }
 
-      window.setTimeout(() => window.api.clipboard.trackNoteCopy(), 0);
+      trackNoteCopy();
+    };
+    const handleNoteCopyShortcut = (event: KeyboardEvent) => {
+      if (event.defaultPrevented
+          || !(event.ctrlKey || event.metaKey)
+          || event.key.toLowerCase() !== "c"
+          || !isNoteCopyTarget(event.target)) {
+        return;
+      }
+
+      trackNoteCopy();
     };
 
     document.addEventListener("copy", handleNoteCopy);
+    document.addEventListener("keydown", handleNoteCopyShortcut);
 
-    return () => document.removeEventListener("copy", handleNoteCopy);
+    return () => {
+      document.removeEventListener("copy", handleNoteCopy);
+      document.removeEventListener("keydown", handleNoteCopyShortcut);
+    };
   }, []);
 
   useEffect(() => {

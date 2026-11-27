@@ -162,7 +162,12 @@ app.on("ready", async () => {
   const backupArchiveReader = new BackupArchiveReader();
   const restoreStateStorage = new RestoreStateStorage(appBackupDir);
   const restoreService = new RestoreService(noteService, settingsService, restoreStateStorage, mainWindowStateFilePath);
-  const clipboardPrivacyService = new ClipboardPrivacyService();
+  const clipboardPrivacyService = new ClipboardPrivacyService(
+    undefined,
+    undefined,
+    undefined,
+    getClipboardClearDelayMilliseconds
+  );
   clipboardPrivacyService.applyClearDelay(initialSettings.clipboardClearDelay);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
@@ -251,6 +256,19 @@ app.on('activate', async () => {
     });
   }
 });
+
+function getClipboardClearDelayMilliseconds(clearDelay: number): number {
+  const e2eClearDelay = process.env.AXION_NOTES_E2E_CLIPBOARD_CLEAR_DELAY_MS;
+  const e2eClearDelayMilliseconds = e2eClearDelay ? Number(e2eClearDelay) : undefined;
+
+  if (process.env.AXION_NOTES_E2E_USER_DATA_DIR
+      && Number.isFinite(e2eClearDelayMilliseconds)
+      && e2eClearDelayMilliseconds! >= 0) {
+    return e2eClearDelayMilliseconds!;
+  }
+
+  return clearDelay * 1_000;
+}
 
 // "About" dialog window customization
 app.setAboutPanelOptions({

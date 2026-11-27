@@ -6,7 +6,7 @@
  * 
  * @author Michael Polowczuk
  */
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "../../../../src/App";
@@ -155,5 +155,85 @@ describe("AppToast integration", () => {
     expect(i18n.t).toHaveBeenCalledWith("noteSortDateCreatedAsc");
     expect(i18n.t).toHaveBeenCalledWith("notesResortedBy", { sortOrder: "Date created (oldest first)" });
     expect(screen.getByRole("status")).toHaveTextContent("Notes re-sorted by Date created (oldest first)");
+  });
+
+  it("tracks a copy from note content after the browser copy completes", async () => {
+    vi.useFakeTimers();
+    const desktopApi = installDesktopApiMock({
+      security: {
+        getLockState: vi.fn().mockResolvedValue({ isLocked: false })
+      },
+      settings: {
+        getSettings: vi.fn().mockResolvedValue(defaultAppSettings)
+      }
+    });
+    const { unmount } = render(<App />);
+    const noteCopySource = document.createElement("div");
+    const input = document.createElement("input");
+    noteCopySource.dataset.noteCopySource = "";
+    noteCopySource.append(input);
+    document.body.append(noteCopySource);
+
+    fireEvent.copy(input);
+    expect(desktopApi.clipboard.trackNoteCopy).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(desktopApi.clipboard.trackNoteCopy).toHaveBeenCalledOnce();
+
+    noteCopySource.remove();
+    unmount();
+  });
+
+  it("does not track a copy outside note content", async () => {
+    vi.useFakeTimers();
+    const desktopApi = installDesktopApiMock({
+      security: {
+        getLockState: vi.fn().mockResolvedValue({ isLocked: false })
+      },
+      settings: {
+        getSettings: vi.fn().mockResolvedValue(defaultAppSettings)
+      }
+    });
+    const { unmount } = render(<App />);
+    const settingsText = document.createElement("span");
+    document.body.append(settingsText);
+
+    fireEvent.copy(settingsText);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(desktopApi.clipboard.trackNoteCopy).not.toHaveBeenCalled();
+    settingsText.remove();
+    unmount();
+  });
+
+  it("tracks a keyboard copy shortcut from note content", async () => {
+    const desktopApi = installDesktopApiMock({
+      security: {
+        getLockState: vi.fn().mockResolvedValue({ isLocked: false })
+      },
+      settings: {
+        getSettings: vi.fn().mockResolvedValue(defaultAppSettings)
+      }
+    });
+    const { unmount } = render(<App />);
+    const noteCopySource = document.createElement("div");
+    const input = document.createElement("input");
+    noteCopySource.dataset.noteCopySource = "";
+    noteCopySource.append(input);
+    document.body.append(noteCopySource);
+
+    fireEvent.keyDown(input, { ctrlKey: true, key: "c" });
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(desktopApi.clipboard.trackNoteCopy).toHaveBeenCalledOnce();
+    noteCopySource.remove();
+    unmount();
   });
 });

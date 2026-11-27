@@ -4,11 +4,15 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ClipboardPrivacyService } from "../../../../electron/security/ClipboardPrivacyService";
 import { ClipboardClearDelay } from "../../../../src/settings/ClipboardClearDelay";
 
 describe("ClipboardPrivacyService", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("does not inspect or schedule clipboard clearing when the preference is Never", () => {
     const clipboard = createClipboard();
     const scheduleTimeout = vi.fn();
@@ -35,6 +39,22 @@ describe("ClipboardPrivacyService", () => {
     scheduledCallbacks[0]();
 
     expect(scheduleTimeout).toHaveBeenCalledWith(expect.any(Function), 120_000);
+    expect(clipboard.clear).toHaveBeenCalledOnce();
+  });
+
+  it("does not clear a copied note before its configured delay expires", () => {
+    vi.useFakeTimers();
+    const clipboard = createClipboard({ text: "Sensitive note text" });
+    const service = new ClipboardPrivacyService(clipboard);
+
+    service.applyClearDelay(ClipboardClearDelay.THIRTY_SECONDS);
+    service.trackCurrentNoteCopy();
+    vi.advanceTimersByTime(29_999);
+
+    expect(clipboard.clear).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+
     expect(clipboard.clear).toHaveBeenCalledOnce();
   });
 

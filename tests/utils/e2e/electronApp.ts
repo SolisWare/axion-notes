@@ -19,7 +19,11 @@ export type TestElectronApp = {
   close: () => Promise<void>;
 };
 
-export async function launchTestElectronApp(userDataDir?: string): Promise<TestElectronApp> {
+type LaunchTestElectronAppOptions = {
+  clipboardClearDelayMilliseconds?: number;
+};
+
+export async function launchTestElectronApp(userDataDir?: string, options: LaunchTestElectronAppOptions = {}): Promise<TestElectronApp> {
   const resolvedUserDataDir = userDataDir ?? await fs.mkdtemp(path.join(os.tmpdir(), "axion-notes-e2e-"));
   const {
     ELECTRON_RUN_AS_NODE: _electronRunAsNode,
@@ -33,6 +37,9 @@ export async function launchTestElectronApp(userDataDir?: string): Promise<TestE
     env: {
       ...env,
       AXION_NOTES_E2E_USER_DATA_DIR: resolvedUserDataDir,
+      ...(options.clipboardClearDelayMilliseconds === undefined ? {} : {
+        AXION_NOTES_E2E_CLIPBOARD_CLEAR_DELAY_MS: String(options.clipboardClearDelayMilliseconds)
+      }),
       ELECTRON_IS_DEV: "0"
     }
   });

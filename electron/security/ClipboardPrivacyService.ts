@@ -15,6 +15,7 @@ type ClipboardSnapshot = {
 type TimeoutHandle = ReturnType<typeof setTimeout>;
 type ScheduleTimeout = (callback: () => void, delay: number) => TimeoutHandle;
 type CancelTimeout = (timeout: TimeoutHandle) => void;
+type GetClearDelayMilliseconds = (clearDelay: ClipboardClearDelay) => number;
 
 /**
  * Clears a note copy only when the native clipboard still contains that exact copy.
@@ -29,7 +30,8 @@ export class ClipboardPrivacyService {
   public constructor(
     private readonly nativeClipboard: NativeClipboard = clipboard,
     private readonly scheduleTimeout: ScheduleTimeout = setTimeout,
-    private readonly cancelTimeout: CancelTimeout = clearTimeout
+    private readonly cancelTimeout: CancelTimeout = clearTimeout,
+    private readonly getClearDelayMilliseconds: GetClearDelayMilliseconds = (clearDelay) => clearDelay * 1_000
   ) {
   }
 
@@ -53,7 +55,7 @@ export class ClipboardPrivacyService {
 
     const clearId = ++this.pendingClearId;
     this.pendingSnapshot = snapshot;
-    this.pendingTimeout = this.scheduleTimeout(() => this.clearClipboardIfUnchanged(clearId), this.clearDelay * 1_000);
+    this.pendingTimeout = this.scheduleTimeout(() => this.clearClipboardIfUnchanged(clearId), this.getClearDelayMilliseconds(this.clearDelay));
   }
 
   private cancelPendingClear(): void {

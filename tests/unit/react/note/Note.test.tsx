@@ -331,6 +331,12 @@ describe("Note", () => {
     expect(screen.getByText(/Last modified:/)).toBeInTheDocument();
     expect(screen.getByText("3 words, 13 characters")).toBeInTheDocument();
   });
+
+  it("marks note text as a clipboard privacy copy source", () => {
+    const { container } = renderNote();
+
+    expect(container.querySelector("[data-note-copy-source]")).toBeInTheDocument();
+  });
 });
 
 function renderNote(props: Partial<ComponentProps<typeof Note>> = {}) {
