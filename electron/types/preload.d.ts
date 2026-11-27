@@ -47,6 +47,9 @@ export interface IElectronAPI {
     saveCopy: () => Promise<BackupSaveResult>;
     updateContentSelection: (contentSelection: BackupContentSelection) => Promise<BackupState | undefined>;
   },
+  clipboard: {
+    trackNoteCopy: () => void;
+  },
   restore: {
     apply: (archivePath: string, options: RestoreApplyOptions) => Promise<RestoreApplyResult>;
     chooseArchive: () => Promise<RestoreChooseResult>;

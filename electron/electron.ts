@@ -39,6 +39,7 @@ import { BackupStateStorage } from "./storage/BackupStateStorage";
 import { BackupArchiveReader } from "./storage/BackupArchiveReader";
 import { RestoreService } from "./storage/RestoreService";
 import { RestoreStateStorage } from "./storage/RestoreStateStorage";
+import { ClipboardPrivacyService } from "./security/ClipboardPrivacyService";
 import { registerStorageMigrationGuard } from "./storage/StorageMigrationGuard";
 import { SettingsService } from "./storage/SettingsService";
 
@@ -161,6 +162,8 @@ app.on("ready", async () => {
   const backupArchiveReader = new BackupArchiveReader();
   const restoreStateStorage = new RestoreStateStorage(appBackupDir);
   const restoreService = new RestoreService(noteService, settingsService, restoreStateStorage, mainWindowStateFilePath);
+  const clipboardPrivacyService = new ClipboardPrivacyService();
+  clipboardPrivacyService.applyClearDelay(initialSettings.clipboardClearDelay);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);
@@ -189,6 +192,7 @@ app.on("ready", async () => {
     appBackupDir,
     backupArchiveService,
     backupArchiveReader,
+    clipboardPrivacyService,
     backupService,
     appDataDir,
     appSecurityDir,

@@ -36,6 +36,9 @@ export function createDesktopApiMock(overrides: DesktopApiMockOverrides = {}): I
       saveCopy: vi.fn().mockResolvedValue({ status: "failed" }),
       updateContentSelection: vi.fn().mockResolvedValue(undefined)
     },
+    clipboard: {
+      trackNoteCopy: vi.fn()
+    },
     restore: {
       apply: vi.fn().mockResolvedValue({ status: "failed" }),
       chooseArchive: vi.fn().mockResolvedValue({ status: "cancelled" }),
@@ -137,6 +140,10 @@ function mergeDesktopApiMock(defaults: IElectronAPI, overrides: DesktopApiMockOv
     backup: {
       ...defaults.backup,
       ...overrides.backup
+    },
+    clipboard: {
+      ...defaults.clipboard,
+      ...overrides.clipboard
     },
     restore: {
       ...defaults.restore,

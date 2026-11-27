@@ -146,6 +146,24 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!UserAgent.isElectron) {
+      return;
+    }
+
+    const handleNoteCopy = (event: ClipboardEvent) => {
+      if (!(event.target instanceof Element) || !event.target.closest("[data-note-copy-source]")) {
+        return;
+      }
+
+      window.setTimeout(() => window.api.clipboard.trackNoteCopy(), 0);
+    };
+
+    document.addEventListener("copy", handleNoteCopy);
+
+    return () => document.removeEventListener("copy", handleNoteCopy);
+  }, []);
+
+  useEffect(() => {
     return window.api.settings.onSettingsChange(setAppSettings);
   }, []);
 

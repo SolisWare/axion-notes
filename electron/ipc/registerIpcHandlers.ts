@@ -6,6 +6,7 @@
  */
 import { registerAppWindowIpc } from "./appWindowIpc";
 import { registerBackupIpc } from "./backupIpc";
+import { registerClipboardIpc } from "./clipboardIpc";
 import { applyMenuSettings, registerMenuIpc, setLockScreenActive, setSecureLockAvailable, setStorageMigrationActive } from "./menuIpc";
 import { registerNoteSortIpc } from "./noteSortIpc";
 import { registerNoteWindowIpc } from "./noteWindowIpc";
@@ -24,10 +25,12 @@ import { SettingsService } from "../storage/SettingsService";
 import { BackupArchiveReader } from "../storage/BackupArchiveReader";
 import { RestoreService } from "../storage/RestoreService";
 import { RestoreStateStorage } from "../storage/RestoreStateStorage";
+import { ClipboardPrivacyService } from "../security/ClipboardPrivacyService";
 
 type IpcHandlerOptions = {
   appBackupDir: string;
   backupArchiveService: BackupArchiveService;
+  clipboardPrivacyService: ClipboardPrivacyService;
   backupService: BackupService;
   backupArchiveReader: BackupArchiveReader;
   appDataDir: string;
@@ -48,6 +51,10 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
     backupService: options.backupService,
     lockStateService: options.lockStateService,
     settingsService: options.settingsService
+  });
+  registerClipboardIpc({
+    clipboardPrivacyService: options.clipboardPrivacyService,
+    lockStateService: options.lockStateService
   });
   registerRestoreIpc({
     backupArchiveReader: options.backupArchiveReader,
@@ -98,6 +105,7 @@ export function registerIpcHandlers(options: IpcHandlerOptions): void {
   registerSettingsIpc({
     lockStateService: options.lockStateService,
     onSettingsChange: (settings: AppSettings) => {
+      options.clipboardPrivacyService.applyClearDelay(settings.clipboardClearDelay);
       options.lockStateService.applySettings(settings);
       applyMenuSettings(settings);
       options.onSettingsChange?.(settings);

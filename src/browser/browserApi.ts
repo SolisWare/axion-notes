@@ -49,6 +49,9 @@ export function installBrowserApi(): void {
       setLayout: noop
     },
     backup: browserBackupApi,
+    clipboard: {
+      trackNoteCopy: noop
+    },
     restore: browserRestoreApi,
     storage: storageApi,
     menu: {

@@ -541,6 +541,7 @@ function Note(props: NoteProps) {
   return (
     <Paper
       elevation={4}
+      data-note-copy-source
       className={classes.note}
       onContextMenu={handleNoteContextMenu}
       onMouseEnter={() => setIsNoteHovered(true)}

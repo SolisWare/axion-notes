@@ -20,6 +20,9 @@ export const channels = {
     saveCopy: "backup.saveCopy",
     updateContentSelection: "backup.updateContentSelection"
   },
+  clipboard: {
+    trackNoteCopy: "clipboard.trackNoteCopy"
+  },
   restore: {
     apply: "restore.apply",
     chooseArchive: "restore.chooseArchive",
