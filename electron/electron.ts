@@ -40,6 +40,7 @@ import { BackupArchiveReader } from "./storage/BackupArchiveReader";
 import { RestoreService } from "./storage/RestoreService";
 import { RestoreStateStorage } from "./storage/RestoreStateStorage";
 import { ClipboardPrivacyService } from "./security/ClipboardPrivacyService";
+import { registerClipboardPrivacyShutdown } from "./security/clipboardPrivacyShutdown";
 import { registerStorageMigrationGuard } from "./storage/StorageMigrationGuard";
 import { SettingsService } from "./storage/SettingsService";
 
@@ -169,6 +170,7 @@ app.on("ready", async () => {
     getClipboardClearDelayMilliseconds
   );
   clipboardPrivacyService.applyClearDelay(initialSettings.clipboardClearDelay);
+  registerClipboardPrivacyShutdown(clipboardPrivacyService);
   registerStorageMigrationGuard(noteService);
   const passwordService = new PasswordService(passwordRecordPath);
   lockStateService = new LockStateService(passwordService, bruteForceProtectionService, lockMarkerService, noteService);

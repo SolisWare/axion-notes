@@ -13,7 +13,7 @@ describe("ClipboardPrivacyService", () => {
     vi.useRealTimers();
   });
 
-  it("does not inspect or schedule clipboard clearing when the preference is Never", () => {
+  it("does not schedule timed clipboard clearing when the preference is Never", () => {
     const clipboard = createClipboard();
     const scheduleTimeout = vi.fn();
     const service = new ClipboardPrivacyService(clipboard, scheduleTimeout as never, vi.fn());
@@ -21,7 +21,7 @@ describe("ClipboardPrivacyService", () => {
     service.applyClearDelay(ClipboardClearDelay.NEVER);
     service.trackCurrentNoteCopy();
 
-    expect(clipboard.readText).not.toHaveBeenCalled();
+    expect(clipboard.readText).toHaveBeenCalledOnce();
     expect(scheduleTimeout).not.toHaveBeenCalled();
   });
 
@@ -147,6 +147,42 @@ describe("ClipboardPrivacyService", () => {
     scheduledCallbacks[0]();
 
     expect(cancelTimeout).toHaveBeenCalledOnce();
+    expect(clipboard.clear).not.toHaveBeenCalled();
+  });
+
+  it("clears an unchanged pending Axion Notes copy when the application exits", () => {
+    const clipboard = createClipboard({ text: "Copied note" });
+    const cancelTimeout = vi.fn();
+    const service = new ClipboardPrivacyService(clipboard, vi.fn(() => ({} as NodeJS.Timeout)), cancelTimeout);
+
+    service.applyClearDelay(ClipboardClearDelay.THIRTY_SECONDS);
+    service.trackCurrentNoteCopy();
+    service.clearTrackedNoteCopy();
+
+    expect(cancelTimeout).toHaveBeenCalledOnce();
+    expect(clipboard.clear).toHaveBeenCalledOnce();
+  });
+
+  it("clears an unchanged Axion Notes copy on exit even when timed clearing is disabled", () => {
+    const clipboard = createClipboard({ text: "Copied note" });
+    const service = new ClipboardPrivacyService(clipboard, vi.fn() as never, vi.fn());
+
+    service.applyClearDelay(ClipboardClearDelay.NEVER);
+    service.trackCurrentNoteCopy();
+    service.clearTrackedNoteCopy();
+
+    expect(clipboard.clear).toHaveBeenCalledOnce();
+  });
+
+  it("preserves newer clipboard content when the application exits", () => {
+    const clipboard = createClipboard({ text: "Copied note" });
+    const service = new ClipboardPrivacyService(clipboard, vi.fn(() => ({} as NodeJS.Timeout)), vi.fn());
+
+    service.applyClearDelay(ClipboardClearDelay.THIRTY_SECONDS);
+    service.trackCurrentNoteCopy();
+    clipboard.readText.mockReturnValue("Copied somewhere else");
+    service.clearTrackedNoteCopy();
+
     expect(clipboard.clear).not.toHaveBeenCalled();
   });
 

@@ -43,19 +43,30 @@ export class ClipboardPrivacyService {
   public trackCurrentNoteCopy(): void {
     this.cancelPendingClear();
 
-    if (this.clearDelay === ClipboardClearDelay.NEVER) {
-      return;
-    }
-
     const snapshot = this.createCurrentSnapshot();
 
     if (!snapshot) {
       return;
     }
 
-    const clearId = ++this.pendingClearId;
     this.pendingSnapshot = snapshot;
+
+    if (this.clearDelay === ClipboardClearDelay.NEVER) {
+      return;
+    }
+
+    const clearId = ++this.pendingClearId;
     this.pendingTimeout = this.scheduleTimeout(() => this.clearClipboardIfUnchanged(clearId), this.getClearDelayMilliseconds(this.clearDelay));
+  }
+
+  /**
+   * Clears the pending Axion Notes copy when the application is about to quit.
+   * Clipboard content copied elsewhere is deliberately preserved.
+   */
+  public clearTrackedNoteCopy(): void {
+    const snapshot = this.pendingSnapshot;
+    this.cancelPendingClear();
+    this.clearSnapshotIfUnchanged(snapshot);
   }
 
   private cancelPendingClear(): void {
@@ -78,6 +89,10 @@ export class ClipboardPrivacyService {
     this.pendingSnapshot = undefined;
     this.pendingTimeout = undefined;
 
+    this.clearSnapshotIfUnchanged(snapshot);
+  }
+
+  private clearSnapshotIfUnchanged(snapshot: ClipboardSnapshot | undefined): void {
     if (!snapshot) {
       return;
     }
