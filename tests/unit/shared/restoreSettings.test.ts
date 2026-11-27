@@ -9,6 +9,7 @@ import { getBackupPreferences } from "../../../src/backup/backupArchive";
 import { prepareRestoredSettings } from "../../../src/backup/restoreSettings";
 import { defaultAppSettings } from "../../../src/settings/defaultSettings";
 import { AppThemePreference } from "../../../src/settings/AppThemePreference";
+import { ClipboardClearDelay } from "../../../src/settings/ClipboardClearDelay";
 import { RestoreSettingsMode } from "../../../src/types/RestoreSettingsMode";
 
 describe("restoreSettings", () => {
@@ -26,6 +27,7 @@ describe("restoreSettings", () => {
     const currentSettings = {
       ...defaultAppSettings,
       bruteForceProtectionEnabled: false,
+      clipboardClearDelay: ClipboardClearDelay.THIRTY_SECONDS,
       lockScreenContentProtectionEnabled: false,
       lockScreenEnabled: true,
       lockScreenIdleTimeout: 60,
@@ -35,6 +37,7 @@ describe("restoreSettings", () => {
     };
     const backupSettings = {
       ...defaultAppSettings,
+      clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
       theme: AppThemePreference.DARK,
       showTitles: false
     };
@@ -44,6 +47,7 @@ describe("restoreSettings", () => {
     expect(restoredSettings).toMatchObject({
       theme: AppThemePreference.DARK,
       showTitles: false,
+      clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
       bruteForceProtectionEnabled: false,
       lockScreenContentProtectionEnabled: false,
       lockScreenEnabled: true,

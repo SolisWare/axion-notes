@@ -13,6 +13,7 @@ import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
 import { LockScreenIdleTimeout } from "./LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "./LockScreenRequirePasswordDelay";
+import { ClipboardClearDelay } from "./ClipboardClearDelay";
 import { SupportedLanguageCode } from "../i18n/languageConfig";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -26,6 +27,7 @@ export type AppSettings = {
   lockScreenIdleTimeout: LockScreenIdleTimeout;
   lockScreenOnSystemSleepEnabled: boolean;
   bruteForceProtectionEnabled: boolean;
+  clipboardClearDelay: ClipboardClearDelay;
   keepNotesMainWindowOnTop: boolean;
   notesSortOrder: NoteSortOrder;
   theme: AppThemePreference;

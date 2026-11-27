@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { createBackupArchiveEntries, getBackupPreferences } from "../../../src/backup/backupArchive";
 import { defaultAppSettings } from "../../../src/settings/defaultSettings";
+import { ClipboardClearDelay } from "../../../src/settings/ClipboardClearDelay";
 import { BackupSource } from "../../../src/types/BackupSource";
 
 describe("backupArchive", () => {
@@ -55,6 +56,7 @@ describe("backupArchive", () => {
     const settings = {
       ...defaultAppSettings,
       bruteForceProtectionEnabled: true,
+      clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
       lockScreenContentProtectionEnabled: true,
       lockScreenEnabled: true,
       lockScreenIdleTimeout: 60,
@@ -84,6 +86,7 @@ describe("backupArchive", () => {
       "main-window-state.json"
     ]);
     expect(entries.find((entry) => entry.fileName === "app-preferences.json")?.value).toEqual(getBackupPreferences(settings));
+    expect(getBackupPreferences(settings)).toHaveProperty("clipboardClearDelay", ClipboardClearDelay.TEN_MINUTES);
     expect(getBackupPreferences(settings)).toHaveProperty("dragAndDropSortingEnabled", true);
     expect(getBackupPreferences(settings)).not.toHaveProperty("bruteForceProtectionEnabled");
     expect(getBackupPreferences(settings)).not.toHaveProperty("lockScreenContentProtectionEnabled");

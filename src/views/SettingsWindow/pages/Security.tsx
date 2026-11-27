@@ -14,6 +14,7 @@ import { EncryptionProgressEvent, EncryptionProgressOperation, EncryptionProgres
 import { AppSettings } from "../../../settings/AppSettings";
 import { LockScreenIdleTimeout } from "../../../settings/LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "../../../settings/LockScreenRequirePasswordDelay";
+import { ClipboardClearDelay } from "../../../settings/ClipboardClearDelay";
 import { SystemTheme } from "../../../theme/SystemTheme";
 import styles from "./SettingsPages.module.css";
 
@@ -71,6 +72,15 @@ function Security(props: SecurityProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       lockScreenContentProtectionEnabled: event.target.checked
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleClipboardClearDelayChange(event: ChangeEvent<HTMLSelectElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      clipboardClearDelay: Number(event.target.value) as ClipboardClearDelay
     });
 
     event.currentTarget.blur();
@@ -329,6 +339,27 @@ function Security(props: SecurityProps) {
               </label>
             </div>
           </Tooltip>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <label className={styles.settingsSectionTitle} htmlFor="clipboard-clear-delay">
+                {t("clearCopiedNoteTextAfter")}
+              </label>
+              <p className={styles.settingsSectionDescription}>{t("clearCopiedNoteTextAfterHelp")}</p>
+            </div>
+            <select
+              className={styles.settingsSelect}
+              id="clipboard-clear-delay"
+              value={props.appSettings.clipboardClearDelay}
+              onChange={handleClipboardClearDelayChange}
+            >
+              <option value={ClipboardClearDelay.NEVER}>{t("time.never")}</option>
+              <option value={ClipboardClearDelay.THIRTY_SECONDS}>{t("time.thirtySeconds")}</option>
+              <option value={ClipboardClearDelay.TWO_MINUTES}>{t("time.twoMinutes")}</option>
+              <option value={ClipboardClearDelay.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
+              <option value={ClipboardClearDelay.TEN_MINUTES}>{t("time.tenMinutes")}</option>
+              <option value={ClipboardClearDelay.THIRTY_MINUTES}>{t("time.thirtyMinutes")}</option>
+            </select>
+          </div>
           <Tooltip
             arrow
             disableFocusListener={!isContentProtectionRowDisabled}

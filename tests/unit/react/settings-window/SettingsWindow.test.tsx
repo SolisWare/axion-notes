@@ -11,6 +11,7 @@ import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import SettingsWindow from "../../../../src/views/SettingsWindow/SettingsWindow";
 import { defaultAppSettings } from "../../../../src/settings/defaultSettings";
+import { ClipboardClearDelay } from "../../../../src/settings/ClipboardClearDelay";
 import { SystemTheme } from "../../../../src/theme/SystemTheme";
 import { UserAgent } from "../../../../src/utils/UserAgent";
 import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiMock";
@@ -32,6 +33,8 @@ const translations: Record<string, string> = {
   restartToApplyLanguage: "Restart Axion Notes now to apply your language change?",
   restartToApplyLanguageTitle: "Restart to apply language",
   security: "Security",
+  clearCopiedNoteTextAfter: "Clear copied note text after",
+  clearCopiedNoteTextAfterHelp: "Automatically clear text copied from Axion Notes after the selected delay.",
   shortcuts: "Shortcuts",
   storage: "Storage"
 };
@@ -148,6 +151,33 @@ describe("SettingsWindow", () => {
     expect(screen.queryByRole("button", { name: "About" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "License" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Links" })).not.toBeInTheDocument();
+  });
+
+  it("defaults clipboard clearing to Never and saves the selected delay", async () => {
+    const user = userEvent.setup();
+    const onAppSettingsChange = vi.fn();
+    UserAgent.isElectron = true;
+    installDesktopApiMock();
+
+    render(
+      <SettingsWindow
+        appSettings={defaultAppSettings}
+        onAppSettingsChange={onAppSettingsChange}
+        theme={SystemTheme.LIGHT}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Security" }));
+
+    const clipboardClearDelay = screen.getByLabelText("Clear copied note text after");
+    expect(clipboardClearDelay).toHaveValue(String(ClipboardClearDelay.NEVER));
+
+    await user.selectOptions(clipboardClearDelay, String(ClipboardClearDelay.TWO_MINUTES));
+
+    expect(onAppSettingsChange).toHaveBeenCalledWith({
+      ...defaultAppSettings,
+      clipboardClearDelay: ClipboardClearDelay.TWO_MINUTES
+    });
   });
 });
 

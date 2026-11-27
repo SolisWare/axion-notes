@@ -70,7 +70,7 @@ export function createBackupArchiveEntries(content: BackupArchiveContent): Backu
 }
 
 /**
- * Removes security configuration that must never be included in a plaintext backup.
+ * Removes sensitive security configuration that must never be included in a plaintext backup.
  */
 export function getBackupPreferences(settings: AppSettings): Omit<AppSettings,
   "bruteForceProtectionEnabled"
@@ -82,6 +82,7 @@ export function getBackupPreferences(settings: AppSettings): Omit<AppSettings,
   | "notesEncryptionEnabled"
 > {
   return {
+    clipboardClearDelay: settings.clipboardClearDelay,
     contentFontSize: settings.contentFontSize,
     dateFormat: settings.dateFormat,
     defaultNoteColor: settings.defaultNoteColor,

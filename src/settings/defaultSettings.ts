@@ -15,6 +15,7 @@ import { NoteLayoutPreference } from "./NoteLayoutPreference";
 import { NoteSizePreference } from "./noteSizePreference";
 import { LockScreenIdleTimeout } from "./LockScreenIdleTimeout";
 import { LockScreenRequirePasswordDelay } from "./LockScreenRequirePasswordDelay";
+import { ClipboardClearDelay } from "./ClipboardClearDelay";
 import { DEFAULT_LANGUAGE } from "../i18n/languageConfig";
 import { DateFormat } from "../utils/dt-formatter/DateFormat";
 import { TimeFormat } from "../utils/dt-formatter/TimeFormat";
@@ -28,6 +29,7 @@ export const defaultAppSettings: AppSettings = {
   lockScreenIdleTimeout: LockScreenIdleTimeout.TEN_MINUTES,
   lockScreenOnSystemSleepEnabled: true,
   bruteForceProtectionEnabled: true,
+  clipboardClearDelay: ClipboardClearDelay.NEVER,
   keepNotesMainWindowOnTop: false,
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,
