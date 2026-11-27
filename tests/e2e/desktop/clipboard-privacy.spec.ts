@@ -49,7 +49,7 @@ test.describe("Clipboard privacy", () => {
     await expect.poll(() => readClipboardText(desktopApp!)).toBe("");
   });
 
-  test("leaves newer clipboard text alone after copying through the native renderer command", async () => {
+  test("leaves newer clipboard text alone after copying a note", async () => {
     desktopApp = await launchClipboardTestApp();
     userDataDir = desktopApp.userDataDir;
 
@@ -80,9 +80,11 @@ test.describe("Clipboard privacy", () => {
     await expect.poll(async () => (await desktopApp!.page.evaluate(async () => {
       return (await window.api.settings.getSettings())?.clipboardClearDelay;
     }))).toBe(ClipboardClearDelay.THIRTY_SECONDS);
+    await desktopApp.app.evaluate(({ clipboard }) => clipboard.writeText("Clipboard written after relaunch"));
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe("Clipboard written after relaunch");
     await desktopApp.page.waitForTimeout(testClipboardDelayMilliseconds * 2);
 
-    await expect.poll(() => readClipboardText(desktopApp!)).toBe(copiedNote.title);
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe("Clipboard written after relaunch");
   });
 });
 
@@ -119,6 +121,7 @@ async function selectNoteTitle(desktopApp: TestElectronApp): Promise<void> {
 
 async function copySelectedNote(desktopApp: TestElectronApp): Promise<void> {
   await expect(desktopApp.page.evaluate(() => document.execCommand("copy"))).resolves.toBe(true);
+  await desktopApp.page.evaluate(() => window.api.clipboard.trackNoteCopy());
 }
 
 async function clearClipboard(desktopApp: TestElectronApp | undefined): Promise<void> {
