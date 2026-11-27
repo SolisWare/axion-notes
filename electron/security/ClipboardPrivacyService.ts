@@ -11,7 +11,10 @@ import { ClipboardClearDelay } from "../../src/settings/ClipboardClearDelay";
 type NativeClipboard = Pick<typeof clipboard, "availableFormats" | "clear" | "readHTML" | "readRTF" | "readText">;
 type ClipboardSnapshot = {
   digest: string;
+  includesHtml: boolean;
+  includesRtf: boolean;
 };
+type ClipboardFormatSelection = Pick<ClipboardSnapshot, "includesHtml" | "includesRtf">;
 type TimeoutHandle = ReturnType<typeof setTimeout>;
 type ScheduleTimeout = (callback: () => void, delay: number) => TimeoutHandle;
 type CancelTimeout = (timeout: TimeoutHandle) => void;
@@ -97,7 +100,7 @@ export class ClipboardPrivacyService {
       return;
     }
 
-    const currentSnapshot = this.createCurrentSnapshot();
+    const currentSnapshot = this.createCurrentSnapshot(snapshot);
 
     if (currentSnapshot?.digest === snapshot.digest) {
       try {
@@ -108,9 +111,11 @@ export class ClipboardPrivacyService {
     }
   }
 
-  private createCurrentSnapshot(): ClipboardSnapshot | undefined {
+  private createCurrentSnapshot(formatSelection?: ClipboardFormatSelection): ClipboardSnapshot | undefined {
     try {
-      const formats = [...this.nativeClipboard.availableFormats()].sort();
+      const formats = formatSelection ? undefined : this.nativeClipboard.availableFormats();
+      const includesHtml = formatSelection?.includesHtml ?? formats?.includes("text/html") ?? false;
+      const includesRtf = formatSelection?.includesRtf ?? formats?.includes("text/rtf") ?? false;
       const text = this.nativeClipboard.readText();
 
       if (!text) {
@@ -118,14 +123,15 @@ export class ClipboardPrivacyService {
       }
 
       const content = {
-        formats,
-        html: formats.includes("text/html") ? this.nativeClipboard.readHTML() : "",
-        rtf: formats.includes("text/rtf") ? this.nativeClipboard.readRTF() : "",
+        html: includesHtml ? this.nativeClipboard.readHTML() : "",
+        rtf: includesRtf ? this.nativeClipboard.readRTF() : "",
         text
       };
 
       return {
-        digest: createHash("sha256").update(JSON.stringify(content)).digest("hex")
+        digest: createHash("sha256").update(JSON.stringify(content)).digest("hex"),
+        includesHtml,
+        includesRtf
       };
     } catch {
       return undefined;

@@ -102,6 +102,28 @@ describe("ClipboardPrivacyService", () => {
     expect(clipboard.clear).not.toHaveBeenCalled();
   });
 
+  it("clears a note copy when the OS adds a native clipboard format after it is copied", () => {
+    const clipboard = createClipboard({ text: "Copied note" });
+    clipboard.availableFormats.mockReturnValueOnce(["text/plain"]);
+    const scheduledCallbacks: Array<() => void> = [];
+    const service = new ClipboardPrivacyService(
+      clipboard,
+      (callback) => {
+        scheduledCallbacks.push(callback);
+        return {} as NodeJS.Timeout;
+      },
+      vi.fn()
+    );
+
+    service.applyClearDelay(ClipboardClearDelay.THIRTY_SECONDS);
+    service.trackCurrentNoteCopy();
+    scheduledCallbacks[0]();
+
+    expect(clipboard.clear).toHaveBeenCalledOnce();
+    expect(clipboard.availableFormats).toHaveBeenCalledOnce();
+    expect(clipboard.readHTML).not.toHaveBeenCalled();
+  });
+
   it("replaces an earlier pending clear when Axion Notes copies again", () => {
     const clipboard = createClipboard({ text: "First copy" });
     const scheduledCallbacks: Array<() => void> = [];
