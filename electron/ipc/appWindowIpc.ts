@@ -28,11 +28,7 @@ export function registerAppWindowIpc(options: AppWindowIpcOptions): void {
     await options.settingsService.waitForPendingSettingsWrite();
 
     if (restartOptions?.preserveMainWindowState) {
-      const window = BrowserWindow.fromWebContents(event.sender);
-
-      if (window) {
-        suppressMainWindowStateSaveOnClose(window);
-      }
+      BrowserWindow.getAllWindows().forEach((window) => suppressMainWindowStateSaveOnClose(window));
     }
 
     app.relaunch();
