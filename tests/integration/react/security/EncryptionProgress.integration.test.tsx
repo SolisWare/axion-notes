@@ -19,10 +19,14 @@ import { installDesktopApiMock } from "../../../utils/electron/createDesktopApiM
 const { translate } = vi.hoisted(() => ({
   translate: vi.fn((key: string, values?: Record<string, number>) => {
     const translations: Record<string, string> = {
+      applicationLock: "Application lock",
+      automaticLocking: "Automatic locking",
       cleaningUp: "Cleaning up encrypted storage",
       decryptingNotes: "Decrypting notes",
       encryptingNotes: "Encrypting notes",
+      notesEncryption: "Note encryption",
       preventScreenCapture: "Prevent screen capture",
+      privacy: "Privacy",
       preparing: "Preparing encrypted storage",
       verifyingDecryptedNotes: "Verifying decrypted notes",
       verifyingEncryptedNotes: "Verifying encrypted notes"
@@ -49,6 +53,19 @@ vi.mock("react-i18next", () => ({
 describe("Security settings integration", () => {
   beforeEach(() => {
     translate.mockClear();
+  });
+
+  it("groups security controls by application lock, encryption, automatic locking, and privacy", () => {
+    installDesktopApiMock();
+
+    renderSecurity();
+
+    expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual([
+      "Application lock",
+      "Note encryption",
+      "Automatic locking",
+      "Privacy"
+    ]);
   });
 
   it("shows translated encryption progress received from the desktop API", () => {

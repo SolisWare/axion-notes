@@ -307,7 +307,8 @@ function Security(props: SecurityProps) {
         onConfirm={handleEnableEncryptionConfirm}
         onCancel={() => setEnableEncryptionDialogOpen(false)}
       />
-      <section className={styles.settingsSection} aria-labelledby="lock-screen-enabled-title">
+      <section className={styles.settingsSection} aria-labelledby="application-lock-heading">
+        <h2 className={styles.settingsSubsectionHeader} id="application-lock-heading">{t("applicationLock")}</h2>
         <div className={styles.settingsRows}>
           <Tooltip
             arrow
@@ -336,87 +337,6 @@ function Security(props: SecurityProps) {
                   <span className={styles.switchThumb} />
                 </span>
                 <span className={styles.visuallyHidden}>{t("notesLock")}</span>
-              </label>
-            </div>
-          </Tooltip>
-          <div className={styles.settingsRow}>
-            <div className={styles.settingsRowText}>
-              <label className={styles.settingsSectionTitle} htmlFor="clipboard-clear-delay">
-                {t("clearCopiedNoteTextAfter")}
-              </label>
-              <p className={styles.settingsSectionDescription}>{t("clearCopiedNoteTextAfterHelp")}</p>
-            </div>
-            <select
-              className={styles.settingsSelect}
-              id="clipboard-clear-delay"
-              value={props.appSettings.clipboardClearDelay}
-              onChange={handleClipboardClearDelayChange}
-            >
-              <option value={ClipboardClearDelay.NEVER}>{t("time.never")}</option>
-              <option value={ClipboardClearDelay.THIRTY_SECONDS}>{t("time.thirtySeconds")}</option>
-              <option value={ClipboardClearDelay.TWO_MINUTES}>{t("time.twoMinutes")}</option>
-              <option value={ClipboardClearDelay.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
-              <option value={ClipboardClearDelay.TEN_MINUTES}>{t("time.tenMinutes")}</option>
-              <option value={ClipboardClearDelay.THIRTY_MINUTES}>{t("time.thirtyMinutes")}</option>
-            </select>
-          </div>
-          <Tooltip
-            arrow
-            disableFocusListener={!isContentProtectionRowDisabled}
-            disableHoverListener={!isContentProtectionRowDisabled}
-            disableTouchListener={!isContentProtectionRowDisabled}
-            enterDelay={300}
-            enterNextDelay={300}
-            title={t("lockScreenRequired")}
-          >
-            <div className={`${styles.settingsRow} ${isContentProtectionRowDisabled ? styles.settingsRowDisabled : ""}`}>
-              <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="lock-screen-content-protection-enabled-title">{t("preventScreenCapture")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("preventScreenCaptureHelp")}</p>
-              </div>
-              <label className={styles.switchControl}>
-                <input
-                  aria-labelledby="lock-screen-content-protection-enabled-title"
-                  checked={props.appSettings.lockScreenContentProtectionEnabled}
-                  className={styles.switchInput}
-                  disabled={isContentProtectionRowDisabled}
-                  type="checkbox"
-                  onChange={handleLockScreenContentProtectionEnabledChange}
-                />
-                <span className={styles.switchTrack} aria-hidden="true">
-                  <span className={styles.switchThumb} />
-                </span>
-                <span className={styles.visuallyHidden}>{t("preventScreenCapture")}</span>
-              </label>
-            </div>
-          </Tooltip>
-          <Tooltip
-            arrow
-            disableFocusListener={!isEncryptionRowDisabled}
-            disableHoverListener={!isEncryptionRowDisabled}
-            disableTouchListener={!isEncryptionRowDisabled}
-            enterDelay={300}
-            enterNextDelay={300}
-            title={t("lockScreenRequired")}
-          >
-            <div className={`${styles.settingsRow} ${isEncryptionRowDisabled ? styles.settingsRowDisabled : ""}`}>
-              <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="notes-encryption-enabled-title">{t("notesEncryption")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("notesEncryptionHelp")}</p>
-              </div>
-              <label className={styles.switchControl}>
-                <input
-                  aria-labelledby="notes-encryption-enabled-title"
-                  checked={props.appSettings.notesEncryptionEnabled}
-                  className={styles.switchInput}
-                  disabled={isEncryptionRowDisabled}
-                  type="checkbox"
-                  onChange={handleNotesEncryptionEnabledChange}
-                />
-                <span className={styles.switchTrack} aria-hidden="true">
-                  <span className={styles.switchThumb} />
-                </span>
-                <span className={styles.visuallyHidden}>{t("notesEncryption")}</span>
               </label>
             </div>
           </Tooltip>
@@ -483,69 +403,6 @@ function Security(props: SecurityProps) {
           )}
           <Tooltip
             arrow
-            disableFocusListener={!isLockOnSystemSleepRowDisabled}
-            disableHoverListener={!isLockOnSystemSleepRowDisabled}
-            disableTouchListener={!isLockOnSystemSleepRowDisabled}
-            enterDelay={300}
-            enterNextDelay={300}
-            title={t("lockScreenRequired")}
-          >
-            <div className={`${styles.settingsRow} ${isLockOnSystemSleepRowDisabled ? styles.settingsRowDisabled : ""}`}>
-              <div className={styles.settingsRowText}>
-                <h3 className={styles.settingsSectionTitle} id="lock-screen-on-system-sleep-enabled-title">{t("lockOnSystemSleep")}</h3>
-                <p className={styles.settingsSectionDescription}>{t("lockOnSystemSleepHelp")}</p>
-              </div>
-              <label className={styles.switchControl}>
-                <input
-                  aria-labelledby="lock-screen-on-system-sleep-enabled-title"
-                  checked={props.appSettings.lockScreenOnSystemSleepEnabled}
-                  className={styles.switchInput}
-                  disabled={isLockOnSystemSleepRowDisabled}
-                  type="checkbox"
-                  onChange={handleLockOnSystemSleepEnabledChange}
-                />
-                <span className={styles.switchTrack} aria-hidden="true">
-                  <span className={styles.switchThumb} />
-                </span>
-                <span className={styles.visuallyHidden}>{t("lockOnSystemSleep")}</span>
-              </label>
-            </div>
-          </Tooltip>
-          <Tooltip
-            arrow
-            disableFocusListener={!isIdleTimeoutRowDisabled}
-            disableHoverListener={!isIdleTimeoutRowDisabled}
-            disableTouchListener={!isIdleTimeoutRowDisabled}
-            enterDelay={300}
-            enterNextDelay={300}
-            title={t("lockScreenRequired")}
-          >
-            <div className={`${styles.settingsRow} ${isIdleTimeoutRowDisabled ? styles.settingsRowDisabled : ""}`}>
-              <div className={styles.settingsRowText}>
-                <label className={styles.settingsSectionTitle} htmlFor="lock-screen-idle-timeout">
-                  {t("lockAfterIdle")}
-                </label>
-                <p className={styles.settingsSectionDescription}>{t("lockAfterIdleHelp")}</p>
-              </div>
-              <select
-                className={styles.settingsSelect}
-                disabled={isIdleTimeoutRowDisabled}
-                id="lock-screen-idle-timeout"
-                value={props.appSettings.lockScreenIdleTimeout}
-                onChange={handleLockScreenIdleTimeoutChange}
-              >
-                <option value={LockScreenIdleTimeout.NEVER}>{t("time.never")}</option>
-                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("time.oneMinute")}</option>
-                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("time.tenMinutes")}</option>
-                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("time.twentyMinutes")}</option>
-                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("time.fortyFiveMinutes")}</option>
-                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("time.sixtyMinutes")}</option>
-              </select>
-            </div>
-          </Tooltip>
-          <Tooltip
-            arrow
             disableFocusListener={!isBruteForceProtectionRowDisabled}
             disableHoverListener={!isBruteForceProtectionRowDisabled}
             disableTouchListener={!isBruteForceProtectionRowDisabled}
@@ -574,6 +431,155 @@ function Security(props: SecurityProps) {
               </label>
             </div>
           </Tooltip>
+        </div>
+      </section>
+      <section className={styles.settingsSection} aria-labelledby="note-encryption-heading">
+        <h2 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderSpaced}`} id="note-encryption-heading">{t("notesEncryption")}</h2>
+        <div className={styles.settingsRows}>
+          <Tooltip
+            arrow
+            disableFocusListener={!isEncryptionRowDisabled}
+            disableHoverListener={!isEncryptionRowDisabled}
+            disableTouchListener={!isEncryptionRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isEncryptionRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="notes-encryption-enabled-title">{t("notesEncryption")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("notesEncryptionHelp")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="notes-encryption-enabled-title"
+                  checked={props.appSettings.notesEncryptionEnabled}
+                  className={styles.switchInput}
+                  disabled={isEncryptionRowDisabled}
+                  type="checkbox"
+                  onChange={handleNotesEncryptionEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true"><span className={styles.switchThumb} /></span>
+                <span className={styles.visuallyHidden}>{t("notesEncryption")}</span>
+              </label>
+            </div>
+          </Tooltip>
+        </div>
+      </section>
+      <section className={styles.settingsSection} aria-labelledby="automatic-locking-heading">
+        <h2 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderSpaced}`} id="automatic-locking-heading">{t("automaticLocking")}</h2>
+        <div className={styles.settingsRows}>
+          <Tooltip
+            arrow
+            disableFocusListener={!isLockOnSystemSleepRowDisabled}
+            disableHoverListener={!isLockOnSystemSleepRowDisabled}
+            disableTouchListener={!isLockOnSystemSleepRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isLockOnSystemSleepRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-on-system-sleep-enabled-title">{t("lockOnSystemSleep")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("lockOnSystemSleepHelp")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="lock-screen-on-system-sleep-enabled-title"
+                  checked={props.appSettings.lockScreenOnSystemSleepEnabled}
+                  className={styles.switchInput}
+                  disabled={isLockOnSystemSleepRowDisabled}
+                  type="checkbox"
+                  onChange={handleLockOnSystemSleepEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true"><span className={styles.switchThumb} /></span>
+                <span className={styles.visuallyHidden}>{t("lockOnSystemSleep")}</span>
+              </label>
+            </div>
+          </Tooltip>
+          <Tooltip
+            arrow
+            disableFocusListener={!isIdleTimeoutRowDisabled}
+            disableHoverListener={!isIdleTimeoutRowDisabled}
+            disableTouchListener={!isIdleTimeoutRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isIdleTimeoutRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <label className={styles.settingsSectionTitle} htmlFor="lock-screen-idle-timeout">{t("lockAfterIdle")}</label>
+                <p className={styles.settingsSectionDescription}>{t("lockAfterIdleHelp")}</p>
+              </div>
+              <select
+                className={styles.settingsSelect}
+                disabled={isIdleTimeoutRowDisabled}
+                id="lock-screen-idle-timeout"
+                value={props.appSettings.lockScreenIdleTimeout}
+                onChange={handleLockScreenIdleTimeoutChange}
+              >
+                <option value={LockScreenIdleTimeout.NEVER}>{t("time.never")}</option>
+                <option value={LockScreenIdleTimeout.ONE_MINUTE}>{t("time.oneMinute")}</option>
+                <option value={LockScreenIdleTimeout.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TEN_MINUTES}>{t("time.tenMinutes")}</option>
+                <option value={LockScreenIdleTimeout.TWENTY_MINUTES}>{t("time.twentyMinutes")}</option>
+                <option value={LockScreenIdleTimeout.FORTY_FIVE_MINUTES}>{t("time.fortyFiveMinutes")}</option>
+                <option value={LockScreenIdleTimeout.SIXTY_MINUTES}>{t("time.sixtyMinutes")}</option>
+              </select>
+            </div>
+          </Tooltip>
+        </div>
+      </section>
+      <section className={styles.settingsSection} aria-labelledby="privacy-heading">
+        <h2 className={`${styles.settingsSubsectionHeader} ${styles.settingsSubsectionHeaderSpaced}`} id="privacy-heading">{t("privacy")}</h2>
+        <div className={styles.settingsRows}>
+          <Tooltip
+            arrow
+            disableFocusListener={!isContentProtectionRowDisabled}
+            disableHoverListener={!isContentProtectionRowDisabled}
+            disableTouchListener={!isContentProtectionRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isContentProtectionRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="lock-screen-content-protection-enabled-title">{t("preventScreenCapture")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("preventScreenCaptureHelp")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="lock-screen-content-protection-enabled-title"
+                  checked={props.appSettings.lockScreenContentProtectionEnabled}
+                  className={styles.switchInput}
+                  disabled={isContentProtectionRowDisabled}
+                  type="checkbox"
+                  onChange={handleLockScreenContentProtectionEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true"><span className={styles.switchThumb} /></span>
+                <span className={styles.visuallyHidden}>{t("preventScreenCapture")}</span>
+              </label>
+            </div>
+          </Tooltip>
+          <div className={styles.settingsRow}>
+            <div className={styles.settingsRowText}>
+              <label className={styles.settingsSectionTitle} htmlFor="clipboard-clear-delay">{t("clearCopiedNoteTextAfter")}</label>
+              <p className={styles.settingsSectionDescription}>{t("clearCopiedNoteTextAfterHelp")}</p>
+            </div>
+            <select
+              className={styles.settingsSelect}
+              id="clipboard-clear-delay"
+              value={props.appSettings.clipboardClearDelay}
+              onChange={handleClipboardClearDelayChange}
+            >
+              <option value={ClipboardClearDelay.NEVER}>{t("time.never")}</option>
+              <option value={ClipboardClearDelay.THIRTY_SECONDS}>{t("time.thirtySeconds")}</option>
+              <option value={ClipboardClearDelay.TWO_MINUTES}>{t("time.twoMinutes")}</option>
+              <option value={ClipboardClearDelay.FIVE_MINUTES}>{t("time.fiveMinutes")}</option>
+              <option value={ClipboardClearDelay.TEN_MINUTES}>{t("time.tenMinutes")}</option>
+              <option value={ClipboardClearDelay.THIRTY_MINUTES}>{t("time.thirtyMinutes")}</option>
+            </select>
+          </div>
         </div>
       </section>
     </div>
