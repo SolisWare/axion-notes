@@ -229,6 +229,72 @@ describe("restore IPC", () => {
     await expect(invoke(channels.restore.inspect, "/tmp/invalid.zip")).resolves.toEqual({ status: RestoreInspectStatus.INVALID_ARCHIVE });
     await expect(invoke(channels.restore.inspect, "/tmp/unreadable.zip")).resolves.toEqual({ status: RestoreInspectStatus.FAILED });
   });
+
+  it("uses the requesting window for archive selection and returns cancellation without a path", async () => {
+    const parentWindow = { id: 1 };
+    fromWebContents.mockReturnValue(parentWindow);
+    registerRestoreIpc({
+      backupArchiveReader: { readArchive: vi.fn() },
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreStateStorage: { getState: vi.fn() },
+      restoreService: { applyRestore: vi.fn(), inspectRestore: vi.fn() }
+    } as never);
+    showOpenDialog.mockResolvedValue({ canceled: true, filePaths: [] });
+
+    await expect(invoke(channels.restore.chooseArchive, { sender: {} })).resolves.toEqual({ status: RestoreChooseStatus.CANCELLED });
+
+    expect(showOpenDialog).toHaveBeenCalledWith(parentWindow, expect.objectContaining({
+      filters: [{ extensions: ["zip"], name: "Axion Notes backup" }],
+      properties: ["openFile"]
+    }));
+  });
+
+  it("reports invalid archives and failures when applying a restore", async () => {
+    const invalidArchiveError = new BackupArchiveReadError(BackupArchiveReadFailure.INVALID_ARCHIVE, "Invalid archive");
+    const backupArchiveReader = {
+      readArchive: vi.fn().mockRejectedValueOnce(invalidArchiveError).mockRejectedValueOnce(new Error("Disk error"))
+    };
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    registerRestoreIpc({
+      backupArchiveReader,
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreStateStorage: { getState: vi.fn() },
+      restoreService: { applyRestore: vi.fn(), inspectRestore: vi.fn() }
+    } as never);
+    const options = { notesMode: RestoreNotesMode.REPLACE_CURRENT, settingsMode: RestoreSettingsMode.KEEP_CURRENT };
+
+    await expect(invoke(channels.restore.apply, "/tmp/invalid.zip", options)).resolves.toEqual({ status: RestoreApplyStatus.INVALID_ARCHIVE });
+    await expect(invoke(channels.restore.apply, "/tmp/unreadable.zip", options)).resolves.toEqual({ status: RestoreApplyStatus.FAILED });
+
+    expect(warn).toHaveBeenCalledWith("Failed to restore backup:", expect.any(Error));
+  });
+
+  it("does not send restore progress to a destroyed renderer", async () => {
+    const event = { sender: { isDestroyed: vi.fn(() => true), send: vi.fn() } };
+    const restoreService = {
+      applyRestore: vi.fn().mockImplementation(async (_archive, _options, onProgress) => {
+        onProgress({ phase: "processingNotes", progress: 50 });
+        return { version: 1 };
+      }),
+      inspectRestore: vi.fn()
+    };
+    registerRestoreIpc({
+      backupArchiveReader: { readArchive: vi.fn().mockResolvedValue({ notes: [] }) },
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      noteService: { isEncryptionUnlocked: vi.fn(() => true) },
+      restoreStateStorage: { getState: vi.fn() },
+      restoreService
+    } as never);
+
+    await invoke(channels.restore.apply, "/tmp/backup.zip", {
+      notesMode: RestoreNotesMode.REPLACE_CURRENT,
+      settingsMode: RestoreSettingsMode.KEEP_CURRENT
+    }, event);
+
+    expect(event.sender.send).not.toHaveBeenCalled();
+  });
 });
 
 async function invoke(channel: string, ...args: unknown[]): Promise<unknown> {

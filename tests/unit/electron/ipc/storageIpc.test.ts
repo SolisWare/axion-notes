@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NoteAccessStatus } from "../../../../src/types/NoteAccessStatus";
 import { channels } from "../../../../electron/ipc/channels";
@@ -11,14 +12,15 @@ import { registerStorageIpc } from "../../../../electron/ipc/storageIpc";
 import { LockStateService } from "../../../../electron/security/LockStateService";
 import { NoteService } from "../../../../electron/storage/NoteService";
 
-const { handlers, listeners } = vi.hoisted(() => ({
+const { getAllWindows, handlers, listeners } = vi.hoisted(() => ({
+  getAllWindows: vi.fn(),
   handlers: new Map<string, (...args: unknown[]) => unknown>(),
   listeners: new Map<string, (...args: unknown[]) => unknown>()
 }));
 
 vi.mock("electron", () => ({
   BrowserWindow: {
-    getAllWindows: vi.fn(() => [])
+    getAllWindows
   },
   ipcMain: {
     handle: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => handlers.set(channel, handler)),
@@ -27,6 +29,8 @@ vi.mock("electron", () => ({
 }));
 
 beforeEach(() => {
+  getAllWindows.mockReset();
+  getAllWindows.mockReturnValue([]);
   handlers.clear();
   listeners.clear();
   vi.restoreAllMocks();
@@ -91,6 +95,44 @@ describe("storage IPC lock boundary", () => {
     });
 
     await expect(invoke(channels.storage.getBackupFolderLocation, createEvent())).resolves.toBe("/private/backup");
+  });
+
+  it("reads and mutates notes while unlocked, broadcasting every change to open windows", async () => {
+    const firstWindow = { webContents: { send: vi.fn() } };
+    const secondWindow = { webContents: { send: vi.fn() } };
+    vi.mocked(BrowserWindow.getAllWindows).mockReturnValue([firstWindow, secondWindow] as never);
+    const note = { id: "note-1", title: "Note" };
+    const noteService = {
+      deleteAllNotes: vi.fn(),
+      deleteNote: vi.fn(),
+      getNotes: vi.fn().mockResolvedValue([note]),
+      setNote: vi.fn(),
+      setNoteOrder: vi.fn()
+    };
+    registerStorageIpc({
+      appBackupDir: "/private/backup",
+      appDataDir: "/private/notes",
+      lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService,
+      noteService: noteService as unknown as NoteService
+    });
+
+    await expect(invoke(channels.storage.getNotes, createEvent())).resolves.toEqual([note]);
+    await expect(invoke(channels.storage.getNotesWithAccessState, createEvent())).resolves.toEqual({
+      notes: [note],
+      status: NoteAccessStatus.AVAILABLE
+    });
+    await expect(invoke(channels.storage.getNotesFolderLocation, createEvent())).resolves.toBe("/private/notes");
+    emit(channels.storage.setNote, createEvent(), note);
+    emit(channels.storage.setNoteOrder, createEvent(), [note.id]);
+    emit(channels.storage.deleteNote, createEvent(), note.id);
+    emit(channels.storage.deleteAllNotes, createEvent());
+
+    expect(noteService.setNote).toHaveBeenCalledWith(note);
+    expect(noteService.setNoteOrder).toHaveBeenCalledWith([note.id]);
+    expect(noteService.deleteNote).toHaveBeenCalledWith(note.id);
+    expect(noteService.deleteAllNotes).toHaveBeenCalledOnce();
+    expect(firstWindow.webContents.send).toHaveBeenCalledWith(channels.storage.onNotesChange, { type: "setNote", note });
+    expect(secondWindow.webContents.send).toHaveBeenCalledWith(channels.storage.onNotesChange, { type: "deleteAllNotes" });
   });
 });
 

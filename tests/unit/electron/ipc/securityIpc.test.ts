@@ -4,6 +4,7 @@
  * All rights reserved. Licensed under the MIT license.
  * See the LICENSE.txt file in the project root directory for details.
  */
+import { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { EncryptionProgressOperation, EncryptionProgressPhase } from "../../../../src/types/EncryptionProgressEvent";
 import { UnlockResultStatus } from "../../../../src/types/UnlockResultStatus";
@@ -110,6 +111,124 @@ describe("security IPC", () => {
     await expect(invoke(channels.security.unlock, event, "correct password")).resolves.toEqual({ status: UnlockResultStatus.UNLOCKED });
     expect(options.lockStateService.unlock).toHaveBeenCalledWith("correct password");
   });
+
+  it("reports password presence from either password protection or encryption records", async () => {
+    const options = createOptions();
+    options.passwordService.hasPassword.mockResolvedValue(false);
+    options.noteService.hasEncryptionRecord.mockResolvedValue(true);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke(channels.security.hasPassword, createEvent())).resolves.toBe(true);
+
+    expect(options.noteService.hasEncryptionRecord).toHaveBeenCalledOnce();
+  });
+
+  it("provides the protected security folder and supports setting and verifying a password", async () => {
+    const options = createOptions();
+    options.passwordService.verifyPassword.mockResolvedValue(true);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke(channels.security.getSecurityFolderLocation, createEvent())).resolves.toBe("/security");
+    await expect(invoke<boolean>(channels.security.setPassword, createEvent(), "password")).resolves.toBe(true);
+    await expect(invoke<boolean>(channels.security.verifyPassword, createEvent(), "password")).resolves.toBe(true);
+
+    expect(options.passwordService.setPassword).toHaveBeenCalledWith("password");
+    expect(options.lockStateService.markLockConfigured).toHaveBeenCalledOnce();
+  });
+
+  it("broadcasts lock state changes only to live renderer windows", () => {
+    const liveWindow = { webContents: { isDestroyed: vi.fn(() => false), send: vi.fn() } };
+    const destroyedWindow = { webContents: { isDestroyed: vi.fn(() => true), send: vi.fn() } };
+    vi.mocked(BrowserWindow.getAllWindows).mockReturnValue([liveWindow, destroyedWindow] as never);
+    const options = createOptions();
+    registerSecurityIpc(options.value);
+
+    lockStateListeners[0]({ isLocked: true });
+
+    expect(liveWindow.webContents.send).toHaveBeenCalledWith(channels.security.onLockStateChange, { isLocked: true });
+    expect(destroyedWindow.webContents.send).not.toHaveBeenCalled();
+  });
+
+  it("changes the encryption password only after verifying the existing encryption password", async () => {
+    const options = createOptions();
+    options.settingsService.getSettings.mockResolvedValue({ notesEncryptionEnabled: true });
+    options.noteService.verifyEncryptionPassword.mockResolvedValue(true);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke<boolean>(channels.security.changePassword, createEvent(), "old", "new")).resolves.toBe(true);
+
+    expect(options.noteService.verifyEncryptionPassword).toHaveBeenCalledWith("old");
+    expect(options.noteService.changeEncryptionPassword).toHaveBeenCalledWith("old", "new");
+    expect(options.passwordService.setPassword).not.toHaveBeenCalled();
+    expect(options.lockStateService.markLockConfigured).toHaveBeenCalledOnce();
+  });
+
+  it("changes or clears the standard password only when allowed", async () => {
+    const options = createOptions();
+    options.passwordService.verifyPassword.mockResolvedValue(true);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke<boolean>(channels.security.changePassword, createEvent(), "old", "new")).resolves.toBe(true);
+    await expect(invoke<boolean>(channels.security.clearPassword, createEvent())).resolves.toBe(true);
+
+    expect(options.passwordService.setPassword).toHaveBeenCalledWith("new");
+    expect(options.passwordService.clearPassword).toHaveBeenCalledOnce();
+    expect(options.lockStateService.clearLockConfigured).toHaveBeenCalledOnce();
+  });
+
+  it("rejects invalid password changes and safely reports lock and unlock failures", async () => {
+    const options = createOptions();
+    options.passwordService.verifyPassword.mockResolvedValue(false);
+    options.lockStateService.lock.mockRejectedValue(new Error("failed"));
+    options.lockStateService.unlock.mockRejectedValue(new Error("failed"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke<boolean>(channels.security.changePassword, createEvent(), "old", "new")).resolves.toBe(false);
+    await expect(invoke<boolean>(channels.security.lock, createEvent())).resolves.toBe(false);
+    await expect(invoke(channels.security.unlock, createEvent(), "wrong")).resolves.toEqual({ status: UnlockResultStatus.INVALID_PASSWORD });
+
+    expect(options.passwordService.setPassword).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith("Failed to lock notes.");
+    expect(warn).toHaveBeenCalledWith("Failed to unlock notes.");
+  });
+
+  it("disables encryption, restores password protection, and skips progress for a destroyed sender", async () => {
+    const options = createOptions();
+    const event = createEvent();
+    event.sender.isDestroyed.mockReturnValue(true);
+    options.noteService.disableEncryption.mockImplementation(async (_password: string, onProgress: (progress: unknown) => void) => {
+      onProgress({ progress: 50 });
+    });
+    registerSecurityIpc(options.value);
+
+    await expect(invoke<boolean>(channels.security.disableEncryption, event, "password")).resolves.toBe(true);
+
+    expect(options.noteService.disableEncryption).toHaveBeenCalledWith("password", expect.any(Function));
+    expect(options.passwordService.setPassword).toHaveBeenCalledWith("password");
+    expect(event.sender.send).not.toHaveBeenCalled();
+  });
+
+  it("returns safe failures when changing, clearing, or toggling encryption throws", async () => {
+    const options = createOptions();
+    options.passwordService.verifyPassword.mockRejectedValue(new Error("verify"));
+    options.passwordService.clearPassword.mockRejectedValue(new Error("clear"));
+    options.noteService.disableEncryption.mockRejectedValue(new Error("disable"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    registerSecurityIpc(options.value);
+
+    await expect(invoke<boolean>(channels.security.verifyPassword, createEvent(), "password")).resolves.toBe(false);
+    await expect(invoke<boolean>(channels.security.changePassword, createEvent(), "old", "new")).resolves.toBe(false);
+    await expect(invoke<boolean>(channels.security.clearPassword, createEvent())).resolves.toBe(false);
+    await expect(invoke<boolean>(channels.security.enableEncryption, createEvent(), "password")).resolves.toBe(false);
+    await expect(invoke<boolean>(channels.security.disableEncryption, createEvent(), "password")).resolves.toBe(false);
+
+    expect(warn).toHaveBeenCalledWith("Failed to verify password.");
+    expect(warn).toHaveBeenCalledWith("Failed to change password.");
+    expect(warn).toHaveBeenCalledWith("Failed to clear password.");
+    expect(warn).toHaveBeenCalledWith("Failed to enable note encryption.");
+    expect(warn).toHaveBeenCalledWith("Failed to disable note encryption.");
+  });
 });
 
 function createOptions(overrides: { isLocked?: boolean } = {}) {
@@ -146,6 +265,7 @@ function createOptions(overrides: { isLocked?: boolean } = {}) {
     lockStateService,
     passwordService,
     noteService,
+    settingsService,
     value: {
       appSecurityDir: "/security",
       lockStateService: lockStateService as unknown as LockStateService,

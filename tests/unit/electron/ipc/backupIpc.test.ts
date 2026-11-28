@@ -130,6 +130,46 @@ describe("backup IPC lock boundary", () => {
       defaultPath: "axion-notes-backup-05-11-2026_14-13-09.zip"
     }));
   });
+
+  it("uses the requesting window for saving and preserves a cancelled save dialog", async () => {
+    const { BrowserWindow } = await import("electron");
+    const parentWindow = { id: 1 };
+    vi.mocked(BrowserWindow.fromWebContents).mockReturnValue(parentWindow as never);
+    const backupArchiveService = { createArchive: vi.fn(), deleteArchive: vi.fn(), saveCopy: vi.fn() };
+    registerBackupIpc({
+      backupArchiveService: backupArchiveService as unknown as BackupArchiveService,
+      backupService: { getState: vi.fn(), initialize: vi.fn(), updateContentSelection: vi.fn() } as unknown as BackupService,
+      lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService,
+      settingsService: { getSettings: vi.fn().mockResolvedValue(undefined) } as unknown as SettingsService
+    });
+    showSaveDialog.mockResolvedValue({ canceled: true });
+
+    await expect(invoke(channels.backup.saveCopy)).resolves.toEqual({ status: "cancelled" });
+
+    expect(showSaveDialog).toHaveBeenCalledWith(parentWindow, expect.objectContaining({ filters: [{ extensions: ["zip"], name: "ZIP archive" }] }));
+    expect(backupArchiveService.saveCopy).not.toHaveBeenCalled();
+  });
+
+  it("returns no state when backup initialization or option updates fail", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const backupService = {
+      getState: vi.fn(),
+      initialize: vi.fn().mockRejectedValue(new Error("initialize")),
+      updateContentSelection: vi.fn().mockRejectedValue(new Error("update"))
+    };
+    registerBackupIpc({
+      backupArchiveService: { createArchive: vi.fn(), deleteArchive: vi.fn(), saveCopy: vi.fn() } as unknown as BackupArchiveService,
+      backupService: backupService as unknown as BackupService,
+      lockStateService: { getIsLocked: vi.fn(() => false) } as unknown as LockStateService,
+      settingsService: { getSettings: vi.fn() } as unknown as SettingsService
+    });
+
+    await expect(invoke(channels.backup.initialize)).resolves.toBeUndefined();
+    await expect(invoke(channels.backup.updateContentSelection, { appSettings: true, mainWindowState: true })).resolves.toBeUndefined();
+
+    expect(warn).toHaveBeenCalledWith("Failed to initialize backups:", expect.any(Error));
+    expect(warn).toHaveBeenCalledWith("Failed to update backup content selection:", expect.any(Error));
+  });
 });
 
 function createBackupState(): BackupState {
