@@ -83,6 +83,7 @@ export function getBackupPreferences(settings: AppSettings): Omit<AppSettings,
 > {
   return {
     clipboardClearDelay: settings.clipboardClearDelay,
+    clearCopiedTextOnLockEnabled: settings.clearCopiedTextOnLockEnabled,
     contentFontSize: settings.contentFontSize,
     dateFormat: settings.dateFormat,
     defaultNoteColor: settings.defaultNoteColor,

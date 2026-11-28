@@ -28,6 +28,7 @@ export type AppSettings = {
   lockScreenOnSystemSleepEnabled: boolean;
   bruteForceProtectionEnabled: boolean;
   clipboardClearDelay: ClipboardClearDelay;
+  clearCopiedTextOnLockEnabled: boolean;
   keepNotesMainWindowOnTop: boolean;
   notesSortOrder: NoteSortOrder;
   theme: AppThemePreference;

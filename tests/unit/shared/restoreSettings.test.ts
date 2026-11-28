@@ -28,6 +28,7 @@ describe("restoreSettings", () => {
       ...defaultAppSettings,
       bruteForceProtectionEnabled: false,
       clipboardClearDelay: ClipboardClearDelay.THIRTY_SECONDS,
+      clearCopiedTextOnLockEnabled: false,
       lockScreenContentProtectionEnabled: false,
       lockScreenEnabled: true,
       lockScreenIdleTimeout: 60,
@@ -38,6 +39,7 @@ describe("restoreSettings", () => {
     const backupSettings = {
       ...defaultAppSettings,
       clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
+      clearCopiedTextOnLockEnabled: true,
       theme: AppThemePreference.DARK,
       showTitles: false
     };
@@ -48,6 +50,7 @@ describe("restoreSettings", () => {
       theme: AppThemePreference.DARK,
       showTitles: false,
       clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
+      clearCopiedTextOnLockEnabled: true,
       bruteForceProtectionEnabled: false,
       lockScreenContentProtectionEnabled: false,
       lockScreenEnabled: true,

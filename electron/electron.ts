@@ -178,6 +178,10 @@ app.on("ready", async () => {
   await lockStateService.initialize(initialSettings);
   lockStateService.onLockStateChange((lockState) => {
     if (lockState.isLocked) {
+      if (currentSettings?.clearCopiedTextOnLockEnabled) {
+        clipboardPrivacyService.clearTrackedNoteCopy();
+      }
+
       closeNoteWindows();
       closeSettingsWindow();
     }

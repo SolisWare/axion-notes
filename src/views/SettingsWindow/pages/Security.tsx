@@ -38,6 +38,7 @@ function Security(props: SecurityProps) {
   const isIdleTimeoutRowDisabled = !props.appSettings.lockScreenEnabled;
   const isLockOnSystemSleepRowDisabled = !props.appSettings.lockScreenEnabled;
   const isRequirePasswordDelayRowDisabled = !props.appSettings.lockScreenEnabled;
+  const isClearCopiedTextOnLockRowDisabled = !props.appSettings.lockScreenEnabled;
   const shouldShowRequirePasswordDelay = window.api.os.isMac;
 
   useEffect(() => {
@@ -81,6 +82,15 @@ function Security(props: SecurityProps) {
     props.onAppSettingsChange({
       ...props.appSettings,
       clipboardClearDelay: Number(event.target.value) as ClipboardClearDelay
+    });
+
+    event.currentTarget.blur();
+  }
+
+  function handleClearCopiedTextOnLockEnabledChange(event: ChangeEvent<HTMLInputElement>) {
+    props.onAppSettingsChange({
+      ...props.appSettings,
+      clearCopiedTextOnLockEnabled: event.target.checked
     });
 
     event.currentTarget.blur();
@@ -580,6 +590,34 @@ function Security(props: SecurityProps) {
               <option value={ClipboardClearDelay.THIRTY_MINUTES}>{t("time.thirtyMinutes")}</option>
             </select>
           </div>
+          <Tooltip
+            arrow
+            disableFocusListener={!isClearCopiedTextOnLockRowDisabled}
+            disableHoverListener={!isClearCopiedTextOnLockRowDisabled}
+            disableTouchListener={!isClearCopiedTextOnLockRowDisabled}
+            enterDelay={300}
+            enterNextDelay={300}
+            title={t("lockScreenRequired")}
+          >
+            <div className={`${styles.settingsRow} ${isClearCopiedTextOnLockRowDisabled ? styles.settingsRowDisabled : ""}`}>
+              <div className={styles.settingsRowText}>
+                <h3 className={styles.settingsSectionTitle} id="clear-copied-text-on-lock-enabled-title">{t("clearCopiedTextOnLock")}</h3>
+                <p className={styles.settingsSectionDescription}>{t("clearCopiedTextOnLockHelp")}</p>
+              </div>
+              <label className={styles.switchControl}>
+                <input
+                  aria-labelledby="clear-copied-text-on-lock-enabled-title"
+                  checked={props.appSettings.clearCopiedTextOnLockEnabled}
+                  className={styles.switchInput}
+                  disabled={isClearCopiedTextOnLockRowDisabled}
+                  type="checkbox"
+                  onChange={handleClearCopiedTextOnLockEnabledChange}
+                />
+                <span className={styles.switchTrack} aria-hidden="true"><span className={styles.switchThumb} /></span>
+                <span className={styles.visuallyHidden}>{t("clearCopiedTextOnLock")}</span>
+              </label>
+            </div>
+          </Tooltip>
         </div>
       </section>
     </div>

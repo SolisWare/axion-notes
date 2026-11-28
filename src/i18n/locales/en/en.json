@@ -330,6 +330,8 @@
   "clearOrCancelSelection": "Clear or cancel note selection",
   "clearCopiedNoteTextAfter": "Clear copied note text after",
   "clearCopiedNoteTextAfterHelp": "Automatically clear text copied from Axion Notes after the selected delay.",
+  "clearCopiedTextOnLock": "Clear copied text when application locks",
+  "clearCopiedTextOnLockHelp": "Automatically clear text copied from Axion Notes when the application locks.",
   "confirmNewPassword": "Confirm your new password.",
   "contentFontHelp": "Applies to note body text.",
   "contentFontSize": "Content font size",

@@ -65,6 +65,37 @@ test.describe("Clipboard privacy", () => {
     await expect.poll(() => readClipboardText(desktopApp!)).toBe("Copied somewhere else");
   });
 
+  test("clears copied note text when Axion Notes locks", async () => {
+    desktopApp = await launchClipboardTestApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await prepareCopiedNote(desktopApp);
+    await enableClearCopiedTextOnLock(desktopApp);
+    await selectNoteTitle(desktopApp);
+    await copySelectedNote(desktopApp);
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe(copiedNote.title);
+
+    await expect(desktopApp.page.evaluate(async () => await window.api.security.lock())).resolves.toBe(true);
+
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe("");
+  });
+
+  test("preserves newer clipboard text when Axion Notes locks", async () => {
+    desktopApp = await launchClipboardTestApp();
+    userDataDir = desktopApp.userDataDir;
+
+    await prepareCopiedNote(desktopApp);
+    await enableClearCopiedTextOnLock(desktopApp);
+    await selectNoteTitle(desktopApp);
+    await copySelectedNote(desktopApp);
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe(copiedNote.title);
+    await desktopApp.app.evaluate(({ clipboard }) => clipboard.writeText("Copied somewhere else"));
+
+    await expect(desktopApp.page.evaluate(async () => await window.api.security.lock())).resolves.toBe(true);
+
+    await expect.poll(() => readClipboardText(desktopApp!)).toBe("Copied somewhere else");
+  });
+
   test("retains the delay preference but not a pending clipboard timer after relaunch", async () => {
     desktopApp = await launchClipboardTestApp();
     userDataDir = desktopApp.userDataDir;
@@ -101,7 +132,7 @@ async function prepareCopiedNote(desktopApp: TestElectronApp): Promise<void> {
       throw new Error("Could not load application settings.");
     }
 
-    window.api.settings.setSettings({
+    await window.api.settings.setSettings({
       ...settings,
       clipboardClearDelay: clearDelay
     });
@@ -112,6 +143,29 @@ async function prepareCopiedNote(desktopApp: TestElectronApp): Promise<void> {
   })).toBe(ClipboardClearDelay.THIRTY_SECONDS);
   await desktopApp.page.waitForTimeout(100);
   await expect(desktopApp.page.getByPlaceholder("Title")).toHaveValue(copiedNote.title);
+}
+
+async function enableClearCopiedTextOnLock(desktopApp: TestElectronApp): Promise<void> {
+  await desktopApp.page.evaluate(async (clearDelay) => {
+    const settings = await window.api.settings.getSettings();
+
+    if (!settings) {
+      throw new Error("Could not load application settings.");
+    }
+
+    await window.api.settings.setSettings({
+      ...settings,
+      clipboardClearDelay: clearDelay,
+      clearCopiedTextOnLockEnabled: true,
+      lockScreenEnabled: true
+    });
+    await window.api.security.setPassword("clipboard test password");
+  }, ClipboardClearDelay.NEVER);
+
+  await expect.poll(async () => desktopApp.page.evaluate(async () => {
+    const settings = await window.api.settings.getSettings();
+    return settings?.clearCopiedTextOnLockEnabled && settings.lockScreenEnabled;
+  })).toBe(true);
 }
 
 async function selectNoteTitle(desktopApp: TestElectronApp): Promise<void> {

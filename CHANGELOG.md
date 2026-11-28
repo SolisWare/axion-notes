@@ -16,6 +16,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Added backup restore with archive validation, note replacement or merge choices, and optional preference restoration
 - Added an Appearance setting to disable drag-and-drop note sorting while preserving note layout
 - Added configurable automatic clearing of copied note text, with safe clipboard clearing when the desktop app quits
+- Added an option to clear Axion Notes text from the clipboard when the application locks while preserving newer clipboard content
 - Added Vitest V8 coverage reports for unit and integration tests
 - Expanded automated test coverage across the app, desktop, encrypted storage, and security flows
 

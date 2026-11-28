@@ -35,6 +35,8 @@ const translations: Record<string, string> = {
   security: "Security",
   clearCopiedNoteTextAfter: "Clear copied note text after",
   clearCopiedNoteTextAfterHelp: "Automatically clear text copied from Axion Notes after the selected delay.",
+  clearCopiedTextOnLock: "Clear copied text when application locks",
+  clearCopiedTextOnLockHelp: "Automatically clear text copied from Axion Notes when the application locks.",
   shortcuts: "Shortcuts",
   storage: "Storage"
 };
@@ -177,6 +179,46 @@ describe("SettingsWindow", () => {
     expect(onAppSettingsChange).toHaveBeenCalledWith({
       ...defaultAppSettings,
       clipboardClearDelay: ClipboardClearDelay.TWO_MINUTES
+    });
+  });
+
+  it("enables clearing copied text on lock only after Application lock is enabled", async () => {
+    const user = userEvent.setup();
+    const onAppSettingsChange = vi.fn();
+    UserAgent.isElectron = true;
+    installDesktopApiMock();
+
+    const { unmount } = render(
+      <SettingsWindow
+        appSettings={defaultAppSettings}
+        onAppSettingsChange={onAppSettingsChange}
+        theme={SystemTheme.LIGHT}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Security" }));
+
+    const clearOnLock = screen.getByRole("checkbox", { name: "Clear copied text when application locks" });
+    expect(clearOnLock).toBeDisabled();
+
+    unmount();
+    render(
+      <SettingsWindow
+        appSettings={{ ...defaultAppSettings, lockScreenEnabled: true }}
+        onAppSettingsChange={onAppSettingsChange}
+        theme={SystemTheme.LIGHT}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Security" }));
+    const enabledClearOnLock = screen.getByRole("checkbox", { name: "Clear copied text when application locks" });
+    expect(enabledClearOnLock).toBeEnabled();
+    await user.click(enabledClearOnLock.closest("label")!);
+
+    expect(onAppSettingsChange).toHaveBeenLastCalledWith({
+      ...defaultAppSettings,
+      clearCopiedTextOnLockEnabled: true,
+      lockScreenEnabled: true
     });
   });
 });

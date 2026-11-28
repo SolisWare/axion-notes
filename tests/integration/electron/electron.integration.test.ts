@@ -16,6 +16,10 @@ const mocks = vi.hoisted(() => ({
   appSetPath: vi.fn(),
   closeNoteWindows: vi.fn(),
   closeSettingsWindow: vi.fn(),
+  clipboardPrivacyService: {
+    applyClearDelay: vi.fn(),
+    clearTrackedNoteCopy: vi.fn()
+  },
   createMainWindow: vi.fn(),
   createMenubar: vi.fn(),
   createSplashWindow: vi.fn(() => ({ isDestroyed: vi.fn(() => false) })),
@@ -165,7 +169,7 @@ vi.mock("../../../electron/security/LockStateService", () => ({
 
 vi.mock("../../../electron/security/BruteForceProtectionService", () => ({ BruteForceProtectionService: vi.fn() }));
 vi.mock("../../../electron/security/ClipboardPrivacyService", () => ({ ClipboardPrivacyService: vi.fn(function ClipboardPrivacyService() {
-  return { applyClearDelay: vi.fn(), clearTrackedNoteCopy: vi.fn() };
+  return mocks.clipboardPrivacyService;
 }) }));
 vi.mock("../../../electron/security/EncryptionKeyService", () => ({ EncryptionKeyService: vi.fn() }));
 vi.mock("../../../electron/security/EncryptionService", () => ({ EncryptionService: vi.fn() }));
@@ -204,6 +208,8 @@ beforeEach(async () => {
   mocks.appSetPath.mockClear();
   mocks.closeNoteWindows.mockClear();
   mocks.closeSettingsWindow.mockClear();
+  mocks.clipboardPrivacyService.applyClearDelay.mockClear();
+  mocks.clipboardPrivacyService.clearTrackedNoteCopy.mockClear();
   mocks.createMainWindow.mockClear();
   mocks.createMenubar.mockClear();
   mocks.createSplashWindow.mockClear();
@@ -308,10 +314,23 @@ describe("Electron application bootstrap", () => {
 
     expect(mocks.closeNoteWindows).toHaveBeenCalledOnce();
     expect(mocks.closeSettingsWindow).toHaveBeenCalledOnce();
+    expect(mocks.clipboardPrivacyService.clearTrackedNoteCopy).not.toHaveBeenCalled();
     expect(mocks.lockStateService.lock).toHaveBeenCalledOnce();
     expect(mocks.lockStateService.secureLock).toHaveBeenCalledOnce();
     expect(liveWindow.webContents.send).toHaveBeenCalledWith("security.onSecureLockComplete");
     expect(destroyedWindow.webContents.send).not.toHaveBeenCalled();
+  });
+
+  it("clears the tracked copy when the application locks after clipboard privacy is enabled", async () => {
+    await emitAppEvent("ready");
+    const ipcOptions = mocks.registerIpcHandlers.mock.calls[0][0] as {
+      onSettingsChange: (settings: { clearCopiedTextOnLockEnabled: boolean }) => void;
+    };
+
+    ipcOptions.onSettingsChange({ clearCopiedTextOnLockEnabled: true });
+    mocks.lockStateChangeHandler?.({ isLocked: true });
+
+    expect(mocks.clipboardPrivacyService.clearTrackedNoteCopy).toHaveBeenCalledOnce();
   });
 
   it("keeps the secure-lock completion private when the lock operation does not complete", async () => {

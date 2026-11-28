@@ -30,6 +30,7 @@ export const defaultAppSettings: AppSettings = {
   lockScreenOnSystemSleepEnabled: true,
   bruteForceProtectionEnabled: true,
   clipboardClearDelay: ClipboardClearDelay.NEVER,
+  clearCopiedTextOnLockEnabled: false,
   keepNotesMainWindowOnTop: false,
   notesSortOrder: NoteSortOrder.DATE_CREATED_ASC,
   theme: AppThemePreference.AUTO,

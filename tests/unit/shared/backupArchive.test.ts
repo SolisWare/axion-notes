@@ -57,6 +57,7 @@ describe("backupArchive", () => {
       ...defaultAppSettings,
       bruteForceProtectionEnabled: true,
       clipboardClearDelay: ClipboardClearDelay.TEN_MINUTES,
+      clearCopiedTextOnLockEnabled: true,
       lockScreenContentProtectionEnabled: true,
       lockScreenEnabled: true,
       lockScreenIdleTimeout: 60,
@@ -87,6 +88,7 @@ describe("backupArchive", () => {
     ]);
     expect(entries.find((entry) => entry.fileName === "app-preferences.json")?.value).toEqual(getBackupPreferences(settings));
     expect(getBackupPreferences(settings)).toHaveProperty("clipboardClearDelay", ClipboardClearDelay.TEN_MINUTES);
+    expect(getBackupPreferences(settings)).toHaveProperty("clearCopiedTextOnLockEnabled", true);
     expect(getBackupPreferences(settings)).toHaveProperty("dragAndDropSortingEnabled", true);
     expect(getBackupPreferences(settings)).not.toHaveProperty("bruteForceProtectionEnabled");
     expect(getBackupPreferences(settings)).not.toHaveProperty("lockScreenContentProtectionEnabled");
