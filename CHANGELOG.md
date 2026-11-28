@@ -24,6 +24,7 @@ The format is inspired by Keep a Changelog, and this project uses release tags f
 - Adopted the `@solisware/electron-menu-i18next` package to localize native Electron role-based menu items
 - Consolidated shared application type declarations under `src/types`
 - Refreshed the dedicated note-window formatting toolbar with a pinned full-width editor layout
+- Grouped Security settings into Application lock, Note encryption, Automatic locking, and Privacy sections
 
 ### Fixed
 - Fixed noon timestamps being displayed as AM instead of PM
