@@ -8,9 +8,20 @@ import type { BrowserWindow } from "electron";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { channels } from "../../../../electron/ipc/channels";
 import { registerAppWindowIpc } from "../../../../electron/ipc/appWindowIpc";
+import { NoteLayoutPreference } from "../../../../src/settings/NoteLayoutPreference";
 
-const { exit, getAllWindows, handlers, relaunch, suppressMainWindowStateSaveOnClose } = vi.hoisted(() => ({
+const {
+  applyMainWindowLayout,
+  exit,
+  fromWebContents,
+  getAllWindows,
+  handlers,
+  relaunch,
+  suppressMainWindowStateSaveOnClose
+} = vi.hoisted(() => ({
+  applyMainWindowLayout: vi.fn(),
   exit: vi.fn(),
+  fromWebContents: vi.fn(),
   getAllWindows: vi.fn<() => BrowserWindow[]>(),
   handlers: new Map<string, (...args: unknown[]) => unknown>(),
   relaunch: vi.fn(),
@@ -19,18 +30,20 @@ const { exit, getAllWindows, handlers, relaunch, suppressMainWindowStateSaveOnCl
 
 vi.mock("electron", () => ({
   app: { exit, relaunch },
-  BrowserWindow: { getAllWindows },
+  BrowserWindow: { fromWebContents, getAllWindows },
   ipcMain: { on: vi.fn((channel: string, handler: (...args: unknown[]) => unknown) => handlers.set(channel, handler)) }
 }));
 
 vi.mock("../../../../electron/windows/mainWindowState", () => ({
-  applyMainWindowLayout: vi.fn(),
+  applyMainWindowLayout,
   suppressMainWindowStateSaveOnClose
 }));
 
 describe("app window IPC", () => {
   beforeEach(() => {
+    applyMainWindowLayout.mockReset();
     exit.mockReset();
+    fromWebContents.mockReset();
     getAllWindows.mockReset();
     handlers.clear();
     relaunch.mockReset();
@@ -72,6 +85,59 @@ describe("app window IPC", () => {
     expect(suppressMainWindowStateSaveOnClose).not.toHaveBeenCalled();
     expect(relaunch).toHaveBeenCalledOnce();
     expect(exit).toHaveBeenCalledWith(0);
+  });
+
+  it("closes the requesting window without requiring an unlocked note vault", async () => {
+    const window = { close: vi.fn() };
+    fromWebContents.mockReturnValue(window);
+    registerAppWindowIpc({
+      lockStateService: { getIsLocked: vi.fn(() => true) },
+      mainWindowStateFilePath: "main-window-state.json",
+      settingsService: { waitForPendingSettingsWrite: vi.fn() }
+    } as never);
+
+    await emit(channels.appWindow.close);
+
+    expect(window.close).toHaveBeenCalledOnce();
+  });
+
+  it("updates the requesting window's always-on-top state and applies valid layouts", async () => {
+    const window = { setAlwaysOnTop: vi.fn() };
+    fromWebContents.mockReturnValue(window);
+    registerAppWindowIpc({
+      lockStateService: { getIsLocked: vi.fn(() => false) },
+      mainWindowStateFilePath: "main-window-state.json",
+      settingsService: { waitForPendingSettingsWrite: vi.fn() }
+    } as never);
+
+    await emit(channels.appWindow.setAlwaysOnTop, true);
+    await emit(channels.appWindow.setLayout, NoteLayoutPreference.LIST);
+    await emit(channels.appWindow.setLayout, "invalid-layout");
+
+    expect(window.setAlwaysOnTop).toHaveBeenCalledWith(true);
+    expect(applyMainWindowLayout).toHaveBeenCalledWith(window, "main-window-state.json", NoteLayoutPreference.LIST);
+    expect(applyMainWindowLayout).toHaveBeenCalledOnce();
+  });
+
+  it("does not perform protected window operations while the note vault is locked", async () => {
+    const window = { setAlwaysOnTop: vi.fn() };
+    const settingsService = { waitForPendingSettingsWrite: vi.fn() };
+    fromWebContents.mockReturnValue(window);
+    registerAppWindowIpc({
+      lockStateService: { getIsLocked: vi.fn(() => true) },
+      mainWindowStateFilePath: "main-window-state.json",
+      settingsService
+    } as never);
+
+    await emit(channels.appWindow.restart);
+    await emit(channels.appWindow.setAlwaysOnTop, true);
+    await emit(channels.appWindow.setLayout, NoteLayoutPreference.GRID);
+
+    expect(settingsService.waitForPendingSettingsWrite).not.toHaveBeenCalled();
+    expect(relaunch).not.toHaveBeenCalled();
+    expect(exit).not.toHaveBeenCalled();
+    expect(window.setAlwaysOnTop).not.toHaveBeenCalled();
+    expect(applyMainWindowLayout).not.toHaveBeenCalled();
   });
 });
 
